@@ -1,0 +1,698 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup Marimo Notebook and Core Imports",
+        "description": "Initialize the Marimo notebook with all required imports and global state variables.",
+        "details": "Create a new Marimo .py file. Import marimo as mo, pandas, os, re, datetime, networkx as nx, pyvis.network, jinja2. Define global states using mo.state: project_root='', files_df=pd.DataFrame(), edges_df=pd.DataFrame(), selected_file='', agent_logs=[]",
+        "testStrategy": "Verify all imports execute without errors. Check mo.state variables are reactive and accessible in notebook cells.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Marimo Notebook File",
+            "description": "Create a new Marimo .py file using the CLI command.",
+            "dependencies": [],
+            "details": "Run 'marimo edit notebook.py' or 'marimo new notebook.py' to create the initial Marimo notebook file structure. This sets up the reactive notebook environment.",
+            "status": "pending",
+            "testStrategy": "Verify the .py file is created and can be opened in marimo edit without errors."
+          },
+          {
+            "id": 2,
+            "title": "Add Core Library Imports",
+            "description": "Import all required libraries at the top of the notebook.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add import statements: import marimo as mo, import pandas, import os, import re, import datetime, import networkx as nx, from pyvis import network, import jinja2. Place in first code cell.",
+            "status": "pending",
+            "testStrategy": "Run the imports cell and confirm no import errors occur in the notebook."
+          },
+          {
+            "id": 3,
+            "title": "Define Global State Variables",
+            "description": "Initialize reactive state variables using mo.state.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create: project_root = mo.state(''), files_df = mo.state(pd.DataFrame()), edges_df = mo.state(pd.DataFrame()), selected_file = mo.state(''), agent_logs = mo.state([]). Ensure pandas is available from prior import.",
+            "status": "pending",
+            "testStrategy": "Check that state variables appear in the variable explorer and are reactive when modified."
+          },
+          {
+            "id": 4,
+            "title": "Verify Imports and State Reactivity",
+            "description": "Test that all imports work and states are properly reactive.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Add a test cell that accesses each state variable (e.g., print(project_root.value)) and uses imported libraries (e.g., nx.__version__). Ensure no runtime errors.",
+            "status": "pending",
+            "testStrategy": "Manually modify a state value in one cell and verify it updates reactively in another cell displaying the value."
+          },
+          {
+            "id": 5,
+            "title": "Document Setup and Save Notebook",
+            "description": "Add markdown documentation and finalize the setup cell structure.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Create a markdown cell explaining the global states and imports. Organize cells logically: imports first, then states, then tests. Save the notebook.",
+            "status": "pending",
+            "testStrategy": "Restart the notebook kernel and re-run all cells to verify complete setup executes cleanly without errors."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Implement Project Scanner Function",
+        "description": "Create scan_project function to inventory files excluding node_modules, .git, __pycache__.",
+        "details": "def scan_project(root_path): Use os.walk(root_path). Filter exclusions. Collect path, name, ext=os.path.splitext(name)[1], size_bytes=os.path.getsize(path). Return pd.DataFrame with these columns. Bind to project_root state.",
+        "testStrategy": "Test with sample directory: verify DataFrame has correct columns, exclusions applied, size_bytes accurate.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define exclusions and import dependencies",
+            "description": "Set up the exclusion list and import required modules for the scan_project function.",
+            "dependencies": [],
+            "details": "Import os, pandas as pd. Define EXCLUSIONS = {'node_modules', '.git', '__pycache__'} as a set for efficient lookup.",
+            "status": "pending",
+            "testStrategy": "Verify imports work and EXCLUSIONS set contains exactly the three specified directories."
+          },
+          {
+            "id": 2,
+            "title": "Implement os.walk traversal with filtering",
+            "description": "Use os.walk to traverse the project directory and filter out excluded directories.",
+            "dependencies": [
+              1
+            ],
+            "details": "def scan_project(root_path): for root, dirs, files in os.walk(root_path): dirs[:] = [d for d in dirs if d not in EXCLUSIONS]. Collect all file paths.",
+            "status": "pending",
+            "testStrategy": "Test with sample dir containing exclusions; verify excluded dirs are skipped in traversal."
+          },
+          {
+            "id": 3,
+            "title": "Extract file metadata for each file",
+            "description": "For each filtered file path, collect name, extension, and size_bytes metadata.",
+            "dependencies": [
+              2
+            ],
+            "details": "For each file in files: path = os.path.join(root, file), name = file, ext = os.path.splitext(name)[1], size_bytes = os.path.getsize(path). Store in list of dicts.",
+            "status": "pending",
+            "testStrategy": "Verify metadata extraction: correct name, ext (e.g. '.py'), accurate size_bytes match os.getsize."
+          },
+          {
+            "id": 4,
+            "title": "Create and return pandas DataFrame",
+            "description": "Convert collected file metadata into pd.DataFrame with columns: path, name, ext, size_bytes.",
+            "dependencies": [
+              3
+            ],
+            "details": "files_data = [{'path': path, 'name': name, 'ext': ext, 'size_bytes': size_bytes} for each file]. return pd.DataFrame(files_data)",
+            "status": "pending",
+            "testStrategy": "Verify DataFrame has exactly 4 columns with correct dtypes and row count matches filtered files."
+          },
+          {
+            "id": 5,
+            "title": "Bind scan_project result to project_root state",
+            "description": "Integrate scan_project with UI state management to store files_df reactively.",
+            "dependencies": [
+              4
+            ],
+            "details": "In scan_button on_click: global files_df = scan_project(project_root.value). Ensure files_df is reactive state for downstream tasks.",
+            "status": "pending",
+            "testStrategy": "Click scan button, verify files_df updates with correct DataFrame content and triggers UI table refresh."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Build Explorer Tab UI with Reactive Table",
+        "description": "Create Explorer tab with path input, scan button, and selectable file table.",
+        "details": "project_root_input = mo.ui.text('Project Root', value='/path/to/stereOS').\nscan_button = mo.ui.button('Scan', on_click=lambda: scan_project(project_root.value)).\nfiles_table = mo.ui.table(files_df, selection='single', on_select=lambda s: selected_file.set(s[0])).\nmo.ui.tabs([('📁 Explorer', mo.vstack([project_root_input, scan_button, files_table]))])",
+        "testStrategy": "Enter path, click Scan, verify table populates. Click row, verify selected_file updates reactively.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Project Root Path Input",
+            "description": "Initialize text input for project root directory path with default value.",
+            "dependencies": [],
+            "details": "Use mo.ui.text('Project Root', value='/path/to/stereOS') to create reactive input. Store as project_root_input variable for later use in scan function.",
+            "status": "pending",
+            "testStrategy": "Verify input displays with default path and accepts new path entry."
+          },
+          {
+            "id": 2,
+            "title": "Create Scan Button with Handler",
+            "description": "Add scan button that triggers project scanning using project root path.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create scan_button = mo.ui.button('Scan', on_click=lambda: scan_project(project_root.value)). Ensure scan_project function exists from dependencies.",
+            "status": "pending",
+            "testStrategy": "Click button after entering path, verify scan_project is called with correct path."
+          },
+          {
+            "id": 3,
+            "title": "Setup Reactive Files DataFrame State",
+            "description": "Initialize mo.state for files_df to hold scanned file data reactively.",
+            "dependencies": [],
+            "details": "Define files_df = mo.state(pd.DataFrame()) in global state section. Ensure pandas imported from Task 1 dependencies.",
+            "status": "pending",
+            "testStrategy": "Verify files_df is reactive state variable accessible throughout notebook."
+          },
+          {
+            "id": 4,
+            "title": "Create Selectable Files Table",
+            "description": "Build reactive table displaying files_df with single row selection.",
+            "dependencies": [
+              3
+            ],
+            "details": "Create files_table = mo.ui.table(files_df, selection='single', on_select=lambda s: selected_file.set(s[0])). Ensure selected_file state exists.",
+            "status": "pending",
+            "testStrategy": "Verify table renders empty initially, shows data after scan, selection updates selected_file."
+          },
+          {
+            "id": 5,
+            "title": "Assemble Explorer Tab Layout",
+            "description": "Combine input, button, and table into Explorer tab using mo.ui.tabs.",
+            "dependencies": [
+              1,
+              2,
+              4
+            ],
+            "details": "Create explorer_vstack = mo.vstack([project_root_input, scan_button, files_table]). Add to tabs: mo.ui.tabs([('📁 Explorer', explorer_vstack)]).",
+            "status": "pending",
+            "testStrategy": "Verify complete tab displays, scan populates table reactively, row selection works."
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Implement Status Badge Logic and Rendering",
+        "description": "Add status column to files_df with WARNING/COMPLEX/NORMAL logic and HTML badge renderer.",
+        "details": "def render_badge(status): return f'<span class=\"badge badge-{status.lower()}\">{status}</span>' with CSS styles.\nIn scan_project, add status column: WARNING if 'TODO' or 'FIXME' in file.read(), COMPLEX if import_count>10, else NORMAL.\nUse files_df['status_display'] = files_df['status'].apply(render_badge)",
+        "testStrategy": "Create test files with TODO/FIXME/many imports. Verify badges render with correct colors in table.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define render_badge function with HTML badge output",
+            "description": "Create the render_badge function that generates HTML span elements with status-specific CSS classes for badge rendering.",
+            "dependencies": [],
+            "details": "Implement def render_badge(status): return f'<span class=badge badge-{status.lower()}>{status}</span>'. Ensure it handles WARNING, COMPLEX, NORMAL statuses correctly.",
+            "status": "pending",
+            "testStrategy": "Test render_badge('WARNING') returns correct HTML string with 'badge-warning' class."
+          },
+          {
+            "id": 2,
+            "title": "Add CSS styles for status badge classes",
+            "description": "Define CSS styles for badge-warning, badge-complex, badge-normal classes to display colored badges in the Marimo UI table.",
+            "dependencies": [],
+            "details": "Add mo.md with CSS: .badge-warning {background: orange}, .badge-complex {background: red}, .badge-normal {background: green}. Include padding and border-radius for proper badge appearance.",
+            "status": "pending",
+            "testStrategy": "Verify badges render with distinct colors when displayed in HTML output."
+          },
+          {
+            "id": 3,
+            "title": "Implement status logic in scan_project function",
+            "description": "Modify scan_project to read file contents and compute status: WARNING for TODO/FIXME, COMPLEX for import_count>10, else NORMAL.",
+            "dependencies": [],
+            "details": "In scan_project loop: file_content = open(path).read(); has_todo = 'TODO' in file_content or 'FIXME' in file_content; status = 'WARNING' if has_todo else 'COMPLEX' if import_count>10 else 'NORMAL'. Add to DataFrame.",
+            "status": "pending",
+            "testStrategy": "Create test files with TODO/FIXME/many imports, verify status column values are correct."
+          },
+          {
+            "id": 4,
+            "title": "Add status and status_display columns to files_df",
+            "description": "Extend files_df with 'status' column from scan_project and create 'status_display' using render_badge applied to status.",
+            "dependencies": [
+              3
+            ],
+            "details": "After scan_project completes: files_df['status_display'] = files_df['status'].apply(render_badge). Ensure status_display contains HTML strings for table rendering.",
+            "status": "pending",
+            "testStrategy": "Verify files_df has both columns and status_display contains valid HTML badge markup."
+          },
+          {
+            "id": 5,
+            "title": "Update files_table to display status_display column",
+            "description": "Modify the Explorer tab's files_table to include and render the status_display column with HTML badges.",
+            "dependencies": [
+              2,
+              4
+            ],
+            "details": "Update files_table = mo.ui.table(files_df, selection='single', columns=['path', 'name', 'status_display', ...], wrap=True). Ensure HTML in status_display renders as styled badges.",
+            "status": "pending",
+            "testStrategy": "Scan project with test files, verify table shows colored badges matching file statuses."
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Develop Connection Verifier and Edge Generation",
+        "description": "Parse imports from files and generate edges_df using regex heuristic.",
+        "details": "def verify_connections(files_df): edges = []\nfor idx, row in files_df.iterrows():\ncontent = open(row.path).read()\nimports = re.findall(r'(?:from|import)\\s+[\"'`]([^\"`]+)[\"`\"]', content)\nfor imp in imports: target_path = resolve_import(row.path, imp) # simple path matching\nedges.append({'source':row.path, 'target':target_path, 'type':'import'})\nglobal edges_df; edges_df.value = pd.DataFrame(edges)",
+        "testStrategy": "Test with Python files containing various import statements. Verify edges_df has correct source/target pairs.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement resolve_import function",
+            "description": "Create helper function to resolve import strings to actual file paths using simple path matching.",
+            "dependencies": [],
+            "details": "Implement resolve_import(source_path, import_str) that performs relative path resolution from source_path directory, handles common Python import patterns like '.' for relative imports, and returns resolved file path or None if not found.",
+            "status": "pending",
+            "testStrategy": "Test with sample imports: relative './module', '../utils/helper', absolute 'numpy/core'. Verify returns correct paths or None."
+          },
+          {
+            "id": 2,
+            "title": "Improve regex pattern for import parsing",
+            "description": "Enhance regex to accurately capture Python import statements including from ... import ... patterns.",
+            "dependencies": [],
+            "details": "Update regex to handle 'from module import func', 'import module', 'from .module import *', multiline imports. Use re.findall with MULTILINE flag and capture module names excluding function names in from-imports.",
+            "status": "pending",
+            "testStrategy": "Test against sample Python files with various import styles. Verify extracts module names correctly without function names."
+          },
+          {
+            "id": 3,
+            "title": "Implement file content reading with error handling",
+            "description": "Add safe file reading and content processing within verify_connections function.",
+            "dependencies": [],
+            "details": "Wrap open(row.path).read() in try-except for FileNotFoundError, PermissionError. Skip problematic files with logging. Only process Python/text files based on extension from files_df.",
+            "status": "pending",
+            "testStrategy": "Test with missing files, permission-denied files, binary files. Verify function continues processing other files."
+          },
+          {
+            "id": 4,
+            "title": "Build edges DataFrame construction logic",
+            "description": "Process parsed imports into edges list and create edges_df using Marimo reactive state.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Replace global edges_df with proper Marimo state: edges_df = mo.state(pd.DataFrame()). Loop through files_df, append valid {'source':row.path, 'target':target_path, 'type':'import'} only if target_path is not None, then set edges_df.value = pd.DataFrame(edges).",
+            "status": "pending",
+            "testStrategy": "Verify edges_df has correct columns, no None targets, source paths match files_df, reasonable edge counts."
+          },
+          {
+            "id": 5,
+            "title": "Complete and document verify_connections function",
+            "description": "Integrate all components into complete verify_connections(files_df) function with documentation.",
+            "dependencies": [
+              4
+            ],
+            "details": "Combine all previous implementations. Add function docstring explaining inputs/outputs, regex limitations, resolution logic. Ensure function is reactive-friendly for Marimo. Add type hints where possible.",
+            "status": "pending",
+            "testStrategy": "End-to-end: Call verify_connections on sample files_df. Verify edges_df populates correctly. Test with 10+ sample Python files containing known import relationships."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Create Interactive Connection Graph Visualization",
+        "description": "Convert edges_df to NetworkX DiGraph and render with PyVis physics simulation.",
+        "details": "def render_graph():\nnet = nx.DiGraph()\nnet.from_pandas_edgelist(edges_df.value)\npyvis_net = Network(height='600px', bgcolor='#222', font_color='white')\npyvis_net.from_nx(net)\npyvis_net.set_options({'physics':{'barnesHut':{'enabled':True}}})\nreturn mo.Html(pyvis_net.generate_html())\nTrigger on scan_button and edges_df changes.",
+        "testStrategy": "Scan project with known dependencies. Verify graph renders with physics, nodes clickable, dark theme.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create render_graph function with NetworkX DiGraph",
+            "description": "Implement the core render_graph function that converts edges_df to NetworkX DiGraph and prepares PyVis network.",
+            "dependencies": [],
+            "details": "def render_graph(): net = nx.DiGraph(); net.from_pandas_edgelist(edges_df.value, source='source', target='target', edge_attr=True); pyvis_net = Network(height='600px', bgcolor='#222', font_color='white'); pyvis_net.from_nx(net); return pyvis_net",
+            "status": "pending",
+            "testStrategy": "Verify DiGraph created with correct nodes/edges from test edges_df. Check pyvis_net has dark theme styling."
+          },
+          {
+            "id": 2,
+            "title": "Configure PyVis physics simulation options",
+            "description": "Add physics simulation configuration to PyVis network using Barnes-Hut algorithm.",
+            "dependencies": [
+              1
+            ],
+            "details": "pyvis_net.set_options({'physics': {'enabled': True, 'barnesHut': {'gravitationalConstant': -2000, 'springLength': 95, 'springConstant': 0.001, 'damping': 0.09}}}); return mo.Html(pyvis_net.generate_html())",
+            "status": "pending",
+            "testStrategy": "Verify generated HTML contains physics configuration. Test with sample graph shows node movement on load."
+          },
+          {
+            "id": 3,
+            "title": "Create graph display UI element",
+            "description": "Create reactive UI container for graph display that updates when render_graph changes.",
+            "dependencies": [
+              2
+            ],
+            "details": "graph_display = mo.ui.html(render_graph(), height='600px'); Add CSS for better integration: mo.md('''<style>.graph-container {border: 1px solid #444; border-radius: 8px;}</style>''')",
+            "status": "pending",
+            "testStrategy": "Verify graph_display renders HTML output and resizes correctly to 600px height."
+          },
+          {
+            "id": 4,
+            "title": "Bind graph updates to scan_button and edges_df changes",
+            "description": "Make graph_display reactive to scan_button clicks and edges_df state changes.",
+            "dependencies": [
+              3
+            ],
+            "details": "scan_button = mo.ui.button('Scan Project', on_click=scan_project); graph_display = mo.ui.html(render_graph(), height='600px').update(trigger=[scan_button, edges_df]); Create main layout with graph_display",
+            "status": "pending",
+            "testStrategy": "Click scan_button with test data, verify graph updates. Change edges_df manually, verify immediate re-render."
+          },
+          {
+            "id": 5,
+            "title": "Add node click interactions and finalize layout",
+            "description": "Enhance graph with node click handlers and integrate into main notebook layout.",
+            "dependencies": [
+              4
+            ],
+            "details": "pyvis_net.set_options({'interaction': {'hover': True, 'selectConnectedEdges': True}}); main_layout = mo.vstack([scan_button, graph_display], height='800px'); Test with project having known dependencies",
+            "status": "pending",
+            "testStrategy": "Scan project with known dependencies. Verify: physics simulation active, nodes clickable, dark theme applied, edges visible."
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Build Complete Tabbed UI Layout",
+        "description": "Assemble all four tabs: Explorer, Connections, PRD Generator, Emperor.",
+        "details": "tabs = mo.ui.tabs([\n('📁 Explorer', explorer_vstack),\n('🕸️ Connections', render_graph()),\n('📄 PRD Generator', prd_content),\n('👑 Emperor', emperor_vstack)\n])\nmo.vstack([tabs])",
+        "testStrategy": "Verify tab switching works, each tab content reactive to scan_button and file selection.",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Verify Explorer Tab Content Availability",
+            "description": "Confirm explorer_vstack is properly defined and reactive to files_df state changes from scan workflow.",
+            "dependencies": [],
+            "details": "Check that explorer_vstack uses mo.ui.table(files_df) or similar with file selection handlers. Ensure badges and scan_button reactivity intact from Task 3 dependencies.",
+            "status": "pending",
+            "testStrategy": "Scan project and verify Explorer tab displays file table with correct badges and selection works."
+          },
+          {
+            "id": 2,
+            "title": "Verify Connections Tab Graph Rendering",
+            "description": "Ensure render_graph() function exists and properly displays edges_df from connection verification.",
+            "dependencies": [
+              1
+            ],
+            "details": "Confirm render_graph() uses mo.ui.graph or network visualization component bound to edges_df.value. Test reactivity after scan+verify_connections chain from Tasks 5,10.",
+            "status": "pending",
+            "testStrategy": "After scanning project with imports, switch to Connections tab and verify graph shows source/target nodes and edges."
+          },
+          {
+            "id": 3,
+            "title": "Verify PRD Generator Tab Content Integration",
+            "description": "Confirm prd_content is defined and reactive to selected file content from Explorer tab.",
+            "dependencies": [
+              1
+            ],
+            "details": "Ensure prd_content uses selected_file state to display PRD generation UI. Bind to file selection event from explorer_vstack for automatic updates.",
+            "status": "pending",
+            "testStrategy": "Select file in Explorer → switch to PRD tab → verify content updates with file-specific PRD elements."
+          },
+          {
+            "id": 4,
+            "title": "Verify Emperor Tab Command Interface",
+            "description": "Ensure emperor_vstack is built with mission briefing, deploy button, and scrollable logs as per Task 9.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement mission_briefing textarea, deploy_btn with agent_logs append, and logs_display vstack with scroll=True. Use provided Task 9 implementation details.",
+            "status": "pending",
+            "testStrategy": "Switch to Emperor tab, enter mission text, click Deploy, verify timestamped log appears and scrolls."
+          },
+          {
+            "id": 5,
+            "title": "Assemble and Test Complete Tabbed Layout",
+            "description": "Create tabs UI with all four verified tab contents and wrap in main vstack. Test full tab switching and reactivity.",
+            "dependencies": [
+              2,
+              3,
+              4
+            ],
+            "details": "Use exact implementation: tabs = mo.ui.tabs([('📁 Explorer', explorer_vstack), ('🕸️ Connections', render_graph()), ('📄 PRD Generator', prd_content), ('👑 Emperor', emperor_vstack)]); mo.vstack([tabs]). Test end-to-end workflow.",
+            "status": "pending",
+            "testStrategy": "Full E2E: Enter path → Scan → Verify all tabs update correctly (Explorer table, Connections graph, PRD on file select, Emperor deploy logs)."
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Implement PRD Generator with Jinja2 Templating",
+        "description": "Generate Markdown PRD for selected_file using file metadata and dependency context.",
+        "details": "jinja_env = Environment(loader=FileSystemLoader('templates')) # or inline\ntemplate = jinja_env.from_string(PRD_TEMPLATE)\ndef generate_prd():\nif selected_file.value:\nfile_info = files_df[files_df.path==selected_file.value]\ndeps = edges_df[edges_df.source==selected_file.value]\nconsumers = edges_df[edges_df.target==selected_file.value]\nreturn mo.md(template.render(file=file_info.iloc[0], deps=deps, consumers=consumers))\nReactive to selected_file.",
+        "testStrategy": "Select different files, verify PRD updates with correct metadata, deps/consumers listed.",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          3,
+          5,
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create PRD Jinja2 Template File",
+            "description": "Define the PRD_TEMPLATE as a Markdown template file using Jinja2 syntax for file metadata, dependencies, and consumers.",
+            "dependencies": [],
+            "details": "Create 'templates/prd_template.md' with sections like file info, dependencies list using {% for dep in deps %}, consumers list, status badges. Use Jinja2 best practices: loops, conditionals, safe Markdown output.",
+            "status": "pending",
+            "testStrategy": "Verify template syntax with jinja_env.get_template('prd_template.md') without errors."
+          },
+          {
+            "id": 2,
+            "title": "Initialize Jinja2 Environment",
+            "description": "Set up Jinja2 Environment with FileSystemLoader pointing to templates directory.",
+            "dependencies": [],
+            "details": "Add import jinja2; jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'), autoescape=True). Configure trim_blocks=True, lstrip_blocks=True for clean output.",
+            "status": "pending",
+            "testStrategy": "Test jinja_env.list_templates() returns ['prd_template.md']."
+          },
+          {
+            "id": 3,
+            "title": "Implement generate_prd Function",
+            "description": "Create the core generate_prd() function that fetches file_info, deps, consumers from DataFrames and renders template.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "def generate_prd(): if selected_file.value: file_info = files_df[files_df.path==selected_file.value].iloc[0]; deps=edges_df[edges_df.source==selected_file.value]; consumers=edges_df[edges_df.target==selected_file.value]; template=jinja_env.get_template('prd_template.md'); return mo.md(template.render(file=file_info, deps=deps, consumers=consumers))",
+            "status": "pending",
+            "testStrategy": "Mock selected_file.value, verify rendered output contains file name, dep paths, consumer paths."
+          },
+          {
+            "id": 4,
+            "title": "Make PRD Generation Reactive",
+            "description": "Bind generate_prd() to selected_file state changes for automatic PRD updates.",
+            "dependencies": [
+              3
+            ],
+            "details": "Create prd_output = mo.state(''); @mo.reactive def update_prd(): prd_output.set(generate_prd() if selected_file.value else ''); update_prd(); Add dependency: mo.ui.bind(update_prd, selected_file).",
+            "status": "pending",
+            "testStrategy": "Change selected_file.value, verify prd_output updates reactively within 100ms."
+          },
+          {
+            "id": 5,
+            "title": "Add PRD Output UI to Explorer Tab",
+            "description": "Integrate reactive PRD display into existing Explorer tab UI below the files table.",
+            "dependencies": [
+              4
+            ],
+            "details": "In Explorer tab vstack: add mo.vstack([files_table, mo.rule(), mo.md('## PRD:', classes='h4'), prd_output]) after table. Style with CSS for scrollable PRD section if content overflows.",
+            "status": "pending",
+            "testStrategy": "Select different files in table, verify PRD section shows correct metadata/deps/consumers for each."
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Create Emperor Command Interface and Logging",
+        "description": "Build mission briefing textarea, deploy button, and scrollable agent logs.",
+        "details": "mission_briefing = mo.ui.text_area('Mission Briefing', height='100px')\ndeploy_btn = mo.ui.button('Deploy Agent', on_click=lambda: agent_logs.append(f'[{datetime.now()}] DEPLOYING: {mission_briefing.value}'))\nlogs_display = mo.ui.vstack([mo.md(log) for log in agent_logs], scroll=True)\nemperor_vstack = mo.vstack([mission_briefing, deploy_btn, logs_display])",
+        "testStrategy": "Enter mission text, click Deploy, verify timestamped log appears and scrolls correctly.",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Initialize agent_logs state variable",
+            "description": "Create the global reactive state for storing agent logs if not already present.",
+            "dependencies": [],
+            "details": "Add agent_logs = mo.state([]) to the global state definitions from Task 1. Ensure it's initialized as an empty list for reactive updates.",
+            "status": "pending",
+            "testStrategy": "Verify agent_logs is accessible and reactive in notebook cells without errors."
+          },
+          {
+            "id": 2,
+            "title": "Create mission briefing textarea",
+            "description": "Implement the mission_briefing textarea UI component with specified height.",
+            "dependencies": [
+              1
+            ],
+            "details": "Define mission_briefing = mo.ui.text_area('Mission Briefing', height='100px'). Ensure it's reactive via mo.state if needed for value access.",
+            "status": "pending",
+            "testStrategy": "Enter text in textarea and verify mission_briefing.value updates reactively."
+          },
+          {
+            "id": 3,
+            "title": "Implement deploy button with logging logic",
+            "description": "Create deploy button that appends timestamped mission briefing to agent_logs on click.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Define deploy_btn = mo.ui.button('Deploy Agent', on_click=lambda: agent_logs.append(f'[{datetime.now()}] DEPLOYING: {mission_briefing.value}')). Import datetime if missing.",
+            "status": "pending",
+            "testStrategy": "Click button after entering mission text; verify agent_logs list updates with correct timestamped entry."
+          },
+          {
+            "id": 4,
+            "title": "Build scrollable logs display component",
+            "description": "Create vstack that renders agent_logs as markdown items with scrolling enabled.",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "Define logs_display = mo.ui.vstack([mo.md(log) for log in agent_logs], scroll=True). Ensure it reacts to agent_logs changes automatically.",
+            "status": "pending",
+            "testStrategy": "Add multiple logs via deploy button; verify display shows all logs and scrolls when content exceeds viewport."
+          },
+          {
+            "id": 5,
+            "title": "Assemble and integrate emperor_vstack interface",
+            "description": "Combine all components into the main emperor_vstack and integrate into tabs or main UI.",
+            "dependencies": [
+              2,
+              3,
+              4
+            ],
+            "details": "Define emperor_vstack = mo.vstack([mission_briefing, deploy_btn, logs_display]). Add to mo.ui.tabs or main layout alongside Explorer tab from Task 3.",
+            "status": "pending",
+            "testStrategy": "Enter mission text, deploy multiple times; verify full interface renders, logs appear/scroll correctly, no layout issues."
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Integrate Connection Verification into Scan Workflow",
+        "description": "Chain verify_connections after successful scan for fully reactive updates.",
+        "details": "Modify scan_button on_click: scan_project(project_root.value); verify_connections(files_df.value)\nEnsure graph and PRD tabs auto-update when files_df and edges_df change due to Marimo reactivity.",
+        "testStrategy": "Full end-to-end: Enter path → Scan → Table populates with badges → Graph renders → Select file → PRD updates.",
+        "priority": "high",
+        "dependencies": [
+          3,
+          5,
+          6,
+          8
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Locate and Modify Scan Button on_click Handler",
+            "description": "Find the scan_button cell in the Marimo notebook and update its on_click callback to chain scan_project and verify_connections calls.",
+            "dependencies": [],
+            "details": "Update the existing scan_button.on_click to: lambda: (scan_project(project_root.value), verify_connections(files_df.value)). Ensure both functions execute sequentially after button click.",
+            "status": "pending",
+            "testStrategy": "Click scan button and verify both scan_project and verify_connections execute in sequence without errors."
+          },
+          {
+            "id": 2,
+            "title": "Verify files_df Passed Correctly to verify_connections",
+            "description": "Ensure verify_connections receives the updated files_df from scan_project and processes it to populate edges_df.",
+            "dependencies": [
+              1
+            ],
+            "details": "Confirm files_df.value is reactive and passed by reference. Test that verify_connections reads files_df after scan completes and generates edges_df correctly using the provided regex heuristic.",
+            "status": "pending",
+            "testStrategy": "After scan, inspect files_df row count matches scanned files and edges_df populates with import edges."
+          },
+          {
+            "id": 3,
+            "title": "Configure Graph Tab for edges_df Reactivity",
+            "description": "Update the graph tab/render_graph to automatically re-render when edges_df changes due to Marimo reactivity.",
+            "dependencies": [
+              2
+            ],
+            "details": "Bind render_graph to edges_df using mo.reactive or cell dependencies. Ensure NetworkX DiGraph rebuilds from updated edges_df and PyVis generates new HTML on every edges_df.value change.",
+            "status": "pending",
+            "testStrategy": "Change edges_df manually; verify graph auto-updates with physics simulation and correct node connections."
+          },
+          {
+            "id": 4,
+            "title": "Configure PRD Tab for files_df and selected_file Reactivity",
+            "description": "Ensure PRD tab content updates automatically when files_df changes post-scan and when selected_file updates.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Make PRD display reactive to files_df.value for file list refresh and selected_file.value for content display. Use mo.ui.table or similar bound to files_df with selection callback updating selected_file.",
+            "status": "pending",
+            "testStrategy": "Scan project → verify PRD table populates; select file → verify PRD content updates with file details."
+          },
+          {
+            "id": 5,
+            "title": "End-to-End Testing of Integrated Scan Workflow",
+            "description": "Run complete workflow test: path entry → scan → verification → auto-updates in graph/PRD tabs.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Test full sequence: Enter project path, click scan_button, confirm files_df populates with badges, edges_df generates, graph renders with physics, file selection updates PRD. Check for reactivity without manual triggers.",
+            "status": "pending",
+            "testStrategy": "Full E2E: Enter path → Scan → Table badges appear → Graph auto-renders → Select file → PRD updates instantly."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2026-01-25T20:30:56.148Z",
+      "updated": "2026-01-25T20:30:56.148Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
