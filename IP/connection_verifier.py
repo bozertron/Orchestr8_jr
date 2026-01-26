@@ -25,6 +25,43 @@ class ImportType(Enum):
     UNKNOWN = "unknown"
 
 
+class IssueSeverity(Enum):
+    """Severity levels for connection issues - maps to Woven Maps colors."""
+    CRITICAL = "critical"    # File doesn't exist or can't be read
+    ERROR = "error"          # Broken imports that block execution
+    WARNING = "warning"      # Unresolved imports that may be external
+    INFO = "info"            # Informational (e.g., circular dependency)
+    
+    @property
+    def color(self) -> str:
+        """Map to Woven Maps three-color system."""
+        return {
+            IssueSeverity.CRITICAL: "red",
+            IssueSeverity.ERROR: "blue",      # Blue = broken
+            IssueSeverity.WARNING: "yellow",
+            IssueSeverity.INFO: "gray"
+        }.get(self, "gray")
+
+
+class NodeType(Enum):
+    """
+    Type of node in the connection graph.
+    Maps to visual encoding in Woven Maps Code City.
+    """
+    FILE = "file"              # Generic file - rectangle
+    COMPONENT = "component"    # Vue/React component - diamond
+    STORE = "store"            # Pinia/Redux store - hexagon
+    ROUTE = "route"            # Router definition - pentagon
+    COMMAND = "command"        # Tauri command - octagon
+    API = "api"                # API endpoint - triangle
+    TYPE = "type"              # Type definition - circle
+    ASSET = "asset"            # Static asset - square
+    CONFIG = "config"          # Configuration file - gear
+    TEST = "test"              # Test file - flask
+    ENTRY = "entry"            # Entry point - star
+    GROUP = "group"            # Logical grouping - cloud
+
+
 @dataclass
 class ImportResult:
     """Result of checking a single import statement."""
@@ -46,7 +83,89 @@ class FileConnectionResult:
     resolved_imports: int = 0
     broken_imports: List[ImportResult] = field(default_factory=list)
     external_imports: List[ImportResult] = field(default_factory=list)
+    local_imports: List[ImportResult] = field(default_factory=list)  # Resolved local imports
     status: str = "working"  # "working" | "broken"
+
+
+@dataclass
+class ConnectionMetrics:
+    """
+    Metrics for a file node in the connection graph.
+    Used for visual encoding in Woven Maps (size, color intensity).
+    """
+    connection_count: int = 0        # Total incoming + outgoing connections
+    incoming_count: int = 0          # Files that import this file
+    outgoing_count: int = 0          # Files this file imports
+    issue_count: int = 0             # Number of issues (broken imports, etc.)
+    max_severity: Optional[IssueSeverity] = None  # Worst issue severity
+    centrality: float = 0.0          # Graph centrality score (0-1)
+    in_cycle: bool = False           # Part of circular dependency
+    depth: int = 0                   # Distance from entry points
+
+
+@dataclass
+class GraphNode:
+    """
+    A node in the connection graph.
+    Represents a file or module with its connections and metrics.
+    """
+    id: str                          # Unique ID (usually file path)
+    label: str                       # Display label
+    file_path: str                   # Full path relative to project root
+    node_type: NodeType = NodeType.FILE
+    status: str = "normal"           # normal, warning, error, selected, highlighted
+    metrics: ConnectionMetrics = field(default_factory=ConnectionMetrics)
+    position: Optional[Tuple[float, float]] = None  # For layout algorithms
+    cluster_id: Optional[str] = None  # For grouping related nodes
+    
+    def to_dict(self) -> Dict:
+        """Convert to dictionary for JSON serialization."""
+        return {
+            "id": self.id,
+            "label": self.label,
+            "filePath": self.file_path,
+            "type": self.node_type.value,
+            "status": self.status,
+            "metrics": {
+                "connectionCount": self.metrics.connection_count,
+                "incomingCount": self.metrics.incoming_count,
+                "outgoingCount": self.metrics.outgoing_count,
+                "issueCount": self.metrics.issue_count,
+                "maxSeverity": self.metrics.max_severity.value if self.metrics.max_severity else None,
+                "centrality": self.metrics.centrality,
+                "inCycle": self.metrics.in_cycle,
+                "depth": self.metrics.depth
+            },
+            "position": {"x": self.position[0], "y": self.position[1]} if self.position else None,
+            "clusterId": self.cluster_id
+        }
+
+
+@dataclass
+class GraphEdge:
+    """
+    An edge in the connection graph.
+    Represents an import/dependency relationship.
+    """
+    source: str                      # Source node ID (importer)
+    target: str                      # Target node ID (imported)
+    edge_type: str = "import"        # import, re_export, dynamic, type_only
+    resolved: bool = True            # Whether the import resolved
+    line_number: int = 0             # Source line of import statement
+    weight: float = 1.0              # Edge weight for layout algorithms
+    bidirectional: bool = False      # True if both files import each other
+    
+    def to_dict(self) -> Dict:
+        """Convert to dictionary for JSON serialization."""
+        return {
+            "source": self.source,
+            "target": self.target,
+            "type": self.edge_type,
+            "resolved": self.resolved,
+            "lineNumber": self.line_number,
+            "weight": self.weight,
+            "bidirectional": self.bidirectional
+        }
 
 
 # Python standard library modules (common ones - not exhaustive)
@@ -362,6 +481,7 @@ class ConnectionVerifier:
                 result.external_imports.append(import_result)
                 result.resolved_imports += 1
             elif resolved_path:
+                result.local_imports.append(import_result)  # Track resolved local imports
                 result.resolved_imports += 1
             else:
                 result.broken_imports.append(import_result)
@@ -468,8 +588,9 @@ def verify_all_connections(project_root: str, files_df) -> Tuple:
         else:
             files_df.at[index, "status"] = "WORKING"  # Maps to Gold
         
-        # Create edges for ALL imports (resolved and broken)
-        for imp in result.broken_imports + result.external_imports:
+        # Create edges for ALL imports (resolved local, broken, and external)
+        all_imports = result.local_imports + result.broken_imports + result.external_imports
+        for imp in all_imports:
             edges.append({
                 "source": row["path"],
                 "target": imp.resolved_path or imp.target_module,
@@ -477,10 +598,6 @@ def verify_all_connections(project_root: str, files_df) -> Tuple:
                 "resolved": imp.is_resolved,
                 "line": imp.line_number
             })
-        
-        # Add resolved local imports
-        for imp in [i for i in result.external_imports if i.resolved_path]:
-            pass  # Already added above
     
     return files_df, pd.DataFrame(edges) if edges else pd.DataFrame()
 
@@ -507,3 +624,278 @@ if __name__ == "__main__":
                 print(f"\n{file_path}:")
                 for imp in result.broken_imports:
                     print(f"  Line {imp.line_number}: {imp.import_statement}")
+
+
+def detect_node_type(file_path: str) -> NodeType:
+    """
+    Detect the NodeType based on file path patterns.
+    Used for visual encoding in Woven Maps Code City.
+    """
+    path = Path(file_path)
+    name = path.stem.lower()
+    full_path = str(path).lower()
+    ext = path.suffix.lower()
+    
+    # Entry points
+    if name in {'main', 'index', 'app', '__main__'} or 'entry' in name:
+        return NodeType.ENTRY
+    
+    # Test files
+    if 'test' in name or 'spec' in name or full_path.startswith('test'):
+        return NodeType.TEST
+    
+    # Configuration files
+    if name in {'config', 'settings', 'conf'} or ext in {'.json', '.yaml', '.yml', '.toml', '.ini'}:
+        if 'tsconfig' in name or 'package' in name or 'cargo' in name:
+            return NodeType.CONFIG
+        return NodeType.CONFIG
+    
+    # Type definitions
+    if name.endswith('.d') or 'types' in full_path or 'interfaces' in full_path:
+        return NodeType.TYPE
+    
+    # Vue/React components
+    if ext in {'.vue', '.jsx', '.tsx'} or 'component' in full_path:
+        return NodeType.COMPONENT
+    
+    # Store files (Pinia, Redux, Vuex)
+    if 'store' in full_path or name.endswith('store') or 'reducer' in name:
+        return NodeType.STORE
+    
+    # Router files
+    if 'route' in name or 'router' in full_path:
+        return NodeType.ROUTE
+    
+    # Tauri commands (Rust commands directory)
+    if 'command' in full_path or 'cmd' in name:
+        return NodeType.COMMAND
+    
+    # API endpoints
+    if 'api' in full_path or 'endpoint' in name or 'handler' in name:
+        return NodeType.API
+    
+    # Static assets
+    if ext in {'.css', '.scss', '.less', '.svg', '.png', '.jpg', '.jpeg', '.gif', '.ico'}:
+        return NodeType.ASSET
+    
+    # Default to generic file
+    return NodeType.FILE
+
+
+class ConnectionGraph:
+    """
+    Builds and analyzes a connection graph from verification results.
+    Provides data for Woven Maps Code City visualization.
+    """
+    
+    def __init__(self, verifier: ConnectionVerifier):
+        self.verifier = verifier
+        self.nodes: Dict[str, GraphNode] = {}
+        self.edges: List[GraphEdge] = []
+        self._nx_graph = None  # NetworkX graph for algorithms
+    
+    def build_from_results(
+        self, 
+        results: Dict[str, FileConnectionResult]
+    ) -> None:
+        """Build the graph from connection verification results."""
+        # Create nodes for all verified files
+        for file_path, result in results.items():
+            node_type = detect_node_type(file_path)
+            
+            metrics = ConnectionMetrics(
+                outgoing_count=result.total_imports,
+                issue_count=len(result.broken_imports),
+                max_severity=IssueSeverity.ERROR if result.broken_imports else None
+            )
+            
+            status = "error" if result.broken_imports else "normal"
+            
+            self.nodes[file_path] = GraphNode(
+                id=file_path,
+                label=Path(file_path).name,
+                file_path=file_path,
+                node_type=node_type,
+                status=status,
+                metrics=metrics
+            )
+        
+        # Create edges from imports
+        edge_set = set()  # Track (source, target) for bidirectional detection
+        
+        for file_path, result in results.items():
+            # Process resolved local imports
+            for imp in result.local_imports:
+                target = imp.resolved_path
+                self.edges.append(GraphEdge(
+                    source=file_path,
+                    target=target,
+                    edge_type="import",
+                    resolved=True,
+                    line_number=imp.line_number
+                ))
+                edge_set.add((file_path, target))
+                
+                # Update incoming count on target
+                if target in self.nodes:
+                    self.nodes[target].metrics.incoming_count += 1
+            
+            # Process broken imports
+            for imp in result.broken_imports:
+                self.edges.append(GraphEdge(
+                    source=file_path,
+                    target=imp.target_module,
+                    edge_type="import",
+                    resolved=False,
+                    line_number=imp.line_number
+                ))
+        
+        # Detect bidirectional edges
+        for edge in self.edges:
+            if (edge.target, edge.source) in edge_set:
+                edge.bidirectional = True
+        
+        # Update connection counts
+        for node in self.nodes.values():
+            node.metrics.connection_count = (
+                node.metrics.incoming_count + node.metrics.outgoing_count
+            )
+    
+    def detect_cycles(self) -> List[List[str]]:
+        """
+        Detect circular dependencies using NetworkX.
+        Returns list of cycles (each cycle is a list of file paths).
+        """
+        try:
+            import networkx as nx
+        except ImportError:
+            # Fallback if NetworkX not installed
+            return []
+        
+        # Build NetworkX graph
+        G = nx.DiGraph()
+        
+        for node_id in self.nodes:
+            G.add_node(node_id)
+        
+        for edge in self.edges:
+            if edge.resolved and edge.source in self.nodes and edge.target in self.nodes:
+                G.add_edge(edge.source, edge.target)
+        
+        self._nx_graph = G
+        
+        # Find strongly connected components (cycles)
+        cycles = []
+        try:
+            sccs = list(nx.strongly_connected_components(G))
+            for scc in sccs:
+                if len(scc) > 1:
+                    cycles.append(list(scc))
+                    # Mark nodes as in cycle
+                    for node_id in scc:
+                        if node_id in self.nodes:
+                            self.nodes[node_id].metrics.in_cycle = True
+                            if not self.nodes[node_id].metrics.max_severity:
+                                self.nodes[node_id].metrics.max_severity = IssueSeverity.INFO
+        except Exception:
+            pass
+        
+        return cycles
+    
+    def calculate_centrality(self) -> None:
+        """Calculate centrality metrics for all nodes."""
+        try:
+            import networkx as nx
+        except ImportError:
+            return
+        
+        if self._nx_graph is None:
+            self.detect_cycles()  # This builds the NetworkX graph
+        
+        if self._nx_graph is None or len(self._nx_graph.nodes) == 0:
+            return
+        
+        try:
+            # PageRank-style centrality
+            centrality = nx.pagerank(self._nx_graph, alpha=0.85)
+            
+            for node_id, score in centrality.items():
+                if node_id in self.nodes:
+                    self.nodes[node_id].metrics.centrality = score
+        except Exception:
+            pass
+    
+    def calculate_depth(self) -> None:
+        """Calculate depth from entry points."""
+        try:
+            import networkx as nx
+        except ImportError:
+            return
+        
+        if self._nx_graph is None:
+            return
+        
+        # Find entry points (nodes with no incoming edges)
+        entry_points = [
+            n for n in self._nx_graph.nodes 
+            if self._nx_graph.in_degree(n) == 0 or 
+               (n in self.nodes and self.nodes[n].node_type == NodeType.ENTRY)
+        ]
+        
+        # BFS from entry points
+        for entry in entry_points:
+            try:
+                lengths = nx.single_source_shortest_path_length(self._nx_graph, entry)
+                for node_id, depth in lengths.items():
+                    if node_id in self.nodes:
+                        # Take minimum depth if already set
+                        current = self.nodes[node_id].metrics.depth
+                        if current == 0 or depth < current:
+                            self.nodes[node_id].metrics.depth = depth
+            except Exception:
+                pass
+    
+    def to_dict(self) -> Dict:
+        """
+        Export graph as dictionary for JSON serialization.
+        Format compatible with Woven Maps visualization.
+        """
+        return {
+            "nodes": [node.to_dict() for node in self.nodes.values()],
+            "edges": [edge.to_dict() for edge in self.edges],
+            "metadata": {
+                "nodeCount": len(self.nodes),
+                "edgeCount": len(self.edges),
+                "brokenImportCount": sum(
+                    1 for e in self.edges if not e.resolved
+                ),
+                "cycleCount": sum(
+                    1 for n in self.nodes.values() if n.metrics.in_cycle
+                )
+            }
+        }
+    
+    def to_json(self) -> str:
+        """Export graph as JSON string."""
+        import json
+        return json.dumps(self.to_dict(), indent=2)
+
+
+def build_connection_graph(project_root: str) -> ConnectionGraph:
+    """
+    Convenience function to build a complete connection graph.
+    
+    Usage:
+        graph = build_connection_graph("/path/to/project")
+        print(graph.to_json())
+    """
+    verifier = ConnectionVerifier(project_root)
+    results = verifier.verify_project()
+    
+    graph = ConnectionGraph(verifier)
+    graph.build_from_results(results)
+    graph.detect_cycles()
+    graph.calculate_centrality()
+    graph.calculate_depth()
+    
+    return graph
