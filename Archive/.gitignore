@@ -1,0 +1,7 @@
+# Archive Directory
+# This directory contains processed SCOUT reports and other archived documents
+# These files are intentionally excluded from git tracking
+
+*
+!.gitignore
+!.contextignore

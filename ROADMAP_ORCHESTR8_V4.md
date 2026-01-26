@@ -54,7 +54,9 @@ Context loaded → Almost ready to execute → Context poisoned/compacted → Un
 
 ## II. System Architecture
 
-### 2.1 The Hierarchy
+### 2.1 The Full Hierarchy
+
+**CRITICAL: The Emperor MUST see the full subagent choreography. Hiding it doesn't work - this was tested and failed.**
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -62,13 +64,19 @@ Context loaded → Almost ready to execute → Context poisoned/compacted → Un
 │                         (Ben + Claude Strategic)                             │
 │                                                                              │
 │  Responsibilities:                                                           │
-│  - Strategic decisions and priority setting                                  │
-│  - Decree issuance                                                          │
-│  - Final approval on architectural changes                                   │
-│  - Reviews escalations from generals                                         │
+│  ✅ Hold conversation with human leadership                                  │
+│  ✅ Create TASK_MANIFEST.json with strategic direction                       │
+│  ✅ Receive STATUS_REPORT.json (compressed, minimal context impact)          │
+│  ✅ Make decisions requiring human alignment                                 │
+│  ✅ Final approval before merges                                             │
+│                                                                              │
+│  ❌ DO NOT act as Orchestrator                                               │
+│  ❌ DO NOT act as Deployment Strategist                                      │
+│  ❌ DO NOT make git commits directly                                         │
+│  ❌ DO NOT execute fixes directly                                            │
 └─────────────────────────────────────────────────────────────────────────────┘
                                     │
-                                    │ Views/Commands
+                                    │ TASK_MANIFEST.json
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           🏰 ORCHESTR8                                       │
@@ -81,6 +89,28 @@ Context loaded → Almost ready to execute → Context poisoned/compacted → Un
 │  - Generate BRIEFING.md for context injection                               │
 │  - Aggregate status from all fiefdoms                                       │
 │  - Display error messages from terminals/consoles/builds                    │
+│  - Run Ralph Wiggum loop until sprint complete                              │
+│  - Compile STATUS_REPORT.json for Emperor                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    │ WAVE_PLAN.json
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      📋 DEPLOYMENT STRATEGIST                                │
+│                                                                              │
+│  Responsibilities:                                                           │
+│  - Receive WAVE_PLAN.json from Orchestrator                                 │
+│  - Maintain FILE_LOCKS.json (collision prevention)                          │
+│  - Calculate parallel batches within each wave                              │
+│  - Deploy agents with proper context distribution                           │
+│  - Monitor agent health and context usage                                   │
+│  - Retry failed agents (2x max)                                             │
+│  - Report wave completion to Orchestrator                                   │
+│                                                                              │
+│  CONTEXT WINDOW MANAGEMENT:                                                  │
+│  - Track estimated context per agent                                        │
+│  - Split large tasks across multiple agents                                 │
+│  - Prefer MORE agents with SMALLER scope over fewer with larger scope       │
 └─────────────────────────────────────────────────────────────────────────────┘
                                     │
                     ┌───────────────┼───────────────┐
@@ -90,29 +120,113 @@ Context loaded → Almost ready to execute → Context poisoned/compacted → Un
             │ ⚔️ GENERAL  │ │ ⚔️ GENERAL  │ │ ⚔️ GENERAL  │
             │  src/llm/   │ │ src/modules/│ │ src/platform│
             └─────────────┘ └─────────────┘ └─────────────┘
-                    │               │               │
-         ┌──────────┴──────────┐   │    ┌──────────┴──────────┐
-         │                     │   │    │                     │
-         ▼                     ▼   ▼    ▼                     ▼
-    ┌─────────┐           ┌─────────┐  ┌─────────┐       ┌─────────┐
-    │ 🔍 Scout│           │ 🔧 Fixer│  │ ✓ Valid │       │ 📝 Git  │
-    │(analyze)│           │ (edit)  │  │ (test)  │       │(commit) │
-    └─────────┘           └─────────┘  └─────────┘       └─────────┘
+                    │
+    ┌───────────────┼───────────────┬───────────────┬───────────────┐
+    │               │               │               │               │
+    ▼               ▼               ▼               ▼               ▼
+┌────────┐    ┌────────┐    ┌────────┐    ┌────────┐    ┌────────┐
+│ 🔍     │    │ 🔧     │    │ 🔄     │    │ ✓      │    │ 📝     │
+│ Scout  │    │ Fixer  │    │Synthzr │    │ Valid  │    │ Git    │
+│        │    │        │    │        │    │        │    │ Agent  │
+└────────┘    └────────┘    └────────┘    └────────┘    └────────┘
+Read-only     Surgical      Pattern       Test          Commits
+analysis      changes       detection     runner        only
 ```
 
-### 2.2 Critical Design Decision: Visibility
+### 2.2 Agent Type Definitions
 
-**The Emperor MUST see the subagent choreography.**
+| Agent | Purpose | Scope | Context Est. | Parallelization |
+|-------|---------|-------|--------------|-----------------|
+| **Scout** | Deep-dive analysis, trace code paths | Can roam freely | 8-15K tokens | HIGH (read-only) |
+| **Fixer** | Apply approved fixes surgically | Limited to assigned files | 5-10K tokens | HIGH (with locks) |
+| **Synthesizer** | Combine Scout outputs, identify patterns | Reads Scout outputs | 10K tokens | LOW (depends on Scouts) |
+| **Validator** | Verify fixes work, check regressions | Runs tests | 5-8K tokens | MEDIUM |
+| **Git Agent** | Handle all git operations | Commits, pushes | 2-3K tokens | LOW |
+| **EPO Advocacy** | Ensure decisions serve human user | Reviews failures | 3-5K tokens | LOW |
 
-This was tested and failed when hidden. The Emperor needs to know:
-- Which scouts are analyzing what
-- Which fixers are modifying which files
-- Which validators are running which tests
-- Which commits are being made
+### 2.3 The Ralph Wiggum Loop
 
-This visibility is achieved through the CAMPAIGN_LOG.md and real-time status in the fiefdom cards.
+The Orchestrator runs a self-referential execution pattern until completion:
 
-### 2.3 Component Responsibilities
+```
+START
+  │
+  ▼
+┌─────────────────────────────────────┐
+│ Load CHECKPOINT.json (or create)    │
+└─────────────────────────────────────┘
+  │
+  ▼
+┌─────────────────────────────────────┐
+│ Determine current wave              │◄─────────────────────┐
+└─────────────────────────────────────┘                      │
+  │                                                          │
+  ▼                                                          │
+┌─────────────────────────────────────┐                      │
+│ Deploy agents for wave              │                      │
+│ (via Deployment Strategist)         │                      │
+└─────────────────────────────────────┘                      │
+  │                                                          │
+  ▼                                                          │
+┌─────────────────────────────────────┐                      │
+│ Collect agent outputs               │                      │
+└─────────────────────────────────────┘                      │
+  │                                                          │
+  ▼                                                          │
+┌─────────────────────────────────────┐                      │
+│ Any failures?                       │                      │
+└─────────────────────────────────────┘                      │
+  │YES              │NO                                      │
+  ▼                 ▼                                        │
+┌──────────┐  ┌─────────────────────────────┐               │
+│ Deploy   │  │ Trigger Git Commit Agent    │               │
+│ Failure  │  └─────────────────────────────┘               │
+│ Scout +  │        │                                        │
+│ EPO      │        ▼                                        │
+└──────────┘  ┌─────────────────────────────┐               │
+  │           │ Update CHECKPOINT.json      │               │
+  │           └─────────────────────────────┘               │
+  │                 │                                        │
+  ▼                 ▼                                        │
+┌─────────────────────────────────────┐                      │
+│ All waves complete?                 │                      │
+└─────────────────────────────────────┘                      │
+  │NO               │YES                                     │
+  │                 ▼                                        │
+  │           ┌─────────────────────────────┐               │
+  │           │ SPRINT_COMPLETE             │               │
+  │           │ Return to Emperor           │               │
+  │           └─────────────────────────────┘               │
+  │                                                          │
+  └──────────────────────────────────────────────────────────┘
+```
+
+### 2.4 Context Window Management Strategy
+
+**Principle: More Agents with Smaller Scope > Fewer Agents with Larger Scope**
+
+| Task Size | Agents | Context per Agent | Rationale |
+|-----------|--------|-------------------|-----------|
+| Read 1 file | 1 Scout | ~5K tokens | Single focus |
+| Read 5 files | 5 Scouts | ~5K each | Parallel, no collision |
+| Implement large class | 4+ Fixers | ~8K each | Split by method/section |
+| Complex analysis | 1 Scout + 1 Synthesizer | ~10K each | Scout gathers, Synthesizer analyzes |
+
+**Example: Implement LoadCalculationEngine (1000 lines)**
+
+Instead of 1 agent implementing entire class:
+
+| Agent | Section | Lines | Context |
+|-------|---------|-------|---------|
+| FIXER-A | Core class, init, primary API | ~200 | 10K |
+| FIXER-B | Structural load methods | ~200 | 10K |
+| FIXER-C | Thermal load methods | ~200 | 10K |
+| FIXER-D | Electrical load methods | ~150 | 8K |
+| FIXER-E | Plumbing load methods | ~150 | 8K |
+
+**Total: 5 Fixers instead of 1, each with manageable context**
+
+### 2.5 Component Responsibilities
 
 | Component | Runtime | Responsibility |
 |-----------|---------|----------------|
@@ -1163,190 +1277,415 @@ stereOS/  (or any target project)
 ### 13.1 Mermaid Graph Generation
 
 ```python
-def generate_empire_mermaid(fiefdoms: list[dict]) -> str:
+# IP/mermaid_generator.py
+from pathlib import Path
+from typing import List, Dict, Optional
+from dataclasses import dataclass
+from enum import Enum
+
+class FiefdomStatus(Enum):
+    WORKING = "working"    # Gold - healthy
+    BROKEN = "broken"      # Blue - has errors
+    COMBAT = "combat"      # Purple - general deployed
+
+@dataclass
+class Fiefdom:
+    path: str
+    status: FiefdomStatus
+    connections: List[str]
+    error_count: int = 0
+    last_check: Optional[str] = None
+
+# Color constants from MaestroView.vue
+COLORS = {
+    "working": {"fill": "#D4AF37", "stroke": "#B8860B", "text": "#000"},
+    "broken": {"fill": "#1fbdea", "stroke": "#0891b2", "text": "#000"},
+    "combat": {"fill": "#9D4EDD", "stroke": "#7c3aed", "text": "#fff"},
+}
+
+def generate_empire_mermaid(fiefdoms: List[Fiefdom]) -> str:
     """
     Generate Mermaid flowchart with gold/blue/purple coloring.
 
     Args:
-        fiefdoms: List of {path, status, connections}
+        fiefdoms: List of Fiefdom objects
 
     Returns:
-        Mermaid markdown string
+        Mermaid markdown string ready for mo.mermaid()
     """
     lines = ["graph TD"]
 
-    # Add nodes
+    # Create node ID mapping
+    path_to_id = {f.path: f"N{i}" for i, f in enumerate(fiefdoms)}
+
+    # Add nodes with labels
     for i, f in enumerate(fiefdoms):
         node_id = f"N{i}"
-        label = Path(f["path"]).name
+        label = Path(f.path).name
+        # Add error count to broken nodes
+        if f.status == FiefdomStatus.BROKEN and f.error_count > 0:
+            label = f"{label} ({f.error_count})"
         lines.append(f'    {node_id}["{label}"]')
 
-    # Add edges
-    for i, f in enumerate(fiefdoms):
-        for conn in f.get("connections", []):
-            target_idx = next(
-                (j for j, t in enumerate(fiefdoms) if t["path"] == conn),
-                None
-            )
-            if target_idx is not None:
-                lines.append(f'    N{i} --> N{target_idx}')
+    # Add edges based on connections
+    for f in fiefdoms:
+        source_id = path_to_id[f.path]
+        for conn in f.connections:
+            if conn in path_to_id:
+                target_id = path_to_id[conn]
+                lines.append(f'    {source_id} --> {target_id}')
 
-    # Add styles
+    # Add styles based on status
     lines.append("")
     for i, f in enumerate(fiefdoms):
-        status = f["status"]
-        if status == "working":
-            lines.append(f'    style N{i} fill:#D4AF37,stroke:#B8860B,color:#000')
-        elif status == "combat":
-            lines.append(f'    style N{i} fill:#9D4EDD,stroke:#7c3aed,color:#fff')
-        else:  # broken
-            lines.append(f'    style N{i} fill:#1fbdea,stroke:#0891b2,color:#000')
+        node_id = f"N{i}"
+        colors = COLORS[f.status.value]
+        lines.append(
+            f'    style {node_id} fill:{colors["fill"]},'
+            f'stroke:{colors["stroke"]},color:{colors["text"]}'
+        )
 
     return "\n".join(lines)
+
+
+def render_in_marimo(fiefdoms: List[Fiefdom]):
+    """Render Mermaid graph in Marimo."""
+    import marimo as mo
+    mermaid_str = generate_empire_mermaid(fiefdoms)
+    return mo.mermaid(mermaid_str)
 ```
 
 ### 13.2 Terminal Spawner
 
 ```python
-def spawn_terminal(fiefdom_path: str, briefing_ready: bool = True) -> None:
-    """
-    Spawn terminal at fiefdom path.
+# IP/terminal_spawner.py
+import platform
+import subprocess
+import json
+from datetime import datetime
+from pathlib import Path
+from typing import Optional
 
-    Args:
-        fiefdom_path: Absolute path to fiefdom
-        briefing_ready: Whether BRIEFING.md has been generated
-    """
-    import platform
-    import subprocess
+class TerminalSpawner:
+    def __init__(self, project_root: str):
+        self.project_root = Path(project_root)
+        self.state_file = self.project_root / ".orchestr8" / "state" / "fiefdom-status.json"
 
-    # Update fiefdom status to COMBAT
-    update_fiefdom_status(fiefdom_path, "combat")
+    def update_fiefdom_status(self, fiefdom_path: str, status: str) -> None:
+        """Update fiefdom status in state file."""
+        self.state_file.parent.mkdir(parents=True, exist_ok=True)
 
-    # Build startup message
-    if briefing_ready:
-        msg = "echo '⚔️ BRIEFING.md ready. Type: claude' && bash"
-    else:
-        msg = "echo '📜 Read CLAUDE.md for orders. Type: claude' && bash"
+        if self.state_file.exists():
+            with open(self.state_file) as f:
+                state = json.load(f)
+        else:
+            state = {"fiefdoms": {}}
 
-    # Platform-specific spawn
-    system = platform.system()
+        state["fiefdoms"][fiefdom_path] = {
+            "status": status,
+            "updated_at": datetime.now().isoformat()
+        }
 
-    if system == "Linux":
-        subprocess.Popen([
-            'gnome-terminal',
-            '--working-directory', fiefdom_path,
-            '--', 'bash', '-c', msg
-        ])
-    elif system == "Darwin":  # macOS
-        script = f'''
-        tell application "Terminal"
-            do script "cd '{fiefdom_path}' && {msg}"
-            activate
-        end tell
-        '''
-        subprocess.Popen(['osascript', '-e', script])
-    elif system == "Windows":
-        subprocess.Popen([
-            'cmd', '/c', 'start', 'cmd', '/k',
-            f'cd /d "{fiefdom_path}" && {msg}'
-        ])
+        with open(self.state_file, "w") as f:
+            json.dump(state, f, indent=2)
+
+    def spawn(
+        self,
+        fiefdom_path: str,
+        briefing_ready: bool = True,
+        auto_start_claude: bool = False
+    ) -> bool:
+        """
+        Spawn terminal at fiefdom path and update status to COMBAT.
+
+        Args:
+            fiefdom_path: Relative path from project root
+            briefing_ready: Whether BRIEFING.md has been generated
+            auto_start_claude: Whether to auto-run claude command
+
+        Returns:
+            True if spawn succeeded
+        """
+        abs_path = str(self.project_root / fiefdom_path)
+
+        # Update status to COMBAT (purple)
+        self.update_fiefdom_status(fiefdom_path, "combat")
+
+        # Build startup message
+        if briefing_ready:
+            msg = 'echo "⚔️ BRIEFING.md ready. Type: claude --print \\"Read BRIEFING.md and begin.\\""'
+        else:
+            msg = 'echo "📜 Read CLAUDE.md for orders. Type: claude"'
+
+        if auto_start_claude:
+            msg += ' && claude --print "Read BRIEFING.md and begin."'
+        else:
+            msg += ' && bash'
+
+        # Platform-specific spawn
+        system = platform.system()
+
+        try:
+            if system == "Linux":
+                # Try gnome-terminal first, fall back to xterm
+                try:
+                    subprocess.Popen([
+                        'gnome-terminal',
+                        '--working-directory', abs_path,
+                        '--', 'bash', '-c', msg
+                    ])
+                except FileNotFoundError:
+                    subprocess.Popen([
+                        'xterm', '-e',
+                        f'cd "{abs_path}" && {msg}'
+                    ])
+
+            elif system == "Darwin":  # macOS
+                script = f'''
+                tell application "Terminal"
+                    do script "cd '{abs_path}' && {msg}"
+                    activate
+                end tell
+                '''
+                subprocess.Popen(['osascript', '-e', script])
+
+            elif system == "Windows":
+                subprocess.Popen([
+                    'cmd', '/c', 'start', 'cmd', '/k',
+                    f'cd /d "{abs_path}" && {msg}'
+                ])
+
+            return True
+
+        except Exception as e:
+            print(f"Failed to spawn terminal: {e}")
+            # Revert status on failure
+            self.update_fiefdom_status(fiefdom_path, "broken")
+            return False
+
+    def mark_combat_complete(self, fiefdom_path: str, success: bool) -> None:
+        """
+        Mark combat as complete. Called when general finishes.
+
+        Args:
+            fiefdom_path: The fiefdom that was worked on
+            success: Whether the mission succeeded (for status update)
+        """
+        # Status will be updated by next health check
+        # This just logs the completion
+        self.update_fiefdom_status(
+            fiefdom_path,
+            "pending_health_check"
+        )
 ```
 
 ### 13.3 Health Check Runner
 
 ```python
-def check_fiefdom_health(fiefdom_path: str) -> dict:
-    """
-    Run health check for a fiefdom.
+# IP/health_checker.py
+import subprocess
+from datetime import datetime
+from pathlib import Path
+from typing import List, Dict, Optional
+from dataclasses import dataclass, field
 
-    Returns:
-        {
-            "status": "working" | "broken",
-            "errors": [...],
-            "warnings": [...],
-            "last_check": "ISO timestamp"
-        }
-    """
-    import subprocess
-    from datetime import datetime
+@dataclass
+class HealthCheckResult:
+    status: str  # "working" | "broken"
+    errors: List[str] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
+    last_check: str = ""
+    raw_output: str = ""
 
-    result = subprocess.run(
-        ["npm", "run", "typecheck"],
-        cwd=project_root,
-        capture_output=True,
-        text=True
-    )
+class HealthChecker:
+    def __init__(self, project_root: str):
+        self.project_root = Path(project_root)
 
-    # Parse errors for this fiefdom
-    errors = []
-    warnings = []
+    def check_fiefdom(self, fiefdom_path: str) -> HealthCheckResult:
+        """
+        Run health check for a fiefdom.
+        Currently uses npm run typecheck. Future: e2e, unit tests.
 
-    for line in result.stderr.split('\n'):
-        if fiefdom_path in line:
-            if 'error' in line.lower():
-                errors.append(line.strip())
-            elif 'warning' in line.lower():
-                warnings.append(line.strip())
+        Args:
+            fiefdom_path: Relative path from project root (e.g., "src/modules/generator")
 
-    return {
-        "status": "broken" if errors else "working",
-        "errors": errors,
-        "warnings": warnings,
-        "last_check": datetime.now().isoformat()
-    }
+        Returns:
+            HealthCheckResult with status, errors, warnings
+        """
+        result = subprocess.run(
+            ["npm", "run", "typecheck"],
+            cwd=str(self.project_root),
+            capture_output=True,
+            text=True,
+            timeout=120  # 2 minute timeout
+        )
+
+        # TypeScript errors go to stdout, not stderr
+        output = result.stdout + result.stderr
+        errors = []
+        warnings = []
+
+        # Parse output for this fiefdom
+        for line in output.split('\n'):
+            # Check if error is in this fiefdom
+            if fiefdom_path in line:
+                if 'error TS' in line or 'error:' in line.lower():
+                    errors.append(line.strip())
+                elif 'warning' in line.lower():
+                    warnings.append(line.strip())
+
+        return HealthCheckResult(
+            status="broken" if errors else "working",
+            errors=errors,
+            warnings=warnings,
+            last_check=datetime.now().isoformat(),
+            raw_output=output
+        )
+
+    def check_all_fiefdoms(self, fiefdom_paths: List[str]) -> Dict[str, HealthCheckResult]:
+        """
+        Run health check once and parse results for all fiefdoms.
+        More efficient than running typecheck per fiefdom.
+        """
+        result = subprocess.run(
+            ["npm", "run", "typecheck"],
+            cwd=str(self.project_root),
+            capture_output=True,
+            text=True,
+            timeout=120
+        )
+
+        output = result.stdout + result.stderr
+        results = {}
+
+        for fiefdom in fiefdom_paths:
+            errors = []
+            warnings = []
+            for line in output.split('\n'):
+                if fiefdom in line:
+                    if 'error TS' in line or 'error:' in line.lower():
+                        errors.append(line.strip())
+                    elif 'warning' in line.lower():
+                        warnings.append(line.strip())
+
+            results[fiefdom] = HealthCheckResult(
+                status="broken" if errors else "working",
+                errors=errors,
+                warnings=warnings,
+                last_check=datetime.now().isoformat(),
+                raw_output=""  # Only store once, not per fiefdom
+            )
+
+        return results
 ```
 
 ### 13.4 Briefing Generator
 
 ```python
-def generate_briefing(fiefdom_path: str, ticket: dict) -> str:
-    """
-    Generate BRIEFING.md with maximum context.
+# IP/briefing_generator.py
+from datetime import datetime
+from pathlib import Path
+from typing import List, Dict, Optional
+import json
 
-    Includes:
-    - Ticket details
-    - All error messages
-    - Carl's analysis
-    - Louis lock status
-    - Recent campaign history
-    - Stacked notes
-    """
-    from datetime import datetime
+class BriefingGenerator:
+    def __init__(self, project_root: str):
+        self.project_root = Path(project_root)
 
-    # Gather all context
-    carl = Carl(project_root)
-    louis = Louis(project_root)
+    def load_campaign_log(self, fiefdom_path: str, limit: int = 5) -> List[Dict]:
+        """Load recent entries from CAMPAIGN_LOG.md."""
+        log_path = self.project_root / fiefdom_path / "CAMPAIGN_LOG.md"
+        if not log_path.exists():
+            return []
 
-    context = carl.gather_context(fiefdom_path)
-    locks = louis.get_locks_for_fiefdom(fiefdom_path)
-    campaign_history = load_campaign_log(fiefdom_path, limit=5)
+        # Parse markdown entries (simplified - would need proper parser)
+        entries = []
+        # ... parsing logic ...
+        return entries[-limit:]
 
-    # Build briefing
-    briefing = f"""# ⚔️ MISSION BRIEFING: {ticket['id']}
+    def get_locks_for_fiefdom(self, fiefdom_path: str) -> List[Dict]:
+        """Get Louis locks relevant to this fiefdom."""
+        config_path = self.project_root / ".louis-control" / "louis-config.json"
+        if not config_path.exists():
+            return []
 
-**Generated:** {datetime.now().isoformat()}
+        with open(config_path) as f:
+            config = json.load(f)
+
+        locks = []
+        for filepath, lock_info in config.get("locks", {}).items():
+            # Include locks in this fiefdom or that this fiefdom might touch
+            if fiefdom_path in filepath or filepath.startswith("../"):
+                locks.append({
+                    "file": filepath,
+                    "reason": lock_info.get("reason", "Protected"),
+                    "locked_at": lock_info.get("locked_at", "Unknown")
+                })
+        return locks
+
+    def generate(
+        self,
+        fiefdom_path: str,
+        ticket_id: str,
+        ticket_status: str,
+        mission: str,
+        errors: List[str],
+        warnings: List[str],
+        notes: List[Dict],
+        context: Optional[Dict] = None
+    ) -> str:
+        """
+        Generate BRIEFING.md with MAXIMUM context.
+
+        We eat the tokens to do the job right the first time.
+        """
+        now = datetime.now()
+        locks = self.get_locks_for_fiefdom(fiefdom_path)
+        campaign_history = self.load_campaign_log(fiefdom_path, limit=5)
+
+        # Default context if not provided
+        if context is None:
+            context = {
+                "related_files": [],
+                "imports_from": [],
+                "exports_to": [],
+                "patterns": []
+            }
+
+        briefing = f"""# ⚔️ MISSION BRIEFING: {ticket_id}
+
+**Generated:** {now.isoformat()}
 **Fiefdom:** {fiefdom_path}
-**Status:** You are being deployed to a {ticket['status'].upper()} fiefdom
+**Absolute Path:** {self.project_root / fiefdom_path}
+**Status:** You are being deployed to a {ticket_status.upper()} fiefdom
 
 ---
 
 ## 🎯 Objective
 
-{ticket['mission']}
+{mission}
 
-## ❌ Current Errors
+## ❌ Current Errors ({len(errors)} total)
 
 ```
-{chr(10).join(ticket['errors'])}
+{chr(10).join(errors) if errors else "No errors recorded"}
+```
+
+## ⚠️ Warnings ({len(warnings)} total)
+
+```
+{chr(10).join(warnings) if warnings else "No warnings recorded"}
 ```
 
 ## 🔍 Carl's Reconnaissance
 
-- **Error Count:** {len(ticket['errors'])}
-- **Related Files:** {', '.join(context['related_files'])}
+- **Error Count:** {len(errors)}
+- **Warning Count:** {len(warnings)}
+- **Related Files:** {', '.join(context.get('related_files', [])) or 'None identified'}
 - **Connections:**
-  - Imports from: {', '.join(context['imports_from'])}
-  - Exports to: {', '.join(context['exports_to'])}
+  - Imports from: {', '.join(context.get('imports_from', [])) or 'None identified'}
+  - Exports to: {', '.join(context.get('exports_to', [])) or 'None identified'}
+- **Patterns to Follow:** {', '.join(context.get('patterns', [])) or 'See CLAUDE.md'}
 
 ## 🔒 Louis's Restrictions
 
@@ -1354,54 +1693,81 @@ def generate_briefing(fiefdom_path: str, ticket: dict) -> str:
 |------|--------|--------|
 """
 
-    for lock in locks:
-        briefing += f"| `{lock['file']}` | 🔒 LOCKED | {lock['reason']} |\n"
+        if locks:
+            for lock in locks:
+                briefing += f"| `{lock['file']}` | 🔒 LOCKED | {lock['reason']} |\n"
+        else:
+            briefing += "| (none) | - | No locks in this fiefdom |\n"
 
-    briefing += f"""
+        briefing += """
 ## 📜 Recent Campaign History
 
 """
 
-    for entry in campaign_history:
-        briefing += f"""### {entry['ticket']} ({entry['date']}) - {entry['status']}
-- **Action:** {entry['summary']}
+        if campaign_history:
+            for entry in campaign_history:
+                briefing += f"""### {entry.get('ticket', 'Unknown')} ({entry.get('date', 'Unknown')}) - {entry.get('status', 'Unknown')}
+- **Action:** {entry.get('summary', 'No summary')}
 - **Lesson:** {entry.get('lesson', 'None recorded')}
+- **Watch List:** {entry.get('watch_list', 'None')}
 
 """
+        else:
+            briefing += "*No previous campaigns recorded. You are the first general here.*\n\n"
 
-    briefing += f"""## 💬 Stacked Notes
+        briefing += """## 💬 Stacked Notes (Read These Carefully)
 
 | Time | Author | Note |
 |------|--------|------|
 """
 
-    for note in ticket.get('notes', []):
-        briefing += f"| {note['time']} | {note['author']} | {note['text']} |\n"
+        if notes:
+            for note in notes:
+                briefing += f"| {note.get('time', '?')} | {note.get('author', '?')} | {note.get('text', '')} |\n"
+        else:
+            briefing += "| - | - | No notes yet |\n"
 
-    briefing += f"""
+        briefing += f"""
 ## ✅ Health Check
 
 ```bash
 npm run typecheck
-# Victory = no errors in {fiefdom_path}
+# Victory = no errors containing "{fiefdom_path}"
 ```
 
 ## 📋 Your Checklist
 
 1. [ ] Read CLAUDE.md for standing orders
-2. [ ] Scan CAMPAIGN_LOG.md for recent lessons
-3. [ ] Deploy Scout to analyze the problem
-4. [ ] Deploy Fixer to make changes
+2. [ ] Scan CAMPAIGN_LOG.md for recent lessons (especially ⚠️ items)
+3. [ ] Deploy Scout to analyze the problem depth
+4. [ ] Deploy Fixer to make surgical changes
 5. [ ] Deploy Validator to run health check
-6. [ ] Update CAMPAIGN_LOG.md with your actions
-7. [ ] Report outcome
+6. [ ] If errors persist, deploy another Scout cycle
+7. [ ] Update CAMPAIGN_LOG.md with your actions AND lessons
+8. [ ] Report outcome clearly
+
+## 🚀 Spawn Command Used
+
+```bash
+claude --print "Read BRIEFING.md and begin."
+```
 
 ---
 
 **BEGIN MISSION**
+
+*Remember: You succeed when this fiefdom turns from blue/purple to gold.*
+*We'd rather have more agents complete the job than fewer agents fail.*
 """
 
-    return briefing
+        return briefing
+
+    def write_briefing(self, fiefdom_path: str, **kwargs) -> Path:
+        """Generate and write BRIEFING.md to the fiefdom."""
+        content = self.generate(fiefdom_path, **kwargs)
+        briefing_path = self.project_root / fiefdom_path / "BRIEFING.md"
+        briefing_path.write_text(content)
+        return briefing_path
 ```
 
 ---

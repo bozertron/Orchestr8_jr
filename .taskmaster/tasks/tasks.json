@@ -351,11 +351,141 @@
         ],
         "status": "pending",
         "subtasks": []
+      },
+      {
+        "id": 23,
+        "title": "Apply MaestroView Color Palette to 06_maestro.py",
+        "description": "Inject exact CSS color variables into the primary Void interface using Marimo's CSS capabilities",
+        "details": "Use Marimo's `mo.html` with `<style>` injection for `:root` CSS variables. Exact hex values: `--blue-dominant: #1fbdea`, `--gold-metallic: #D4AF37`, `--gold-dark: #B8860B`, `--gold-saffron: #F4C430`, `--purple-combat: #9D4EDD`, `--bg-primary: #0A0A0B`, `--bg-elevated: #121214`. Apply to background (`#0A0A0B`), panels (`#121214`), and status indicators. Use `mo.css` for scoped styling. Test with Marimo 2025.11.0+ for CSS variable support.",
+        "testStrategy": "Visual inspection: Void background pure black, panels dark gray, status colors match hex values exactly. No color drift across browsers.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "Implement Mermaid Status Graph in Void Dashboard",
+        "description": "Create interactive Mermaid graph showing fiefdoms with gold/blue/purple states in left panel",
+        "details": "Use `mermaid==10.9.1` library in Marimo. Generate graph from Carl's `fiefdom-status.json`. Nodes: `src/llm`, `src/modules`, `src/platform`, `src/generator`, `src/maestro`. Edges show dependencies. Colors: gold (`fill:#D4AF37`), blue (`fill:#1fbdea`), purple (`fill:#9D4EDD`). Click handlers open fiefdom details. Cache in `.orchestr8/mermaid-cache.md`. Reactive updates via Marimo `reactive` state.",
+        "testStrategy": "Graph renders 5+ fiefdoms correctly. Node colors match health states. Click opens fiefdom card. Updates when Carl refreshes status.",
+        "priority": "high",
+        "dependencies": [
+          23
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "Build Fiefdom List with Health Indicators",
+        "description": "Right panel showing stackable fiefdom cards with WORKING/BROKEN/COMBAT status and Deploy button",
+        "details": "Marimo `mo.ui.card()` components styled with CSS vars. Each card: path, emoji+color status (🟡🔵🟣), notes stack, [DEPLOY ▼] dropdown. Data from `Carl.get_fiefdom_status()`. Deploy triggers `spawn_actu8_terminal()`. Fixed height scrollable list. Use `mo.ui.vstack()` for stacking.",
+        "testStrategy": "List shows all fiefdoms. Status colors match graph. Deploy button changes status to purple. Cards stack without overflow.",
+        "priority": "high",
+        "dependencies": [
+          23,
+          24
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "Integrate Carl Health Checks with Status Aggregation",
+        "description": "Connect Carl's `check_health_all_fiefdoms()` to update fiefdom states and Mermaid graph",
+        "details": "Import `IP/carl_core.py`. Add `[🔄 REFRESH]` button calling `carl.check_health_all_fiefdoms()` → `carl.update_mermaid_graph()` → save `.orchestr8/state/fiefdom-status.json`. Parse `npm run typecheck` output for scope-specific errors. States: 'working' (gold), 'broken' (blue). Auto-create tickets for broken fiefdoms.",
+        "testStrategy": "Manual typecheck errors appear as blue nodes. Fixed errors turn gold. Graph and list sync instantly.",
+        "priority": "high",
+        "dependencies": [
+          24
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 27,
+        "title": "Create Runtime Directories and Initial State Files",
+        "description": "Setup `.orchestr8/` structure with tickets, state, and CLAUDE.md templates",
+        "details": "`os.makedirs('.orchestr8/{tickets, tickets/archive, state}', exist_ok=True)`. Init `fiefdom-status.json` with default fiefdoms. Generate `CLAUDE.md` templates for `src/llm/`, `src/modules/`, `src/generator/` using Jinja2 3.1.4 template from PRD spec. Include health check commands.",
+        "testStrategy": "Directories exist with correct permissions. JSON valid. 3 CLAUDE.md files match template exactly.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 28,
+        "title": "Implement Fixed Overton Anchor Input Bar",
+        "description": "Bottom 5th fixed input bar with [Files][Matrix][Graph]═══[maestro]═══[Search][Deploy][⏎]",
+        "details": "Marimo `mo.ui.hstack(spacing='small')` with `position: fixed; bottom: 0; height: 20vh`. Never moves. Style with `--bg-elevated`. Buttons trigger panels. `[⏎]` sends Emperor command to active fiefdom. Use `mo.ui.text_area` for command input.",
+        "testStrategy": "Bar stays fixed on scroll/resize. All buttons functional. Input persists across panel changes.",
+        "priority": "medium",
+        "dependencies": [
+          23
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 29,
+        "title": "Build Tickets Panel with Slide-Right Animation",
+        "description": "Clickable 'Tickets' nav spawns searchable ticket list from `.orchestr8/tickets/`",
+        "details": "Marimo `mo.ui.transition()` for slide-right (CSS `transform: translateX(100%)` → `0`). List `.md` files as cards: TICKET-###.md. Search/filter by status/keyword using `re` module. States: PENDING|IN_PROGRESS|RESOLVED|BLOCKED. Archive to `tickets/archive/`.",
+        "testStrategy": "Click 'Tickets' → slides from right. Search filters instantly. 5+ sample tickets display correctly.",
+        "priority": "medium",
+        "dependencies": [
+          25,
+          27
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 30,
+        "title": "Generate BRIEFING.md for General Deployment",
+        "description": "Auto-generate mission briefing injecting Carl context + CAMPAIGN_LOG wisdom",
+        "details": "`def generate_briefing(fiefdom_path):` combines `CLAUDE.md` + Carl file inventory + open TICKET-###.md + `CAMPAIGN_LOG.md` tail(10). Write to `{fiefdom_path}/BRIEFING.md`. Template format specified in PRD. Trigger before `spawn_actu8_terminal()`.",
+        "testStrategy": "BRIEFING.md contains all 4 components. File created before terminal spawn. Content mission-specific.",
+        "priority": "medium",
+        "dependencies": [
+          26,
+          27
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 31,
+        "title": "Implement CAMPAIGN_LOG.md Wisdom System",
+        "description": "Append-only wisdom accumulation per fiefdom with standardized format",
+        "details": "`def append_campaign_log(fiefdom_path, ticket_id, status, actions, lessons):` using PRD template. Timestamp `[YYYY-MM-DD HH:MM] TICKET-###`. Sections: General, Status, Duration, Mission, Actions Taken, Lessons Learned, Watch List. Atomic writes with Louis lock.",
+        "testStrategy": "Log appends without duplication. Format matches PRD spec. Multi-entry log readable by next general.",
+        "priority": "medium",
+        "dependencies": [
+          27,
+          30
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 32,
+        "title": "Setup Git Hooks for Louis and Carl Enforcement",
+        "description": "Pre-commit (Louis validation) + post-commit (Carl health check) integration",
+        "details": "Create `.git/hooks/pre-commit`: `python3 -c \"from IP.louis_core import Louis; Louis('.').validate_staged()\"`. Post-commit: `Carl('.').check_health_all_fiefdoms(); Carl('.').update_mermaid_graph()`. Make executable `chmod +x`. Test with dummy commits.",
+        "testStrategy": "Hooks trigger on git commit. Invalid changes blocked. Post-commit updates graph automatically.",
+        "priority": "medium",
+        "dependencies": [
+          26
+        ],
+        "status": "pending",
+        "subtasks": []
       }
     ],
     "metadata": {
       "created": "2026-01-26T05:47:32.622Z",
-      "updated": "2026-01-26T05:47:32.622Z",
+      "updated": "2026-01-26T14:48:02.265Z",
       "description": "Tasks for master context"
     }
   }
