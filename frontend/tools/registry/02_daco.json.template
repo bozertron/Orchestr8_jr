@@ -1,0 +1,31 @@
+{
+  "name": "Daco Analyzers (RS)",
+  "description": "Rust-powered code analysis tools for high-performance parsing",
+  "icon": "RS",
+  "base_command": ["./target/release/daco-cli"],
+  "discovery": {
+    "enabled": false,
+    "command": "list-analyzers"
+  },
+  "static_commands": [
+    {
+      "name": "Overview",
+      "command": "overview",
+      "description": "Generate project structure overview"
+    },
+    {
+      "name": "Routes",
+      "command": "routes",
+      "description": "Extract and display API routes"
+    }
+  ],
+  "_template_notes": {
+    "purpose": "Template for future Rust-based Daco integration",
+    "activation": "Remove .template extension when Daco binary is built",
+    "requirements": [
+      "Build Daco: cargo build --release",
+      "Ensure binary at ./target/release/daco-cli",
+      "Rename to 02_daco.json to activate"
+    ]
+  }
+}

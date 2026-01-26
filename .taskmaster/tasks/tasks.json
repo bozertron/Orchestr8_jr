@@ -9,7 +9,7 @@
         "testStrategy": "Click 'Lock All', verify selected files have 0o444 permissions via os.stat(). Click 'Unlock All', verify 0o644. Toggle individual files and verify permission changes match selection state.",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -310,7 +310,7 @@
         "dependencies": [
           18
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -323,7 +323,7 @@
         "dependencies": [
           15
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
