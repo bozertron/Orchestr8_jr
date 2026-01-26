@@ -1,0 +1,437 @@
+{
+  "synthesis_id": "SYNTHESIS-UI-B",
+  "title": "Plugin Architecture Issues - Root Cause Analysis",
+  "analysis_date": "2026-01-25",
+  "synthesizer": "SYNTHESIZER-B",
+  "scope": "UI Plugin Integration Issues (03_gatekeeper.py, 05_cli_bridge.py)",
+  "report_version": "1.0",
+
+  "executive_summary": {
+    "overview": "Analysis of two critical UI plugins reveals distinct architectural patterns: Gatekeeper suffers from integration isolation (reimplements core functionality), while CLI Bridge lacks output specialization. Both issues stem from plugin architecture assumptions about data handling and core module dependencies.",
+    "total_issues_identified": 13,
+    "critical_issues": 3,
+    "high_priority_issues": 2,
+    "estimated_total_fix_effort_hours": "8-12 hours"
+  },
+
+  "gatekeeper_root_causes": {
+    "plugin": "03_gatekeeper.py",
+    "root_cause_1": {
+      "category": "Architectural Isolation",
+      "name": "No louis_core Module Integration",
+      "severity": "CRITICAL",
+      "root_cause": "Plugin implements its own config management layer (load_louis_config, save_louis_config) instead of importing from IP/louis_core.py. This creates a divergent codebase with conflicting configuration strategies.",
+      "evidence": [
+        "Custom load_louis_config() at lines 29-45 vs louis_core.LouisConfig class",
+        "Custom save_louis_config() at lines 47-55 vs louis_core API",
+        "Project-local .louis-control/ directory vs global ~/.louis-control/ in louis_core",
+        "No import statement: 'from IP.louis_core import ...'"
+      ],
+      "impact": {
+        "functionality": "Config stored in two different locations, risking desynchronization",
+        "maintainability": "Dual implementations must be kept in sync manually",
+        "consistency": "Users experience inconsistent behavior depending on which tool they use"
+      },
+      "fix_strategy": "Replace all load/save functions with imports from louis_core; unify config location",
+      "acceptance_criteria": "Plugin uses LouisConfig and LouisWarden exclusively, zero custom config code"
+    },
+
+    "root_cause_2": {
+      "category": "Missing Core Functionality",
+      "name": "No Actual File Locking Implementation",
+      "severity": "CRITICAL",
+      "root_cause": "Plugin manages a list of 'protected paths' in JSON config but never calls LouisWarden.lock_file() or unlock_file(). It's a protection PATH registry, not a file LOCKING system.",
+      "evidence": [
+        "Lines 29-45: load_louis_config only returns path lists",
+        "Lines 200-220: add_protection() adds to config, doesn't call any lock functions",
+        "Lines 57-68: get_protection_status() only counts items, doesn't check file permissions",
+        "No imports of LouisWarden methods anywhere in the file",
+        "Git hook script (lines 95-126) only checks paths, doesn't verify file permissions"
+      ],
+      "impact": {
+        "security": "Files are not actually locked - anyone can modify them despite 'protection' status",
+        "acceptance_criteria": "Missing critical requirement 'Lock All Protected' button",
+        "user_trust": "UI suggests files are protected but they aren't"
+      },
+      "fix_strategy": "Implement actual file locking via warden.lock_file() and warden.unlock_file() calls",
+      "acceptance_criteria": "Clicking 'Lock All' must call warden.lock_file() for each protected path; files show actual chmod status"
+    },
+
+    "root_cause_3": {
+      "category": "Incomplete UI Implementation",
+      "name": "Missing File Selection Integration",
+      "severity": "HIGH",
+      "root_cause": "Plugin doesn't access STATE_MANAGERS['selected_file'] from Explorer tab. It operates in isolation without context about what file the user is viewing.",
+      "evidence": [
+        "Line 140-145: STATE_MANAGERS only uses ['root'] and ['logs']",
+        "No reference to 'selected_file' state variable",
+        "Per-file toggle buttons would require knowledge of currently selected file"
+      ],
+      "impact": {
+        "usability": "Can't lock/unlock the file user is viewing - must manually type path",
+        "integration": "Plugin doesn't participate in the integrated UI ecosystem",
+        "workflow": "Requires users to switch contexts instead of operating on current selection"
+      },
+      "fix_strategy": "Add selected_file to STATE_MANAGERS destructuring; create dynamic lock/unlock toggle based on current selection",
+      "acceptance_criteria": "When user selects file in Explorer, Gatekeeper shows lock/unlock button for that specific file"
+    }
+  },
+
+  "cli_bridge_root_causes": {
+    "plugin": "05_cli_bridge.py",
+    "root_cause_1": {
+      "category": "Output Format Handling",
+      "name": "No JSON Table Rendering for Structured Data",
+      "severity": "MEDIUM",
+      "root_cause": "Plugin treats all output as plain text, displaying it in markdown code blocks. When scaffold-cli.ts returns JSON data intended for tabular display, it's shown as raw text instead of an interactive table.",
+      "evidence": [
+        "Lines 203-213: Result display uses mo.md(f'```\\n{output}\\n```') for all output types",
+        "No JSON detection: no try/except json.loads() wrapper",
+        "No DataFrame conversion: plugin doesn't check if output is tabular data",
+        "Line 205: Blindly truncates at 2000 chars with no indication of truncation"
+      ],
+      "impact": {
+        "usability": "JSON data like dependency matrices are unreadable as raw text",
+        "discoverability": "Users don't know JSON output is available; they see garbled text",
+        "analysis": "Structured data loses its semantic meaning in plain-text display",
+        "acceptance_criteria": "Criteria mentions 'JSON as table' but implementation ignores this"
+      },
+      "fix_strategy": "Add JSON detection and rendering: attempt json.loads(result['stdout']), if successful convert to pandas DataFrame and display with mo.ui.table()",
+      "acceptance_criteria": "When scaffold-cli returns JSON array of objects, plugin renders as interactive sortable table; falls back to text for non-JSON"
+    },
+
+    "root_cause_2": {
+      "category": "State Management",
+      "name": "No Concurrent Execution Prevention",
+      "severity": "LOW",
+      "root_cause": "Plugin sets is_loading flag but doesn't disable run buttons when multiple operations are in progress. Users can trigger overlapping executions, leading to unpredictable results.",
+      "evidence": [
+        "Line 108: is_loading is boolean (not a set of executing plugins)",
+        "Lines 160, 184: Only sets/unsets global flag, doesn't track which plugins are executing",
+        "Line 228-231: Run buttons don't check is_loading state before execution",
+        "No disabled={get_is_loading()} on individual run buttons"
+      ],
+      "impact": {
+        "reliability": "Multiple concurrent CLI processes could corrupt results state",
+        "UX": "User doesn't know which operation is in progress",
+        "state_inconsistency": "Results from Plugin A might overwrite Plugin B's results"
+      },
+      "fix_strategy": "Change is_loading to executing_plugins (set/dict tracking active command types); disable only that button during execution",
+      "acceptance_criteria": "Only one run button is active at a time; running button shows spinner; concurrent runs are prevented"
+    },
+
+    "root_cause_3": {
+      "category": "Output Handling",
+      "name": "Silent Truncation Without User Awareness",
+      "severity": "LOW",
+      "root_cause": "Output is silently truncated at 2000 characters without any indicator to the user. Long plugin outputs are incomplete but appear complete in UI.",
+      "evidence": [
+        "Line 205: output = result.get('stdout', '')[:2000]",
+        "No '...(truncated)' suffix or download option",
+        "No visual indicator that output was cut off",
+        "User has no way to access full output"
+      ],
+      "impact": {
+        "data_loss": "Important diagnostic information in tail of output is invisible",
+        "debugging": "Users can't see complete error messages",
+        "trust": "Users don't know if they're seeing the full picture"
+      },
+      "fix_strategy": "Add truncation indicator, provide download button for full stdout, or use expandable/collapsible sections",
+      "acceptance_criteria": "If output > 2000 chars, append '... (truncated, full output available)' and show download button"
+    }
+  },
+
+  "cross_plugin_patterns": {
+    "pattern_1": {
+      "title": "Incomplete STATE_MANAGERS Usage",
+      "description": "Both plugins access only a subset of available STATE_MANAGERS. They don't integrate holistically with the dashboard's reactive ecosystem.",
+      "affected_plugins": ["03_gatekeeper.py", "05_cli_bridge.py"],
+      "examples": [
+        "Gatekeeper: ignores selected_file, can't provide file-specific actions",
+        "CLI Bridge: ignores selected_file, can't run analysis on current file"
+      ],
+      "fix_approach": "Document full STATE_MANAGERS interface; require plugins to use relevant state variables for contextual behavior"
+    },
+    "pattern_2": {
+      "title": "Configuration Architecture Divergence",
+      "description": "Plugins implement their own config patterns instead of using consistent core abstractions. This creates maintenance burden and inconsistency.",
+      "affected_plugins": ["03_gatekeeper.py"],
+      "examples": [
+        "Gatekeeper defines load_louis_config/save_louis_config instead of using IP/louis_core.py",
+        "Config location differs from louis_core (project/.louis-control vs ~/.louis-control)"
+      ],
+      "fix_approach": "Establish plugin architecture rule: all domain-specific operations must delegate to core modules (louis_core, carl_core, etc)"
+    },
+    "pattern_3": {
+      "title": "Output Format Agnosticism",
+      "description": "CLI Bridge treats all output equally as text. Should be aware of common output types (JSON, YAML, CSV, tables) and render appropriately.",
+      "affected_plugins": ["05_cli_bridge.py"],
+      "examples": [
+        "JSON arrays displayed as raw text instead of tables",
+        "No consideration for other structured formats"
+      ],
+      "fix_approach": "Create output renderer module that detects format and delegates to appropriate renderer (JSON→table, YAML→syntax-highlight, etc)"
+    }
+  },
+
+  "unified_fix_strategies": {
+    "strategy_1": {
+      "title": "Plugin Architecture Documentation",
+      "description": "Create formal plugin interface specification requiring plugins to:",
+      "requirements": [
+        "Document which STATE_MANAGERS they use",
+        "Explicitly list dependencies on core modules",
+        "Define input/output contracts",
+        "Specify config location strategy"
+      ],
+      "effort": "4 hours",
+      "priority": "P1",
+      "benefits": ["Prevents future integration issues", "Improves code review process"]
+    },
+
+    "strategy_2": {
+      "title": "Core Module Integration Audit",
+      "description": "Review each plugin to ensure it uses core modules correctly:",
+      "actions": [
+        "Gatekeeper: Remove load/save functions, import from louis_core",
+        "Gatekeeper: Add LouisWarden.lock_file() calls for actual file locking",
+        "Document which modules each plugin should use"
+      ],
+      "effort": "6-8 hours",
+      "priority": "P0",
+      "benefits": ["Single source of truth for configs", "Actual file protection works"]
+    },
+
+    "strategy_3": {
+      "title": "Output Handling Enhancement",
+      "description": "Create common output renderer module for plugins:",
+      "features": [
+        "JSON detection and table rendering",
+        "YAML syntax highlighting",
+        "Truncation indicators with download options",
+        "Streaming support for large outputs"
+      ],
+      "effort": "3-4 hours",
+      "priority": "P1",
+      "benefits": ["Better UX for all plugins using CLI execution", "Consistent output handling"]
+    },
+
+    "strategy_4": {
+      "title": "State Management Standardization",
+      "description": "Define plugin state management patterns:",
+      "patterns": [
+        "Per-operation loading state (not global boolean)",
+        "Error state with clear message",
+        "Results state with timestamp",
+        "Integration points with selected_file"
+      ],
+      "effort": "2 hours",
+      "priority": "P2",
+      "benefits": ["Prevents concurrent execution bugs", "Better user feedback"]
+    }
+  },
+
+  "grouped_issues_by_impact": {
+    "blocking_issues": [
+      {
+        "issue_id": "G-001",
+        "plugin": "Gatekeeper",
+        "title": "No louis_core Integration",
+        "blocks": ["File locking functionality", "Config consistency", "UI acceptance criteria"],
+        "must_fix_before": ["Any file protection feature", "Unified config strategy"]
+      },
+      {
+        "issue_id": "G-002",
+        "plugin": "Gatekeeper",
+        "title": "No Actual File Locking",
+        "blocks": ["Lock All button", "Per-file toggle", "Real protection"],
+        "must_fix_before": ["Feature completion"]
+      },
+      {
+        "issue_id": "C-001",
+        "plugin": "CLI Bridge",
+        "title": "No JSON Table Rendering",
+        "blocks": ["Structured output display"],
+        "must_fix_before": ["Production deployment"]
+      }
+    ],
+
+    "consistency_issues": [
+      {
+        "issue_id": "PATTERN-001",
+        "title": "CONFIG_LOCATION_DIVERGENCE",
+        "affected_modules": ["IP/louis_core.py", "03_gatekeeper.py"],
+        "problem": "Gatekeeper uses project/.louis-control; louis_core uses ~/.louis-control",
+        "resolution": "Standardize on one location and document rationale"
+      }
+    ],
+
+    "ux_issues": [
+      {
+        "issue_id": "G-003",
+        "plugin": "Gatekeeper",
+        "title": "No Selected File Integration",
+        "severity": "HIGH",
+        "affects_workflow": true
+      },
+      {
+        "issue_id": "C-002",
+        "plugin": "CLI Bridge",
+        "title": "Silent Truncation",
+        "severity": "LOW",
+        "affects_workflow": false
+      }
+    ]
+  },
+
+  "implementation_roadmap": {
+    "phase_1_critical_fixes": {
+      "duration": "6-8 hours",
+      "goal": "Fix blocking issues preventing functionality",
+      "tasks": [
+        {
+          "id": "G-FIX-001",
+          "task": "Import louis_core in Gatekeeper",
+          "files_affected": ["03_gatekeeper.py"],
+          "steps": [
+            "Add: from IP.louis_core import LouisConfig, LouisWarden",
+            "Replace load_louis_config() with LouisConfig.load()",
+            "Replace save_louis_config() with config.save()",
+            "Update config path to use ~/.louis-control/"
+          ]
+        },
+        {
+          "id": "G-FIX-002",
+          "task": "Implement File Locking in Gatekeeper",
+          "files_affected": ["03_gatekeeper.py"],
+          "steps": [
+            "Add lock_all_protected() that iterates protected files and calls warden.lock_file()",
+            "Add unlock_all() that iterates and calls warden.unlock_file()",
+            "Replace 'Clear All' button with 'Unlock All'",
+            "Call warden methods in button handlers"
+          ]
+        },
+        {
+          "id": "C-FIX-001",
+          "task": "Add JSON Table Rendering to CLI Bridge",
+          "files_affected": ["05_cli_bridge.py"],
+          "steps": [
+            "Create output renderer function that tries json.loads()",
+            "If successful: convert to pandas DataFrame and render with mo.ui.table()",
+            "If fails: fall back to text display",
+            "Update build_plugin_cards() to use renderer"
+          ]
+        }
+      ]
+    },
+
+    "phase_2_ui_integration": {
+      "duration": "4-6 hours",
+      "goal": "Improve integration with overall dashboard",
+      "tasks": [
+        {
+          "id": "G-FIX-003",
+          "task": "Add Selected File Integration to Gatekeeper",
+          "files_affected": ["03_gatekeeper.py"],
+          "steps": [
+            "Add selected_file to STATE_MANAGERS destructuring",
+            "Create dynamic lock/unlock toggle based on current file",
+            "Show lock status for selected file"
+          ]
+        },
+        {
+          "id": "C-FIX-002",
+          "task": "Improve Concurrent Execution Handling in CLI Bridge",
+          "files_affected": ["05_cli_bridge.py"],
+          "steps": [
+            "Change is_loading to executing_plugins set",
+            "Disable only active plugin's run button",
+            "Show per-plugin loading indicators"
+          ]
+        }
+      ]
+    },
+
+    "phase_3_polish": {
+      "duration": "2-3 hours",
+      "goal": "Production readiness improvements",
+      "tasks": [
+        {
+          "id": "C-FIX-003",
+          "task": "Add Truncation Indicators to CLI Bridge",
+          "files_affected": ["05_cli_bridge.py"],
+          "steps": [
+            "Check output length before display",
+            "Add '...(truncated)' indicator if > 2000 chars",
+            "Provide download button for full output"
+          ]
+        }
+      ]
+    }
+  },
+
+  "success_criteria": {
+    "gatekeeper_completion": {
+      "acceptance": [
+        "✓ Imports and uses LouisConfig for all config operations",
+        "✓ Imports and uses LouisWarden for file locking",
+        "✓ 'Lock All' button successfully locks all protected files",
+        "✓ 'Unlock All' button successfully unlocks all files",
+        "✓ Per-file toggle appears when file selected in Explorer",
+        "✓ Config location matches louis_core strategy",
+        "✓ All tests pass"
+      ]
+    },
+
+    "cli_bridge_completion": {
+      "acceptance": [
+        "✓ JSON output detected and rendered as sortable table",
+        "✓ Text output still displayed in code blocks",
+        "✓ Long outputs show truncation indicator",
+        "✓ Concurrent executions prevented",
+        "✓ Only one run button active at a time",
+        "✓ All tests pass"
+      ]
+    },
+
+    "overall_completion": {
+      "acceptance": [
+        "✓ Both plugins follow formal interface specification",
+        "✓ Zero duplicate code with core modules",
+        "✓ Plugins use all relevant STATE_MANAGERS",
+        "✓ Documentation updated"
+      ]
+    }
+  },
+
+  "risk_assessment": {
+    "risk_1": {
+      "title": "Config Migration in Gatekeeper",
+      "severity": "MEDIUM",
+      "description": "Moving from project/.louis-control to ~/.louis-control may lose existing user configurations",
+      "mitigation": "Add migration function that copies existing configs before switching paths"
+    },
+
+    "risk_2": {
+      "title": "File Permission Changes",
+      "severity": "MEDIUM",
+      "description": "Calling warden.lock_file() modifies actual file permissions - mistakes could lock files permanently",
+      "mitigation": "Implement careful error handling, log all permission changes, provide unlock mechanism"
+    },
+
+    "risk_3": {
+      "title": "Breaking Changes to Plugin API",
+      "severity": "LOW",
+      "description": "Requiring STATE_MANAGERS['selected_file'] might affect existing plugins",
+      "mitigation": "Make selected_file optional in render() function, document as future requirement"
+    }
+  },
+
+  "conclusion": {
+    "summary": "The root causes are systemic patterns in plugin architecture rather than isolated bugs. Gatekeeper reimplements louis_core functionality instead of using it, losing the security benefits of actual file locking. CLI Bridge treats all output as plain text, losing the semantic value of structured data. Both issues stem from plugin design that doesn't enforce integration with core modules and doesn't provide output-aware rendering frameworks.",
+
+    "fix_priority": "Fix Gatekeeper integration issues before CLI Bridge enhancements, as file protection is security-critical.",
+
+    "long_term_improvement": "Establish plugin architecture patterns to prevent future divergence: mandatory core module usage, state management standards, and output format awareness."
+  }
+}

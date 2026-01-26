@@ -63,6 +63,31 @@ class LouisWarden:
         full = self.config.project_root / rel_path
         return full.exists() and not (os.stat(full).st_mode & stat.S_IWUSR)
 
+    def get_protection_status(self) -> dict:
+        """
+        Get protection status for all tracked files.
+
+        Returns:
+            dict: Mapping of file paths to their status
+                  {"path": {"locked": bool, "protected": bool}}
+        """
+        status_map = {}
+
+        # Read protected files list if it exists
+        protected_files = set()
+        if self.config.protected_list.exists():
+            with open(self.config.protected_list, 'r') as f:
+                protected_files = set(line.strip() for line in f if line.strip())
+
+        # Check status for each protected file
+        for rel_path in protected_files:
+            status_map[rel_path] = {
+                "locked": self.is_locked(rel_path),
+                "protected": True
+            }
+
+        return status_map
+
     def lock_file(self, rel_path: str) -> Tuple[bool, str]:
         full = self.config.project_root / rel_path
         if not full.exists(): return False, "Not Found"

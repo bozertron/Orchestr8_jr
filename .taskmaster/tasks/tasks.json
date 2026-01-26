@@ -2,192 +2,361 @@
   "master": {
     "tasks": [
       {
-        "id": 1,
-        "title": "Create IP Protocol Directory Structure",
-        "description": "Set up complete IP directory structure with required files and verify existing core modules",
-        "details": "Use pathlib to create directories and files: `IP/__init__.py` (empty), `IP/plugins/` dir. Verify `louis_core.py`, `carl_core.py`, `connie.py`, `orchestr8_app.py` exist using Path.exists(). Python 3.12+ required. No external deps needed.",
-        "testStrategy": "Implement verification script using pathlib.Path.exists() for all paths, print success/failure status.",
+        "id": 13,
+        "title": "Refactor Gatekeeper Plugin for Louis Core Integration",
+        "description": "Replace duplicate config management in 03_gatekeeper.py with LouisWarden and LouisConfig from louis_core.py",
+        "details": "Import LouisWarden, LouisConfig from IP/louis_core.py. Remove all existing config code. Use project .louis-control/ path. Add 'Lock All Protected' button: iterate STATE_MANAGERS['selected'] and call warden.lock_file(path). Add 'Unlock All' button: iterate and call warden.unlock_file(path). Add per-file toggle checkboxes bound to STATE_MANAGERS['selected']. Use Python 3.12+ json module for state management. Ensure permissions: locked=0o444, unlocked=0o644.",
+        "testStrategy": "Click 'Lock All', verify selected files have 0o444 permissions via os.stat(). Click 'Unlock All', verify 0o644. Toggle individual files and verify permission changes match selection state.",
         "priority": "high",
         "dependencies": [],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 2,
-        "title": "Create Frontend Tools Directory and Move Context System",
-        "description": "Establish TypeScript tools directory structure and relocate unified-context-system.ts",
-        "details": "Create `frontend/tools/` and `frontend/tools/parsers/` dirs. Move `IP/unified-context-system.ts` to `frontend/tools/unified-context-system.ts`. Ensure Node.js 22+ with npx tsx available for execution.",
-        "testStrategy": "Verify directories exist and file moved correctly using fs.existsSync() or pathlib equivalent.",
-        "priority": "high",
-        "dependencies": [1],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 3,
-        "title": "Setup Louis Control Configuration",
-        "description": "Create Louis configuration storage with default protected paths and ignore patterns",
-        "details": "Create `.louis-control/` dir and `louis-config.json` with exact content: {\"protected_paths\": [\"src/core/\", \"config/\"], \"protected_folders\": [], \"ignore_patterns\": [\"node_modules\", \".git\", \"__pycache__\", \"dist\"]}. Use json.dump() with indent=2.",
-        "testStrategy": "Verify directory exists and json.load() parses file without errors.",
-        "priority": "high",
-        "dependencies": [1],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 4,
-        "title": "Extract Headless Connie ConversionEngine",
-        "description": "Migrate Connie to headless operation preserving GUI version, implement context manager with export methods",
-        "details": "Rename `IP/connie.py` → `IP/connie_gui.py`. Create new `IP/connie.py` with class ConversionEngine supporting list_tables(), export_to_json/csv/markdown/sql_dump(). Use contextlib.contextmanager, sqlite3 3.41+, pandas for DataFrame handling, no PyQt6 imports.",
-        "testStrategy": "Create test SQLite DB, instantiate engine, verify all 5 methods work: assert len(list_tables()) > 0, check exported files exist and contain expected data.",
-        "priority": "high",
-        "dependencies": [1],
-        "status": "done",
+        "status": "pending",
         "subtasks": [
-          {"id": 1, "title": "Rename connie.py to connie_gui.py", "description": "Rename the existing IP/connie.py file to IP/connie_gui.py to preserve the GUI version while preparing for headless implementation.", "dependencies": [], "details": "Use operating system rename command or IDE refactor: mv IP/connie.py IP/connie_gui.py. Verify no imports break by checking dependent files. Ensure PyQt6 imports remain only in GUI version.", "status": "pending", "testStrategy": "Confirm file renamed: ls IP/connie_gui.py exists, IP/connie.py does not exist. Verify syntax: python -m py_compile IP/connie_gui.py"},
-          {"id": 2, "title": "Create new headless connie.py skeleton", "description": "Create new IP/connie.py file with ConversionEngine class structure, import statements for sqlite3, pandas, contextlib, excluding all PyQt6 imports.", "dependencies": [1], "details": "Add imports: import sqlite3, import pandas as pd, from contextlib import contextmanager. Define class ConversionEngine: def __init__(self, db_path): pass. Add context manager methods stubs.", "status": "pending", "testStrategy": "python -m py_compile IP/connie.py succeeds without import errors or PyQt6 references."},
-          {"id": 3, "title": "Implement ConversionEngine context manager", "description": "Add @contextmanager decorator to manage SQLite database connection lifecycle with proper setup/teardown using sqlite3 3.41+.", "dependencies": [2], "details": "Create @contextmanager def _engine_manager(self, db_path): conn = sqlite3.connect(db_path); try: yield conn; finally: conn.close(). Implement __enter__/__exit__ or generator-based manager for resource safety.", "status": "pending", "testStrategy": "with ConversionEngine(':memory:') as engine: assert engine.conn is not None. Verify conn closes after context exit."},
-          {"id": 4, "title": "Implement list_tables() method", "description": "Add list_tables() method to return DataFrame of all tables in the SQLite database using pandas for structured output.", "dependencies": [3], "details": "def list_tables(self): return pd.read_sql_query('SELECT name FROM sqlite_master WHERE type=table;', self.conn). Ensure returns pandas DataFrame with table names.", "status": "pending", "testStrategy": "Create test DB with tables, assert len(engine.list_tables()) > 0, verify DataFrame contains expected table names."},
-          {"id": 5, "title": "Implement export methods for all formats", "description": "Add export_to_json(), export_to_csv(), export_to_markdown(), export_to_sql_dump() methods using pandas DataFrame handling.", "dependencies": [3], "details": "For each table in list_tables(): df.to_json(path), df.to_csv(path), df.to_markdown(path), conn.iterdump() for SQL dump. Support file paths as parameters with default naming.", "status": "pending", "testStrategy": "Call each export method, verify output files exist and contain expected data matching source tables."}
+          {
+            "id": 1,
+            "title": "Import LouisWarden and LouisConfig",
+            "description": "Add imports for LouisWarden and LouisConfig from IP/louis_core.py at the top of 03_gatekeeper.py",
+            "dependencies": [],
+            "details": "Insert 'from IP.louis_core import LouisWarden, LouisConfig' after existing imports. Verify no import errors by running the file directly.",
+            "status": "pending",
+            "testStrategy": "Run 'python 03_gatekeeper.py' to confirm imports succeed without errors."
+          },
+          {
+            "id": 2,
+            "title": "Remove Existing Config Management Code",
+            "description": "Delete all duplicate config management code in 03_gatekeeper.py and initialize LouisConfig with .louis-control/ path",
+            "dependencies": [
+              1
+            ],
+            "details": "Search for and remove all config-related variables/functions (config dicts, load/save functions). Replace with: config = LouisConfig('.louis-control/'). Ensure no references remain to old config.",
+            "status": "pending",
+            "testStrategy": "Use git diff to verify all config code removed. Run file to check no NameError on config usage."
+          },
+          {
+            "id": 3,
+            "title": "Implement Lock All Protected and Unlock All Buttons",
+            "description": "Add two buttons that iterate over STATE_MANAGERS['selected'] and call warden.lock_file() or warden.unlock_file()",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create warden = LouisWarden(config). Add mo.ui.button('Lock All Protected', on_click=lambda: [warden.lock_file(path) for path in STATE_MANAGERS['selected']]). Add similar Unlock All button with warden.unlock_file(). Use Python 3.12+ json module for state serialization.",
+            "status": "pending",
+            "testStrategy": "Click buttons with selected files, verify os.stat(file).st_mode & 0o777 == 0o444 for lock, 0o644 for unlock."
+          },
+          {
+            "id": 4,
+            "title": "Add Per-File Toggle Checkboxes",
+            "description": "Create checkboxes for each file in STATE_MANAGERS['selected'] bound to lock/unlock state",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "For each file in STATE_MANAGERS['selected'], create mo.ui.checkbox(label=path, value=is_locked(path), on_change=lambda checked, path: warden.lock_file(path) if checked else warden.unlock_file(path)). Update state management with json module.",
+            "status": "pending",
+            "testStrategy": "Toggle checkbox on/off, verify file permissions change immediately to 0o444/0o644 matching checkbox state."
+          },
+          {
+            "id": 5,
+            "title": "Finalize Permissions and State Management Integration",
+            "description": "Ensure all lock/unlock operations set correct permissions and integrate with project state using Python 3.12+ json",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Verify lock_file sets 0o444, unlock_file sets 0o644 using os.chmod. Persist state to .louis-control/ using config.save_state() with json.dump (indent=2). Handle all edge cases like non-existent files.",
+            "status": "pending",
+            "testStrategy": "Full end-to-end: select files, toggle individual + bulk buttons, restart Marimo, verify state persists and permissions match UI state."
+          }
         ]
       },
       {
-        "id": 5,
-        "title": "Update Carl Core TypeScript Path References",
-        "description": "Modify carl_core.py to execute unified-context-system.ts from new frontend/tools location",
-        "details": "Update `IP/carl_core.py`: change path to 'frontend/tools/unified-context-system.ts', subprocess.run(['npx', 'tsx', 'frontend/tools/unified-context-system.ts']). Ensure get_file_context() and run_deep_scan() handle new paths. Use subprocess.PIPE, timeout=30.",
-        "testStrategy": "Mock subprocess.run with MagicMock, verify correct args passed: assert 'npx tsx frontend/tools/unified-context-system.ts' in call args.",
+        "id": 14,
+        "title": "Implement JSON Table Rendering Utility",
+        "description": "Create detect_and_render_output() function for smart output rendering in IP/plugins/",
+        "details": "Create IP/plugins/output_renderer.py. Use Python 3.12+ json module: try json.loads(stdout_text) except JSONDecodeError: return mo.ui.text_area(stdout_text). For JSON array: mo.ui.table(data=json_data, sortable=True). For JSON object: mo.ui.json(json_data) or mo.ui.text_area(json.dumps(json_data, indent=2)). Integrate into 05_cli_bridge.py and future universal_bridge.py output pipeline. Handle large JSON with pagination if >1000 rows.",
+        "testStrategy": "Test with JSON array: verify sortable mo.ui.table renders. Test JSON object: verify formatted display. Test plain text: verify mo.ui.text_area. Test invalid JSON: graceful fallback.",
         "priority": "medium",
-        "dependencies": [2],
-        "status": "done",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create output_renderer.py module",
+            "description": "Create the IP/plugins/output_renderer.py file with basic structure and imports for JSON handling and mo.ui components.",
+            "dependencies": [],
+            "details": "Include imports: import json, from json.decoder import JSONDecodeError, import mo. Add function signature def detect_and_render_output(stdout_text: str) -> None: pass. Ensure Python 3.12+ compatibility.",
+            "status": "pending",
+            "testStrategy": "Verify file created at IP/plugins/output_renderer.py with correct imports and function skeleton."
+          },
+          {
+            "id": 2,
+            "title": "Implement JSON detection and basic rendering logic",
+            "description": "Add core logic to detect JSON in stdout_text and render appropriately: fallback to text_area for invalid JSON.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement try: json_data = json.loads(stdout_text) except JSONDecodeError: return mo.ui.text_area(stdout_text). For JSON array (isinstance(json_data, list)): mo.ui.table(data=json_data, sortable=True). For JSON object (dict): mo.ui.json(json_data) or mo.ui.text_area(json.dumps(json_data, indent=2)).",
+            "status": "pending",
+            "testStrategy": "Test invalid JSON falls back to text_area. Test valid JSON array renders sortable table. Test JSON object renders formatted JSON."
+          },
+          {
+            "id": 3,
+            "title": "Add large JSON pagination handling",
+            "description": "Implement pagination logic for JSON arrays exceeding 1000 rows to handle large datasets efficiently.",
+            "dependencies": [
+              2
+            ],
+            "details": "After detecting list and len(json_data) > 1000, implement pagination using mo.ui components (e.g., paginated table or sliced data with navigation). Add configurable threshold (default 1000). Preserve sortable=True where possible.",
+            "status": "pending",
+            "testStrategy": "Test JSON array with 1001+ rows triggers pagination. Verify data slicing works correctly and navigation functions."
+          },
+          {
+            "id": 4,
+            "title": "Integrate into 05_cli_bridge.py output pipeline",
+            "description": "Modify 05_cli_bridge.py to use detect_and_render_output() in its stdout processing pipeline.",
+            "dependencies": [
+              2
+            ],
+            "details": "Locate stdout/output rendering section in 05_cli_bridge.py. Replace existing output display with: from IP.plugins.output_renderer import detect_and_render_output; detect_and_render_output(stdout_text). Ensure seamless integration without breaking existing flow.",
+            "status": "pending",
+            "testStrategy": "Run 05_cli_bridge.py with JSON output: verify smart rendering. Test plain text: verify text_area fallback. Test large JSON: verify pagination."
+          },
+          {
+            "id": 5,
+            "title": "Add comprehensive tests and documentation",
+            "description": "Create test cases and documentation for the complete JSON rendering utility including edge cases.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Add docstring to detect_and_render_output() explaining parameters, return types, rendering logic, and pagination. Create test suite covering: valid JSON array (sortable table), JSON object (formatted), invalid JSON (fallback), large array (>1000 rows pagination), empty JSON []. Document integration points for universal_bridge.py.",
+            "status": "pending",
+            "testStrategy": "Run full test suite: verify all rendering paths work. Test edge cases: empty arrays/objects, malformed JSON, extremely large datasets. Verify 05_cli_bridge.py integration doesn't break existing functionality."
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Create Registry Directory Structure",
+        "description": "Setup frontend/tools/registry/ directory with .gitkeep",
+        "details": "mkdir -p frontend/tools/registry/. Touch frontend/tools/registry/.gitkeep. Ensure .gitkeep prevents empty directory deletion in git. Verify structure: frontend/tools/registry/, parsers/, scaffold-cli.ts. Use Python pathlib for directory creation in setup script if needed.",
+        "testStrategy": "ls frontend/tools/registry/ should show .gitkeep. Git status should track empty directory.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
         "subtasks": []
       },
       {
-        "id": 6,
-        "title": "Implement ScaffoldPlugin Interface and CLI Base",
-        "description": "Create scaffold-cli.ts with ParserOptions and ScaffoldPlugin TypeScript interfaces",
-        "details": "Create `frontend/tools/scaffold-cli.ts` with exact interfaces: ParserOptions and ScaffoldPlugin. Use Node.js 22+, tsx for execution. tsconfig.json: target ES2022, module NodeNext, strict: true. No external deps needed yet.",
-        "testStrategy": "npx tsc --noEmit scaffold-cli.ts, verify compiles without type errors.",
+        "id": 16,
+        "title": "Create Scaffold Manifest 01_scaffold.json",
+        "description": "Generate first registry manifest for TypeScript Scaffold parsers",
+        "details": "Create frontend/tools/registry/01_scaffold.json exactly as specified: {name:\"Scaffold Parsers (TS)\", description:\"TypeScript AST analysis tools powered by Commander.js\", icon:\"TS\", base_command:[\"npx\",\"tsx\",\"frontend/tools/scaffold-cli.ts\"], discovery:{enabled:true, command:\"list-plugins\"}}. Validate with python -m json.tool < file.",
+        "testStrategy": "python -m json.tool frontend/tools/registry/01_scaffold.json should parse without errors.",
         "priority": "high",
-        "dependencies": [2],
-        "status": "done",
+        "dependencies": [
+          15
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Add Silent JSON Mode to scaffold-cli.ts",
+        "description": "Modify scaffold-cli.ts to output clean JSON in machine mode without console logs",
+        "details": "Use Node.js 22+ with tsx. Add at list-plugins command start: const isMachineMode = !process.stdout.isTTY || process.argv.includes('--json'); if(!isMachineMode) console.log('Listing available plugins...');. Output: console.log(JSON.stringify(plugins, null, isMachineMode ? 0 : 2));. No emoji prefixes, no extra messages. Test: npx tsx scaffold-cli.ts list-plugins --json | python -m json.tool.",
+        "testStrategy": "npx tsx scaffold-cli.ts list-plugins --json | python -m json.tool parses cleanly. Non-TTY mode outputs only JSON blob.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
         "subtasks": [
-          {"id": 1, "title": "Create frontend/tools directory structure", "description": "Set up the required directory path for scaffold-cli.ts file creation", "dependencies": [], "details": "Create directory frontend/tools/ if it doesn't exist using mkdir -p frontend/tools. Verify path exists before proceeding to file creation.", "status": "pending", "testStrategy": "ls frontend/tools/ confirms directory exists and is writable"},
-          {"id": 2, "title": "Define ParserOptions TypeScript interface", "description": "Create the ParserOptions interface with appropriate properties for CLI parsing needs", "dependencies": [1], "details": "In scaffold-cli.ts, define interface ParserOptions using UpperCamelCase with properties like inputPath?: string, outputDir?: string, format?: string following TypeScript best practices for optional properties and index signatures if needed.", "status": "pending", "testStrategy": "npx tsc --noEmit verifies ParserOptions interface compiles without errors"},
-          {"id": 3, "title": "Define ScaffoldPlugin TypeScript interface", "description": "Create the ScaffoldPlugin interface specifying plugin contract for execution and metadata", "dependencies": [1], "details": "Define interface ScaffoldPlugin with required methods like execute(options: ParserOptions): Promise<void> and metadata: { name: string, version: string, description: string }. Use readonly properties where appropriate per TypeScript handbook guidelines.", "status": "pending", "testStrategy": "npx tsc --noEmit confirms ScaffoldPlugin interface type checks successfully"},
-          {"id": 4, "title": "Configure tsconfig.json for scaffold-cli.ts", "description": "Set up TypeScript compiler options matching project requirements", "dependencies": [1], "details": "In frontend/tools/tsconfig.json, configure { target: 'ES2022', module: 'NodeNext', strict: true, moduleResolution: 'NodeNext', noEmit: true }. Ensure compatibility with Node.js 22+ and tsx execution.", "status": "pending", "testStrategy": "npx tsc --noEmit scaffold-cli.ts passes with strict type checking enabled"},
-          {"id": 5, "title": "Create basic scaffold-cli.ts file with shebang and exports", "description": "Initialize main CLI file structure with interfaces and basic execution setup", "dependencies": [2, 3, 4], "details": "Add #!/usr/bin/env node shebang, export { ParserOptions, ScaffoldPlugin }, include basic main() function structure for tsx execution. Add JSDoc comments documenting Node.js 22+ requirement and zero external dependencies.", "status": "pending", "testStrategy": "npx tsx scaffold-cli.ts --help shows basic usage; npx tsc --noEmit verifies complete file compiles"}
+          {
+            "id": 1,
+            "title": "Define machine mode detection logic",
+            "description": "Add code to detect if running in machine-readable mode based on TTY or --json flag",
+            "dependencies": [],
+            "details": "Insert at list-plugins command start: const isMachineMode = !process.stdout.isTTY || process.argv.includes('--json');. This detects non-interactive TTY or explicit --json flag for JSON output.",
+            "status": "pending",
+            "testStrategy": "Verify isMachineMode=true when running with --json flag and false in interactive TTY."
+          },
+          {
+            "id": 2,
+            "title": "Add conditional human-readable header",
+            "description": "Print 'Listing available plugins...' message only when not in machine mode",
+            "dependencies": [
+              1
+            ],
+            "details": "After machine mode detection, add: if(!isMachineMode) console.log('Listing available plugins...');. Ensures clean JSON output in machine mode without extra messages.",
+            "status": "pending",
+            "testStrategy": "Check header appears in TTY mode without --json, absent with --json."
+          },
+          {
+            "id": 3,
+            "title": "Modify plugins output to conditional JSON formatting",
+            "description": "Replace existing plugins console.log with machine-aware JSON.stringify formatting",
+            "dependencies": [
+              1
+            ],
+            "details": "Change output to: console.log(JSON.stringify(plugins, null, isMachineMode ? 0 : 2));. Uses compact JSON (no indent) in machine mode, pretty-printed (2 spaces) in human mode.",
+            "status": "pending",
+            "testStrategy": "Verify compact JSON with --json, pretty JSON without flag."
+          },
+          {
+            "id": 4,
+            "title": "Remove emoji prefixes and extra console messages",
+            "description": "Audit and remove all emoji prefixes and extraneous console.log statements from list-plugins",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Scan list-plugins command for emoji prefixes (🚀, ✅, etc.) and non-essential messages. Ensure only the conditional header and final JSON output remain. No extra messages in machine mode.",
+            "status": "pending",
+            "testStrategy": "Confirm no emojis or extra text in --json output."
+          },
+          {
+            "id": 5,
+            "title": "Test silent JSON mode end-to-end",
+            "description": "Validate clean JSON output parses correctly in machine mode using provided test command",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Run: npx tsx scaffold-cli.ts list-plugins --json | python -m json.tool. Verify output is valid JSON with no extra text. Test non-TTY piping and interactive modes separately.",
+            "status": "pending",
+            "testStrategy": "JSON parses cleanly via python -m json.tool. Non-TTY outputs only JSON blob without headers."
+          }
         ]
       },
       {
-        "id": 7,
-        "title": "Refactor orchestr8_app.py to Marimo Notebook Format",
-        "description": "Convert existing app to Marimo reactive notebook with cell structure and STATE_MANAGERS",
-        "details": "Install marimo 0.19+: pip install marimo==0.19.1. Refactor `IP/orchestr8_app.py`: import marimo as mo, app = mo.App(), @app.cell decorators for imports/state/plugins/render, mo.state() for STATE_MANAGERS {'root':(get_root,set_root), 'files':..., 'selected':..., 'logs':...}, if __name__ == '__main__': app.run().",
-        "testStrategy": "marimo edit IP/orchestr8_app.py launches without errors, verify 4 STATE_MANAGERS keys exist with callable get/set.",
+        "id": 18,
+        "title": "Develop Universal Bridge Plugin 05_universal_bridge.py",
+        "description": "Create core Universal Bridge that dynamically scans registry and generates UI",
+        "details": "PLUGIN_ORDER=5, PLUGIN_NAME='Universal Bridge'. Scan frontend/tools/registry/*.json (skip .template). Validate REQUIRED_FIELDS=['name','base_command'], OPTIONAL_FIELDS=['description','icon','discovery','static_commands']. For each valid manifest: mo.ui.accordion() with manifest.name. If discovery.enabled: subprocess.run(manifest.base_command + [discovery.command], timeout=30, capture_output=True), parse JSON with json.loads(), generate mo.ui.button() per item. If static_commands: generate buttons from array. Execution: subprocess.run(full_command, timeout=30, capture_output=True), then detect_and_render_output(stdout). Use Python 3.12+ pathlib.glob('**/*.json'), shutil.which() for command validation.",
+        "testStrategy": "Create test manifest, restart Marimo, verify dynamic accordion appears, execute discovery and static commands, verify JSON table/text rendering.",
         "priority": "high",
-        "dependencies": [1],
-        "status": "done",
+        "dependencies": [
+          14,
+          16,
+          17
+        ],
+        "status": "pending",
         "subtasks": [
-          {"id": 1, "title": "Install Marimo 0.19.1 and Verify Installation", "description": "Install the specified version of Marimo using pip and confirm it works correctly.", "dependencies": [], "details": "Run 'pip install marimo==0.19.1' in the project environment. Verify installation by running 'marimo --version' to ensure version 0.19.1 is installed and accessible.", "status": "pending", "testStrategy": "Check 'marimo --version' outputs 0.19.1 and 'marimo --help' displays usage without errors."},
-          {"id": 2, "title": "Initialize Marimo App Structure in orchestr8_app.py", "description": "Set up the basic Marimo app skeleton with imports and app creation using cell decorators.", "dependencies": [1], "details": "Refactor IP/orchestr8_app.py: Add 'import marimo as mo', 'app = mo.App()', and structure code with @app.cell decorators for different sections (imports, state, plugins, render).", "status": "pending", "testStrategy": "Run 'marimo edit IP/orchestr8_app.py' and verify the app launches with initial cells structured correctly without syntax errors."},
-          {"id": 3, "title": "Define STATE_MANAGERS Using mo.state()", "description": "Create reactive state managers for root, files, selected, and logs using Marimo's mo.state() function.", "dependencies": [2], "details": "In a dedicated @app.cell: Define get_root/set_root = mo.state(''), get_files/set_files = mo.state([]), get_selected/set_selected = mo.state(None), get_logs/set_logs = mo.state([]). Assign getters to global variables.", "status": "pending", "testStrategy": "Verify 4 state pairs exist in the notebook, call each getter() to confirm initial values, and test setter functions update state reactively."},
-          {"id": 4, "title": "Implement Cell Logic for Plugins and Rendering", "description": "Add @app.cell implementations for plugin loading and UI rendering using the defined STATE_MANAGERS.", "dependencies": [3], "details": "Create cells for scanning/loading plugins from IP/plugins/*.py, and rendering UI components (tabs, lists, etc.) that react to state changes from STATE_MANAGERS.", "status": "pending", "testStrategy": "Verify plugin scanning reads files correctly, rendering cells reference state getters, and UI updates when state setters are called."},
-          {"id": 5, "title": "Add Main Entry Point and Final Testing", "description": "Implement the if __name__ == '__main__' block and perform complete verification.", "dependencies": [4], "details": "Add 'if __name__ == '__main__': app.run()' at the end. Test full app launch, confirm 4 STATE_MANAGERS keys exist with callable get/set functions.", "status": "pending", "testStrategy": "Execute 'marimo edit IP/orchestr8_app.py', verify launches without errors, check len(STATE_MANAGERS) == 4, and confirm each get/set is callable."}
+          {
+            "id": 1,
+            "title": "Create Plugin File and Define Constants",
+            "description": "Initialize 05_universal_bridge.py with PLUGIN_ORDER=5 and PLUGIN_NAME='Universal Bridge'.",
+            "dependencies": [],
+            "details": "Create the Python file in the plugins directory. Define constants at module top: PLUGIN_ORDER=5, PLUGIN_NAME='Universal Bridge'. Add basic imports: pathlib, json, subprocess, shutil, mo.ui.",
+            "status": "pending",
+            "testStrategy": "Verify file exists and constants print correctly when imported."
+          },
+          {
+            "id": 2,
+            "title": "Implement Registry Scanning and Manifest Validation",
+            "description": "Scan frontend/tools/registry/*.json files, skip .template files, validate REQUIRED_FIELDS and OPTIONAL_FIELDS.",
+            "dependencies": [
+              1
+            ],
+            "details": "Use pathlib.glob('frontend/tools/registry/**/*.json') excluding paths with '.template'. Load JSON, check for required keys ['name','base_command'], optional ['description','icon','discovery','static_commands']. Collect valid manifests in list.",
+            "status": "pending",
+            "testStrategy": "Create test JSON files, assert valid manifests list has correct entries, invalid ones skipped."
+          },
+          {
+            "id": 3,
+            "title": "Generate UI Accordions for Valid Manifests",
+            "description": "For each valid manifest, create mo.ui.accordion() using manifest.name as title.",
+            "dependencies": [
+              2
+            ],
+            "details": "Loop through valid manifests. Use mo.ui.accordion(manifest.get('name', 'Unknown'), contents=[]) initially. Store accordion references for later population. Render accordions in main UI.",
+            "status": "pending",
+            "testStrategy": "Restart Marimo, verify accordions appear with correct names from manifests."
+          },
+          {
+            "id": 4,
+            "title": "Implement Discovery and Static Commands Button Generation",
+            "description": "For manifests with discovery.enabled, run discovery command and generate buttons. Add static_commands buttons.",
+            "dependencies": [
+              3
+            ],
+            "details": "If 'discovery' in manifest and discovery.get('enabled'): run subprocess.run([base_command, discovery.command], timeout=30, capture_output=True), parse json.loads(stdout). Create mo.ui.button() per item. If 'static_commands': generate buttons from array.",
+            "status": "pending",
+            "testStrategy": "Verify buttons appear in accordions after discovery/static commands processed."
+          },
+          {
+            "id": 5,
+            "title": "Implement Command Execution and Output Rendering",
+            "description": "Handle button clicks: run full_command via subprocess, use detect_and_render_output(stdout). Validate commands with shutil.which().",
+            "dependencies": [
+              4
+            ],
+            "details": "On button click: validate shutil.which(base_command[0]), run subprocess.run(full_command, timeout=30, capture_output=True). Call detect_and_render_output(stdout) for JSON table/text rendering.",
+            "status": "pending",
+            "testStrategy": "Click buttons, verify commands execute, output renders as JSON table or text correctly."
+          }
         ]
       },
       {
-        "id": 8,
-        "title": "Implement Scaffold CLI list-plugins and Execution Commands",
-        "description": "Add list-plugins command and plugin execution to scaffold-cli.ts",
-        "details": "Extend scaffold-cli.ts: implement 'list-plugins' scanning parsers/*.js, validate ScaffoldPlugin interface, return JSON metadata array. Add execution: 'scaffold-cli.ts [commandType] --target [path] [options]'. Use commander.js v11.5.0: program.command('list-plugins').action(scanPlugins), dynamic command registration.",
-        "testStrategy": "Create mock .js plugin files, npx tsx scaffold-cli.ts list-plugins | jq verifies JSON array, test execution with mock parser.",
-        "priority": "high",
-        "dependencies": [6],
-        "status": "done",
-        "subtasks": [
-          {"id": 1, "title": "Set up Commander.js v11.5.0 in scaffold-cli.ts", "description": "Install commander.js v11.5.0 as dependency and initialize program in scaffold-cli.ts with version and basic parse setup.", "dependencies": [], "details": "Run `npm install commander@11.5.0`. In scaffold-cli.ts, import Commander, create `program = new Command()`, set `.version('1.0.0')`, call `program.parse()`, ensure Node.js 22+ compatibility with tsx.", "status": "pending", "testStrategy": "Verify `npx tsx scaffold-cli.ts --version` outputs version, `npx tsx scaffold-cli.ts --help` shows basic help without errors."},
-          {"id": 2, "title": "Define ScaffoldPlugin and ParserOptions TypeScript interfaces", "description": "Add exact TypeScript interfaces for ScaffoldPlugin and ParserOptions in scaffold-cli.ts as foundation for plugin validation.", "dependencies": [], "details": "Define `interface ScaffoldPlugin { name: string; version: string; description: string; execute(options: ParserOptions): Promise<any>; }` and `interface ParserOptions { target: string; [key: string]: any; }`. Ensure strict typing with tsconfig.json.", "status": "pending", "testStrategy": "Run `npx tsc --noEmit scaffold-cli.ts` to verify interfaces compile without type errors."},
-          {"id": 3, "title": "Implement scanPlugins function to discover parsers/*.js", "description": "Create scanPlugins() function that scans parsers/*.js files, dynamically requires them, validates against ScaffoldPlugin interface, collects metadata.", "dependencies": [1, 2], "details": "Use `fs.readdirSync('parsers')` to find .js files, `require(path)` each, check `typeof plugin.execute === 'function' && plugin.name`, filter valid plugins, return `[{name, version, description}, ...]` array.", "status": "pending", "testStrategy": "Create mock parsers/01_mock.js with valid interface, run scanPlugins() manually, verify returns correct metadata array."},
-          {"id": 4, "title": "Implement list-plugins command with JSON output", "description": "Register 'list-plugins' command using Commander.js that calls scanPlugins() and outputs JSON array of plugin metadata.", "dependencies": [1, 3], "details": "Add `program.command('list-plugins').description('List available plugins').action(async () => { const plugins = await scanPlugins(); console.log(JSON.stringify(plugins, null, 2)); })`. Ensure clean JSON formatting.", "status": "pending", "testStrategy": "Create 2-3 mock plugin .js files in parsers/, run `npx tsx scaffold-cli.ts list-plugins | jq '. | length'` verifies array length >1."},
-          {"id": 5, "title": "Implement dynamic plugin execution command registration", "description": "Add dynamic command registration for discovered plugins and generic execution handler with --target [path] [options].", "dependencies": [1, 2, 3, 4], "details": "After scanning plugins, for each: `program.command(plugin.name).argument('[options...]').option('--target <path>', 'target path', '.').action(async (opts, cmd) => { const options: ParserOptions = {target: cmd.opts().target, ...parseOptions(opts)}; await plugin.execute(options); })`. Parse remaining args as options.", "status": "pending", "testStrategy": "With mock plugin, run `npx tsx scaffold-cli.ts mock-plugin --target ./test` verifies execute() called with correct ParserOptions."}
-        ]
+        "id": 19,
+        "title": "Retire Old CLI Bridge Plugin",
+        "description": "Deprecate 05_cli_bridge.py after Universal Bridge verification",
+        "details": "Rename IP/plugins/05_cli_bridge.py to 05_cli_bridge.py.deprecated. Verify no duplicate tabs in Marimo UI. Preserve git history. Update any references if needed.",
+        "testStrategy": "Restart marimo edit IP/orchestr8_app.py, verify only Universal Bridge tab appears, no CLI Bridge tab.",
+        "priority": "low",
+        "dependencies": [
+          18
+        ],
+        "status": "pending",
+        "subtasks": []
       },
       {
-        "id": 9,
-        "title": "Create Overview Parser Plugin and Dynamic Plugin Loader",
-        "description": "Implement overview.js parser and orchestr8_app.py dynamic plugin loader",
-        "details": "Create `frontend/tools/parsers/overview.js`: export const plugin: ScaffoldPlugin = {commandType:'overview', description:..., parserFunction: async (path,options)=> {...scan project, return numbered index...}, supportsCompare:false}. In orchestr8_app.py @app.cell: scan IP/plugins/*.py sorted by prefix, importlib.util.spec_from_file_location(), extract PLUGIN_NAME/ORDER, mo.ui.tabs() from render(STATE_MANAGERS).",
-        "testStrategy": "npx tsx scaffold-cli.ts overview --target testproj verifies output format, create test 01_test.py plugin, restart marimo verifies tab appears.",
-        "priority": "high",
-        "dependencies": [7, 8],
-        "status": "done",
-        "subtasks": [
-          {"id": 1, "title": "Create frontend/tools/parsers/overview.js file", "description": "Set up the overview parser plugin file with correct TypeScript structure and ScaffoldPlugin export", "dependencies": [], "details": "Create `frontend/tools/parsers/overview.js` file exporting const plugin: ScaffoldPlugin with commandType:'overview', description, parserFunction, and supportsCompare:false properties as specified in task details.", "status": "pending", "testStrategy": "Verify file exists at correct path and contains proper export structure using fs.existsSync and basic content check"},
-          {"id": 2, "title": "Implement overview parser scanning logic", "description": "Develop the async parserFunction to scan project directory and return numbered index structure", "dependencies": [1], "details": "In overview.js parserFunction(path, options), implement project directory scanning logic that returns a numbered index of project contents following the specified format from task implementation details.", "status": "pending", "testStrategy": "Run npx tsx scaffold-cli.ts overview --target testproj and verify returns structured numbered index output"},
-          {"id": 3, "title": "Implement plugin directory scanning in orchestr8_app.py", "description": "Add code to scan IP/plugins/*.py files sorted by prefix in orchestr8_app.py", "dependencies": [], "details": "In orchestr8_app.py, implement @app.cell decorator that uses pathlib.glob('IP/plugins/*.py'), sorts by filename prefix, and prepares plugin file list for dynamic loading.", "status": "pending", "testStrategy": "Verify scanning logic returns correctly sorted list of plugin files using print statements or logging"},
-          {"id": 4, "title": "Create dynamic plugin loader with importlib", "description": "Implement dynamic import using importlib.util.spec_from_file_location and extract PLUGIN_NAME/ORDER", "dependencies": [3], "details": "Extend scanning logic to use importlib.util.spec_from_file_location() for dynamic imports, extract PLUGIN_NAME and ORDER from each plugin module, and store in accessible structure.", "status": "pending", "testStrategy": "Create test plugin 01_test.py, restart marimo, verify PLUGIN_NAME/ORDER extracted correctly via logs or UI"},
-          {"id": 5, "title": "Integrate plugins with mo.ui.tabs rendering", "description": "Connect loaded plugins to STATE_MANAGERS rendering using mo.ui.tabs()", "dependencies": [4], "details": "Implement render(STATE_MANAGERS) logic using mo.ui.tabs() to display dynamically loaded plugins as tabs based on extracted PLUGIN_NAME/ORDER metadata.", "status": "pending", "testStrategy": "Create 01_test.py plugin, restart marimo app, verify test plugin tab appears and displays correctly in UI"}
-        ]
+        "id": 20,
+        "title": "Create Daco Rust Manifest Template",
+        "description": "Generate 02_daco.json.template for future Rust integration",
+        "details": "Create frontend/tools/registry/02_daco.json.template exactly as specified with static_commands for 'Overview' and 'Routes'. Use .template extension to prevent loading by Universal Bridge. Validate JSON syntax.",
+        "testStrategy": "python -m json.tool 02_daco.json.template succeeds. Restart Marimo, verify Universal Bridge ignores .template files.",
+        "priority": "low",
+        "dependencies": [
+          15
+        ],
+        "status": "pending",
+        "subtasks": []
       },
       {
-        "id": 10,
-        "title": "Implement Core UI Plugins: Generator and Explorer",
-        "description": "Create 01_generator.py (7-phase wizard) and 02_explorer.py (file tree with Carl integration)",
-        "details": "01_generator.py: PLUGIN_ORDER=1, PLUGIN_NAME='Generator', render(): mo.ui.progress(phase/7), mo.ui.text_area(), lock buttons updating mo.state(), export BUILD_SPEC.json. 02_explorer.py: PLUGIN_ORDER=2, PLUGIN_NAME='Explorer', mo.ui.table(files, selection='single'), scan button -> carl_core.run_deep_scan(), context panel.",
-        "testStrategy": "Navigate generator 7 phases -> verify BUILD_SPEC.json created, explorer scan -> table populates, selection updates state.",
+        "id": 21,
+        "title": "End-to-End Universal Bridge Integration Test",
+        "description": "Complete E2E test of Scaffold Parsers integration",
+        "details": "marimo edit IP/orchestr8_app.py → Universal Bridge tab → Verify 'Scaffold Parsers (TS)' accordion → Expand → Verify discovered plugins as buttons → Execute 'overview' parser → Verify JSON table rendering. Document failures in test log.",
+        "testStrategy": "Manual walkthrough: accordion appears, plugins discovered, execution succeeds, output renders correctly.",
         "priority": "high",
-        "dependencies": [4, 5, 9],
-        "status": "done",
-        "subtasks": [
-          {"id": 1, "title": "Create 01_generator.py Base Structure", "description": "Initialize the Generator plugin file with PLUGIN_ORDER=1, PLUGIN_NAME='Generator', and basic mo.state() setup for 7 phases.", "dependencies": [], "details": "Create file 01_generator.py in plugins directory. Define PLUGIN_ORDER=1, PLUGIN_NAME='Generator'. Initialize mo.state(phase=0, build_spec={}). Import mo and json modules.", "status": "pending", "testStrategy": "Verify file created with correct PLUGIN_ORDER and PLUGIN_NAME constants accessible via import."},
-          {"id": 2, "title": "Implement Generator 7-Phase Wizard UI", "description": "Build render() function with progress bar, text area, phase-specific content, and lock buttons based on mo.state().", "dependencies": [1], "details": "In render(): mo.ui.progress(mo.state.phase/7), conditional phase content via if mo.state.phase==0-6, mo.ui.text_area() for input, buttons disabled when phase locked. Update phase via button callbacks.", "status": "pending", "testStrategy": "Navigate through phases manually, verify progress bar updates 0/7->7/7, text_area persists state, buttons lock correctly."},
-          {"id": 3, "title": "Add Generator BUILD_SPEC.json Export", "description": "Implement export functionality to save mo.state() build_spec as BUILD_SPEC.json with validation.", "dependencies": [2], "details": "Add Export button -> callback: validate build_spec keys, json.dump(mo.state.build_spec, 'BUILD_SPEC.json', indent=2), mo.ui.notify('Exported successfully'). Handle phase=7 completion.", "status": "pending", "testStrategy": "Complete all 7 phases, click Export -> verify BUILD_SPEC.json created with valid JSON structure and content."},
-          {"id": 4, "title": "Create 02_explorer.py Base Structure", "description": "Initialize Explorer plugin with PLUGIN_ORDER=2, PLUGIN_NAME='Explorer', files list in mo.state(), and basic UI layout.", "dependencies": [1], "details": "Create 02_explorer.py. Set PLUGIN_ORDER=2, PLUGIN_NAME='Explorer'. mo.state(files=[], selected_file=''). Import mo, carl_core, os/pathlib modules.", "status": "pending", "testStrategy": "Verify plugin loads after Generator, initial state files=[] empty, no errors on render."},
-          {"id": 5, "title": "Implement Explorer File Table and Carl Integration", "description": "Add file table with single selection, scan button calling carl_core.run_deep_scan(), and context panel for selected file.", "dependencies": [4], "details": "render(): mo.ui.table(data=mo.state.files, selection='single', on_change=update_selected), Scan button -> carl_core.run_deep_scan(root.get()) -> mo.state.files=results, context panel: mo.ui.text(mo.state.selected_file details).", "status": "pending", "testStrategy": "Click Scan -> verify table populates with files, select row -> context panel updates, state.selected_file persists."}
-        ]
+        "dependencies": [
+          18
+        ],
+        "status": "pending",
+        "subtasks": []
       },
       {
-        "id": 11,
-        "title": "Implement Gatekeeper and Connie UI Plugins",
-        "description": "Create 03_gatekeeper.py (Louis protection) and 04_connie_ui.py (DB conversion)",
-        "details": "03_gatekeeper.py: PLUGIN_ORDER=3, import louis_core, status badge, lock/unlock buttons -> louis_core.scan_and_protect(), git hook install. 04_connie_ui.py: PLUGIN_ORDER=4, DB picker (*.db), table dropdown -> engine.list_tables(), format radio -> export_*, preview pd.head(10).to_markdown().",
-        "testStrategy": "Gatekeeper: verify chmod changes and git hook installs, Connie: test all 4 export formats create files.",
-        "priority": "high",
-        "dependencies": [4, 10],
-        "status": "done",
-        "subtasks": [
-          {"id": 1, "title": "Create Gatekeeper Plugin Base Structure", "description": "Set up 03_gatekeeper.py with PLUGIN_ORDER=3 and import louis_core module.", "dependencies": [], "details": "Create new file 03_gatekeeper.py in plugins directory. Define PLUGIN_ORDER = 3 constant. Add import statement for louis_core. Ensure file follows standard plugin structure with basic class definition.", "status": "pending", "testStrategy": "Verify file creation and PLUGIN_ORDER value via grep or direct inspection. Confirm louis_core import succeeds without errors."},
-          {"id": 2, "title": "Implement Gatekeeper UI Status and Buttons", "description": "Add status badge display and lock/unlock buttons to Gatekeeper plugin UI.", "dependencies": [1], "details": "Implement mo.ui.badge() for protection status display. Add mo.ui.button('Lock') and mo.ui.button('Unlock') with click handlers. Connect buttons to toggle louis_core.scan_and_protect() execution.", "status": "pending", "testStrategy": "Manual UI test: verify badge shows correct status, buttons appear and respond to clicks without crashing."},
-          {"id": 3, "title": "Add Git Hook Installation to Gatekeeper", "description": "Implement git hook installation functionality triggered by Gatekeeper plugin.", "dependencies": [2], "details": "Create function to install pre-commit git hook calling louis_core.scan_and_protect(). Add UI confirmation dialog before installation. Use subprocess to run git config commands for hook setup.", "status": "pending", "testStrategy": "Run plugin, trigger hook install, verify .git/hooks/pre-commit file created with correct chmod 755 permissions."},
-          {"id": 4, "title": "Create Connie UI Plugin Base with DB Picker", "description": "Set up 04_connie_ui.py with PLUGIN_ORDER=4 and database file picker functionality.", "dependencies": [], "details": "Create 04_connie_ui.py file with PLUGIN_ORDER = 4. Implement mo.ui.file_picker(filter='*.db') for SQLite database selection. Store selected DB path in plugin state.", "status": "pending", "testStrategy": "Verify plugin loads, file picker opens and filters .db files correctly, selected path is stored."},
-          {"id": 5, "title": "Implement Connie UI Table Selection and Export Features", "description": "Add table dropdown, format selector, preview, and export functionality to Connie UI.", "dependencies": [4], "details": "Connect DB picker to engine = create_engine(selected_db). Add mo.ui.dropdown(values=engine.list_tables()). Add format radio buttons (csv, json, parquet, markdown). Implement preview with pd.read_sql(table).head(10).to_markdown(). Add export buttons calling export_csv(), export_json(), etc.", "status": "pending", "testStrategy": "Test full flow: select DB -> table dropdown populates -> select format -> preview shows data -> export creates 4 different file formats in output directory."}
-        ]
-      },
-      {
-        "id": 12,
-        "title": "Implement CLI Bridge Plugin and E2E Testing",
-        "description": "Create 05_cli_bridge.py for dynamic TypeScript plugin discovery/execution, run integration tests",
-        "details": "05_cli_bridge.py: PLUGIN_ORDER=5, npx tsx scaffold-cli.ts list-plugins -> parse JSON -> dynamic mo.ui.accordion(), Run button -> subprocess.run(['npx','tsx','scaffold-cli.ts',commandType,'--target',root.get()], timeout=30), display results. Test full workflow: launch->scan->generator->connie->bridge.",
-        "testStrategy": "Mock list-plugins JSON -> verify dynamic UI, test execution timeout, manual E2E: all 5 plugins functional, dynamic discovery works.",
-        "priority": "high",
-        "dependencies": [8, 11],
-        "status": "done",
-        "subtasks": [
-          {"id": 1, "title": "Create 05_cli_bridge.py file with PLUGIN_ORDER", "description": "Initialize the CLI bridge plugin file with proper plugin structure and ordering", "dependencies": [], "details": "Create 05_cli_bridge.py in plugins directory. Set PLUGIN_ORDER=5. Include basic plugin structure with mo.ui integration. Ensure compatibility with existing plugin system (dependencies 8,11).", "status": "pending", "testStrategy": "Verify file creation and PLUGIN_ORDER=5 via python -m pytest --collect-only"},
-          {"id": 2, "title": "Implement dynamic plugin discovery from CLI JSON", "description": "Execute npx tsx scaffold-cli.ts list-plugins and parse JSON output for UI display", "dependencies": [1], "details": "Add subprocess call: subprocess.run(['npx','tsx','scaffold-cli.ts','list-plugins'], capture_output=True). Parse JSON response using json.loads(). Handle errors and empty responses gracefully.", "status": "pending", "testStrategy": "Mock subprocess JSON output -> verify parsed plugins array structure and metadata extraction"},
-          {"id": 3, "title": "Build dynamic mo.ui.accordion() plugin interface", "description": "Create interactive accordion UI displaying discovered plugins with metadata", "dependencies": [2], "details": "Use parsed JSON to generate mo.ui.accordion() with plugin name, description, version. Each accordion item shows plugin details. Make collapsible and responsive. Add loading spinner during discovery.", "status": "pending", "testStrategy": "Mock plugin JSON -> verify accordion renders correct number of items with proper metadata display"},
-          {"id": 4, "title": "Implement Run button with subprocess execution", "description": "Add execution functionality for selected plugins with timeout and result display", "dependencies": [3], "details": "For each accordion: Run button -> subprocess.run(['npx','tsx','scaffold-cli.ts',commandType,'--target',root.get()], timeout=30, capture_output=True). Display stdout/stderr in results panel. Handle timeout exceptions.", "status": "pending", "testStrategy": "Mock subprocess -> verify command construction, timeout=30, result display for success/error/timeout cases"},
-          {"id": 5, "title": "Create E2E tests for full CLI bridge workflow", "description": "Test complete workflow: launch->scan->generator->connie->bridge with all 5 plugins", "dependencies": [4], "details": "Write integration tests: 1) Verify dynamic discovery finds all 5 plugins, 2) Test each plugin execution timeout handling, 3) Manual E2E: run full workflow launch->scan->generator->connie->bridge. Mock scaffold-cli.ts responses.", "status": "pending", "testStrategy": "pytest integration tests: mock list-plugins JSON -> verify UI/execution -> manual verification all 5 plugins functional end-to-end"}
-        ]
+        "id": 22,
+        "title": "Multi-Manifest and Dynamic UI Test",
+        "description": "Verify multiple manifests and dynamic UI updates",
+        "details": "Create 99_test.json with static_commands. Restart Marimo: verify both Scaffold + Test accordions. Execute test command. Remove 99_test.json, restart: verify only Scaffold remains. Test hot reload capability.",
+        "testStrategy": "Add/remove manifests, verify UI updates on Marimo restart. Multiple accordions render correctly without conflicts.",
+        "priority": "medium",
+        "dependencies": [
+          21
+        ],
+        "status": "pending",
+        "subtasks": []
       }
     ],
     "metadata": {
-      "created": "2026-01-25T20:30:56.148Z",
-      "updated": "2026-01-26T03:00:00.000Z",
-      "description": "Tasks for Orchestr8 v3.0 Fortress Factory - master context - ALL TASKS COMPLETE",
-      "version": "3.0.0",
-      "v1_migration_note": "Tasks renumbered from 31-42 to 1-12. Original v1.0 MVP (orchestr8.py) completed prior to v3.0 architecture refactor. v1.0 implemented: ExplorerView, ConnectionVerifier, ConnectionGraph (PyVis/NetworkX), PRDGenerator (Jinja2), Emperor Command Interface. See orchestr8.py (424 lines) for working v1.0 reference."
+      "created": "2026-01-26T05:47:32.622Z",
+      "updated": "2026-01-26T05:47:32.622Z",
+      "description": "Tasks for master context"
     }
   }
 }

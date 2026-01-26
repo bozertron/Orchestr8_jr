@@ -1,0 +1,293 @@
+# PRD: Orchestr8 v3.0 - The Universal Fortress
+# Taskmaster AI Parsing Document
+# Version: 3.0.0
+# Date: 2026-01-25
+# Codename: "Polyglot"
+
+## Project Overview
+
+Orchestr8 v3.0 transforms the existing CLI Bridge into a Universal Bridge that can drive ANY CLI tool (TypeScript, Rust, Python, Go) via a JSON Registry system. This upgrade also addresses critical UI issues identified during verification.
+
+**Core Objective:** Decouple the GUI from specific implementations. Orchestr8 becomes a "Universal Head" for any CLI tool.
+
+**The Rule:** If it speaks JSON to stdout, Orchestr8 can drive it.
+
+---
+
+## Phase 1: Critical UI Fixes
+
+### Task 1.1: Refactor Gatekeeper Plugin for Louis Core Integration
+**Priority:** high
+**Dependencies:** none
+
+The current 03_gatekeeper.py reimplements config management instead of using louis_core.py. This creates divergent behavior.
+
+**Required Changes:**
+1. Import LouisWarden and LouisConfig from IP/louis_core.py
+2. Remove duplicate config management code
+3. Add "Lock All Protected" button that calls warden.lock_file() for each protected path
+4. Add "Unlock All" button that calls warden.unlock_file() for each path
+5. Add per-file toggle using STATE_MANAGERS['selected'] to lock/unlock individual files
+6. Ensure config path matches louis_core (project .louis-control/, not home dir)
+
+**Test Strategy:** Click Lock All, verify files have 0o444 permissions. Click Unlock All, verify 0o644.
+
+### Task 1.2: Add JSON Table Rendering to Output Display
+**Priority:** medium
+**Dependencies:** none
+
+Current plugins display all subprocess output as plain text. JSON output should render as interactive tables.
+
+**Required Changes:**
+1. Create utility function `detect_and_render_output(stdout_text)` in IP/plugins/
+2. If output is valid JSON array: render as mo.ui.table()
+3. If output is valid JSON object: render as mo.json() or formatted display
+4. If output is plain text: render as mo.ui.text_area()
+5. Add to 05_cli_bridge.py (and later 05_universal_bridge.py)
+
+**Test Strategy:** Execute plugin returning JSON array, verify table renders with sortable columns.
+
+---
+
+## Phase 2: Registry Infrastructure
+
+### Task 2.1: Create Registry Directory Structure
+**Priority:** high
+**Dependencies:** none
+
+Create the registry directory for JSON manifests.
+
+**Structure:**
+```
+frontend/tools/
+├── registry/                # NEW - The Hall of Manifests
+│   └── .gitkeep
+├── parsers/                 # Existing TS parsers
+└── scaffold-cli.ts          # Existing TS CLI
+```
+
+**Test Strategy:** Verify directory exists with ls frontend/tools/registry/
+
+### Task 2.2: Create Scaffold Manifest (01_scaffold.json)
+**Priority:** high
+**Dependencies:** 2.1
+
+Create the first registry manifest for existing TypeScript parsers.
+
+**File:** frontend/tools/registry/01_scaffold.json
+```json
+{
+  "name": "Scaffold Parsers (TS)",
+  "description": "TypeScript AST analysis tools powered by Commander.js",
+  "icon": "TS",
+  "base_command": ["npx", "tsx", "frontend/tools/scaffold-cli.ts"],
+  "discovery": {
+    "enabled": true,
+    "command": "list-plugins"
+  }
+}
+```
+
+**Test Strategy:** Verify JSON is valid with python -m json.tool.
+
+---
+
+## Phase 3: CLI Silent Mode
+
+### Task 3.1: Add Silent JSON Mode to scaffold-cli.ts
+**Priority:** high
+**Dependencies:** none
+
+Currently scaffold-cli.ts list-plugins outputs console logs before JSON, which breaks parsing.
+
+**Required Changes:**
+1. Add --json flag or detect non-TTY mode
+2. When in machine mode, output ONLY the JSON blob
+3. No emoji prefixes, no "Listing plugins..." messages
+4. Ensure clean stdout that Python json.loads() can parse directly
+
+**Implementation:**
+```typescript
+// At start of list-plugins command
+const isMachineMode = !process.stdout.isTTY || process.argv.includes('--json');
+if (!isMachineMode) {
+  console.log('Listing available plugins...');
+}
+// ... discovery logic ...
+console.log(JSON.stringify(plugins, null, isMachineMode ? 0 : 2));
+```
+
+**Test Strategy:** Run `npx tsx scaffold-cli.ts list-plugins --json | python -m json.tool` - should parse without errors.
+
+---
+
+## Phase 4: Universal Bridge Plugin
+
+### Task 4.1: Create Universal Bridge Plugin (05_universal_bridge.py)
+**Priority:** high
+**Dependencies:** 2.2, 3.1, 1.2
+
+Replace 05_cli_bridge.py with the Universal Bridge that reads JSON manifests.
+
+**File:** IP/plugins/05_universal_bridge.py
+
+**Plugin Metadata:**
+- PLUGIN_ORDER = 5
+- PLUGIN_NAME = "Universal Bridge"
+
+**Logic Flow:**
+1. **Scan:** Look for .json files in frontend/tools/registry/
+2. **Parse:** Load each manifest, validate required fields (name, base_command)
+3. **Iterate:** For each manifest, create an accordion section
+4. **Check Mode:**
+   - If discovery.enabled: Run base_command + discovery.command, parse JSON, generate buttons
+   - If static_commands exist: Generate buttons for hardcoded entries
+5. **Execute:** When button clicked:
+   - Construct command: base_command + subcommand + flags
+   - Run via subprocess with 30s timeout
+   - Capture stdout
+6. **Render:**
+   - If JSON array: mo.ui.table()
+   - If JSON object: mo.json() or formatted
+   - If text: mo.ui.text_area()
+
+**Required Manifest Schema Validation:**
+```python
+REQUIRED_FIELDS = ['name', 'base_command']
+OPTIONAL_FIELDS = ['description', 'icon', 'discovery', 'static_commands']
+```
+
+**Test Strategy:** Create test manifest, verify UI generates dynamically, execute command, verify output renders.
+
+### Task 4.2: Retire Old CLI Bridge Plugin
+**Priority:** low
+**Dependencies:** 4.1
+
+After Universal Bridge is verified working:
+1. Rename 05_cli_bridge.py to 05_cli_bridge.py.deprecated
+2. Or delete if git history is sufficient backup
+
+**Test Strategy:** Restart Marimo, verify only Universal Bridge tab appears (not duplicate).
+
+---
+
+## Phase 5: Future-Proofing (Rust Integration Prep)
+
+### Task 5.1: Create Daco Manifest Template (02_daco.json.template)
+**Priority:** low
+**Dependencies:** 2.1
+
+Create a template manifest for future Rust binary integration.
+
+**File:** frontend/tools/registry/02_daco.json.template
+```json
+{
+  "name": "Daco Deep Scan (Rust)",
+  "description": "High-performance Rust analysis engine",
+  "icon": "RS",
+  "base_command": ["./IP/bin/daco"],
+  "static_commands": [
+    {
+      "name": "Overview",
+      "args": ["overview"],
+      "description": "Full project scan"
+    },
+    {
+      "name": "Routes",
+      "args": ["routes"],
+      "description": "Vue Router AST analysis"
+    }
+  ]
+}
+```
+
+**Note:** .template extension prevents Universal Bridge from loading it until Rust binary exists.
+
+**Test Strategy:** Verify file is valid JSON, verify Universal Bridge ignores .template files.
+
+---
+
+## Phase 6: Integration Testing
+
+### Task 6.1: End-to-End Universal Bridge Test
+**Priority:** high
+**Dependencies:** 4.1
+
+Complete integration test:
+1. Launch Orchestr8 with `marimo edit IP/orchestr8_app.py`
+2. Navigate to Universal Bridge tab
+3. Verify "Scaffold Parsers (TS)" accordion appears
+4. Click to expand, verify discovered plugins listed
+5. Execute "overview" parser
+6. Verify output renders (JSON as table or formatted)
+
+**Test Strategy:** Manual E2E walkthrough, document any failures.
+
+### Task 6.2: Multi-Manifest Test
+**Priority:** medium
+**Dependencies:** 6.1
+
+Verify multiple manifests render correctly:
+1. Create a test manifest (99_test.json) with static_commands
+2. Restart Orchestr8
+3. Verify both Scaffold and Test accordions appear
+4. Execute test command
+5. Remove test manifest, verify UI updates
+
+**Test Strategy:** Add/remove manifests, verify dynamic UI updates.
+
+---
+
+## Acceptance Criteria
+
+1. Gatekeeper plugin integrates with louis_core.py (no duplicate code)
+2. Lock All / Unlock All buttons actually change file permissions
+3. Per-file toggle works with STATE_MANAGERS['selected']
+4. Registry directory exists at frontend/tools/registry/
+5. 01_scaffold.json manifest is valid and loaded
+6. scaffold-cli.ts outputs clean JSON in machine mode
+7. Universal Bridge scans registry and generates dynamic UI
+8. Discovery mode works (list-plugins parsed and rendered)
+9. Static commands mode works (hardcoded buttons)
+10. JSON output renders as table, text as text_area
+11. Old cli_bridge.py retired
+12. Zero hardcoded tool references in Universal Bridge
+
+---
+
+## Technical Constraints
+
+- Python 3.12+ required
+- Marimo 0.19+ required
+- Node.js 22+ with npx tsx available
+- All CLI tools must output valid JSON to stdout for table rendering
+- Subprocess timeout: 30 seconds
+- Manifest files must be valid JSON
+
+---
+
+## File Manifest
+
+### Files to Create
+- frontend/tools/registry/.gitkeep
+- frontend/tools/registry/01_scaffold.json
+- frontend/tools/registry/02_daco.json.template
+- IP/plugins/05_universal_bridge.py
+
+### Files to Modify
+- IP/plugins/03_gatekeeper.py (louis_core integration)
+- frontend/tools/scaffold-cli.ts (silent JSON mode)
+
+### Files to Retire
+- IP/plugins/05_cli_bridge.py (after Universal Bridge verified)
+
+---
+
+## Notes for Taskmaster AI
+
+- Phase 1 fixes existing issues identified by UI verification sprint
+- Phase 2-4 implements the Universal Bridge architecture
+- Phase 5 is prep work for future Rust integration
+- Phase 6 validates the complete system
+- Tasks should include subtasks for implementation details
+- Prioritize Gatekeeper fix and Universal Bridge as parallel tracks
