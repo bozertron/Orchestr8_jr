@@ -1,0 +1,9 @@
+# Keep tickets but ignore archives
+tickets/archive/*
+!tickets/archive/.gitkeep
+
+# State files are local
+state/*.json
+
+# Mermaid cache is regenerated
+mermaid-cache.md

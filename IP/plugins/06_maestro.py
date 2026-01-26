@@ -29,6 +29,12 @@ from datetime import datetime
 from typing import Any, Optional
 import uuid
 
+# Import new modules
+from IP.mermaid_generator import Fiefdom, FiefdomStatus, generate_empire_mermaid
+from IP.terminal_spawner import TerminalSpawner
+from IP.health_checker import HealthChecker
+from IP.briefing_generator import BriefingGenerator
+
 PLUGIN_NAME = "The Void"
 PLUGIN_ORDER = 6
 
@@ -281,7 +287,7 @@ def render(STATE_MANAGERS: dict) -> Any:
             "id": str(uuid.uuid4()),
             "role": "user",
             "content": text,
-            "timestamp": datetime.now().strftime("%H:%M:%S")
+            "timestamp": datetime.now().strftime("%H:%M:%S"),
         }
         messages.append(user_msg)
 
@@ -291,7 +297,7 @@ def render(STATE_MANAGERS: dict) -> Any:
             "id": str(uuid.uuid4()),
             "role": "assistant",
             "content": f"Acknowledged. Processing request in context of: {get_root()}",
-            "timestamp": datetime.now().strftime("%H:%M:%S")
+            "timestamp": datetime.now().strftime("%H:%M:%S"),
         }
         messages.append(assistant_msg)
 
@@ -332,26 +338,27 @@ def render(STATE_MANAGERS: dict) -> Any:
         """)
 
         # Navigation buttons
-        nav_buttons = mo.hstack([
-            mo.ui.button(
-                label="Collabor8",
-                on_change=lambda _: toggle_collabor8()
-            ),
-            mo.ui.button(
-                label="JFDI",
-                on_change=lambda _: toggle_jfdi()
-            ),
-            mo.ui.button(
-                label="Gener8",
-                on_change=lambda _: log_action("Switch to Generator tab")
-            ),
-        ], gap="0.5rem")
+        nav_buttons = mo.hstack(
+            [
+                mo.ui.button(label="Collabor8", on_change=lambda _: toggle_collabor8()),
+                mo.ui.button(label="JFDI", on_change=lambda _: toggle_jfdi()),
+                mo.ui.button(
+                    label="Gener8",
+                    on_change=lambda _: log_action("Switch to Generator tab"),
+                ),
+            ],
+            gap="0.5rem",
+        )
 
-        return mo.hstack([
-            mo.ui.button(label="Home", on_change=lambda _: handle_home_click()),
-            brand,
-            nav_buttons
-        ], justify="space-between", align="center")
+        return mo.hstack(
+            [
+                mo.ui.button(label="Home", on_change=lambda _: handle_home_click()),
+                brand,
+                nav_buttons,
+            ],
+            justify="space-between",
+            align="center",
+        )
 
     def build_void_messages() -> Any:
         """
@@ -374,8 +381,8 @@ def render(STATE_MANAGERS: dict) -> Any:
         for msg in assistant_msgs:
             message_html += f"""
             <div class="emerged-message">
-                <div class="content">{msg['content']}</div>
-                <div class="meta">{msg['timestamp']}</div>
+                <div class="content">{msg["content"]}</div>
+                <div class="meta">{msg["timestamp"]}</div>
             </div>
             """
 
@@ -501,34 +508,54 @@ def render(STATE_MANAGERS: dict) -> Any:
             value=get_user_input(),
             placeholder="What would you like to accomplish?",
             on_change=set_user_input,
-            full_width=True
+            full_width=True,
         )
 
         # Left group
-        left_buttons = mo.hstack([
-            mo.ui.button(label="Apps", on_change=lambda _: log_action("Apps grid toggled")),
-            mo.ui.button(label="Matrix", on_change=lambda _: log_action("Matrix diagnostics opened")),
-            mo.ui.button(label="Files", on_change=lambda _: log_action("Switch to Explorer tab")),
-        ], gap="0.25rem")
-
-        # Center - maestro
-        center_btn = mo.ui.button(
-            label="maestro",
-            on_change=lambda _: handle_summon()
+        left_buttons = mo.hstack(
+            [
+                mo.ui.button(
+                    label="Apps", on_change=lambda _: log_action("Apps grid toggled")
+                ),
+                mo.ui.button(
+                    label="Matrix",
+                    on_change=lambda _: log_action("Matrix diagnostics opened"),
+                ),
+                mo.ui.button(
+                    label="Files",
+                    on_change=lambda _: log_action("Switch to Explorer tab"),
+                ),
+            ],
+            gap="0.25rem",
         )
 
-        # Right group
-        right_buttons = mo.hstack([
-            mo.ui.button(label="Search", on_change=lambda _: handle_summon()),
-            mo.ui.button(label="Terminal", on_change=lambda _: set_show_terminal(not get_show_terminal())),
-            mo.ui.button(label="Send", on_change=lambda _: handle_send()),
-            mo.ui.button(label="Attach", on_change=lambda _: handle_attach()),
-        ], gap="0.25rem")
+        # Center - maestro
+        center_btn = mo.ui.button(label="maestro", on_change=lambda _: handle_summon())
 
-        return mo.vstack([
-            chat_input,
-            mo.hstack([left_buttons, center_btn, right_buttons], justify="space-between", align="center")
-        ])
+        # Right group
+        right_buttons = mo.hstack(
+            [
+                mo.ui.button(label="Search", on_change=lambda _: handle_summon()),
+                mo.ui.button(
+                    label="Terminal",
+                    on_change=lambda _: set_show_terminal(not get_show_terminal()),
+                ),
+                mo.ui.button(label="Send", on_change=lambda _: handle_send()),
+                mo.ui.button(label="Attach", on_change=lambda _: handle_attach()),
+            ],
+            gap="0.25rem",
+        )
+
+        return mo.vstack(
+            [
+                chat_input,
+                mo.hstack(
+                    [left_buttons, center_btn, right_buttons],
+                    justify="space-between",
+                    align="center",
+                ),
+            ]
+        )
 
     # ========================================================================
     # MAIN LAYOUT
@@ -549,18 +576,20 @@ def render(STATE_MANAGERS: dict) -> Any:
     selected = get_selected()
     status_bar = mo.md(f"**Root:** `{root}` | **Selected:** `{selected or 'None'}`")
 
-    return mo.vstack([
-        css_injection,
-        mo.md("## The Void"),
-        mo.md("*maestro overlooks the abyss*"),
-        mo.md("---"),
-        top_row,
-        mo.md("---"),
-        panels,
-        void_messages,
-        mo.md("---"),
-        attachment_bar,
-        control_surface,
-        mo.md("---"),
-        status_bar
-    ])
+    return mo.vstack(
+        [
+            css_injection,
+            mo.md("## The Void"),
+            mo.md("*maestro overlooks the abyss*"),
+            mo.md("---"),
+            top_row,
+            mo.md("---"),
+            panels,
+            void_messages,
+            mo.md("---"),
+            attachment_bar,
+            control_surface,
+            mo.md("---"),
+            status_bar,
+        ]
+    )
