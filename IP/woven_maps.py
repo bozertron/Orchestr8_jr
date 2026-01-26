@@ -421,6 +421,18 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
         `;
 
         // ================================================================
+        // WAVE FIELD CONFIG - Dual interference pattern from AwakeningEngine
+        // ================================================================
+        const waveField = {
+            sourceLeftX: width * 0.15,   // Left wave source
+            sourceRightX: width * 0.85,  // Right wave source
+            ampBase: 8,                   // Base amplitude
+            ampScale: 12,                 // Additional amplitude during coalescing
+            speedBase: 0.002,             // Wave speed
+            complexity: 0.5               // Third wave complexity
+        };
+
+        // ================================================================
         // EMERGENCE STATE
         // ================================================================
         let emergenceProgress = 0;  // 0 to 1
@@ -438,8 +450,20 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             currentAlpha: 0,
             targetAlpha: 1,
             // Emergence timing: stagger based on distance from center
-            delay: Math.sqrt(Math.pow(n.x - width/2, 2) + Math.pow(n.y - height/2, 2)) / (width/2) * 0.3
+            delay: Math.sqrt(Math.pow(n.x - width/2, 2) + Math.pow(n.y - height/2, 2)) / (width/2) * 0.3,
+            // Entry offset for wave field
+            entryOffset: Math.random() * 4
         }));
+
+        // Wave field calculation - creates interference pattern
+        function calcWaveDisplacement(x, y, elapsed) {
+            const d1 = Math.sqrt(Math.pow(x - waveField.sourceLeftX, 2) + Math.pow(y - height/2, 2));
+            const d2 = Math.sqrt(Math.pow(x - waveField.sourceRightX, 2) + Math.pow(y - height/2, 2));
+            const wave1 = Math.sin(d1 * 0.02 - elapsed * waveField.speedBase) * waveField.ampBase;
+            const wave2 = Math.sin(d2 * 0.018 - elapsed * waveField.speedBase * 0.85) * waveField.ampBase * 0.8;
+            const wave3 = Math.sin((x + y) * 0.01 + elapsed * waveField.speedBase * 0.5) * waveField.ampBase * 0.3 * waveField.complexity;
+            return { dx: (wave1 + wave2) * 0.3, dy: wave3 };
+        }
 
         // ================================================================
         // ENHANCED PARTICLE SYSTEM - Curl-like Motion
@@ -614,19 +638,29 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
                 }
             }
 
-            // Update node positions during emergence
+            // Update node positions during emergence with wave field distortion
             for (let i = 0; i < nodeStates.length; i++) {
                 const state = nodeStates[i];
                 const adjustedProgress = Math.max(0, Math.min(1, (easedProgress - state.delay) / (1 - state.delay)));
 
-                // Lerp from chaos to target
-                state.currentX = state.currentX + (state.targetX - state.currentX) * adjustedProgress * 0.1;
-                state.currentY = state.currentY + (state.targetY - state.currentY) * adjustedProgress * 0.1;
+                // Calculate wave field distortion (strongest during coalescing)
+                const waveStrength = Math.sin(adjustedProgress * Math.PI); // Peak at 0.5
+                const wave = calcWaveDisplacement(state.targetX, state.targetY, elapsed);
+
+                // Lerp from chaos to target with wave distortion
+                const targetX = state.targetX + wave.dx * waveStrength * (1 - adjustedProgress);
+                const targetY = state.targetY + wave.dy * waveStrength * (1 - adjustedProgress);
+
+                state.currentX = state.currentX + (targetX - state.currentX) * adjustedProgress * 0.1;
+                state.currentY = state.currentY + (targetY - state.currentY) * adjustedProgress * 0.1;
                 state.currentAlpha = adjustedProgress;
 
-                // Spawn emergence particles during coalescing
-                if (!emerged && adjustedProgress > 0.1 && adjustedProgress < 0.9 && Math.random() < 0.02) {
-                    spawnEmergenceParticles(state.currentX, state.currentY, 2);
+                // Spawn emergence particles during coalescing (more during peak wave)
+                if (!emerged && adjustedProgress > 0.1 && adjustedProgress < 0.9) {
+                    const spawnChance = 0.02 + waveStrength * 0.03;
+                    if (Math.random() < spawnChance) {
+                        spawnEmergenceParticles(state.currentX, state.currentY, 2);
+                    }
                 }
             }
 
@@ -661,8 +695,17 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
                 const state = nodeStates[i];
                 const color = COLORS[node.status];
                 const baseRadius = 2 + Math.min(node.loc / 80, 6);
-                const x = emerged ? node.x : state.currentX;
-                const y = emerged ? node.y : state.currentY;
+
+                // After emergence: subtle energy field displacement (NOT breathing)
+                let x, y;
+                if (emerged) {
+                    const ambientWave = calcWaveDisplacement(node.x, node.y, elapsed);
+                    x = node.x + ambientWave.dx * 0.15;  // Very subtle
+                    y = node.y + ambientWave.dy * 0.15;
+                } else {
+                    x = state.currentX;
+                    y = state.currentY;
+                }
                 const alpha = state.currentAlpha;
 
                 // Outer glow for non-working
