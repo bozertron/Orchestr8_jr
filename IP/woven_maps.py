@@ -1,20 +1,15 @@
 """
-Woven Maps Code City Visualization
-===================================
+Woven Maps Code City Visualization - Enhanced Edition
+======================================================
 
-A complete implementation of Nicolas Barradeau's "Woven Maps" algorithm
-adapted for codebase visualization in Marimo.
+Enhanced with:
+- Emergence animation (particles coalesce from chaos)
+- Teal → Gold frame transition (scan progress → complete)
+- Organic curl-like particle motion
+- Phase-based initialization (tuning → coalescing → emergence)
 
-Usage:
-    from IP.woven_maps import create_code_city, build_graph_data
-
-    # In a Marimo plugin:
-    def render(STATE_MANAGERS):
-        get_root, _ = STATE_MANAGERS["root"]
-        return create_code_city(get_root(), width=800, height=600)
-
-Source: https://barradeau.com/blog/?p=1001
-Colors: MaestroView.vue (stereOS)
+Based on Nicolas Barradeau's "Woven Maps" algorithm
+Aligned with stereOS Maestro vision (M14.jpg reference)
 """
 
 from __future__ import annotations
@@ -24,9 +19,9 @@ import html
 import math
 import os
 import re
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional
 
 # =============================================================================
 # COLOR CONSTANTS - EXACT, NO EXCEPTIONS
@@ -34,7 +29,7 @@ from typing import List, Dict, Any, Optional, Tuple
 
 COLORS = {
     "gold_metallic": "#D4AF37",   # Working code
-    "blue_dominant": "#1fbdea",   # Broken code
+    "blue_dominant": "#1fbdea",   # Broken code / Teal during scan
     "purple_combat": "#9D4EDD",   # Combat (LLM active)
     "bg_primary": "#0A0A0B",      # The Void
     "bg_elevated": "#121214",     # Elevated surfaces
@@ -42,13 +37,14 @@ COLORS = {
     "gold_saffron": "#F4C430",    # Bright highlights
 }
 
-# JavaScript-friendly color map
 JS_COLORS = {
     "void": "#0A0A0B",
     "working": "#D4AF37",
     "broken": "#1fbdea",
     "combat": "#9D4EDD",
     "wireframe": "#333333",
+    "teal": "#1fbdea",
+    "gold": "#D4AF37",
 }
 
 # =============================================================================
@@ -59,7 +55,7 @@ JS_COLORS = {
 class CodeNode:
     """Represents a file in the codebase."""
     path: str
-    status: str = "working"  # 'working' | 'broken' | 'combat'
+    status: str = "working"
     loc: int = 0
     errors: List[str] = field(default_factory=list)
     x: float = 0.0
@@ -86,6 +82,7 @@ class GraphConfig:
     wire_count: int = 10
     show_particles: bool = True
     show_tooltip: bool = True
+    emergence_duration: float = 2.0  # seconds for emergence animation
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -95,6 +92,7 @@ class GraphConfig:
             "wireCount": self.wire_count,
             "showParticles": self.show_particles,
             "showTooltip": self.show_tooltip,
+            "emergenceDuration": self.emergence_duration,
         }
 
 
@@ -118,7 +116,6 @@ class GraphData:
 # CODEBASE SCANNING
 # =============================================================================
 
-# Directories to skip during scanning
 SKIP_DIRS = {
     'node_modules', '.git', '__pycache__', 'dist', 'build',
     '.venv', 'venv', 'env', '.env', '.tox', '.pytest_cache',
@@ -126,7 +123,6 @@ SKIP_DIRS = {
     'htmlcov', '.idea', '.vscode', 'target', 'out', 'bin',
 }
 
-# File extensions to include
 CODE_EXTENSIONS = {
     '.py', '.js', '.ts', '.tsx', '.jsx', '.mjs', '.cjs',
     '.java', '.go', '.rs', '.cpp', '.c', '.h', '.hpp',
@@ -140,28 +136,16 @@ def scan_codebase(
     skip_dirs: Optional[set] = None,
     extensions: Optional[set] = None,
 ) -> List[CodeNode]:
-    """
-    Scan a codebase and return a list of CodeNodes.
-
-    Args:
-        root: Root directory to scan
-        skip_dirs: Directories to skip (defaults to SKIP_DIRS)
-        extensions: File extensions to include (defaults to CODE_EXTENSIONS)
-
-    Returns:
-        List of CodeNode objects
-    """
+    """Scan a codebase and return a list of CodeNodes."""
     skip = skip_dirs or SKIP_DIRS
     exts = extensions or CODE_EXTENSIONS
     nodes = []
 
     root_path = Path(root).resolve()
-
     if not root_path.exists():
         return nodes
 
     for dirpath, dirnames, filenames in os.walk(root_path):
-        # Filter out skip directories
         dirnames[:] = [d for d in dirnames if d not in skip and not d.startswith('.')]
 
         for filename in filenames:
@@ -176,7 +160,6 @@ def scan_codebase(
                 node = analyze_file(filepath, relpath)
                 nodes.append(node)
             except Exception as e:
-                # File couldn't be read - mark as broken
                 nodes.append(CodeNode(
                     path=relpath,
                     status="broken",
@@ -188,38 +171,23 @@ def scan_codebase(
 
 
 def analyze_file(filepath: Path, relpath: str) -> CodeNode:
-    """
-    Analyze a single file for status and metrics.
-
-    Args:
-        filepath: Absolute path to file
-        relpath: Relative path for display
-
-    Returns:
-        CodeNode with analysis results
-    """
+    """Analyze a single file for status and metrics."""
     try:
         content = filepath.read_text(encoding='utf-8', errors='ignore')
     except Exception as e:
-        return CodeNode(
-            path=relpath,
-            status="broken",
-            errors=[str(e)],
-        )
+        return CodeNode(path=relpath, status="broken", errors=[str(e)])
 
     lines = content.split('\n')
     loc = len(lines)
-
-    # Detect potential issues
     errors = []
 
     # TODO/FIXME detection
     todo_pattern = re.compile(r'\b(TODO|FIXME|XXX|HACK|BUG)\b', re.IGNORECASE)
-    for i, line in enumerate(lines[:500], 1):  # Check first 500 lines
+    for i, line in enumerate(lines[:500], 1):
         if todo_pattern.search(line):
             match = todo_pattern.search(line)
             errors.append(f"Line {i}: {match.group(0)} found")
-            if len(errors) >= 5:  # Limit errors per file
+            if len(errors) >= 5:
                 errors.append("... and more")
                 break
 
@@ -236,20 +204,9 @@ def analyze_file(filepath: Path, relpath: str) -> CodeNode:
         if re.search(pattern, content, re.IGNORECASE):
             errors.append(f"{name} detected")
 
-    # Determine status
     status = "broken" if errors else "working"
+    return CodeNode(path=relpath, status=status, loc=loc, errors=errors[:10])
 
-    return CodeNode(
-        path=relpath,
-        status=status,
-        loc=loc,
-        errors=errors[:10],  # Limit to 10 errors
-    )
-
-
-# =============================================================================
-# LAYOUT CALCULATION
-# =============================================================================
 
 def calculate_layout(
     nodes: List[CodeNode],
@@ -257,27 +214,10 @@ def calculate_layout(
     height: int,
     padding: int = 60,
 ) -> List[CodeNode]:
-    """
-    Calculate 2D positions for nodes based on directory structure.
-
-    Uses a radial layout where:
-    - Directories are arranged in a grid
-    - Files within a directory are arranged radially
-    - Larger files are positioned further from center
-
-    Args:
-        nodes: List of CodeNodes to position
-        width: Canvas width
-        height: Canvas height
-        padding: Edge padding
-
-    Returns:
-        Same nodes with x, y coordinates set
-    """
+    """Calculate 2D positions for nodes based on directory structure."""
     if not nodes:
         return nodes
 
-    # Group nodes by directory
     dirs: Dict[str, List[CodeNode]] = {}
     for node in nodes:
         dir_path = str(Path(node.path).parent)
@@ -287,64 +227,43 @@ def calculate_layout(
             dirs[dir_path] = []
         dirs[dir_path].append(node)
 
-    # Calculate grid dimensions
     dir_count = len(dirs)
     cols = max(1, int(math.ceil(math.sqrt(dir_count))))
     rows = max(1, int(math.ceil(dir_count / cols)))
 
-    # Usable area
     usable_width = width - padding * 2
     usable_height = height - padding * 2
-
-    # Cell dimensions
     cell_width = usable_width / cols
     cell_height = usable_height / rows
 
-    # Position each directory's files
     for i, (dir_path, dir_nodes) in enumerate(dirs.items()):
-        # Grid position
         col = i % cols
         row = i // cols
-
-        # Center of this cell
         center_x = padding + col * cell_width + cell_width / 2
         center_y = padding + row * cell_height + cell_height / 2
 
-        # Position files radially within cell
         file_count = len(dir_nodes)
         max_radius = min(cell_width, cell_height) / 2 - 20
 
         for j, node in enumerate(dir_nodes):
             if file_count == 1:
-                # Single file - place at center
                 node.x = center_x
                 node.y = center_y
             else:
-                # Multiple files - arrange radially
                 angle = (j / file_count) * 2 * math.pi - math.pi / 2
-
-                # Radius based on file size (larger files further out)
-                size_factor = min(1.0, node.loc / 500)  # Normalize by 500 LOC
+                size_factor = min(1.0, node.loc / 500)
                 radius = 20 + size_factor * (max_radius - 20)
-
-                # Add some jitter for visual interest
                 jitter_x = (hash(node.path) % 21 - 10)
                 jitter_y = (hash(node.path + 'y') % 21 - 10)
-
                 node.x = center_x + math.cos(angle) * radius + jitter_x
                 node.y = center_y + math.sin(angle) * radius + jitter_y
 
-        # Ensure nodes stay within bounds
         for node in dir_nodes:
             node.x = max(padding, min(width - padding, node.x))
             node.y = max(padding, min(height - padding, node.y))
 
     return nodes
 
-
-# =============================================================================
-# GRAPH DATA BUILDER
-# =============================================================================
 
 def build_graph_data(
     root: str,
@@ -353,38 +272,20 @@ def build_graph_data(
     max_height: int = 200,
     wire_count: int = 10,
 ) -> GraphData:
-    """
-    Build complete graph data from a codebase root.
-
-    Args:
-        root: Root directory to scan
-        width: Canvas width
-        height: Canvas height
-        max_height: Max gradient height (cityscape effect)
-        wire_count: Number of wireframe layers
-
-    Returns:
-        GraphData ready for visualization
-    """
-    # Scan codebase
+    """Build complete graph data from a codebase root."""
     nodes = scan_codebase(root)
-
-    # Calculate layout
     nodes = calculate_layout(nodes, width, height)
-
-    # Build config
     config = GraphConfig(
         width=width,
         height=height,
         max_height=max_height,
         wire_count=wire_count,
     )
-
     return GraphData(nodes=nodes, config=config)
 
 
 # =============================================================================
-# IFRAME TEMPLATE
+# ENHANCED IFRAME TEMPLATE - With Emergence Animations
 # =============================================================================
 
 WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
@@ -399,7 +300,35 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             overflow: hidden;
             font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
         }
+
+        /* Canvas with animated border */
+        #canvas-container {
+            position: relative;
+            border: 1px solid #1fbdea;
+            border-radius: 4px;
+            transition: border-color 1.5s ease;
+        }
+        #canvas-container.emerged {
+            border-color: #D4AF37;
+        }
+
         canvas { display: block; cursor: crosshair; }
+
+        /* Phase indicator */
+        #phase {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 9px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #1fbdea;
+            transition: color 1s ease;
+            opacity: 0.7;
+        }
+        #phase.emerged { color: #D4AF37; }
+
+        /* Tooltip */
         #tooltip {
             position: absolute;
             background: #121214;
@@ -416,37 +345,17 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
         #tooltip.visible { opacity: 1; }
-        #tooltip .path {
-            color: #D4AF37;
-            font-weight: 600;
-            word-break: break-all;
-            margin-bottom: 4px;
-        }
-        #tooltip .meta {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 4px;
-        }
-        #tooltip .status {
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
+        #tooltip .path { color: #D4AF37; font-weight: 600; word-break: break-all; margin-bottom: 4px; }
+        #tooltip .meta { display: flex; gap: 12px; margin-bottom: 4px; }
+        #tooltip .status { padding: 2px 6px; border-radius: 3px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
         #tooltip .status.working { background: rgba(212, 175, 55, 0.2); color: #D4AF37; }
         #tooltip .status.broken { background: rgba(31, 189, 234, 0.2); color: #1fbdea; }
         #tooltip .status.combat { background: rgba(157, 78, 221, 0.2); color: #9D4EDD; }
         #tooltip .loc { color: #888; }
-        #tooltip .errors {
-            margin-top: 6px;
-            padding-top: 6px;
-            border-top: 1px solid #333;
-            color: #1fbdea;
-            font-size: 10px;
-            line-height: 1.4;
-        }
+        #tooltip .errors { margin-top: 6px; padding-top: 6px; border-top: 1px solid #333; color: #1fbdea; font-size: 10px; line-height: 1.4; }
         #tooltip .error-item { margin: 2px 0; }
+
+        /* Stats */
         #stats {
             position: absolute;
             bottom: 10px;
@@ -462,37 +371,40 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
     </style>
 </head>
 <body>
-    <canvas id="city"></canvas>
+    <div id="canvas-container">
+        <canvas id="city"></canvas>
+        <div id="phase">tuning...</div>
+    </div>
     <div id="tooltip"></div>
     <div id="stats"></div>
 
     <script>
         // ================================================================
-        // DATA INJECTION
+        // DATA & CONFIG
         // ================================================================
         const GRAPH_DATA = __GRAPH_DATA__;
+        const { nodes, config } = GRAPH_DATA;
+        const { width, height, maxHeight, wireCount, emergenceDuration = 2.0 } = config;
 
-        // ================================================================
-        // CONSTANTS
-        // ================================================================
         const COLORS = {
             void: '#0A0A0B',
             working: '#D4AF37',
             broken: '#1fbdea',
             combat: '#9D4EDD',
-            wireframe: '#2a2a2a'
+            wireframe: '#2a2a2a',
+            teal: '#1fbdea',
+            gold: '#D4AF37'
         };
 
         // ================================================================
         // SETUP
         // ================================================================
+        const container = document.getElementById('canvas-container');
         const canvas = document.getElementById('city');
         const ctx = canvas.getContext('2d');
         const tooltip = document.getElementById('tooltip');
         const stats = document.getElementById('stats');
-
-        const { nodes, config } = GRAPH_DATA;
-        const { width, height, maxHeight, wireCount } = config;
+        const phaseEl = document.getElementById('phase');
 
         canvas.width = width;
         canvas.height = height;
@@ -505,32 +417,82 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             <span class="working">${workingCount} working</span>
             <span class="broken">${brokenCount} broken</span>
             ${combatCount ? `<span class="combat">${combatCount} combat</span>` : ''}
-            <span>${nodes.length} total files</span>
+            <span>${nodes.length} files</span>
         `;
 
         // ================================================================
-        // PARTICLE SYSTEM
+        // EMERGENCE STATE
+        // ================================================================
+        let emergenceProgress = 0;  // 0 to 1
+        let emerged = false;
+        const emergenceStartTime = performance.now();
+        const emergenceDurationMs = emergenceDuration * 1000;
+
+        // Store original positions, start from chaos
+        const nodeStates = nodes.map(n => ({
+            targetX: n.x,
+            targetY: n.y,
+            // Start positions: scattered from center with chaos
+            currentX: width / 2 + (Math.random() - 0.5) * width * 0.8,
+            currentY: height / 2 + (Math.random() - 0.5) * height * 0.8,
+            currentAlpha: 0,
+            targetAlpha: 1,
+            // Emergence timing: stagger based on distance from center
+            delay: Math.sqrt(Math.pow(n.x - width/2, 2) + Math.pow(n.y - height/2, 2)) / (width/2) * 0.3
+        }));
+
+        // ================================================================
+        // ENHANCED PARTICLE SYSTEM - Curl-like Motion
         // ================================================================
         const particles = [];
+        const emergenceParticles = [];  // Special particles during emergence
 
         class Particle {
-            constructor(x, y, color) {
+            constructor(x, y, color, type = 'error') {
                 this.x = x;
                 this.y = y;
-                this.vy = -0.2 - Math.random() * 0.4;
-                this.vx = (Math.random() - 0.5) * 0.15;
-                this.size = 1 + Math.random() * 2;
-                this.alpha = 0.3 + Math.random() * 0.4;
+                this.type = type;
                 this.color = color;
-                this.life = 200 + Math.random() * 150;
+
+                if (type === 'emergence') {
+                    // Emergence particles: swirl toward target
+                    this.vx = (Math.random() - 0.5) * 2;
+                    this.vy = (Math.random() - 0.5) * 2;
+                    this.size = 1 + Math.random() * 1.5;
+                    this.alpha = 0.5 + Math.random() * 0.3;
+                    this.life = 60 + Math.random() * 40;
+                    this.friction = 0.98;
+                } else {
+                    // Error particles: rise like pollution with curl
+                    this.vy = -0.15 - Math.random() * 0.25;
+                    this.vx = (Math.random() - 0.5) * 0.1;
+                    this.size = 1 + Math.random() * 2;
+                    this.alpha = 0.3 + Math.random() * 0.4;
+                    this.life = 200 + Math.random() * 150;
+                    this.curlPhase = Math.random() * Math.PI * 2;
+                    this.curlSpeed = 0.02 + Math.random() * 0.02;
+                    this.curlAmplitude = 0.3 + Math.random() * 0.3;
+                }
             }
 
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                this.life--;
-                this.alpha = Math.max(0, this.alpha - 0.002);
-                this.size = Math.max(0.3, this.size - 0.005);
+            update(time) {
+                if (this.type === 'emergence') {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vx *= this.friction;
+                    this.vy *= this.friction;
+                    this.life--;
+                    this.alpha = Math.max(0, this.alpha - 0.008);
+                } else {
+                    // Curl noise approximation for organic motion
+                    this.curlPhase += this.curlSpeed;
+                    this.vx = Math.sin(this.curlPhase) * this.curlAmplitude;
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.life--;
+                    this.alpha = Math.max(0, this.alpha - 0.002);
+                    this.size = Math.max(0.3, this.size - 0.003);
+                }
             }
 
             draw(ctx) {
@@ -546,25 +508,27 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             }
         }
 
-        function spawnParticles(node) {
+        function spawnEmergenceParticles(x, y, count = 5) {
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle(
+                    x + (Math.random() - 0.5) * 20,
+                    y + (Math.random() - 0.5) * 20,
+                    COLORS.teal,
+                    'emergence'
+                ));
+            }
+        }
+
+        function spawnErrorParticles(node) {
             if (node.status !== 'broken') return;
             const count = Math.min(Math.max(1, node.errors.length), 4);
             for (let i = 0; i < count; i++) {
                 particles.push(new Particle(
                     node.x + (Math.random() - 0.5) * 12,
                     node.y + (Math.random() - 0.5) * 4,
-                    COLORS.broken
+                    COLORS.broken,
+                    'error'
                 ));
-            }
-        }
-
-        function updateParticles() {
-            for (let i = particles.length - 1; i >= 0; i--) {
-                particles[i].update();
-                particles[i].draw(ctx);
-                if (particles[i].isDead()) {
-                    particles.splice(i, 1);
-                }
             }
         }
 
@@ -572,12 +536,9 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
         // DELAUNAY TRIANGULATION
         // ================================================================
         function distance(p0, p1) {
-            const dx = p1.x - p0.x;
-            const dy = p1.y - p0.y;
-            return Math.sqrt(dx * dx + dy * dy);
+            return Math.sqrt(Math.pow(p1.x - p0.x, 2) + Math.pow(p1.y - p0.y, 2));
         }
 
-        // Build triangulation (only if we have enough points)
         let edges = [];
         if (nodes.length >= 3) {
             const points = nodes.map(n => [n.x, n.y]);
@@ -585,19 +546,13 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             const triangles = delaunay.triangles;
 
             for (let i = 0; i < triangles.length; i += 3) {
-                const i0 = triangles[i];
-                const i1 = triangles[i + 1];
-                const i2 = triangles[i + 2];
-
-                const p0 = nodes[i0];
-                const p1 = nodes[i1];
-                const p2 = nodes[i2];
-
+                const [i0, i1, i2] = [triangles[i], triangles[i+1], triangles[i+2]];
+                const [p0, p1, p2] = [nodes[i0], nodes[i1], nodes[i2]];
                 if (p0 && p1 && p2) {
                     edges.push(
-                        { length: distance(p0, p1), p0, p1 },
-                        { length: distance(p1, p2), p0: p1, p1: p2 },
-                        { length: distance(p2, p0), p0: p2, p1: p0 }
+                        { length: distance(p0, p1), i0, i1 },
+                        { length: distance(p1, p2), i0: i1, i1: i2 },
+                        { length: distance(p2, p0), i0: i2, i1: i0 }
                     );
                 }
             }
@@ -606,35 +561,87 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
         // ================================================================
         // RENDERING
         // ================================================================
-        function renderEdges(minLength, color, alpha) {
-            if (edges.length === 0) return;
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
 
-            ctx.globalAlpha = alpha;
+        function easeOutElastic(t) {
+            const c4 = (2 * Math.PI) / 3;
+            return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+        }
+
+        function renderEdges(minLength, color, alpha, useCurrentPositions = false) {
+            if (edges.length === 0) return;
+            ctx.globalAlpha = alpha * emergenceProgress;
             ctx.strokeStyle = color;
             ctx.lineWidth = 0.5;
             ctx.beginPath();
 
             for (const edge of edges) {
                 if (edge.length < minLength) {
-                    ctx.moveTo(edge.p0.x, edge.p0.y);
-                    ctx.lineTo(edge.p1.x, edge.p1.y);
+                    const p0 = useCurrentPositions ? nodeStates[edge.i0] : nodes[edge.i0];
+                    const p1 = useCurrentPositions ? nodeStates[edge.i1] : nodes[edge.i1];
+                    const x0 = useCurrentPositions ? p0.currentX : p0.x;
+                    const y0 = useCurrentPositions ? p0.currentY : p0.y;
+                    const x1 = useCurrentPositions ? p1.currentX : p1.x;
+                    const y1 = useCurrentPositions ? p1.currentY : p1.y;
+                    ctx.moveTo(x0, y0);
+                    ctx.lineTo(x1, y1);
                 }
             }
             ctx.stroke();
         }
 
-        function render() {
-            // Clear to void
+        function render(time) {
+            // Update emergence progress
+            const elapsed = time - emergenceStartTime;
+            emergenceProgress = Math.min(1, elapsed / emergenceDurationMs);
+            const easedProgress = easeOutCubic(emergenceProgress);
+
+            // Update phase indicator
+            if (emergenceProgress >= 1 && !emerged) {
+                emerged = true;
+                container.classList.add('emerged');
+                phaseEl.classList.add('emerged');
+                phaseEl.textContent = 'emerged';
+            } else if (!emerged) {
+                if (emergenceProgress < 0.3) {
+                    phaseEl.textContent = 'tuning...';
+                } else if (emergenceProgress < 0.7) {
+                    phaseEl.textContent = 'coalescing...';
+                } else {
+                    phaseEl.textContent = 'emerging...';
+                }
+            }
+
+            // Update node positions during emergence
+            for (let i = 0; i < nodeStates.length; i++) {
+                const state = nodeStates[i];
+                const adjustedProgress = Math.max(0, Math.min(1, (easedProgress - state.delay) / (1 - state.delay)));
+
+                // Lerp from chaos to target
+                state.currentX = state.currentX + (state.targetX - state.currentX) * adjustedProgress * 0.1;
+                state.currentY = state.currentY + (state.targetY - state.currentY) * adjustedProgress * 0.1;
+                state.currentAlpha = adjustedProgress;
+
+                // Spawn emergence particles during coalescing
+                if (!emerged && adjustedProgress > 0.1 && adjustedProgress < 0.9 && Math.random() < 0.02) {
+                    spawnEmergenceParticles(state.currentX, state.currentY, 2);
+                }
+            }
+
+            // Clear
             ctx.fillStyle = COLORS.void;
             ctx.fillRect(0, 0, width, height);
 
-            // Draw gradient layers (the cityscape magic)
+            // Draw gradient layers (cityscape) - use current positions during emergence
             if (edges.length > 0) {
                 ctx.save();
+                const frameColor = emerged ? COLORS.gold : COLORS.teal;
                 for (let i = 0; i < maxHeight; i++) {
                     ctx.translate(0, 0.4);
                     const alpha = (1 - i / maxHeight) * 0.03;
-                    renderEdges(i * 0.6, COLORS.working, alpha);
+                    renderEdges(i * 0.6, frameColor, alpha, !emerged);
                 }
                 ctx.restore();
 
@@ -643,57 +650,66 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
                     const t = i / wireCount;
                     ctx.save();
                     ctx.translate(0, maxHeight * (1 - t) * 0.25);
-                    renderEdges(i * 18, COLORS.working, 0.02 + 0.08 * t);
+                    renderEdges(i * 18, emerged ? COLORS.gold : COLORS.teal, 0.02 + 0.08 * t, !emerged);
                     ctx.restore();
                 }
             }
 
             // Draw nodes
-            ctx.globalAlpha = 1;
-            for (const node of nodes) {
+            for (let i = 0; i < nodes.length; i++) {
+                const node = nodes[i];
+                const state = nodeStates[i];
                 const color = COLORS[node.status];
                 const baseRadius = 2 + Math.min(node.loc / 80, 6);
+                const x = emerged ? node.x : state.currentX;
+                const y = emerged ? node.y : state.currentY;
+                const alpha = state.currentAlpha;
 
                 // Outer glow for non-working
-                if (node.status === 'broken' || node.status === 'combat') {
+                if ((node.status === 'broken' || node.status === 'combat') && alpha > 0.5) {
                     ctx.save();
-                    ctx.globalAlpha = 0.25;
+                    ctx.globalAlpha = 0.25 * alpha;
                     ctx.shadowColor = color;
                     ctx.shadowBlur = 15;
                     ctx.fillStyle = color;
                     ctx.beginPath();
-                    ctx.arc(node.x, node.y, baseRadius * 1.8, 0, Math.PI * 2);
+                    ctx.arc(x, y, baseRadius * 1.8, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.restore();
                 }
 
                 // Core dot
-                ctx.globalAlpha = 0.85;
+                ctx.globalAlpha = 0.85 * alpha;
                 ctx.fillStyle = color;
                 ctx.beginPath();
-                ctx.arc(node.x, node.y, baseRadius, 0, Math.PI * 2);
+                ctx.arc(x, y, baseRadius, 0, Math.PI * 2);
                 ctx.fill();
 
                 // Inner highlight
-                ctx.globalAlpha = 0.4;
-                ctx.fillStyle = '#fff';
-                ctx.beginPath();
-                ctx.arc(
-                    node.x - baseRadius * 0.25,
-                    node.y - baseRadius * 0.25,
-                    baseRadius * 0.25,
-                    0, Math.PI * 2
-                );
-                ctx.fill();
+                if (alpha > 0.7) {
+                    ctx.globalAlpha = 0.4 * alpha;
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.arc(x - baseRadius * 0.25, y - baseRadius * 0.25, baseRadius * 0.25, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             }
 
-            // Particles
-            updateParticles();
+            // Update and draw particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update(time);
+                particles[i].draw(ctx);
+                if (particles[i].isDead()) {
+                    particles.splice(i, 1);
+                }
+            }
 
-            // Spawn new particles (randomly for broken nodes)
-            for (const node of nodes) {
-                if (node.status === 'broken' && Math.random() < 0.03) {
-                    spawnParticles(node);
+            // Spawn error particles (only after emerged)
+            if (emerged) {
+                for (const node of nodes) {
+                    if (node.status === 'broken' && Math.random() < 0.025) {
+                        spawnErrorParticles(node);
+                    }
                 }
             }
 
@@ -704,10 +720,12 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
         // INTERACTION
         // ================================================================
         function findNodeAt(x, y) {
-            for (const node of nodes) {
-                const dx = node.x - x;
-                const dy = node.y - y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+            for (let i = 0; i < nodes.length; i++) {
+                const node = nodes[i];
+                const state = nodeStates[i];
+                const nx = emerged ? node.x : state.currentX;
+                const ny = emerged ? node.y : state.currentY;
+                const dist = Math.sqrt(Math.pow(nx - x, 2) + Math.pow(ny - y, 2));
                 const radius = 2 + Math.min(node.loc / 80, 6);
                 if (dist < radius + 8) {
                     return node;
@@ -720,7 +738,6 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-
             const node = findNodeAt(x, y);
 
             if (node) {
@@ -737,12 +754,8 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
                     ${errorsHtml}
                 `;
 
-                // Position tooltip
                 let tx = e.clientX + 15;
                 let ty = e.clientY + 15;
-
-                // Keep on screen
-                const tooltipRect = tooltip.getBoundingClientRect();
                 if (tx + 320 > window.innerWidth) tx = e.clientX - 325;
                 if (ty + 200 > window.innerHeight) ty = e.clientY - 100;
 
@@ -760,21 +773,13 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-
             const node = findNodeAt(x, y);
 
             if (node) {
-                // Send message to parent window (Marimo)
                 window.parent.postMessage({
                     type: 'WOVEN_MAPS_NODE_CLICK',
-                    node: {
-                        path: node.path,
-                        status: node.status,
-                        loc: node.loc,
-                        errors: node.errors
-                    }
+                    node: { path: node.path, status: node.status, loc: node.loc, errors: node.errors }
                 }, '*');
-
                 console.log('Node clicked:', node.path);
             }
         });
@@ -786,8 +791,8 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
         // ================================================================
         // START
         // ================================================================
-        render();
-        console.log('Woven Maps initialized:', nodes.length, 'nodes');
+        requestAnimationFrame(render);
+        console.log('Woven Maps Enhanced initialized:', nodes.length, 'nodes');
     </script>
 </body>
 </html>'''
@@ -804,72 +809,28 @@ def create_code_city(
     max_height: int = 200,
     wire_count: int = 10,
 ) -> Any:
-    """
-    Create a Woven Maps Code City visualization for Marimo.
-
-    Args:
-        root: Root directory of the codebase to visualize
-        width: Canvas width in pixels
-        height: Canvas height in pixels
-        max_height: Maximum gradient height (affects cityscape depth)
-        wire_count: Number of wireframe overlay layers
-
-    Returns:
-        mo.Html element containing the visualization iframe
-
-    Example:
-        >>> import marimo as mo
-        >>> from IP.woven_maps import create_code_city
-        >>>
-        >>> @app.cell
-        >>> def city_view():
-        >>>     return create_code_city("/path/to/project", width=900, height=600)
-    """
+    """Create a Woven Maps Code City visualization for Marimo."""
     try:
         import marimo as mo
     except ImportError:
         raise ImportError("marimo is required. Install with: pip install marimo")
 
-    # Validate root
     if not root or not os.path.isdir(root):
-        return mo.md(f"""
-        **Set a valid project root to visualize the codebase.**
+        return mo.md(f"**Set a valid project root to visualize the codebase.**\n\nCurrent: `{root or 'None'}`")
 
-        Current value: `{root or 'None'}`
-        """)
-
-    # Build graph data
     graph_data = build_graph_data(root, width, height, max_height, wire_count)
 
     if not graph_data.nodes:
-        return mo.md(f"""
-        **No code files found in project.**
+        return mo.md(f"**No code files found in project.**\n\nScanned: `{root}`")
 
-        Scanned: `{root}`
-
-        Supported extensions: {', '.join(sorted(CODE_EXTENSIONS))}
-        """)
-
-    # Inject data into template
-    iframe_html = WOVEN_MAPS_TEMPLATE.replace(
-        '__GRAPH_DATA__',
-        graph_data.to_json()
-    )
-
-    # Escape for srcdoc attribute
+    iframe_html = WOVEN_MAPS_TEMPLATE.replace('__GRAPH_DATA__', graph_data.to_json())
     escaped = html.escape(iframe_html)
-
-    # Stats for header
-    working = sum(1 for n in graph_data.nodes if n.status == 'working')
-    broken = sum(1 for n in graph_data.nodes if n.status == 'broken')
-    combat = sum(1 for n in graph_data.nodes if n.status == 'combat')
 
     return mo.Html(f'''
         <div style="
             background: #0A0A0B;
             border-radius: 8px;
             overflow: hidden;
-            border: 1px solid rgba(212, 175, 55, 0.15);
         ">
             <iframe
                 srcdoc="{escaped}"
@@ -882,65 +843,17 @@ def create_code_city(
     ''')
 
 
-def create_code_city_with_controls(STATE_MANAGERS: dict) -> Any:
-    """
-    Create Code City with Marimo UI controls.
-
-    Integrates with STATE_MANAGERS pattern for plugin compatibility.
-
-    Args:
-        STATE_MANAGERS: Dict of (getter, setter) tuples
-
-    Returns:
-        mo.vstack with controls and visualization
-    """
-    try:
-        import marimo as mo
-    except ImportError:
-        raise ImportError("marimo required")
-
-    get_root, set_root = STATE_MANAGERS.get("root", (lambda: None, lambda x: None))
-    root = get_root()
-
-    # Controls
-    width_slider = mo.ui.slider(400, 1200, value=800, step=50, label="Width")
-    height_slider = mo.ui.slider(300, 800, value=600, step=50, label="Height")
-    refresh_btn = mo.ui.button(label="Refresh", on_change=lambda _: None)
-
-    controls = mo.hstack([
-        width_slider,
-        height_slider,
-        refresh_btn,
-    ], gap="1rem")
-
-    # Visualization
-    city = create_code_city(
-        root,
-        width=width_slider.value,
-        height=height_slider.value,
-    )
-
-    return mo.vstack([controls, city], gap="1rem")
-
-
 # =============================================================================
-# CLI FOR TESTING
+# CLI
 # =============================================================================
 
 if __name__ == "__main__":
     import sys
-
     if len(sys.argv) < 2:
         print("Usage: python woven_maps.py <directory>")
-        print("\nGenerates graph data JSON for the given directory.")
         sys.exit(1)
 
-    root = sys.argv[1]
-    data = build_graph_data(root)
-
+    data = build_graph_data(sys.argv[1])
     print(f"Scanned {len(data.nodes)} files")
     print(f"Working: {sum(1 for n in data.nodes if n.status == 'working')}")
     print(f"Broken: {sum(1 for n in data.nodes if n.status == 'broken')}")
-    print()
-    print("JSON output:")
-    print(data.to_json())
