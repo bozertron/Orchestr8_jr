@@ -15,12 +15,18 @@ Design Principles (from MaestroView.vue):
 - The Input Bar: Docked at bottom. It NEVER moves.
 
 Colors (EXACT - NO EXCEPTIONS):
---blue-dominant: #1fbdea (UI default)
---gold-metallic: #D4AF37 (UI highlight)
+--blue-dominant: #1fbdea (UI default, Broken state)
+--gold-metallic: #D4AF37 (UI highlight, Working state)
 --gold-dark: #B8860B (Maestro default)
 --gold-saffron: #F4C430 (Maestro highlight)
 --bg-primary: #0A0A0B (The Void)
 --bg-elevated: #121214 (Surface)
+--purple-combat: #9D4EDD (Combat state - General deployed)
+
+Three-State System:
+- Gold (#D4AF37): Working - All imports resolve, typecheck passes
+- Blue (#1fbdea): Broken - Has errors, needs attention
+- Purple (#9D4EDD): Combat - General currently deployed and active
 
 Reference: UI Reference/MaestroView.vue
 """
@@ -47,6 +53,7 @@ GOLD_DARK = "#B8860B"
 GOLD_SAFFRON = "#F4C430"
 BG_PRIMARY = "#0A0A0B"
 BG_ELEVATED = "#121214"
+PURPLE_COMBAT = "#9D4EDD"  # Combat state - General deployed and active
 
 # ============================================================================
 # CSS STYLES - Injected for void aesthetics
@@ -537,7 +544,7 @@ def render(STATE_MANAGERS: dict) -> Any:
             [
                 mo.ui.button(label="Search", on_change=lambda _: handle_summon()),
                 mo.ui.button(
-                    label="Terminal",
+                    label="Phreak>",  # Opens actu8 terminal
                     on_change=lambda _: set_show_terminal(not get_show_terminal()),
                 ),
                 mo.ui.button(label="Send", on_change=lambda _: handle_send()),
