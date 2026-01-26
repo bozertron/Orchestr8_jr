@@ -541,16 +541,32 @@ export class CodeAnalyzer {
 
 ## PART 3: 3D ASSET SOURCES
 
-### 3.1 FREE Low-Poly Building Assets
+### 3.1 FREE Low-Poly Building Assets (CC0 - No Attribution Required)
 
-**Download and convert to glTF for Three.js:**
+**KENNEY ASSETS (Gold Standard - CC0 License, glTF format):**
+
+| Pack | URL | Files | Notes |
+|------|-----|-------|-------|
+| **City Kit (Commercial)** | https://kenney.nl/assets/city-kit-commercial | 50 | Skyscrapers, large buildings |
+| **City Kit (Suburban)** | https://kenney.nl/assets/city-kit-suburban | 40 | Houses, small buildings |
+| **City Kit (Industrial)** | https://kenney.nl/assets/city-kit-industrial | 25 | Factories, warehouses |
+| **All-in-1 Bundle** | https://kenney.nl/assets | 1000+ | Everything Kenney makes |
+
+**QUATERNIUS (CC0 License):**
+
+| Pack | URL | Notes |
+|------|-----|-------|
+| Ultimate Buildings | https://quaternius.com/packs/ultimatetexturedbuildings.html | Modular, textured |
+| Simple Buildings | https://quaternius.com/packs/simplebuildings.html | 10 basic models |
+| Sci-Fi Megakit | https://quaternius.com/packs/modularscifimegakit.html | 270+ pieces, glTF |
+
+**Other Sources:**
 
 | Source | URL | License | Notes |
 |--------|-----|---------|-------|
-| Poly Pizza | https://poly.pizza/explore/Buildings | CC0/CC-BY | Best free collection |
-| Sketchfab | https://sketchfab.com/3d-models/low-poly-city-buildings-e0209ac5bb684d2d85e5ade96c92d2ff | CC-BY | 7.2k triangles, 4k vertices |
-| Free3D | https://free3d.com/3d-models/lowpoly-building | Mixed | 131 models |
-| CGTrader | https://www.cgtrader.com/low-poly-3d-models/city | Mixed | Filter by Free |
+| Poly Pizza | https://poly.pizza/explore/Buildings | CC0/CC-BY | Aggregates Kenney/Quaternius |
+| Sketchfab | https://sketchfab.com/3d-models/low-poly-city-buildings-e0209ac5bb684d2d85e5ade96c92d2ff | CC-BY | 7.2k triangles |
+| OpenGameArt | https://opengameart.org/content/city-kit-suburban | CC0 | Mirror of Kenney |
 
 ### 3.2 Model Requirements
 
@@ -564,24 +580,51 @@ export class CodeAnalyzer {
   - Skyscraper (10+ stories) → Entry points/main files
   - Warehouse → Data files/configs
 
-### 3.3 Existing Open Source Code City Projects
+### 3.3 OPEN SOURCE CODE CITY IMPLEMENTATIONS (Copy Their Code!)
 
-**Reference implementations:**
+**JSCity (1.4k+ stars) - THE REFERENCE IMPLEMENTATION:**
+- **URL:** https://github.com/aserg-ufmg/JSCity
+- **Stack:** Node.js + MySQL + Three.js
+- **How it works:** 
+  - Files are sub-districts, functions are buildings
+  - LOC = building height, Variables = base size
+  - Blue = named functions, Green = anonymous
+- **Why use:** Mature, well-documented, Three.js rendering code
 
-1. **software-city-project** (Three.js)
-   - https://github.com/jonaslanzlinger/software-city-project
-   - Docker-based, Three.js rendering
-   - Can extract their Three.js visualization logic
+**CoderCity (Code Ownership Visualization):**
+- **URL:** https://github.com/INSO-World/CoderCity
+- **Stack:** Angular + NestJS + Three.js + Nodegit
+- **How it works:**
+  - Uses git blame for ownership colors
+  - Each hunk = building segment colored by author
+  - Docker-compose ready
+- **Why use:** Modern stack, ownership visualization
 
-2. **CodeCity** (Original academic project)
-   - https://wettel.github.io/codecity.html
-   - Smalltalk/OpenGL (concepts transferable)
-   - Research papers on visualization effectiveness
+**City Blocks (Git Repo 3D):**
+- **URL:** https://github.com/cjayawickrema/city-blocks
+- **Stack:** Node.js + Three.js
+- **How it works:**
+  - Visualizes file sizes and commit churn
+  - Shell script + Node server + WebGL
+- **Why use:** Simple, focused on git metrics
 
-3. **NYC 3D Model** (TUM)
-   - https://www.asg.ed.tum.de/gis/projekte/new-york-city-3d/
-   - CityGML, KML, COLLADA, glTF formats
-   - Real city data for reference
+**Code Is Beautiful (Collection):**
+- **URL:** https://quantifiedcode.github.io/code-is-beautiful/
+- **Includes:** Multiple visualizations including Code City
+- **Live demo:** https://quantifiedcode.github.io/code-city/index.html
+
+### 3.4 VS Code Customization References
+
+**vscode-custom-ui-style (Inject CSS/JS into VS Code):**
+- **URL:** https://github.com/subframe7536/vscode-custom-ui-style
+- **Marketplace:** https://marketplace.visualstudio.com/items?itemName=subframe7536.custom-ui-style
+- **Features:** Modify CSS/JS, set background images, Electron BrowserWindow options
+- **Why relevant:** Shows how to inject custom rendering into VS Code
+
+**VS Code Extension Samples (Microsoft official):**
+- **Webview Sample:** https://github.com/microsoft/vscode-extension-samples/tree/main/webview-sample
+- **Custom Editor:** https://github.com/microsoft/vscode-extension-samples/tree/main/custom-editor-sample
+- **Webview UI Toolkit:** https://github.com/microsoft/vscode-webview-ui-toolkit
 
 ---
 
