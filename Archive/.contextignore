@@ -1,0 +1,6 @@
+# Archive Directory - Context Ignore
+# Exclude archived documents from AI context loading
+# These files have been processed and their content consolidated elsewhere
+
+*.json
+*.md

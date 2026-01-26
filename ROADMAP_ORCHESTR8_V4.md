@@ -105,6 +105,7 @@ Context loaded → Almost ready to execute → Context poisoned/compacted → Un
 **The Emperor MUST see the subagent choreography.**
 
 This was tested and failed when hidden. The Emperor needs to know:
+
 - Which scouts are analyzing what
 - Which fixers are modifying which files
 - Which validators are running which tests
@@ -280,6 +281,7 @@ graph LR
 ### 4.3 Why Purple Matters
 
 Without the COMBAT state, the Emperor might:
+
 - Deploy a second general to the same fiefdom (friendly fire)
 - Not know if a general is still working or has abandoned
 - Lose track of active operations
@@ -306,6 +308,7 @@ Without the COMBAT state, the Emperor might:
 ### 5.1 What is a Fiefdom?
 
 A fiefdom is a **directory scope** assigned to a general. It can be:
+
 - A top-level directory: `src/llm/`
 - A subdirectory: `src/modules/generator/`
 - A specific feature area: `src/platform/auth/`
@@ -361,18 +364,22 @@ npm run typecheck
 ```
 
 ## Integration Points
+
 - **Imports from:** [list of dependencies]
 - **Exports to:** [list of consumers]
 - **Patterns to follow:** [architectural patterns]
 
 ## Known Gotchas
+
 - [Historical lessons from CAMPAIGN_LOG.md]
 
 ## When You're Done
+
 1. Run health check
 2. Update CAMPAIGN_LOG.md with your actions
 3. If VICTORY: Report success, specify what changed
 4. If BLOCKED: Report what's blocking, suggest escalation
+
 ```
 
 ---
@@ -407,11 +414,13 @@ Type errors preventing build:
 
 ## Error Output (Raw)
 ```
+
 src/modules/generator/GeneratorView.vue:142:15 - error TS2322:
 Type 'string' is not assignable to type 'number'.
 
 142     const phase: number = currentPhase.toString();
                     ~~~~~
+
 ```
 
 ## Context (Carl's Analysis)
@@ -570,6 +579,7 @@ Fix type errors in generator module to restore build health.
 ## ❌ Current Errors
 
 ```
+
 src/modules/generator/GeneratorView.vue:142:15 - error TS2322:
 Type 'string' is not assignable to type 'number'.
 
@@ -581,6 +591,7 @@ Cannot find name 'BuildSpec'.
 
 28   const spec: BuildSpec = reactive({});
               ~~~~~~~~~
+
 ```
 
 ## 🔍 Carl's Reconnaissance
@@ -640,6 +651,7 @@ npm run typecheck
 ---
 
 **BEGIN MISSION**
+
 ```
 
 ### 7.3 Briefing Content Requirements
@@ -666,6 +678,7 @@ npm run typecheck
 ### 8.2 How Wisdom Accumulates
 
 ```
+
 General A deployed → Fixes bug → Writes to CAMPAIGN_LOG.md → Departs
          │
          ▼
@@ -676,6 +689,7 @@ General B deployed → Reads CAMPAIGN_LOG.md → Has predecessor's knowledge
          │
          ▼
 General B encounters similar issue → Already knows the gotcha → Fixes faster
+
 ```
 
 ### 8.3 CAMPAIGN_LOG.md Format
@@ -744,6 +758,7 @@ Add scaffold templates for new module types.
 ### 8.4 Wisdom Injection
 
 When generating BRIEFING.md, automatically include:
+
 1. Last 3-5 campaign entries
 2. All lessons learned (⚠️ items)
 3. Active watch list items
@@ -874,6 +889,7 @@ class ChangeHandler(FileSystemEventHandler):
 **When ready to integrate ChangeChecker components:**
 
 Prompt Ben to move the following files from stereOS to Orchestr8:
+
 - `unified-context-system.ts` → Translate to Python or call via subprocess
 - `verification.rs` → Keep in Rust, call via subprocess
 - `ParserPack/*.rs` → Keep in Rust, call via subprocess
@@ -888,6 +904,7 @@ Prompt Ben to move the following files from stereOS to Orchestr8:
 **Location:** `IP/carl_core.py`
 
 **Responsibilities:**
+
 - Scan fiefdoms and build file inventory
 - Run health checks (typecheck, tests)
 - Generate Mermaid status graph
@@ -933,6 +950,7 @@ class Carl:
 **Location:** `IP/connie.py`
 
 **Responsibilities:**
+
 - Convert SQLite databases to LLM-friendly formats
 - Export schemas as JSON, Markdown, or CSV
 - Make opaque data structures readable
@@ -940,6 +958,7 @@ class Carl:
 **Status:** ✅ Already working
 
 **Usage:**
+
 ```python
 from IP.connie import ConnieConverter
 
@@ -953,6 +972,7 @@ connie.export_to_json("output/schema.json")
 **Location:** `IP/louis_core.py`
 
 **Responsibilities:**
+
 - Lock files at OS level (chmod 444)
 - Maintain lock registry
 - Integrate with git pre-commit hook
@@ -1337,7 +1357,9 @@ def generate_briefing(fiefdom_path: str, ticket: dict) -> str:
 ## ❌ Current Errors
 
 ```
+
 {chr(10).join(ticket['errors'])}
+
 ```
 
 ## 🔍 Carl's Reconnaissance
@@ -1402,6 +1424,7 @@ npm run typecheck
 """
 
     return briefing
+
 ```
 
 ---
@@ -1428,29 +1451,37 @@ When you are deployed to a fiefdom:
 
 **Scout:** Deploy for read-only analysis
 ```
+
 Use Task tool with subagent_type=Explore
 "Analyze the import structure in this fiefdom"
 "Find all files that reference BuildSpec"
+
 ```
 
 **Fixer:** Deploy for surgical changes
 ```
+
 Use Edit tool directly, or Task for complex multi-file changes
 "Fix the import path in useGenerator.ts"
 "Update type annotation in GeneratorView.vue"
+
 ```
 
 **Validator:** Deploy to verify fixes
 ```
+
 Use Bash tool
 "npm run typecheck"
 "npm run test -- --filter=generator"
+
 ```
 
 **Git Agent:** Deploy for commits
 ```
+
 Use Bash tool for git operations
 "git add . && git commit -m 'fix: correct BuildSpec import paths'"
+
 ```
 
 ### 14.3 Reporting Format
@@ -1458,30 +1489,38 @@ Use Bash tool for git operations
 When mission complete, report in this format:
 
 ```
+
 ## MISSION REPORT: TICKET-042
 
 **Status:** VICTORY | PARTIAL | BLOCKED
 **Duration:** [time spent]
 
 ### Actions Taken
+
 1. [What you did]
 2. [What you did]
 
 ### Files Modified
+
 - `file1.ts` - [what changed]
 - `file2.ts` - [what changed]
 
 ### Health Check Result
+
 [Pass/Fail with details]
 
 ### Lessons Learned
+
 - ⚠️ [Gotcha for future generals]
 
 ### Watch List
+
 - [Things that might break due to these changes]
 
 ### Escalations (if any)
+
 - [Issues requiring Emperor attention]
+
 ```
 
 ### 14.4 When to Escalate
