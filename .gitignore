@@ -11,6 +11,7 @@ node_modules/
 
 # Environment variables
 .env
+.env.*
 
 # Editor directories and files
 .idea
@@ -23,3 +24,47 @@ node_modules/
 
 # OS specific
 .DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# Marimo
+.marimo/
+
+# TypeScript build
+frontend/tools/dist/
+*.tsbuildinfo
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/

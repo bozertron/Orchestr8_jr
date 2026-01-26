@@ -1,0 +1,13 @@
+{
+  "protected_paths": [
+    "src/core/",
+    "config/"
+  ],
+  "protected_folders": [],
+  "ignore_patterns": [
+    "node_modules",
+    ".git",
+    "__pycache__",
+    "dist"
+  ]
+}

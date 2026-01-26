@@ -1,0 +1,379 @@
+// src/commands/overview.ts
+import path from 'path';
+import fs from 'fs-extra';
+import fg from 'fast-glob'; // Using fast-glob for efficiency
+
+// --- Constants ---
+const SCAN_DIRS = ['src', 'src-tauri'];
+const IGNORE_PATTERNS = [
+    '**/node_modules/**', '**/target/**', '**/.git/**', '**/dist/**', '**/Scaffolding/**',
+    '**/.DS_Store', '**/typings/**', '**/*.log', // Common ignores
+    // Add specific Maestro build artifacts if needed, e.g., '**/gen/**' if it's purely generated
+];
+const KEY_CONFIG_FILES = ['package.json', 'vite.config.ts', 'tauri.conf.json', 'tsconfig.json'];
+const ENTRY_POINTS = ['src/main.ts', 'src-tauri/src/main.rs'];
+const CORE_DEPS = ['vue', 'pinia', 'vue-router', 'naive-ui', '@tauri-apps/api', 'fs-extra']; // Frontend focus
+const RUST_CORE_DEPS = ['tauri ', 'tokio ', 'serde ', 'rusqlite ']; // Note space for Cargo.toml format
+
+// --- Helper Functions ---
+
+/**
+ * Uses fast-glob to get a sorted list of project files, applying ignores.
+ * @param projectRoot - Absolute path to the project root.
+ * @returns Promise resolving to a sorted array of relative file paths (POSIX).
+ */
+async function getAllProjectFiles(projectRoot: string): Promise<string[]> {
+    console.log(`DEBUG [overview]: Scanning directories: ${SCAN_DIRS.join(', ')} in ${projectRoot}`);
+    const patterns = SCAN_DIRS.map(dir => `${dir}/**/*`); // Create glob patterns for scan dirs
+    try {
+        const files = await fg(patterns, {
+            cwd: projectRoot, // Use the provided projectRoot
+            ignore: IGNORE_PATTERNS,
+            onlyFiles: true,
+            dot: false, // Exclude dotfiles unless explicitly included (like .gitignore if needed)
+            absolute: false, // Get paths relative to cwd
+        });
+        console.log(`DEBUG [overview]: Found ${files.length} files after filtering.`);
+        return files.sort(); // Sort for consistent ordering
+    } catch (err) {
+        console.error(`ERROR [overview]: Failed to scan project files using fast-glob:`, err);
+        return []; // Return empty list on error
+    }
+}
+
+/**
+ * Generates the numbered file index string from a list of files.
+ * @param fileList - Sorted array of relative file paths.
+ * @returns The formatted index string.
+ */
+function generateIndexString(fileList: string[]): string {
+    let fileIndexString = "=== Numbered File Index ===\n";
+    if (fileList.length === 0) {
+        fileIndexString += "(No files found matching scan criteria)\n";
+    } else {
+        fileList.forEach((file, index) => {
+            fileIndexString += `${index + 1}: ${file}\n`;
+        });
+    }
+    fileIndexString += "===========================\n\n";
+    return fileIndexString;
+}
+
+/**
+ * Generates summary of key configuration files.
+ * Reads snippets or key values.
+ * @param projectRoot - Absolute path to the project root.
+ * @param fileList - Sorted array of relative file paths.
+ * @returns Formatted config summary string.
+ */
+async function generateConfigSummary(projectRoot: string, fileList: string[]): Promise<string> {
+    let summary = "=== Key Config Files ===\n";
+    for (const cfgFile of KEY_CONFIG_FILES) {
+        // Construct path relative to the provided projectRoot
+        const filePath = path.join(projectRoot, cfgFile); 
+        summary += `- ${cfgFile}: `;
+        try {
+            // Special case for tauri.conf.json which is in the src-tauri directory relative to projectRoot
+            const actualFilePath = cfgFile === 'tauri.conf.json'
+                ? path.join(projectRoot, 'src-tauri', cfgFile)
+                : filePath;
+
+            if (await fs.pathExists(actualFilePath)) {
+            // Extract specific info based on file type
+            if (cfgFile === 'package.json') {
+                const pkg = await fs.readJson(actualFilePath);
+                summary += `(Name: ${pkg.name}, Version: ${pkg.version})\n`;
+            } else if (cfgFile === 'tauri.conf.json') {
+                 const tauriConf = await fs.readJson(actualFilePath);
+                     summary += `(ID: ${tauriConf?.tauri?.bundle?.identifier || 'N/A'}, Version: ${tauriConf?.package?.version || 'N/A'})\n`;
+                } else {
+                     summary += `(Found - Details TBD)\n`; // Placeholder for vite/tsconfig
+                }
+            } else {
+                summary += `(Not Found)\n`;
+            }
+        } catch (err: any) {
+            summary += `(Error reading: ${err.message})\n`;
+        }
+    }
+    summary += "========================\n\n";
+    return summary;
+}
+
+/**
+ * Checks for the existence of defined entry points.
+ * @param projectRoot - Absolute path to the project root.
+ * @param fileList - Sorted array of relative file paths.
+ * @returns Formatted entry point summary string.
+ */
+async function generateEntryPointSummary(projectRoot: string, fileList: string[]): Promise<string> {
+    let summary = "=== Entry Points ===\n";
+    for (const ep of ENTRY_POINTS) {
+        // Construct path relative to the provided projectRoot
+        const filePath = path.join(projectRoot, ep); 
+        summary += `- ${ep}: `;
+        try {
+            // Check existence using fs-extra for reliability
+            if (await fs.pathExists(filePath)) {
+                summary += `(Found)\n`;
+            } else {
+                summary += `(Not Found)\n`;
+            }
+        } catch (err: any) {
+             summary += `(Error checking: ${err.message})\n`;
+        }
+    }
+    summary += "====================\n\n";
+    return summary;
+}
+
+/**
+ * Lists core dependencies from package.json and potentially Cargo.toml.
+ * @param projectRoot - Absolute path to the project root.
+ * @returns Formatted dependency summary string.
+ */
+async function generateDependencySummary(projectRoot: string): Promise<string> {
+    let summary = "=== Core Dependencies ===\n";
+    // --- Frontend Deps ---
+    summary += "--- Frontend (package.json) ---\n";
+    // Construct path relative to the provided projectRoot
+    const pkgJsonPath = path.join(projectRoot, 'package.json'); 
+    try {
+        if (await fs.pathExists(pkgJsonPath)) {
+            const pkgJson = await fs.readJson(pkgJsonPath);
+            const deps = { ...pkgJson.dependencies, ...pkgJson.devDependencies };
+            let foundCount = 0;
+            CORE_DEPS.forEach(dep => {
+                if (deps[dep]) {
+                    summary += `- ${dep}: ${deps[dep]}\n`;
+                    foundCount++;
+                }
+            });
+            if (foundCount === 0) summary += "(No core frontend dependencies found)\n";
+        } else {
+            summary += "(package.json not found)\n";
+        }
+    } catch (err: any) {
+        summary += `(Error reading package.json: ${err.message})\n`;
+    }
+
+    // --- Backend Deps (Basic Scan) ---
+    summary += "\n--- Backend (Cargo.toml - Basic Scan) ---\n";
+    // Construct path relative to the provided projectRoot
+    const cargoTomlPath = path.join(projectRoot, 'src-tauri/Cargo.toml'); 
+    try {
+        if (await fs.pathExists(cargoTomlPath)) {
+            const cargoContent = await fs.readFile(cargoTomlPath, 'utf-8');
+            let foundCount = 0;
+            RUST_CORE_DEPS.forEach(depPrefix => {
+                 // Simple line check - could be improved with TOML parser
+                 const regex = new RegExp(`^${depPrefix.trim()}\\s*=`, 'm');
+                 if (cargoContent.includes(depPrefix) || regex.test(cargoContent)) { // Basic check
+                      summary += `- ${depPrefix.trim()}\n`;
+                      foundCount++;
+                 }
+            });
+             if (foundCount === 0) summary += "(No core backend dependencies found via basic scan)\n";
+        } else {
+            summary += "(src-tauri/Cargo.toml not found)\n";
+        }
+    } catch (err: any) {
+        summary += `(Error reading Cargo.toml: ${err.message})\n`;
+    }
+
+    summary += "=========================\n\n";
+    return summary;
+}
+
+/**
+ * Provides a simple listing of top-level directories within scan roots.
+ * @param projectRoot - Absolute path to the project root.
+ * @param fileList - The current list of files to append to
+ * @returns Formatted directory summary string.
+ */
+async function generateDirectorySummary(projectRoot: string, fileList: string[]): Promise<string> {
+    let summary = "=== Top-Level Directory Summary ===\n";
+
+    // First, let's get all top-level entries from the provided projectRoot
+    try {
+        const topLevelEntries = await fs.readdir(projectRoot, { withFileTypes: true });
+
+        // Process directories first
+        const directories = topLevelEntries
+            .filter(entry => entry.isDirectory())
+            .sort((a, b) => a.name.localeCompare(b.name));
+            
+        // Process files second
+        const files = topLevelEntries
+            .filter(entry => entry.isFile())
+            .sort((a, b) => a.name.localeCompare(b.name));
+        
+        // List all top-level directories
+        for (const dir of directories) {
+            // Basic check against ignore patterns at top level
+            if (!IGNORE_PATTERNS.some(pattern => pattern.includes(dir.name))) {
+                summary += `- ${dir.name}/\n`;
+                
+                // Add subdirectories for important dirs (src, src-tauri) relative to projectRoot
+                if (SCAN_DIRS.includes(dir.name)) {
+                    const fullDirPath = path.join(projectRoot, dir.name); 
+                    try {
+                        const subEntries = await fs.readdir(fullDirPath, { withFileTypes: true });
+                        const subDirs = subEntries
+                            .filter(entry => entry.isDirectory())
+                            .sort((a, b) => a.name.localeCompare(b.name));
+                            
+                        subDirs.forEach(subDir => {
+                            if (!IGNORE_PATTERNS.some(pattern => pattern.includes(subDir.name))) {
+                                summary += `  - ${subDir.name}/\n`;
+                            }
+                        });
+                    } catch (err: any) {
+                        summary += `  (Error reading subdirectories: ${err.message})\n`;
+                    }
+                }
+            }
+        }
+        
+        // List all top-level files with numbering
+        if (files.length > 0) {
+            summary += "\n- Top-level files:\n";
+            let fileIndex = fileList.length + 1; // Start file numbering after the last file in fileList
+            const topLevelFiles: string[] = [];
+            
+            files.forEach(file => {
+                // Skip ignored files
+                if (!IGNORE_PATTERNS.some(pattern => pattern.includes(file.name))) {
+                    summary += `  ${fileIndex}: ${file.name}\n`;
+                    topLevelFiles.push(file.name);
+                    fileIndex++;
+                }
+            });
+            
+            // Add these top-level files to the fileList
+            fileList.push(...topLevelFiles);
+        }
+    } catch (err: any) {
+        summary += `(Error reading directory: ${err.message})\n`;
+    }
+    summary += "=================================\n\n";
+    return summary;
+}
+
+// --- Main Overview Generation Function ---
+/**
+ * Generates the full overview report string and returns the file list.
+ * @param projectRoot - Absolute path to the project root.
+ * @returns Promise resolving to an object containing the report string and the file list.
+ */
+export async function generateOverviewAndGetFileList(projectRoot: string): Promise<{ reportString: string; fileList: string[] }> {
+    console.log("DEBUG [overview]: Starting overview generation...");
+    let report = `Maestro is not just an application; it's a **sentient operational fabric** designed to revolutionize how complex projects, particularly in hardware and integrated systems, are managed and executed. 
+Our mission is **to make the process of bringing incredible ideas to life dramatically less painful and exponentially more successful.** Maestro achieves this through a unique combination of:
+
+*   **Intelligent AI Collaboration:** Leveraging multiple specialized LLM agents working alongside human users.
+*   **Dynamic "Smart PRD":** An immutable, versioned source of truth for product requirements that evolves via controlled changes.
+*   **Workflow Orchestration:** An intelligent engine that manages complex, multi-step processes involving both humans and AI.
+*   **Secure Communication:** Robust layers for real-time internal updates, efficient P2P transfers, and secure federated instance communication.
+*   **Verifiable Computation:** Integration of Zero-Knowledge Proofs (Noir) for trustless verification.
+*   **Standardized Extensibility:** Interaction with external tools via the Model Context Protocol (MCP).
+*   **Local-First & Secure Architecture:** Built with Rust, Tauri, SQLite, and Stronghold for performance, reliability, and data sovereignty.
+
+Maestro Project Scaffold: Overview - Generated: ${new Date().toISOString()}\n`;
+    report += "===========================================================================\n\n";
+
+    // 1. Get Project Files (used by multiple sections)
+    const fileList = await getAllProjectFiles(projectRoot);
+
+    // 2. Generate File Index String
+    report += generateIndexString(fileList);
+
+    // 3. Generate Config Summary
+    report += await generateConfigSummary(projectRoot, fileList);
+
+    // 4. Generate Entry Point Summary
+    report += await generateEntryPointSummary(projectRoot, fileList);
+
+    // 5. Generate Dependency Summary
+    report += await generateDependencySummary(projectRoot);
+
+    // 6. Generate Directory Summary
+    report += await generateDirectorySummary(projectRoot, fileList);
+
+    report += "============================= End of Overview ==============================\n\n";
+
+    report += `This scaffolding tool was created by Benjamin Webster, Founder of Electronic Pixel Orchestra Inc. and Co-Founder of Maestro.tech, to furnish LLMs - otherwise known as "friends of Maestro" - with the ability to quickly, and comprehensively, acquire precision context for any project they were working on, in service of providing the most help in the fewest amount of cycles. 
+
+Here are the commands available in the scaffolding tool! 
+
+## Primary Command
+
+**scaffold \\<type\\>** - Generate scaffolding context for a Maestro project. Run from project root.
+
+### Scaffold Types
+
+- **overview** - Generates a comprehensive overview of the project, including file index, key config files, entry points, dependencies, and directory structure.
+  - Example: \`scaffold overview\`
+  - Output: A numbered file index and project structure summary in Scaffolding/scaffold-overview-N.txt
+  - #To Execute Command in PowerShell: node dist/index.js scaffold overview
+
+- **stores** - Analyzes Pinia stores in the project, extracting state, getters, and actions.
+  - Example: \`scaffold stores\`
+  - Output: Pinia store analysis in Scaffolding/scaffold-stores-N.txt
+  - #To Execute Command in PowerShell: node dist/index.js scaffold stores
+
+- **routes** - Analyzes Vue Router routes in the project.
+  - Example: \`scaffold routes\`
+  - Output: Vue Router routes analysis in Scaffolding/scaffold-routes-N.txt
+  - #To Execute Command in PowerShell: node dist/index.js scaffold routes
+
+- **commands** - Analyzes Tauri commands in the project, both frontend invocations and backend declarations.
+  - Example: \`scaffold commands\`
+  - Output: Tauri commands analysis in Scaffolding/scaffold-commands-N.txt
+  - #To Execute Command in PowerShell: node dist/index.js scaffold commands
+
+- **types** - Analyzes TypeScript type definitions in the project.
+  - Example: \`scaffold types\`
+  - Output: TypeScript types analysis in Scaffolding/scaffold-types-N.txt
+  - Optional filter: \`scaffold types --filter <pattern>\` to focus on specific types
+  - #To Execute Command in PowerShell: node dist/index.js scaffold types
+  - #With filter: node dist/index.js scaffold types --filter Auth
+
+- **ui** - Analyzes UI components (particularly Naive UI) used in the project.
+  - Example: \`scaffold ui\`
+  - Output: UI components analysis in Scaffolding/scaffold-ui-N.txt
+  - #To Execute Command in PowerShell: node dist/index.js scaffold ui
+
+- **files** - Retrieves the content of specific files by index (from the overview report).
+  - Example: \`scaffold files --indices 1,5,10\`
+  - Output: Content of specified files in Scaffolding/scaffold-files-N.txt
+  - #To Execute Command in PowerShell: node dist/index.js scaffold files --indices 1,5,10
+
+### Options
+
+- **--indices, -i** - Comma-separated list of file indices (from overview) for --files type
+  - Example: \`scaffold files --indices 1,5,10\`
+
+- **--filter, -f** - Filter pattern for --types command
+  - Example: \`scaffold types --filter Auth\`
+  - Example: \`scaffold types --filter Prd\` (special case to scan PRDs directory)
+
+- **--help, -h** - Show help information
+  - Example: \`scaffold --help\`
+
+- **--version, -v** - Show version information
+  - Example: \`scaffold --version\`
+
+All output files are saved to the Scaffolding directory in the Maestro project.
+
+Context is King! 
+
+Love, 
+
+          Ben       ;-*`;
+
+    console.log("DEBUG [overview]: Finished overview generation.");
+
+    // Return both the report string and the file list
+    return { reportString: report, fileList: fileList };
+}

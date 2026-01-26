@@ -3,696 +3,191 @@
     "tasks": [
       {
         "id": 1,
-        "title": "Setup Marimo Notebook and Core Imports",
-        "description": "Initialize the Marimo notebook with all required imports and global state variables.",
-        "details": "Create a new Marimo .py file. Import marimo as mo, pandas, os, re, datetime, networkx as nx, pyvis.network, jinja2. Define global states using mo.state: project_root='', files_df=pd.DataFrame(), edges_df=pd.DataFrame(), selected_file='', agent_logs=[]",
-        "testStrategy": "Verify all imports execute without errors. Check mo.state variables are reactive and accessible in notebook cells.",
+        "title": "Create IP Protocol Directory Structure",
+        "description": "Set up complete IP directory structure with required files and verify existing core modules",
+        "details": "Use pathlib to create directories and files: `IP/__init__.py` (empty), `IP/plugins/` dir. Verify `louis_core.py`, `carl_core.py`, `connie.py`, `orchestr8_app.py` exist using Path.exists(). Python 3.12+ required. No external deps needed.",
+        "testStrategy": "Implement verification script using pathlib.Path.exists() for all paths, print success/failure status.",
         "priority": "high",
         "dependencies": [],
         "status": "pending",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Create Marimo Notebook File",
-            "description": "Create a new Marimo .py file using the CLI command.",
-            "dependencies": [],
-            "details": "Run 'marimo edit notebook.py' or 'marimo new notebook.py' to create the initial Marimo notebook file structure. This sets up the reactive notebook environment.",
-            "status": "pending",
-            "testStrategy": "Verify the .py file is created and can be opened in marimo edit without errors."
-          },
-          {
-            "id": 2,
-            "title": "Add Core Library Imports",
-            "description": "Import all required libraries at the top of the notebook.",
-            "dependencies": [
-              1
-            ],
-            "details": "Add import statements: import marimo as mo, import pandas, import os, import re, import datetime, import networkx as nx, from pyvis import network, import jinja2. Place in first code cell.",
-            "status": "pending",
-            "testStrategy": "Run the imports cell and confirm no import errors occur in the notebook."
-          },
-          {
-            "id": 3,
-            "title": "Define Global State Variables",
-            "description": "Initialize reactive state variables using mo.state.",
-            "dependencies": [
-              1,
-              2
-            ],
-            "details": "Create: project_root = mo.state(''), files_df = mo.state(pd.DataFrame()), edges_df = mo.state(pd.DataFrame()), selected_file = mo.state(''), agent_logs = mo.state([]). Ensure pandas is available from prior import.",
-            "status": "pending",
-            "testStrategy": "Check that state variables appear in the variable explorer and are reactive when modified."
-          },
-          {
-            "id": 4,
-            "title": "Verify Imports and State Reactivity",
-            "description": "Test that all imports work and states are properly reactive.",
-            "dependencies": [
-              2,
-              3
-            ],
-            "details": "Add a test cell that accesses each state variable (e.g., print(project_root.value)) and uses imported libraries (e.g., nx.__version__). Ensure no runtime errors.",
-            "status": "pending",
-            "testStrategy": "Manually modify a state value in one cell and verify it updates reactively in another cell displaying the value."
-          },
-          {
-            "id": 5,
-            "title": "Document Setup and Save Notebook",
-            "description": "Add markdown documentation and finalize the setup cell structure.",
-            "dependencies": [
-              3,
-              4
-            ],
-            "details": "Create a markdown cell explaining the global states and imports. Organize cells logically: imports first, then states, then tests. Save the notebook.",
-            "status": "pending",
-            "testStrategy": "Restart the notebook kernel and re-run all cells to verify complete setup executes cleanly without errors."
-          }
-        ]
+        "subtasks": []
       },
       {
         "id": 2,
-        "title": "Implement Project Scanner Function",
-        "description": "Create scan_project function to inventory files excluding node_modules, .git, __pycache__.",
-        "details": "def scan_project(root_path): Use os.walk(root_path). Filter exclusions. Collect path, name, ext=os.path.splitext(name)[1], size_bytes=os.path.getsize(path). Return pd.DataFrame with these columns. Bind to project_root state.",
-        "testStrategy": "Test with sample directory: verify DataFrame has correct columns, exclusions applied, size_bytes accurate.",
+        "title": "Create Frontend Tools Directory and Move Context System",
+        "description": "Establish TypeScript tools directory structure and relocate unified-context-system.ts",
+        "details": "Create `frontend/tools/` and `frontend/tools/parsers/` dirs. Move `IP/unified-context-system.ts` to `frontend/tools/unified-context-system.ts`. Ensure Node.js 22+ with npx tsx available for execution.",
+        "testStrategy": "Verify directories exist and file moved correctly using fs.existsSync() or pathlib equivalent.",
         "priority": "high",
-        "dependencies": [
-          1
-        ],
+        "dependencies": [1],
         "status": "pending",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Define exclusions and import dependencies",
-            "description": "Set up the exclusion list and import required modules for the scan_project function.",
-            "dependencies": [],
-            "details": "Import os, pandas as pd. Define EXCLUSIONS = {'node_modules', '.git', '__pycache__'} as a set for efficient lookup.",
-            "status": "pending",
-            "testStrategy": "Verify imports work and EXCLUSIONS set contains exactly the three specified directories."
-          },
-          {
-            "id": 2,
-            "title": "Implement os.walk traversal with filtering",
-            "description": "Use os.walk to traverse the project directory and filter out excluded directories.",
-            "dependencies": [
-              1
-            ],
-            "details": "def scan_project(root_path): for root, dirs, files in os.walk(root_path): dirs[:] = [d for d in dirs if d not in EXCLUSIONS]. Collect all file paths.",
-            "status": "pending",
-            "testStrategy": "Test with sample dir containing exclusions; verify excluded dirs are skipped in traversal."
-          },
-          {
-            "id": 3,
-            "title": "Extract file metadata for each file",
-            "description": "For each filtered file path, collect name, extension, and size_bytes metadata.",
-            "dependencies": [
-              2
-            ],
-            "details": "For each file in files: path = os.path.join(root, file), name = file, ext = os.path.splitext(name)[1], size_bytes = os.path.getsize(path). Store in list of dicts.",
-            "status": "pending",
-            "testStrategy": "Verify metadata extraction: correct name, ext (e.g. '.py'), accurate size_bytes match os.getsize."
-          },
-          {
-            "id": 4,
-            "title": "Create and return pandas DataFrame",
-            "description": "Convert collected file metadata into pd.DataFrame with columns: path, name, ext, size_bytes.",
-            "dependencies": [
-              3
-            ],
-            "details": "files_data = [{'path': path, 'name': name, 'ext': ext, 'size_bytes': size_bytes} for each file]. return pd.DataFrame(files_data)",
-            "status": "pending",
-            "testStrategy": "Verify DataFrame has exactly 4 columns with correct dtypes and row count matches filtered files."
-          },
-          {
-            "id": 5,
-            "title": "Bind scan_project result to project_root state",
-            "description": "Integrate scan_project with UI state management to store files_df reactively.",
-            "dependencies": [
-              4
-            ],
-            "details": "In scan_button on_click: global files_df = scan_project(project_root.value). Ensure files_df is reactive state for downstream tasks.",
-            "status": "pending",
-            "testStrategy": "Click scan button, verify files_df updates with correct DataFrame content and triggers UI table refresh."
-          }
-        ]
+        "subtasks": []
       },
       {
         "id": 3,
-        "title": "Build Explorer Tab UI with Reactive Table",
-        "description": "Create Explorer tab with path input, scan button, and selectable file table.",
-        "details": "project_root_input = mo.ui.text('Project Root', value='/path/to/stereOS').\nscan_button = mo.ui.button('Scan', on_click=lambda: scan_project(project_root.value)).\nfiles_table = mo.ui.table(files_df, selection='single', on_select=lambda s: selected_file.set(s[0])).\nmo.ui.tabs([('📁 Explorer', mo.vstack([project_root_input, scan_button, files_table]))])",
-        "testStrategy": "Enter path, click Scan, verify table populates. Click row, verify selected_file updates reactively.",
+        "title": "Setup Louis Control Configuration",
+        "description": "Create Louis configuration storage with default protected paths and ignore patterns",
+        "details": "Create `.louis-control/` dir and `louis-config.json` with exact content: {\"protected_paths\": [\"src/core/\", \"config/\"], \"protected_folders\": [], \"ignore_patterns\": [\"node_modules\", \".git\", \"__pycache__\", \"dist\"]}. Use json.dump() with indent=2.",
+        "testStrategy": "Verify directory exists and json.load() parses file without errors.",
         "priority": "high",
-        "dependencies": [
-          1,
-          2
-        ],
+        "dependencies": [1],
         "status": "pending",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Create Project Root Path Input",
-            "description": "Initialize text input for project root directory path with default value.",
-            "dependencies": [],
-            "details": "Use mo.ui.text('Project Root', value='/path/to/stereOS') to create reactive input. Store as project_root_input variable for later use in scan function.",
-            "status": "pending",
-            "testStrategy": "Verify input displays with default path and accepts new path entry."
-          },
-          {
-            "id": 2,
-            "title": "Create Scan Button with Handler",
-            "description": "Add scan button that triggers project scanning using project root path.",
-            "dependencies": [
-              1
-            ],
-            "details": "Create scan_button = mo.ui.button('Scan', on_click=lambda: scan_project(project_root.value)). Ensure scan_project function exists from dependencies.",
-            "status": "pending",
-            "testStrategy": "Click button after entering path, verify scan_project is called with correct path."
-          },
-          {
-            "id": 3,
-            "title": "Setup Reactive Files DataFrame State",
-            "description": "Initialize mo.state for files_df to hold scanned file data reactively.",
-            "dependencies": [],
-            "details": "Define files_df = mo.state(pd.DataFrame()) in global state section. Ensure pandas imported from Task 1 dependencies.",
-            "status": "pending",
-            "testStrategy": "Verify files_df is reactive state variable accessible throughout notebook."
-          },
-          {
-            "id": 4,
-            "title": "Create Selectable Files Table",
-            "description": "Build reactive table displaying files_df with single row selection.",
-            "dependencies": [
-              3
-            ],
-            "details": "Create files_table = mo.ui.table(files_df, selection='single', on_select=lambda s: selected_file.set(s[0])). Ensure selected_file state exists.",
-            "status": "pending",
-            "testStrategy": "Verify table renders empty initially, shows data after scan, selection updates selected_file."
-          },
-          {
-            "id": 5,
-            "title": "Assemble Explorer Tab Layout",
-            "description": "Combine input, button, and table into Explorer tab using mo.ui.tabs.",
-            "dependencies": [
-              1,
-              2,
-              4
-            ],
-            "details": "Create explorer_vstack = mo.vstack([project_root_input, scan_button, files_table]). Add to tabs: mo.ui.tabs([('📁 Explorer', explorer_vstack)]).",
-            "status": "pending",
-            "testStrategy": "Verify complete tab displays, scan populates table reactively, row selection works."
-          }
-        ]
+        "subtasks": []
       },
       {
         "id": 4,
-        "title": "Implement Status Badge Logic and Rendering",
-        "description": "Add status column to files_df with WARNING/COMPLEX/NORMAL logic and HTML badge renderer.",
-        "details": "def render_badge(status): return f'<span class=\"badge badge-{status.lower()}\">{status}</span>' with CSS styles.\nIn scan_project, add status column: WARNING if 'TODO' or 'FIXME' in file.read(), COMPLEX if import_count>10, else NORMAL.\nUse files_df['status_display'] = files_df['status'].apply(render_badge)",
-        "testStrategy": "Create test files with TODO/FIXME/many imports. Verify badges render with correct colors in table.",
-        "priority": "medium",
-        "dependencies": [
-          2,
-          3
-        ],
+        "title": "Extract Headless Connie ConversionEngine",
+        "description": "Migrate Connie to headless operation preserving GUI version, implement context manager with export methods",
+        "details": "Rename `IP/connie.py` → `IP/connie_gui.py`. Create new `IP/connie.py` with class ConversionEngine supporting list_tables(), export_to_json/csv/markdown/sql_dump(). Use contextlib.contextmanager, sqlite3 3.41+, pandas for DataFrame handling, no PyQt6 imports.",
+        "testStrategy": "Create test SQLite DB, instantiate engine, verify all 5 methods work: assert len(list_tables()) > 0, check exported files exist and contain expected data.",
+        "priority": "high",
+        "dependencies": [1],
         "status": "pending",
         "subtasks": [
-          {
-            "id": 1,
-            "title": "Define render_badge function with HTML badge output",
-            "description": "Create the render_badge function that generates HTML span elements with status-specific CSS classes for badge rendering.",
-            "dependencies": [],
-            "details": "Implement def render_badge(status): return f'<span class=badge badge-{status.lower()}>{status}</span>'. Ensure it handles WARNING, COMPLEX, NORMAL statuses correctly.",
-            "status": "pending",
-            "testStrategy": "Test render_badge('WARNING') returns correct HTML string with 'badge-warning' class."
-          },
-          {
-            "id": 2,
-            "title": "Add CSS styles for status badge classes",
-            "description": "Define CSS styles for badge-warning, badge-complex, badge-normal classes to display colored badges in the Marimo UI table.",
-            "dependencies": [],
-            "details": "Add mo.md with CSS: .badge-warning {background: orange}, .badge-complex {background: red}, .badge-normal {background: green}. Include padding and border-radius for proper badge appearance.",
-            "status": "pending",
-            "testStrategy": "Verify badges render with distinct colors when displayed in HTML output."
-          },
-          {
-            "id": 3,
-            "title": "Implement status logic in scan_project function",
-            "description": "Modify scan_project to read file contents and compute status: WARNING for TODO/FIXME, COMPLEX for import_count>10, else NORMAL.",
-            "dependencies": [],
-            "details": "In scan_project loop: file_content = open(path).read(); has_todo = 'TODO' in file_content or 'FIXME' in file_content; status = 'WARNING' if has_todo else 'COMPLEX' if import_count>10 else 'NORMAL'. Add to DataFrame.",
-            "status": "pending",
-            "testStrategy": "Create test files with TODO/FIXME/many imports, verify status column values are correct."
-          },
-          {
-            "id": 4,
-            "title": "Add status and status_display columns to files_df",
-            "description": "Extend files_df with 'status' column from scan_project and create 'status_display' using render_badge applied to status.",
-            "dependencies": [
-              3
-            ],
-            "details": "After scan_project completes: files_df['status_display'] = files_df['status'].apply(render_badge). Ensure status_display contains HTML strings for table rendering.",
-            "status": "pending",
-            "testStrategy": "Verify files_df has both columns and status_display contains valid HTML badge markup."
-          },
-          {
-            "id": 5,
-            "title": "Update files_table to display status_display column",
-            "description": "Modify the Explorer tab's files_table to include and render the status_display column with HTML badges.",
-            "dependencies": [
-              2,
-              4
-            ],
-            "details": "Update files_table = mo.ui.table(files_df, selection='single', columns=['path', 'name', 'status_display', ...], wrap=True). Ensure HTML in status_display renders as styled badges.",
-            "status": "pending",
-            "testStrategy": "Scan project with test files, verify table shows colored badges matching file statuses."
-          }
+          {"id": 1, "title": "Rename connie.py to connie_gui.py", "description": "Rename the existing IP/connie.py file to IP/connie_gui.py to preserve the GUI version while preparing for headless implementation.", "dependencies": [], "details": "Use operating system rename command or IDE refactor: mv IP/connie.py IP/connie_gui.py. Verify no imports break by checking dependent files. Ensure PyQt6 imports remain only in GUI version.", "status": "pending", "testStrategy": "Confirm file renamed: ls IP/connie_gui.py exists, IP/connie.py does not exist. Verify syntax: python -m py_compile IP/connie_gui.py"},
+          {"id": 2, "title": "Create new headless connie.py skeleton", "description": "Create new IP/connie.py file with ConversionEngine class structure, import statements for sqlite3, pandas, contextlib, excluding all PyQt6 imports.", "dependencies": [1], "details": "Add imports: import sqlite3, import pandas as pd, from contextlib import contextmanager. Define class ConversionEngine: def __init__(self, db_path): pass. Add context manager methods stubs.", "status": "pending", "testStrategy": "python -m py_compile IP/connie.py succeeds without import errors or PyQt6 references."},
+          {"id": 3, "title": "Implement ConversionEngine context manager", "description": "Add @contextmanager decorator to manage SQLite database connection lifecycle with proper setup/teardown using sqlite3 3.41+.", "dependencies": [2], "details": "Create @contextmanager def _engine_manager(self, db_path): conn = sqlite3.connect(db_path); try: yield conn; finally: conn.close(). Implement __enter__/__exit__ or generator-based manager for resource safety.", "status": "pending", "testStrategy": "with ConversionEngine(':memory:') as engine: assert engine.conn is not None. Verify conn closes after context exit."},
+          {"id": 4, "title": "Implement list_tables() method", "description": "Add list_tables() method to return DataFrame of all tables in the SQLite database using pandas for structured output.", "dependencies": [3], "details": "def list_tables(self): return pd.read_sql_query('SELECT name FROM sqlite_master WHERE type=table;', self.conn). Ensure returns pandas DataFrame with table names.", "status": "pending", "testStrategy": "Create test DB with tables, assert len(engine.list_tables()) > 0, verify DataFrame contains expected table names."},
+          {"id": 5, "title": "Implement export methods for all formats", "description": "Add export_to_json(), export_to_csv(), export_to_markdown(), export_to_sql_dump() methods using pandas DataFrame handling.", "dependencies": [3], "details": "For each table in list_tables(): df.to_json(path), df.to_csv(path), df.to_markdown(path), conn.iterdump() for SQL dump. Support file paths as parameters with default naming.", "status": "pending", "testStrategy": "Call each export method, verify output files exist and contain expected data matching source tables."}
         ]
       },
       {
         "id": 5,
-        "title": "Develop Connection Verifier and Edge Generation",
-        "description": "Parse imports from files and generate edges_df using regex heuristic.",
-        "details": "def verify_connections(files_df): edges = []\nfor idx, row in files_df.iterrows():\ncontent = open(row.path).read()\nimports = re.findall(r'(?:from|import)\\s+[\"'`]([^\"`]+)[\"`\"]', content)\nfor imp in imports: target_path = resolve_import(row.path, imp) # simple path matching\nedges.append({'source':row.path, 'target':target_path, 'type':'import'})\nglobal edges_df; edges_df.value = pd.DataFrame(edges)",
-        "testStrategy": "Test with Python files containing various import statements. Verify edges_df has correct source/target pairs.",
-        "priority": "high",
-        "dependencies": [
-          2,
-          4
-        ],
+        "title": "Update Carl Core TypeScript Path References",
+        "description": "Modify carl_core.py to execute unified-context-system.ts from new frontend/tools location",
+        "details": "Update `IP/carl_core.py`: change path to 'frontend/tools/unified-context-system.ts', subprocess.run(['npx', 'tsx', 'frontend/tools/unified-context-system.ts']). Ensure get_file_context() and run_deep_scan() handle new paths. Use subprocess.PIPE, timeout=30.",
+        "testStrategy": "Mock subprocess.run with MagicMock, verify correct args passed: assert 'npx tsx frontend/tools/unified-context-system.ts' in call args.",
+        "priority": "medium",
+        "dependencies": [2],
         "status": "pending",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Implement resolve_import function",
-            "description": "Create helper function to resolve import strings to actual file paths using simple path matching.",
-            "dependencies": [],
-            "details": "Implement resolve_import(source_path, import_str) that performs relative path resolution from source_path directory, handles common Python import patterns like '.' for relative imports, and returns resolved file path or None if not found.",
-            "status": "pending",
-            "testStrategy": "Test with sample imports: relative './module', '../utils/helper', absolute 'numpy/core'. Verify returns correct paths or None."
-          },
-          {
-            "id": 2,
-            "title": "Improve regex pattern for import parsing",
-            "description": "Enhance regex to accurately capture Python import statements including from ... import ... patterns.",
-            "dependencies": [],
-            "details": "Update regex to handle 'from module import func', 'import module', 'from .module import *', multiline imports. Use re.findall with MULTILINE flag and capture module names excluding function names in from-imports.",
-            "status": "pending",
-            "testStrategy": "Test against sample Python files with various import styles. Verify extracts module names correctly without function names."
-          },
-          {
-            "id": 3,
-            "title": "Implement file content reading with error handling",
-            "description": "Add safe file reading and content processing within verify_connections function.",
-            "dependencies": [],
-            "details": "Wrap open(row.path).read() in try-except for FileNotFoundError, PermissionError. Skip problematic files with logging. Only process Python/text files based on extension from files_df.",
-            "status": "pending",
-            "testStrategy": "Test with missing files, permission-denied files, binary files. Verify function continues processing other files."
-          },
-          {
-            "id": 4,
-            "title": "Build edges DataFrame construction logic",
-            "description": "Process parsed imports into edges list and create edges_df using Marimo reactive state.",
-            "dependencies": [
-              1,
-              2,
-              3
-            ],
-            "details": "Replace global edges_df with proper Marimo state: edges_df = mo.state(pd.DataFrame()). Loop through files_df, append valid {'source':row.path, 'target':target_path, 'type':'import'} only if target_path is not None, then set edges_df.value = pd.DataFrame(edges).",
-            "status": "pending",
-            "testStrategy": "Verify edges_df has correct columns, no None targets, source paths match files_df, reasonable edge counts."
-          },
-          {
-            "id": 5,
-            "title": "Complete and document verify_connections function",
-            "description": "Integrate all components into complete verify_connections(files_df) function with documentation.",
-            "dependencies": [
-              4
-            ],
-            "details": "Combine all previous implementations. Add function docstring explaining inputs/outputs, regex limitations, resolution logic. Ensure function is reactive-friendly for Marimo. Add type hints where possible.",
-            "status": "pending",
-            "testStrategy": "End-to-end: Call verify_connections on sample files_df. Verify edges_df populates correctly. Test with 10+ sample Python files containing known import relationships."
-          }
-        ]
+        "subtasks": []
       },
       {
         "id": 6,
-        "title": "Create Interactive Connection Graph Visualization",
-        "description": "Convert edges_df to NetworkX DiGraph and render with PyVis physics simulation.",
-        "details": "def render_graph():\nnet = nx.DiGraph()\nnet.from_pandas_edgelist(edges_df.value)\npyvis_net = Network(height='600px', bgcolor='#222', font_color='white')\npyvis_net.from_nx(net)\npyvis_net.set_options({'physics':{'barnesHut':{'enabled':True}}})\nreturn mo.Html(pyvis_net.generate_html())\nTrigger on scan_button and edges_df changes.",
-        "testStrategy": "Scan project with known dependencies. Verify graph renders with physics, nodes clickable, dark theme.",
+        "title": "Implement ScaffoldPlugin Interface and CLI Base",
+        "description": "Create scaffold-cli.ts with ParserOptions and ScaffoldPlugin TypeScript interfaces",
+        "details": "Create `frontend/tools/scaffold-cli.ts` with exact interfaces: ParserOptions and ScaffoldPlugin. Use Node.js 22+, tsx for execution. tsconfig.json: target ES2022, module NodeNext, strict: true. No external deps needed yet.",
+        "testStrategy": "npx tsc --noEmit scaffold-cli.ts, verify compiles without type errors.",
         "priority": "high",
-        "dependencies": [
-          1,
-          5
-        ],
+        "dependencies": [2],
         "status": "pending",
         "subtasks": [
-          {
-            "id": 1,
-            "title": "Create render_graph function with NetworkX DiGraph",
-            "description": "Implement the core render_graph function that converts edges_df to NetworkX DiGraph and prepares PyVis network.",
-            "dependencies": [],
-            "details": "def render_graph(): net = nx.DiGraph(); net.from_pandas_edgelist(edges_df.value, source='source', target='target', edge_attr=True); pyvis_net = Network(height='600px', bgcolor='#222', font_color='white'); pyvis_net.from_nx(net); return pyvis_net",
-            "status": "pending",
-            "testStrategy": "Verify DiGraph created with correct nodes/edges from test edges_df. Check pyvis_net has dark theme styling."
-          },
-          {
-            "id": 2,
-            "title": "Configure PyVis physics simulation options",
-            "description": "Add physics simulation configuration to PyVis network using Barnes-Hut algorithm.",
-            "dependencies": [
-              1
-            ],
-            "details": "pyvis_net.set_options({'physics': {'enabled': True, 'barnesHut': {'gravitationalConstant': -2000, 'springLength': 95, 'springConstant': 0.001, 'damping': 0.09}}}); return mo.Html(pyvis_net.generate_html())",
-            "status": "pending",
-            "testStrategy": "Verify generated HTML contains physics configuration. Test with sample graph shows node movement on load."
-          },
-          {
-            "id": 3,
-            "title": "Create graph display UI element",
-            "description": "Create reactive UI container for graph display that updates when render_graph changes.",
-            "dependencies": [
-              2
-            ],
-            "details": "graph_display = mo.ui.html(render_graph(), height='600px'); Add CSS for better integration: mo.md('''<style>.graph-container {border: 1px solid #444; border-radius: 8px;}</style>''')",
-            "status": "pending",
-            "testStrategy": "Verify graph_display renders HTML output and resizes correctly to 600px height."
-          },
-          {
-            "id": 4,
-            "title": "Bind graph updates to scan_button and edges_df changes",
-            "description": "Make graph_display reactive to scan_button clicks and edges_df state changes.",
-            "dependencies": [
-              3
-            ],
-            "details": "scan_button = mo.ui.button('Scan Project', on_click=scan_project); graph_display = mo.ui.html(render_graph(), height='600px').update(trigger=[scan_button, edges_df]); Create main layout with graph_display",
-            "status": "pending",
-            "testStrategy": "Click scan_button with test data, verify graph updates. Change edges_df manually, verify immediate re-render."
-          },
-          {
-            "id": 5,
-            "title": "Add node click interactions and finalize layout",
-            "description": "Enhance graph with node click handlers and integrate into main notebook layout.",
-            "dependencies": [
-              4
-            ],
-            "details": "pyvis_net.set_options({'interaction': {'hover': True, 'selectConnectedEdges': True}}); main_layout = mo.vstack([scan_button, graph_display], height='800px'); Test with project having known dependencies",
-            "status": "pending",
-            "testStrategy": "Scan project with known dependencies. Verify: physics simulation active, nodes clickable, dark theme applied, edges visible."
-          }
+          {"id": 1, "title": "Create frontend/tools directory structure", "description": "Set up the required directory path for scaffold-cli.ts file creation", "dependencies": [], "details": "Create directory frontend/tools/ if it doesn't exist using mkdir -p frontend/tools. Verify path exists before proceeding to file creation.", "status": "pending", "testStrategy": "ls frontend/tools/ confirms directory exists and is writable"},
+          {"id": 2, "title": "Define ParserOptions TypeScript interface", "description": "Create the ParserOptions interface with appropriate properties for CLI parsing needs", "dependencies": [1], "details": "In scaffold-cli.ts, define interface ParserOptions using UpperCamelCase with properties like inputPath?: string, outputDir?: string, format?: string following TypeScript best practices for optional properties and index signatures if needed.", "status": "pending", "testStrategy": "npx tsc --noEmit verifies ParserOptions interface compiles without errors"},
+          {"id": 3, "title": "Define ScaffoldPlugin TypeScript interface", "description": "Create the ScaffoldPlugin interface specifying plugin contract for execution and metadata", "dependencies": [1], "details": "Define interface ScaffoldPlugin with required methods like execute(options: ParserOptions): Promise<void> and metadata: { name: string, version: string, description: string }. Use readonly properties where appropriate per TypeScript handbook guidelines.", "status": "pending", "testStrategy": "npx tsc --noEmit confirms ScaffoldPlugin interface type checks successfully"},
+          {"id": 4, "title": "Configure tsconfig.json for scaffold-cli.ts", "description": "Set up TypeScript compiler options matching project requirements", "dependencies": [1], "details": "In frontend/tools/tsconfig.json, configure { target: 'ES2022', module: 'NodeNext', strict: true, moduleResolution: 'NodeNext', noEmit: true }. Ensure compatibility with Node.js 22+ and tsx execution.", "status": "pending", "testStrategy": "npx tsc --noEmit scaffold-cli.ts passes with strict type checking enabled"},
+          {"id": 5, "title": "Create basic scaffold-cli.ts file with shebang and exports", "description": "Initialize main CLI file structure with interfaces and basic execution setup", "dependencies": [2, 3, 4], "details": "Add #!/usr/bin/env node shebang, export { ParserOptions, ScaffoldPlugin }, include basic main() function structure for tsx execution. Add JSDoc comments documenting Node.js 22+ requirement and zero external dependencies.", "status": "pending", "testStrategy": "npx tsx scaffold-cli.ts --help shows basic usage; npx tsc --noEmit verifies complete file compiles"}
         ]
       },
       {
         "id": 7,
-        "title": "Build Complete Tabbed UI Layout",
-        "description": "Assemble all four tabs: Explorer, Connections, PRD Generator, Emperor.",
-        "details": "tabs = mo.ui.tabs([\n('📁 Explorer', explorer_vstack),\n('🕸️ Connections', render_graph()),\n('📄 PRD Generator', prd_content),\n('👑 Emperor', emperor_vstack)\n])\nmo.vstack([tabs])",
-        "testStrategy": "Verify tab switching works, each tab content reactive to scan_button and file selection.",
-        "priority": "medium",
-        "dependencies": [
-          3,
-          6
-        ],
+        "title": "Refactor orchestr8_app.py to Marimo Notebook Format",
+        "description": "Convert existing app to Marimo reactive notebook with cell structure and STATE_MANAGERS",
+        "details": "Install marimo 0.19+: pip install marimo==0.19.1. Refactor `IP/orchestr8_app.py`: import marimo as mo, app = mo.App(), @app.cell decorators for imports/state/plugins/render, mo.state() for STATE_MANAGERS {'root':(get_root,set_root), 'files':..., 'selected':..., 'logs':...}, if __name__ == '__main__': app.run().",
+        "testStrategy": "marimo edit IP/orchestr8_app.py launches without errors, verify 4 STATE_MANAGERS keys exist with callable get/set.",
+        "priority": "high",
+        "dependencies": [1],
         "status": "pending",
         "subtasks": [
-          {
-            "id": 1,
-            "title": "Verify Explorer Tab Content Availability",
-            "description": "Confirm explorer_vstack is properly defined and reactive to files_df state changes from scan workflow.",
-            "dependencies": [],
-            "details": "Check that explorer_vstack uses mo.ui.table(files_df) or similar with file selection handlers. Ensure badges and scan_button reactivity intact from Task 3 dependencies.",
-            "status": "pending",
-            "testStrategy": "Scan project and verify Explorer tab displays file table with correct badges and selection works."
-          },
-          {
-            "id": 2,
-            "title": "Verify Connections Tab Graph Rendering",
-            "description": "Ensure render_graph() function exists and properly displays edges_df from connection verification.",
-            "dependencies": [
-              1
-            ],
-            "details": "Confirm render_graph() uses mo.ui.graph or network visualization component bound to edges_df.value. Test reactivity after scan+verify_connections chain from Tasks 5,10.",
-            "status": "pending",
-            "testStrategy": "After scanning project with imports, switch to Connections tab and verify graph shows source/target nodes and edges."
-          },
-          {
-            "id": 3,
-            "title": "Verify PRD Generator Tab Content Integration",
-            "description": "Confirm prd_content is defined and reactive to selected file content from Explorer tab.",
-            "dependencies": [
-              1
-            ],
-            "details": "Ensure prd_content uses selected_file state to display PRD generation UI. Bind to file selection event from explorer_vstack for automatic updates.",
-            "status": "pending",
-            "testStrategy": "Select file in Explorer → switch to PRD tab → verify content updates with file-specific PRD elements."
-          },
-          {
-            "id": 4,
-            "title": "Verify Emperor Tab Command Interface",
-            "description": "Ensure emperor_vstack is built with mission briefing, deploy button, and scrollable logs as per Task 9.",
-            "dependencies": [
-              1
-            ],
-            "details": "Implement mission_briefing textarea, deploy_btn with agent_logs append, and logs_display vstack with scroll=True. Use provided Task 9 implementation details.",
-            "status": "pending",
-            "testStrategy": "Switch to Emperor tab, enter mission text, click Deploy, verify timestamped log appears and scrolls."
-          },
-          {
-            "id": 5,
-            "title": "Assemble and Test Complete Tabbed Layout",
-            "description": "Create tabs UI with all four verified tab contents and wrap in main vstack. Test full tab switching and reactivity.",
-            "dependencies": [
-              2,
-              3,
-              4
-            ],
-            "details": "Use exact implementation: tabs = mo.ui.tabs([('📁 Explorer', explorer_vstack), ('🕸️ Connections', render_graph()), ('📄 PRD Generator', prd_content), ('👑 Emperor', emperor_vstack)]); mo.vstack([tabs]). Test end-to-end workflow.",
-            "status": "pending",
-            "testStrategy": "Full E2E: Enter path → Scan → Verify all tabs update correctly (Explorer table, Connections graph, PRD on file select, Emperor deploy logs)."
-          }
+          {"id": 1, "title": "Install Marimo 0.19.1 and Verify Installation", "description": "Install the specified version of Marimo using pip and confirm it works correctly.", "dependencies": [], "details": "Run 'pip install marimo==0.19.1' in the project environment. Verify installation by running 'marimo --version' to ensure version 0.19.1 is installed and accessible.", "status": "pending", "testStrategy": "Check 'marimo --version' outputs 0.19.1 and 'marimo --help' displays usage without errors."},
+          {"id": 2, "title": "Initialize Marimo App Structure in orchestr8_app.py", "description": "Set up the basic Marimo app skeleton with imports and app creation using cell decorators.", "dependencies": [1], "details": "Refactor IP/orchestr8_app.py: Add 'import marimo as mo', 'app = mo.App()', and structure code with @app.cell decorators for different sections (imports, state, plugins, render).", "status": "pending", "testStrategy": "Run 'marimo edit IP/orchestr8_app.py' and verify the app launches with initial cells structured correctly without syntax errors."},
+          {"id": 3, "title": "Define STATE_MANAGERS Using mo.state()", "description": "Create reactive state managers for root, files, selected, and logs using Marimo's mo.state() function.", "dependencies": [2], "details": "In a dedicated @app.cell: Define get_root/set_root = mo.state(''), get_files/set_files = mo.state([]), get_selected/set_selected = mo.state(None), get_logs/set_logs = mo.state([]). Assign getters to global variables.", "status": "pending", "testStrategy": "Verify 4 state pairs exist in the notebook, call each getter() to confirm initial values, and test setter functions update state reactively."},
+          {"id": 4, "title": "Implement Cell Logic for Plugins and Rendering", "description": "Add @app.cell implementations for plugin loading and UI rendering using the defined STATE_MANAGERS.", "dependencies": [3], "details": "Create cells for scanning/loading plugins from IP/plugins/*.py, and rendering UI components (tabs, lists, etc.) that react to state changes from STATE_MANAGERS.", "status": "pending", "testStrategy": "Verify plugin scanning reads files correctly, rendering cells reference state getters, and UI updates when state setters are called."},
+          {"id": 5, "title": "Add Main Entry Point and Final Testing", "description": "Implement the if __name__ == '__main__' block and perform complete verification.", "dependencies": [4], "details": "Add 'if __name__ == '__main__': app.run()' at the end. Test full app launch, confirm 4 STATE_MANAGERS keys exist with callable get/set functions.", "status": "pending", "testStrategy": "Execute 'marimo edit IP/orchestr8_app.py', verify launches without errors, check len(STATE_MANAGERS) == 4, and confirm each get/set is callable."}
         ]
       },
       {
         "id": 8,
-        "title": "Implement PRD Generator with Jinja2 Templating",
-        "description": "Generate Markdown PRD for selected_file using file metadata and dependency context.",
-        "details": "jinja_env = Environment(loader=FileSystemLoader('templates')) # or inline\ntemplate = jinja_env.from_string(PRD_TEMPLATE)\ndef generate_prd():\nif selected_file.value:\nfile_info = files_df[files_df.path==selected_file.value]\ndeps = edges_df[edges_df.source==selected_file.value]\nconsumers = edges_df[edges_df.target==selected_file.value]\nreturn mo.md(template.render(file=file_info.iloc[0], deps=deps, consumers=consumers))\nReactive to selected_file.",
-        "testStrategy": "Select different files, verify PRD updates with correct metadata, deps/consumers listed.",
-        "priority": "medium",
-        "dependencies": [
-          1,
-          3,
-          5,
-          7
-        ],
+        "title": "Implement Scaffold CLI list-plugins and Execution Commands",
+        "description": "Add list-plugins command and plugin execution to scaffold-cli.ts",
+        "details": "Extend scaffold-cli.ts: implement 'list-plugins' scanning parsers/*.js, validate ScaffoldPlugin interface, return JSON metadata array. Add execution: 'scaffold-cli.ts [commandType] --target [path] [options]'. Use commander.js v11.5.0: program.command('list-plugins').action(scanPlugins), dynamic command registration.",
+        "testStrategy": "Create mock .js plugin files, npx tsx scaffold-cli.ts list-plugins | jq verifies JSON array, test execution with mock parser.",
+        "priority": "high",
+        "dependencies": [6],
         "status": "pending",
         "subtasks": [
-          {
-            "id": 1,
-            "title": "Create PRD Jinja2 Template File",
-            "description": "Define the PRD_TEMPLATE as a Markdown template file using Jinja2 syntax for file metadata, dependencies, and consumers.",
-            "dependencies": [],
-            "details": "Create 'templates/prd_template.md' with sections like file info, dependencies list using {% for dep in deps %}, consumers list, status badges. Use Jinja2 best practices: loops, conditionals, safe Markdown output.",
-            "status": "pending",
-            "testStrategy": "Verify template syntax with jinja_env.get_template('prd_template.md') without errors."
-          },
-          {
-            "id": 2,
-            "title": "Initialize Jinja2 Environment",
-            "description": "Set up Jinja2 Environment with FileSystemLoader pointing to templates directory.",
-            "dependencies": [],
-            "details": "Add import jinja2; jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'), autoescape=True). Configure trim_blocks=True, lstrip_blocks=True for clean output.",
-            "status": "pending",
-            "testStrategy": "Test jinja_env.list_templates() returns ['prd_template.md']."
-          },
-          {
-            "id": 3,
-            "title": "Implement generate_prd Function",
-            "description": "Create the core generate_prd() function that fetches file_info, deps, consumers from DataFrames and renders template.",
-            "dependencies": [
-              1,
-              2
-            ],
-            "details": "def generate_prd(): if selected_file.value: file_info = files_df[files_df.path==selected_file.value].iloc[0]; deps=edges_df[edges_df.source==selected_file.value]; consumers=edges_df[edges_df.target==selected_file.value]; template=jinja_env.get_template('prd_template.md'); return mo.md(template.render(file=file_info, deps=deps, consumers=consumers))",
-            "status": "pending",
-            "testStrategy": "Mock selected_file.value, verify rendered output contains file name, dep paths, consumer paths."
-          },
-          {
-            "id": 4,
-            "title": "Make PRD Generation Reactive",
-            "description": "Bind generate_prd() to selected_file state changes for automatic PRD updates.",
-            "dependencies": [
-              3
-            ],
-            "details": "Create prd_output = mo.state(''); @mo.reactive def update_prd(): prd_output.set(generate_prd() if selected_file.value else ''); update_prd(); Add dependency: mo.ui.bind(update_prd, selected_file).",
-            "status": "pending",
-            "testStrategy": "Change selected_file.value, verify prd_output updates reactively within 100ms."
-          },
-          {
-            "id": 5,
-            "title": "Add PRD Output UI to Explorer Tab",
-            "description": "Integrate reactive PRD display into existing Explorer tab UI below the files table.",
-            "dependencies": [
-              4
-            ],
-            "details": "In Explorer tab vstack: add mo.vstack([files_table, mo.rule(), mo.md('## PRD:', classes='h4'), prd_output]) after table. Style with CSS for scrollable PRD section if content overflows.",
-            "status": "pending",
-            "testStrategy": "Select different files in table, verify PRD section shows correct metadata/deps/consumers for each."
-          }
+          {"id": 1, "title": "Set up Commander.js v11.5.0 in scaffold-cli.ts", "description": "Install commander.js v11.5.0 as dependency and initialize program in scaffold-cli.ts with version and basic parse setup.", "dependencies": [], "details": "Run `npm install commander@11.5.0`. In scaffold-cli.ts, import Commander, create `program = new Command()`, set `.version('1.0.0')`, call `program.parse()`, ensure Node.js 22+ compatibility with tsx.", "status": "pending", "testStrategy": "Verify `npx tsx scaffold-cli.ts --version` outputs version, `npx tsx scaffold-cli.ts --help` shows basic help without errors."},
+          {"id": 2, "title": "Define ScaffoldPlugin and ParserOptions TypeScript interfaces", "description": "Add exact TypeScript interfaces for ScaffoldPlugin and ParserOptions in scaffold-cli.ts as foundation for plugin validation.", "dependencies": [], "details": "Define `interface ScaffoldPlugin { name: string; version: string; description: string; execute(options: ParserOptions): Promise<any>; }` and `interface ParserOptions { target: string; [key: string]: any; }`. Ensure strict typing with tsconfig.json.", "status": "pending", "testStrategy": "Run `npx tsc --noEmit scaffold-cli.ts` to verify interfaces compile without type errors."},
+          {"id": 3, "title": "Implement scanPlugins function to discover parsers/*.js", "description": "Create scanPlugins() function that scans parsers/*.js files, dynamically requires them, validates against ScaffoldPlugin interface, collects metadata.", "dependencies": [1, 2], "details": "Use `fs.readdirSync('parsers')` to find .js files, `require(path)` each, check `typeof plugin.execute === 'function' && plugin.name`, filter valid plugins, return `[{name, version, description}, ...]` array.", "status": "pending", "testStrategy": "Create mock parsers/01_mock.js with valid interface, run scanPlugins() manually, verify returns correct metadata array."},
+          {"id": 4, "title": "Implement list-plugins command with JSON output", "description": "Register 'list-plugins' command using Commander.js that calls scanPlugins() and outputs JSON array of plugin metadata.", "dependencies": [1, 3], "details": "Add `program.command('list-plugins').description('List available plugins').action(async () => { const plugins = await scanPlugins(); console.log(JSON.stringify(plugins, null, 2)); })`. Ensure clean JSON formatting.", "status": "pending", "testStrategy": "Create 2-3 mock plugin .js files in parsers/, run `npx tsx scaffold-cli.ts list-plugins | jq '. | length'` verifies array length >1."},
+          {"id": 5, "title": "Implement dynamic plugin execution command registration", "description": "Add dynamic command registration for discovered plugins and generic execution handler with --target [path] [options].", "dependencies": [1, 2, 3, 4], "details": "After scanning plugins, for each: `program.command(plugin.name).argument('[options...]').option('--target <path>', 'target path', '.').action(async (opts, cmd) => { const options: ParserOptions = {target: cmd.opts().target, ...parseOptions(opts)}; await plugin.execute(options); })`. Parse remaining args as options.", "status": "pending", "testStrategy": "With mock plugin, run `npx tsx scaffold-cli.ts mock-plugin --target ./test` verifies execute() called with correct ParserOptions."}
         ]
       },
       {
         "id": 9,
-        "title": "Create Emperor Command Interface and Logging",
-        "description": "Build mission briefing textarea, deploy button, and scrollable agent logs.",
-        "details": "mission_briefing = mo.ui.text_area('Mission Briefing', height='100px')\ndeploy_btn = mo.ui.button('Deploy Agent', on_click=lambda: agent_logs.append(f'[{datetime.now()}] DEPLOYING: {mission_briefing.value}'))\nlogs_display = mo.ui.vstack([mo.md(log) for log in agent_logs], scroll=True)\nemperor_vstack = mo.vstack([mission_briefing, deploy_btn, logs_display])",
-        "testStrategy": "Enter mission text, click Deploy, verify timestamped log appears and scrolls correctly.",
-        "priority": "medium",
-        "dependencies": [
-          1,
-          7
-        ],
+        "title": "Create Overview Parser Plugin and Dynamic Plugin Loader",
+        "description": "Implement overview.js parser and orchestr8_app.py dynamic plugin loader",
+        "details": "Create `frontend/tools/parsers/overview.js`: export const plugin: ScaffoldPlugin = {commandType:'overview', description:..., parserFunction: async (path,options)=> {...scan project, return numbered index...}, supportsCompare:false}. In orchestr8_app.py @app.cell: scan IP/plugins/*.py sorted by prefix, importlib.util.spec_from_file_location(), extract PLUGIN_NAME/ORDER, mo.ui.tabs() from render(STATE_MANAGERS).",
+        "testStrategy": "npx tsx scaffold-cli.ts overview --target testproj verifies output format, create test 01_test.py plugin, restart marimo verifies tab appears.",
+        "priority": "high",
+        "dependencies": [7, 8],
         "status": "pending",
         "subtasks": [
-          {
-            "id": 1,
-            "title": "Initialize agent_logs state variable",
-            "description": "Create the global reactive state for storing agent logs if not already present.",
-            "dependencies": [],
-            "details": "Add agent_logs = mo.state([]) to the global state definitions from Task 1. Ensure it's initialized as an empty list for reactive updates.",
-            "status": "pending",
-            "testStrategy": "Verify agent_logs is accessible and reactive in notebook cells without errors."
-          },
-          {
-            "id": 2,
-            "title": "Create mission briefing textarea",
-            "description": "Implement the mission_briefing textarea UI component with specified height.",
-            "dependencies": [
-              1
-            ],
-            "details": "Define mission_briefing = mo.ui.text_area('Mission Briefing', height='100px'). Ensure it's reactive via mo.state if needed for value access.",
-            "status": "pending",
-            "testStrategy": "Enter text in textarea and verify mission_briefing.value updates reactively."
-          },
-          {
-            "id": 3,
-            "title": "Implement deploy button with logging logic",
-            "description": "Create deploy button that appends timestamped mission briefing to agent_logs on click.",
-            "dependencies": [
-              1,
-              2
-            ],
-            "details": "Define deploy_btn = mo.ui.button('Deploy Agent', on_click=lambda: agent_logs.append(f'[{datetime.now()}] DEPLOYING: {mission_briefing.value}')). Import datetime if missing.",
-            "status": "pending",
-            "testStrategy": "Click button after entering mission text; verify agent_logs list updates with correct timestamped entry."
-          },
-          {
-            "id": 4,
-            "title": "Build scrollable logs display component",
-            "description": "Create vstack that renders agent_logs as markdown items with scrolling enabled.",
-            "dependencies": [
-              1,
-              3
-            ],
-            "details": "Define logs_display = mo.ui.vstack([mo.md(log) for log in agent_logs], scroll=True). Ensure it reacts to agent_logs changes automatically.",
-            "status": "pending",
-            "testStrategy": "Add multiple logs via deploy button; verify display shows all logs and scrolls when content exceeds viewport."
-          },
-          {
-            "id": 5,
-            "title": "Assemble and integrate emperor_vstack interface",
-            "description": "Combine all components into the main emperor_vstack and integrate into tabs or main UI.",
-            "dependencies": [
-              2,
-              3,
-              4
-            ],
-            "details": "Define emperor_vstack = mo.vstack([mission_briefing, deploy_btn, logs_display]). Add to mo.ui.tabs or main layout alongside Explorer tab from Task 3.",
-            "status": "pending",
-            "testStrategy": "Enter mission text, deploy multiple times; verify full interface renders, logs appear/scroll correctly, no layout issues."
-          }
+          {"id": 1, "title": "Create frontend/tools/parsers/overview.js file", "description": "Set up the overview parser plugin file with correct TypeScript structure and ScaffoldPlugin export", "dependencies": [], "details": "Create `frontend/tools/parsers/overview.js` file exporting const plugin: ScaffoldPlugin with commandType:'overview', description, parserFunction, and supportsCompare:false properties as specified in task details.", "status": "pending", "testStrategy": "Verify file exists at correct path and contains proper export structure using fs.existsSync and basic content check"},
+          {"id": 2, "title": "Implement overview parser scanning logic", "description": "Develop the async parserFunction to scan project directory and return numbered index structure", "dependencies": [1], "details": "In overview.js parserFunction(path, options), implement project directory scanning logic that returns a numbered index of project contents following the specified format from task implementation details.", "status": "pending", "testStrategy": "Run npx tsx scaffold-cli.ts overview --target testproj and verify returns structured numbered index output"},
+          {"id": 3, "title": "Implement plugin directory scanning in orchestr8_app.py", "description": "Add code to scan IP/plugins/*.py files sorted by prefix in orchestr8_app.py", "dependencies": [], "details": "In orchestr8_app.py, implement @app.cell decorator that uses pathlib.glob('IP/plugins/*.py'), sorts by filename prefix, and prepares plugin file list for dynamic loading.", "status": "pending", "testStrategy": "Verify scanning logic returns correctly sorted list of plugin files using print statements or logging"},
+          {"id": 4, "title": "Create dynamic plugin loader with importlib", "description": "Implement dynamic import using importlib.util.spec_from_file_location and extract PLUGIN_NAME/ORDER", "dependencies": [3], "details": "Extend scanning logic to use importlib.util.spec_from_file_location() for dynamic imports, extract PLUGIN_NAME and ORDER from each plugin module, and store in accessible structure.", "status": "pending", "testStrategy": "Create test plugin 01_test.py, restart marimo, verify PLUGIN_NAME/ORDER extracted correctly via logs or UI"},
+          {"id": 5, "title": "Integrate plugins with mo.ui.tabs rendering", "description": "Connect loaded plugins to STATE_MANAGERS rendering using mo.ui.tabs()", "dependencies": [4], "details": "Implement render(STATE_MANAGERS) logic using mo.ui.tabs() to display dynamically loaded plugins as tabs based on extracted PLUGIN_NAME/ORDER metadata.", "status": "pending", "testStrategy": "Create 01_test.py plugin, restart marimo app, verify test plugin tab appears and displays correctly in UI"}
         ]
       },
       {
         "id": 10,
-        "title": "Integrate Connection Verification into Scan Workflow",
-        "description": "Chain verify_connections after successful scan for fully reactive updates.",
-        "details": "Modify scan_button on_click: scan_project(project_root.value); verify_connections(files_df.value)\nEnsure graph and PRD tabs auto-update when files_df and edges_df change due to Marimo reactivity.",
-        "testStrategy": "Full end-to-end: Enter path → Scan → Table populates with badges → Graph renders → Select file → PRD updates.",
+        "title": "Implement Core UI Plugins: Generator and Explorer",
+        "description": "Create 01_generator.py (7-phase wizard) and 02_explorer.py (file tree with Carl integration)",
+        "details": "01_generator.py: PLUGIN_ORDER=1, PLUGIN_NAME='Generator', render(): mo.ui.progress(phase/7), mo.ui.text_area(), lock buttons updating mo.state(), export BUILD_SPEC.json. 02_explorer.py: PLUGIN_ORDER=2, PLUGIN_NAME='Explorer', mo.ui.table(files, selection='single'), scan button -> carl_core.run_deep_scan(), context panel.",
+        "testStrategy": "Navigate generator 7 phases -> verify BUILD_SPEC.json created, explorer scan -> table populates, selection updates state.",
         "priority": "high",
-        "dependencies": [
-          3,
-          5,
-          6,
-          8
-        ],
+        "dependencies": [4, 5, 9],
         "status": "pending",
         "subtasks": [
-          {
-            "id": 1,
-            "title": "Locate and Modify Scan Button on_click Handler",
-            "description": "Find the scan_button cell in the Marimo notebook and update its on_click callback to chain scan_project and verify_connections calls.",
-            "dependencies": [],
-            "details": "Update the existing scan_button.on_click to: lambda: (scan_project(project_root.value), verify_connections(files_df.value)). Ensure both functions execute sequentially after button click.",
-            "status": "pending",
-            "testStrategy": "Click scan button and verify both scan_project and verify_connections execute in sequence without errors."
-          },
-          {
-            "id": 2,
-            "title": "Verify files_df Passed Correctly to verify_connections",
-            "description": "Ensure verify_connections receives the updated files_df from scan_project and processes it to populate edges_df.",
-            "dependencies": [
-              1
-            ],
-            "details": "Confirm files_df.value is reactive and passed by reference. Test that verify_connections reads files_df after scan completes and generates edges_df correctly using the provided regex heuristic.",
-            "status": "pending",
-            "testStrategy": "After scan, inspect files_df row count matches scanned files and edges_df populates with import edges."
-          },
-          {
-            "id": 3,
-            "title": "Configure Graph Tab for edges_df Reactivity",
-            "description": "Update the graph tab/render_graph to automatically re-render when edges_df changes due to Marimo reactivity.",
-            "dependencies": [
-              2
-            ],
-            "details": "Bind render_graph to edges_df using mo.reactive or cell dependencies. Ensure NetworkX DiGraph rebuilds from updated edges_df and PyVis generates new HTML on every edges_df.value change.",
-            "status": "pending",
-            "testStrategy": "Change edges_df manually; verify graph auto-updates with physics simulation and correct node connections."
-          },
-          {
-            "id": 4,
-            "title": "Configure PRD Tab for files_df and selected_file Reactivity",
-            "description": "Ensure PRD tab content updates automatically when files_df changes post-scan and when selected_file updates.",
-            "dependencies": [
-              2,
-              3
-            ],
-            "details": "Make PRD display reactive to files_df.value for file list refresh and selected_file.value for content display. Use mo.ui.table or similar bound to files_df with selection callback updating selected_file.",
-            "status": "pending",
-            "testStrategy": "Scan project → verify PRD table populates; select file → verify PRD content updates with file details."
-          },
-          {
-            "id": 5,
-            "title": "End-to-End Testing of Integrated Scan Workflow",
-            "description": "Run complete workflow test: path entry → scan → verification → auto-updates in graph/PRD tabs.",
-            "dependencies": [
-              1,
-              2,
-              3,
-              4
-            ],
-            "details": "Test full sequence: Enter project path, click scan_button, confirm files_df populates with badges, edges_df generates, graph renders with physics, file selection updates PRD. Check for reactivity without manual triggers.",
-            "status": "pending",
-            "testStrategy": "Full E2E: Enter path → Scan → Table badges appear → Graph auto-renders → Select file → PRD updates instantly."
-          }
+          {"id": 1, "title": "Create 01_generator.py Base Structure", "description": "Initialize the Generator plugin file with PLUGIN_ORDER=1, PLUGIN_NAME='Generator', and basic mo.state() setup for 7 phases.", "dependencies": [], "details": "Create file 01_generator.py in plugins directory. Define PLUGIN_ORDER=1, PLUGIN_NAME='Generator'. Initialize mo.state(phase=0, build_spec={}). Import mo and json modules.", "status": "pending", "testStrategy": "Verify file created with correct PLUGIN_ORDER and PLUGIN_NAME constants accessible via import."},
+          {"id": 2, "title": "Implement Generator 7-Phase Wizard UI", "description": "Build render() function with progress bar, text area, phase-specific content, and lock buttons based on mo.state().", "dependencies": [1], "details": "In render(): mo.ui.progress(mo.state.phase/7), conditional phase content via if mo.state.phase==0-6, mo.ui.text_area() for input, buttons disabled when phase locked. Update phase via button callbacks.", "status": "pending", "testStrategy": "Navigate through phases manually, verify progress bar updates 0/7->7/7, text_area persists state, buttons lock correctly."},
+          {"id": 3, "title": "Add Generator BUILD_SPEC.json Export", "description": "Implement export functionality to save mo.state() build_spec as BUILD_SPEC.json with validation.", "dependencies": [2], "details": "Add Export button -> callback: validate build_spec keys, json.dump(mo.state.build_spec, 'BUILD_SPEC.json', indent=2), mo.ui.notify('Exported successfully'). Handle phase=7 completion.", "status": "pending", "testStrategy": "Complete all 7 phases, click Export -> verify BUILD_SPEC.json created with valid JSON structure and content."},
+          {"id": 4, "title": "Create 02_explorer.py Base Structure", "description": "Initialize Explorer plugin with PLUGIN_ORDER=2, PLUGIN_NAME='Explorer', files list in mo.state(), and basic UI layout.", "dependencies": [1], "details": "Create 02_explorer.py. Set PLUGIN_ORDER=2, PLUGIN_NAME='Explorer'. mo.state(files=[], selected_file=''). Import mo, carl_core, os/pathlib modules.", "status": "pending", "testStrategy": "Verify plugin loads after Generator, initial state files=[] empty, no errors on render."},
+          {"id": 5, "title": "Implement Explorer File Table and Carl Integration", "description": "Add file table with single selection, scan button calling carl_core.run_deep_scan(), and context panel for selected file.", "dependencies": [4], "details": "render(): mo.ui.table(data=mo.state.files, selection='single', on_change=update_selected), Scan button -> carl_core.run_deep_scan(root.get()) -> mo.state.files=results, context panel: mo.ui.text(mo.state.selected_file details).", "status": "pending", "testStrategy": "Click Scan -> verify table populates with files, select row -> context panel updates, state.selected_file persists."}
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Implement Gatekeeper and Connie UI Plugins",
+        "description": "Create 03_gatekeeper.py (Louis protection) and 04_connie_ui.py (DB conversion)",
+        "details": "03_gatekeeper.py: PLUGIN_ORDER=3, import louis_core, status badge, lock/unlock buttons -> louis_core.scan_and_protect(), git hook install. 04_connie_ui.py: PLUGIN_ORDER=4, DB picker (*.db), table dropdown -> engine.list_tables(), format radio -> export_*, preview pd.head(10).to_markdown().",
+        "testStrategy": "Gatekeeper: verify chmod changes and git hook installs, Connie: test all 4 export formats create files.",
+        "priority": "high",
+        "dependencies": [4, 10],
+        "status": "pending",
+        "subtasks": [
+          {"id": 1, "title": "Create Gatekeeper Plugin Base Structure", "description": "Set up 03_gatekeeper.py with PLUGIN_ORDER=3 and import louis_core module.", "dependencies": [], "details": "Create new file 03_gatekeeper.py in plugins directory. Define PLUGIN_ORDER = 3 constant. Add import statement for louis_core. Ensure file follows standard plugin structure with basic class definition.", "status": "pending", "testStrategy": "Verify file creation and PLUGIN_ORDER value via grep or direct inspection. Confirm louis_core import succeeds without errors."},
+          {"id": 2, "title": "Implement Gatekeeper UI Status and Buttons", "description": "Add status badge display and lock/unlock buttons to Gatekeeper plugin UI.", "dependencies": [1], "details": "Implement mo.ui.badge() for protection status display. Add mo.ui.button('Lock') and mo.ui.button('Unlock') with click handlers. Connect buttons to toggle louis_core.scan_and_protect() execution.", "status": "pending", "testStrategy": "Manual UI test: verify badge shows correct status, buttons appear and respond to clicks without crashing."},
+          {"id": 3, "title": "Add Git Hook Installation to Gatekeeper", "description": "Implement git hook installation functionality triggered by Gatekeeper plugin.", "dependencies": [2], "details": "Create function to install pre-commit git hook calling louis_core.scan_and_protect(). Add UI confirmation dialog before installation. Use subprocess to run git config commands for hook setup.", "status": "pending", "testStrategy": "Run plugin, trigger hook install, verify .git/hooks/pre-commit file created with correct chmod 755 permissions."},
+          {"id": 4, "title": "Create Connie UI Plugin Base with DB Picker", "description": "Set up 04_connie_ui.py with PLUGIN_ORDER=4 and database file picker functionality.", "dependencies": [], "details": "Create 04_connie_ui.py file with PLUGIN_ORDER = 4. Implement mo.ui.file_picker(filter='*.db') for SQLite database selection. Store selected DB path in plugin state.", "status": "pending", "testStrategy": "Verify plugin loads, file picker opens and filters .db files correctly, selected path is stored."},
+          {"id": 5, "title": "Implement Connie UI Table Selection and Export Features", "description": "Add table dropdown, format selector, preview, and export functionality to Connie UI.", "dependencies": [4], "details": "Connect DB picker to engine = create_engine(selected_db). Add mo.ui.dropdown(values=engine.list_tables()). Add format radio buttons (csv, json, parquet, markdown). Implement preview with pd.read_sql(table).head(10).to_markdown(). Add export buttons calling export_csv(), export_json(), etc.", "status": "pending", "testStrategy": "Test full flow: select DB -> table dropdown populates -> select format -> preview shows data -> export creates 4 different file formats in output directory."}
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Implement CLI Bridge Plugin and E2E Testing",
+        "description": "Create 05_cli_bridge.py for dynamic TypeScript plugin discovery/execution, run integration tests",
+        "details": "05_cli_bridge.py: PLUGIN_ORDER=5, npx tsx scaffold-cli.ts list-plugins -> parse JSON -> dynamic mo.ui.accordion(), Run button -> subprocess.run(['npx','tsx','scaffold-cli.ts',commandType,'--target',root.get()], timeout=30), display results. Test full workflow: launch->scan->generator->connie->bridge.",
+        "testStrategy": "Mock list-plugins JSON -> verify dynamic UI, test execution timeout, manual E2E: all 5 plugins functional, dynamic discovery works.",
+        "priority": "high",
+        "dependencies": [8, 11],
+        "status": "pending",
+        "subtasks": [
+          {"id": 1, "title": "Create 05_cli_bridge.py file with PLUGIN_ORDER", "description": "Initialize the CLI bridge plugin file with proper plugin structure and ordering", "dependencies": [], "details": "Create 05_cli_bridge.py in plugins directory. Set PLUGIN_ORDER=5. Include basic plugin structure with mo.ui integration. Ensure compatibility with existing plugin system (dependencies 8,11).", "status": "pending", "testStrategy": "Verify file creation and PLUGIN_ORDER=5 via python -m pytest --collect-only"},
+          {"id": 2, "title": "Implement dynamic plugin discovery from CLI JSON", "description": "Execute npx tsx scaffold-cli.ts list-plugins and parse JSON output for UI display", "dependencies": [1], "details": "Add subprocess call: subprocess.run(['npx','tsx','scaffold-cli.ts','list-plugins'], capture_output=True). Parse JSON response using json.loads(). Handle errors and empty responses gracefully.", "status": "pending", "testStrategy": "Mock subprocess JSON output -> verify parsed plugins array structure and metadata extraction"},
+          {"id": 3, "title": "Build dynamic mo.ui.accordion() plugin interface", "description": "Create interactive accordion UI displaying discovered plugins with metadata", "dependencies": [2], "details": "Use parsed JSON to generate mo.ui.accordion() with plugin name, description, version. Each accordion item shows plugin details. Make collapsible and responsive. Add loading spinner during discovery.", "status": "pending", "testStrategy": "Mock plugin JSON -> verify accordion renders correct number of items with proper metadata display"},
+          {"id": 4, "title": "Implement Run button with subprocess execution", "description": "Add execution functionality for selected plugins with timeout and result display", "dependencies": [3], "details": "For each accordion: Run button -> subprocess.run(['npx','tsx','scaffold-cli.ts',commandType,'--target',root.get()], timeout=30, capture_output=True). Display stdout/stderr in results panel. Handle timeout exceptions.", "status": "pending", "testStrategy": "Mock subprocess -> verify command construction, timeout=30, result display for success/error/timeout cases"},
+          {"id": 5, "title": "Create E2E tests for full CLI bridge workflow", "description": "Test complete workflow: launch->scan->generator->connie->bridge with all 5 plugins", "dependencies": [4], "details": "Write integration tests: 1) Verify dynamic discovery finds all 5 plugins, 2) Test each plugin execution timeout handling, 3) Manual E2E: run full workflow launch->scan->generator->connie->bridge. Mock scaffold-cli.ts responses.", "status": "pending", "testStrategy": "pytest integration tests: mock list-plugins JSON -> verify UI/execution -> manual verification all 5 plugins functional end-to-end"}
         ]
       }
     ],
     "metadata": {
       "created": "2026-01-25T20:30:56.148Z",
-      "updated": "2026-01-25T20:30:56.148Z",
-      "description": "Tasks for master context"
+      "updated": "2026-01-26T02:00:00.000Z",
+      "description": "Tasks for Orchestr8 v3.0 Fortress Factory - master context",
+      "version": "3.0.0",
+      "v1_migration_note": "Tasks renumbered from 31-42 to 1-12. Original v1.0 MVP (orchestr8.py) completed prior to v3.0 architecture refactor. v1.0 implemented: ExplorerView, ConnectionVerifier, ConnectionGraph (PyVis/NetworkX), PRDGenerator (Jinja2), Emperor Command Interface. See orchestr8.py (424 lines) for working v1.0 reference."
     }
   }
 }

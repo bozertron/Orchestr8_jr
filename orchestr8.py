@@ -1,288 +1,423 @@
-import marimo as mo
-import pandas as pd
-import networkx as nx
-from pyvis.network import Network
-import os
-import re
-import json
-import datetime
-from jinja2 import Template
+import marimo
 
-# ==========================================
-# 1. THE DATA CORE (State Management)
-# ==========================================
+__generated_with = "0.19.6"
+app = marimo.App(width="full")
 
-# We use Marimo state to hold the "Project Soul"
-get_project_root, set_project_root = mo.state(".")
-get_files_df, set_files_df = mo.state(pd.DataFrame())
-get_edges_df, set_edges_df = mo.state(pd.DataFrame())
-get_selected_file, set_selected_file = mo.state(None)
-get_agent_logs, set_agent_logs = mo.state([])
 
-# ==========================================
-# 2. THE HARVESTERS (Logic & Analysis)
-# ==========================================
+@app.cell
+def imports():
+    """Core imports for Orchestr8"""
+    import marimo as mo
+    import pandas as pd
+    import networkx as nx
+    from pyvis.network import Network
+    import os
+    import re
+    import json
+    import datetime
+    from jinja2 import Template
+    return Network, Template, datetime, json, mo, nx, os, pd, re
 
-def scan_project(root_path):
-    """
-    The ExplorerView Backend.
-    Scans the directory and builds the Files DataFrame.
-    """
-    file_list = []
+
+@app.cell
+def state_management(mo, pd):
+    """Global state management - The Data Core"""
+    # Project state using Marimo's reactive state
+    get_project_root, set_project_root = mo.state(".")
+    get_files_df, set_files_df = mo.state(pd.DataFrame())
+    get_edges_df, set_edges_df = mo.state(pd.DataFrame())
+    get_selected_file, set_selected_file = mo.state(None)
+    get_agent_logs, set_agent_logs = mo.state([])
+    return (
+        get_agent_logs,
+        get_edges_df,
+        get_files_df,
+        get_project_root,
+        get_selected_file,
+        set_agent_logs,
+        set_edges_df,
+        set_files_df,
+        set_project_root,
+        set_selected_file,
+    )
+
+
+@app.cell
+def scanner_function(os, pd):
+    """Project Scanner - The Harvester"""
+    EXCLUSIONS = {'node_modules', '.git', '__pycache__', '.venv', 'venv', '.env'}
     
-    # Walk the directory
-    for root, dirs, files in os.walk(root_path):
-        if 'node_modules' in root or '.git' in root or '__pycache__' in root:
-            continue
+    def scan_project(root_path):
+        """
+        Scans directory and builds Files DataFrame.
+        Excludes common non-source directories.
+        """
+        file_list = []
+        
+        for root, dirs, files in os.walk(root_path):
+            # Filter out excluded directories in-place
+            dirs[:] = [d for d in dirs if d not in EXCLUSIONS]
             
-        for file in files:
-            full_path = os.path.join(root, file)
-            rel_path = os.path.relpath(full_path, root_path)
-            ext = os.path.splitext(file)[1]
-            
-            # Simple heuristic for complexity (File Size)
-            size = os.path.getsize(full_path)
-            
-            file_list.append({
-                "path": rel_path,
-                "name": file,
-                "type": ext,
-                "size": size,
-                "status": "NORMAL", # Default
-                "issues": 0
-            })
-            
-    return pd.DataFrame(file_list)
+            # Skip if we're inside an excluded path
+            if any(excl in root for excl in EXCLUSIONS):
+                continue
+                
+            for file in files:
+                full_path = os.path.join(root, file)
+                rel_path = os.path.relpath(full_path, root_path)
+                ext = os.path.splitext(file)[1]
+                
+                try:
+                    size = os.path.getsize(full_path)
+                except OSError:
+                    size = 0
+                
+                file_list.append({
+                    "path": rel_path,
+                    "name": file,
+                    "type": ext,
+                    "size": size,
+                    "status": "NORMAL",
+                    "issues": 0
+                })
+                
+        return pd.DataFrame(file_list)
+    return EXCLUSIONS, scan_project
 
-def verify_connections(root_path, files_df):
-    """
-    The ConnectionVerifier Backend.
-    Parses files for imports and checks validity.
-    Returns: Updated Files DF (with badges) and Edges DF.
-    """
-    edges = []
+
+@app.cell
+def verifier_function(os, pd, re):
+    """Connection Verifier - Parses imports and checks file health"""
+    # Regex patterns for various import styles
+    IMPORT_PATTERNS = [
+        re.compile(r"(?:from|import)\s+['\"]([^'\"]+)['\"]"),  # JS/TS style
+        re.compile(r"^import\s+(\w+)", re.MULTILINE),          # Python: import module
+        re.compile(r"^from\s+([\w.]+)\s+import", re.MULTILINE), # Python: from x import y
+    ]
     
-    # Regex for JS/Python imports (Simplified for MVP)
-    # Matches: import X from 'Y' OR from 'Y' import X
-    import_pattern = re.compile(r"(?:from|import)\s+['\"]([^'\"]+)['\"]")
+    def verify_connections(root_path, files_df):
+        """
+        Analyzes files for imports and health status.
+        Returns: Updated files_df with badges, edges_df with connections
+        """
+        edges = []
+        
+        for index, row in files_df.iterrows():
+            full_path = os.path.join(root_path, row['path'])
+            
+            try:
+                with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    content = f.read()
+                    
+                    # Extract all imports using multiple patterns
+                    all_imports = set()
+                    for pattern in IMPORT_PATTERNS:
+                        matches = pattern.findall(content)
+                        all_imports.update(matches)
+                    
+                    # Create edges for each import
+                    for target in all_imports:
+                        edge = {
+                            "source": row['path'],
+                            "target": target,
+                            "type": "import"
+                        }
+                        edges.append(edge)
+                    
+                    # Status badge logic
+                    issues = 0
+                    status = "NORMAL"
+                    
+                    if "TODO" in content or "FIXME" in content:
+                        status = "WARNING"
+                        issues += content.count("TODO") + content.count("FIXME")
+                    
+                    if len(all_imports) > 10:
+                        status = "COMPLEX"
+                    
+                    files_df.at[index, 'status'] = status
+                    files_df.at[index, 'issues'] = issues
+                    
+            except Exception:
+                pass  # Skip binary/unreadable files
+        
+        return files_df, pd.DataFrame(edges)
+    return IMPORT_PATTERNS, verify_connections
+
+
+@app.cell
+def badge_renderer():
+    """Status Badge Renderer - Visual indicators"""
+    def render_badge(status):
+        colors = {
+            "NORMAL": "#22c55e",   # green
+            "WARNING": "#f97316",  # orange
+            "COMPLEX": "#a855f7",  # purple
+            "ERROR": "#ef4444"     # red
+        }
+        color = colors.get(status, "#6b7280")
+        return f"<span style='background-color:{color}; color:white; padding:2px 8px; border-radius:4px; font-size:0.85em; font-weight:500'>{status}</span>"
+    return (render_badge,)
+
+
+@app.cell
+def app_header(mo):
+    """App Title and Header"""
+    app_title = mo.md("# 🎻 Orchestr8: The Command Center")
+    return (app_title,)
+
+
+@app.cell
+def control_panel(
+    mo,
+    get_project_root,
+    set_project_root,
+    set_files_df,
+    set_edges_df,
+    scan_project,
+    verify_connections,
+):
+    """Control Panel - Path input and scan button"""
+    path_input = mo.ui.text(
+        value=".", 
+        label="Project Root", 
+        full_width=True
+    )
     
-    for index, row in files_df.iterrows():
-        full_path = os.path.join(root_path, row['path'])
+    def run_scan():
+        root = path_input.value
+        set_project_root(root)
+        df = scan_project(root)
+        df, edges = verify_connections(root, df)
+        set_files_df(df)
+        set_edges_df(edges)
+    
+    scan_button = mo.ui.button(
+        label="🔍 Scan & Verify Codebase", 
+        on_change=lambda _: run_scan()
+    )
+    
+    control_row = mo.hstack([path_input, scan_button], justify="start", gap=1)
+    return control_row, path_input, run_scan, scan_button
+
+
+@app.cell
+def explorer_view_cell(mo, get_files_df, get_selected_file, set_selected_file, render_badge):
+    """Explorer Tab - File system table with selection"""
+    def build_explorer_view():
+        df = get_files_df()
+        if df.empty:
+            return mo.md("*No project loaded. Enter a path and click Scan.*")
+        
+        # Add visual badges
+        display_df = df.copy()
+        display_df['status_badge'] = display_df['status'].apply(render_badge)
+        
+        # Create interactive table
+        table = mo.ui.table(
+            display_df[['status_badge', 'path', 'type', 'size', 'issues']],
+            selection='single',
+            label="📂 File System"
+        )
+        
+        return mo.vstack([
+            table,
+            mo.md(f"**Selected:** `{get_selected_file() or 'None'}`")
+        ])
+    
+    explorer_content = build_explorer_view()
+    return (explorer_content,)
+
+
+@app.cell
+def connection_graph_cell(mo, nx, Network, get_edges_df, get_files_df):
+    """Connections Tab - NetworkX/PyVis graph visualization"""
+    def build_connection_graph():
+        edges = get_edges_df()
+        
+        if edges.empty:
+            return mo.md("*No connections found. Scan a project first.*")
+        
+        # Build NetworkX directed graph
+        G = nx.from_pandas_edgelist(edges, source='source', target='target', create_using=nx.DiGraph())
+        
+        # Configure PyVis
+        net = Network(
+            height="500px", 
+            width="100%", 
+            bgcolor="#1a1a2e", 
+            font_color="white",
+            directed=True
+        )
+        net.from_nx(G)
+        
+        # Physics settings for force-directed layout
+        net.barnes_hut(
+            gravity=-2000,
+            central_gravity=0.3,
+            spring_length=100,
+            spring_strength=0.01,
+            damping=0.09
+        )
         
         try:
-            with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
-                content = f.read()
-                
-                # HARVEST IMPORTS
-                matches = import_pattern.findall(content)
-                for target in matches:
-                    # Logic to resolve path (Naive for MVP)
-                    # In a real app, we'd handle alias resolution (@/components/...)
-                    edge = {
-                        "source": row['path'],
-                        "target": target, # This needs resolution logic
-                        "type": "import"
-                    }
-                    edges.append(edge)
-                    
-                # HEURISTIC CHECKS (The "Verifier")
-                issues = 0
-                if "TODO" in content:
-                    files_df.at[index, 'status'] = "WARNING"
-                    issues += 1
-                if len(matches) > 10: # High coupling
-                    files_df.at[index, 'status'] = "COMPLEX"
-                    
-                files_df.at[index, 'issues'] = issues
-                
-        except Exception:
-            pass # Skip binary files
+            html_str = net.generate_html()
+            return mo.Html(html_str)
+        except Exception as e:
+            return mo.md(f"Graph generation error: {str(e)}")
+    
+    graph_content = build_connection_graph()
+    return (graph_content,)
 
-    return files_df, pd.DataFrame(edges)
 
-# ==========================================
-# 3. THE VISUALIZERS (UI Components)
-# ==========================================
-
-def render_badge(status):
-    colors = {
-        "NORMAL": "green",
-        "WARNING": "orange",
-        "COMPLEX": "purple",
-        "ERROR": "red"
-    }
-    color = colors.get(status, "gray")
-    return f"<span style='background-color:{color}; color:white; padding:2px 6px; border-radius:4px; font-size:0.8em'>{status}</span>"
-
-# ==========================================
-# 4. MARIMO APP LAYOUT
-# ==========================================
-
-app_title = mo.md("# 🎻 Orchestr8: The Command Center")
-
-# --- CONTROL PANEL ---
-path_input = mo.ui.text(
-    value=".", 
-    label="Project Root", 
-    full_width=True
-)
-
-scan_button = mo.ui.button(
-    label="🔍 Scan & Verify Codebase", 
-    on_change=lambda _: run_scan()
-)
-
-def run_scan():
-    root = path_input.value
-    set_project_root(root)
-    df = scan_project(root)
-    df, edges = verify_connections(root, df)
-    set_files_df(df)
-    set_edges_df(edges)
-
-# --- TAB 1: EXPLORER VIEW ---
-def explorer_view():
-    df = get_files_df()
-    if df.empty:
-        return mo.md("*No project loaded. Enter a path and click Scan.*")
-    
-    # Add Visual Badges
-    display_df = df.copy()
-    display_df['status_badge'] = display_df['status'].apply(render_badge)
-    
-    # Interactive Table
-    table = mo.ui.table(
-        display_df[['status_badge', 'path', 'type', 'size', 'issues']],
-        selection='single',
-        label="File System"
-    )
-    
-    # Handle Selection
-    def on_select(value):
-        if value:
-            set_selected_file(value[0]['path'])
-            
-    return mo.vstack([
-        table,
-        # We hook into the table's value to update state
-        mo.call_to_action(
-            lambda: on_select(table.value) if hasattr(table, 'value') else None
-        )
-    ])
-
-# --- TAB 2: CONNECTION GRAPH ---
-def connection_graph_view():
-    edges = get_edges_df()
-    nodes = get_files_df()
-    
-    if edges.empty:
-        return mo.md("*No connections found.*")
-    
-    # Build NetworkX Graph
-    G = nx.from_pandas_edgelist(edges, source='source', target='target')
-    
-    # Use PyVis for Physics
-    net = Network(height="500px", width="100%", bgcolor="#222222", font_color="white")
-    net.from_nx(G)
-    
-    # Physics settings
-    net.barnes_hut()
-    
-    # Render to HTML string
-    # We save to a temp file or get string (PyVis quirks)
-    try:
-        html_str = net.generate_html()
-        return mo.Html(html_str)
-    except:
-        return mo.md("Graph generation requires write permissions for temp files.")
-
-# --- TAB 3: PRD GENERATOR ---
-def prd_generator_view():
-    selected = get_selected_file()
-    if not selected:
-        return mo.md("👈 *Select a file in the Explorer View to generate a PRD.*")
-    
-    # The Template (Jinja2)
-    template_str = """
-    # PRD: {{ filename }}
-    **Generated:** {{ timestamp }}
-    **Status:** {{ status }}
-    
-    ## 1. Overview
-    This document describes the functionality of `{{ filename }}`. 
-    It is a {{ extension }} file with a size of {{ size }} bytes.
-    
-    ## 2. Dependencies (The "Context Link")
-    The ConnectionGraph indicates this file is connected to:
-    {% for edge in connections %}
-    - `{{ edge.target }}` (Type: {{ edge.type }})
-    {% endfor %}
-    
-    ## 3. Implementation Plan
-    [TODO: Taskmaster AI to insert specific implementation details here based on file content]
-    """
-    
-    # Context Packing
-    df = get_files_df()
-    edges = get_edges_df()
-    
-    file_data = df[df['path'] == selected].iloc[0]
-    relevant_edges = edges[edges['source'] == selected].to_dict('records')
-    
-    # Render
-    t = Template(template_str)
-    markdown_out = t.render(
-        filename=selected,
-        timestamp=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
-        status=file_data['status'],
-        extension=file_data['type'],
-        size=file_data['size'],
-        connections=relevant_edges
-    )
-    
-    return mo.md(markdown_out)
-
-# --- TAB 4: THE EMPEROR (Taskmaster) ---
-def emperor_view():
-    selected = get_selected_file()
-    
-    mission_input = mo.ui.text_area(label="Mission Briefing", placeholder="e.g. Refactor the login logic to use OAuth...")
-    
-    def deploy_general():
-        if not selected: return
-        # Logic to append to logs
-        current_logs = get_agent_logs()
-        new_log = f"[{datetime.datetime.now().time()}] 🚀 DEPLOYING GENERAL to '{selected}' with mission: {mission_input.value}"
-        set_agent_logs(current_logs + [new_log])
+@app.cell
+def prd_generator_cell(mo, Template, datetime, get_selected_file, get_files_df, get_edges_df):
+    """PRD Generator Tab - Jinja2 templated documentation"""
+    def build_prd_view():
+        selected = get_selected_file()
+        if not selected:
+            return mo.md("👈 *Select a file in the Explorer tab to generate a PRD.*")
         
-    deploy_btn = mo.ui.button(label="Deploy Agent", on_change=lambda _: deploy_general())
+        df = get_files_df()
+        edges = get_edges_df()
+        
+        if df.empty:
+            return mo.md("*No project loaded.*")
+        
+        # Find file data
+        file_matches = df[df['path'] == selected]
+        if file_matches.empty:
+            return mo.md(f"*File `{selected}` not found in scan results.*")
+        
+        file_data = file_matches.iloc[0]
+        
+        # Get connections
+        outgoing = edges[edges['source'] == selected].to_dict('records') if not edges.empty else []
+        incoming = edges[edges['target'] == selected].to_dict('records') if not edges.empty else []
+        
+        # Jinja2 Template
+        template_str = """
+# PRD: {{ filename }}
+
+**Generated:** {{ timestamp }}  
+**Status:** {{ status }}  
+**Type:** {{ extension }}  
+**Size:** {{ size }} bytes
+
+---
+
+## 1. Overview
+
+This document describes the functionality of `{{ filename }}`.
+
+## 2. Dependencies (Outgoing)
+
+{% if outgoing %}
+This file imports:
+{% for edge in outgoing %}
+- `{{ edge.target }}` ({{ edge.type }})
+{% endfor %}
+{% else %}
+*No outgoing dependencies detected.*
+{% endif %}
+
+## 3. Consumers (Incoming)
+
+{% if incoming %}
+This file is imported by:
+{% for edge in incoming %}
+- `{{ edge.source }}` ({{ edge.type }})
+{% endfor %}
+{% else %}
+*No incoming references detected.*
+{% endif %}
+
+## 4. Implementation Notes
+
+[TODO: Add implementation details based on file analysis]
+
+---
+*Generated by Orchestr8 PRD Generator*
+"""
+        
+        t = Template(template_str)
+        markdown_out = t.render(
+            filename=selected,
+            timestamp=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+            status=file_data['status'],
+            extension=file_data['type'],
+            size=file_data['size'],
+            outgoing=outgoing,
+            incoming=incoming
+        )
+        
+        return mo.md(markdown_out)
     
-    # Log Window
+    prd_content = build_prd_view()
+    return (prd_content,)
+
+
+@app.cell
+def emperor_view_cell(mo, datetime, get_selected_file, get_agent_logs, set_agent_logs):
+    """Emperor Tab - Command interface and logging"""
+    selected = get_selected_file()
+    
+    mission_input = mo.ui.text_area(
+        label="Mission Briefing", 
+        placeholder="e.g., Refactor the login logic to use OAuth...",
+        full_width=True
+    )
+    
+    def deploy_agent():
+        if not selected:
+            return
+        current_logs = get_agent_logs()
+        timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+        new_log = f"[{timestamp}] 🚀 DEPLOYING to '{selected}': {mission_input.value}"
+        set_agent_logs(current_logs + [new_log])
+    
+    deploy_btn = mo.ui.button(
+        label="🎯 Deploy Agent", 
+        on_change=lambda _: deploy_agent()
+    )
+    
+    # Build log display
     logs = get_agent_logs()
-    log_display = mo.md("\n".join([f"- {l}" for l in logs]))
+    if logs:
+        log_items = "\n".join([f"- {log}" for log in logs])
+        log_display = mo.md(log_items)
+    else:
+        log_display = mo.md("*No deployments yet.*")
     
-    return mo.vstack([
-        mo.md(f"### Target: `{selected or 'None'}`"),
+    emperor_content = mo.vstack([
+        mo.md(f"### 🎯 Target: `{selected or 'None selected'}`"),
         mission_input,
         deploy_btn,
         mo.md("---"),
         mo.md("### 📡 Command Center Logs"),
         log_display
     ])
+    return deploy_btn, emperor_content, mission_input
 
-# ==========================================
-# 5. MAIN RENDER
-# ==========================================
 
-tabs = mo.ui.tabs({
-    "📁 Explorer": explorer_view(),
-    "🕸️ Connections": connection_graph_view(),
-    "📄 PRD Generator": prd_generator_view(),
-    "👑 Emperor": emperor_view()
-})
+@app.cell
+def main_layout(mo, app_title, control_row, explorer_content, graph_content, prd_content, emperor_content):
+    """Main Application Layout with Tabs"""
+    tabs = mo.ui.tabs({
+        "📁 Explorer": explorer_content,
+        "🕸️ Connections": graph_content,
+        "📄 PRD Generator": prd_content,
+        "👑 Emperor": emperor_content
+    })
+    
+    # Final layout
+    mo.vstack([
+        app_title,
+        control_row,
+        tabs
+    ])
+    return (tabs,)
 
-mo.vstack([
-    app_title,
-    mo.hstack([path_input, scan_button], justify="start"),
-    tabs
-])
+
+if __name__ == "__main__":
+    app.run()

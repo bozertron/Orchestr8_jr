@@ -1,0 +1,27 @@
+{
+  "name": "orchestr8-scaffold-cli",
+  "version": "1.0.0",
+  "description": "TypeScript CLI tools for Orchestr8 plugin protocol",
+  "type": "module",
+  "main": "scaffold-cli.ts",
+  "scripts": {
+    "start": "npx tsx scaffold-cli.ts",
+    "list-plugins": "npx tsx scaffold-cli.ts list-plugins",
+    "typecheck": "npx tsc --noEmit"
+  },
+  "keywords": [
+    "orchestr8",
+    "scaffold",
+    "cli",
+    "typescript"
+  ],
+  "author": "Orchestr8 Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
