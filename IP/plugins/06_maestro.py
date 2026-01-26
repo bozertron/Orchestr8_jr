@@ -41,6 +41,9 @@ from IP.terminal_spawner import TerminalSpawner
 from IP.health_checker import HealthChecker
 from IP.briefing_generator import BriefingGenerator
 
+# Import Woven Maps Code City visualization
+from IP.woven_maps import create_code_city, build_graph_data
+
 PLUGIN_NAME = "The Void"
 PLUGIN_ORDER = 6
 
@@ -242,6 +245,9 @@ def render(STATE_MANAGERS: dict) -> Any:
     # Local state - Attachments
     get_attached_files, set_attached_files = mo.state([])
 
+    # Local state - View mode (city vs chat)
+    get_view_mode, set_view_mode = mo.state("city")  # "city" | "chat"
+
     # ========================================================================
     # EVENT HANDLERS (Transliterated from MaestroView.vue)
     # ========================================================================
@@ -367,6 +373,35 @@ def render(STATE_MANAGERS: dict) -> Any:
             align="center",
         )
 
+    def build_code_city() -> Any:
+        """
+        Build the Woven Maps Code City visualization.
+        Shows codebase as abstract cityscape with Gold/Blue/Purple status.
+        """
+        root = get_root()
+
+        if not root:
+            return mo.Html("""
+            <div class="void-center">
+                <div class="void-placeholder">
+                    Set a project root to visualize the codebase as a city.
+                </div>
+            </div>
+            """)
+
+        try:
+            # Create the Code City visualization
+            return create_code_city(root, width=850, height=500)
+        except Exception as e:
+            log_action(f"Code City error: {str(e)}")
+            return mo.Html(f"""
+            <div class="void-center">
+                <div class="void-placeholder" style="color: {BLUE_DOMINANT};">
+                    Error rendering Code City: {str(e)}
+                </div>
+            </div>
+            """)
+
     def build_void_messages() -> Any:
         """
         Build the void emergence display.
@@ -400,6 +435,53 @@ def render(STATE_MANAGERS: dict) -> Any:
             </div>
         </div>
         """)
+
+    def build_void_content() -> Any:
+        """
+        Build the main void content based on current view mode.
+        - City mode: Shows Woven Maps Code City visualization
+        - Chat mode: Shows conversation messages
+        """
+        mode = get_view_mode()
+
+        # View mode toggle
+        toggle_label = "View Chat" if mode == "city" else "View City"
+        toggle_btn = mo.ui.button(
+            label=toggle_label,
+            on_change=lambda _: set_view_mode("chat" if mode == "city" else "city"),
+        )
+
+        # Mode indicator
+        mode_indicator = mo.Html(f"""
+        <div style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(31, 189, 234, 0.1);
+        ">
+            <span style="
+                font-family: monospace;
+                font-size: 10px;
+                letter-spacing: 0.1em;
+                color: {'#D4AF37' if mode == 'city' else '#1fbdea'};
+            ">
+                {'CODE CITY' if mode == 'city' else 'CHAT'}
+            </span>
+        </div>
+        """)
+
+        # Content based on mode
+        if mode == "city":
+            content = build_code_city()
+        else:
+            content = build_void_messages()
+
+        return mo.vstack([
+            mo.hstack([mode_indicator, toggle_btn], justify="space-between", align="center"),
+            content,
+        ])
 
     def build_panels() -> Any:
         """Build conditional overlay panels."""
@@ -574,7 +656,7 @@ def render(STATE_MANAGERS: dict) -> Any:
     # Build components
     top_row = build_top_row()
     panels = build_panels()
-    void_messages = build_void_messages()
+    void_content = build_void_content()  # Code City or Chat based on mode
     attachment_bar = build_attachment_bar()
     control_surface = build_control_surface()
 
@@ -592,7 +674,7 @@ def render(STATE_MANAGERS: dict) -> Any:
             top_row,
             mo.md("---"),
             panels,
-            void_messages,
+            void_content,  # Code City or Chat based on view mode
             mo.md("---"),
             attachment_bar,
             control_surface,
