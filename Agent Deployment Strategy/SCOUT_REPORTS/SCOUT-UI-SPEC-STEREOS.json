@@ -1,0 +1,236 @@
+{
+  "scout_id": "SCOUT-UI-SPEC-STEREOS",
+  "scanned_at": "2026-01-25T22:30:00Z",
+  "source_file": ".taskmaster/docs/ui_design_prd.txt",
+  "report_version": "1.0",
+
+  "design_system": {
+    "philosophy": {
+      "aesthetic": "Mission Control Noir",
+      "mood": "Cinematic tension of a spacecraft command center",
+      "color_philosophy": "Deep space blacks with electric accent punctuation",
+      "typography_philosophy": "Monospace precision meets editorial elegance",
+      "motion_philosophy": "Purposeful micro-animations that reinforce the live system feeling"
+    },
+
+    "design_principles": [
+      "Data Density with Clarity - Pack information tightly but with clear visual hierarchy",
+      "Ambient Feedback - The UI should feel alive with subtle pulsing, glows, and state indicators",
+      "Dramatic Negative Space - Let key elements breathe while keeping secondary info compact",
+      "Brutalist Structure - Visible grid lines, exposed borders, no rounded-corner softness"
+    ],
+
+    "colors": {
+      "backgrounds": {
+        "bg_void": "#0a0a0f",
+        "bg_surface": "#12121a",
+        "bg_panel": "#1a1a28",
+        "bg_hover": "#252538"
+      },
+      "accents": {
+        "accent_cyan": "#00fff2",
+        "accent_amber": "#ffb800",
+        "accent_rose": "#ff3366",
+        "accent_lime": "#b8ff00",
+        "accent_violet": "#9d4edd"
+      },
+      "text": {
+        "text_primary": "#f0f0f5",
+        "text_secondary": "#8888a0",
+        "text_accent": "#00fff2"
+      },
+      "borders": {
+        "border_subtle": "#2a2a3a",
+        "border_strong": "#3a3a4a"
+      },
+      "effects": {
+        "glow_cyan": "0 0 20px rgba(0, 255, 242, 0.3)"
+      }
+    },
+
+    "typography": {
+      "font_families": {
+        "display_headers": ["JetBrains Mono", "Berkeley Mono"],
+        "body_ui": ["IBM Plex Mono"],
+        "accent_labels": ["Space Grotesk"],
+        "fallbacks": ["SF Mono", "Consolas", "monospace"]
+      },
+      "type_scale": {
+        "text_xs": "0.75rem (12px) - metadata, timestamps",
+        "text_sm": "0.875rem (14px) - secondary content",
+        "text_base": "1rem (16px) - body text",
+        "text_lg": "1.25rem (20px) - section headers",
+        "text_xl": "1.5rem (24px) - tab titles",
+        "text_2xl": "2rem (32px) - page title",
+        "text_display": "3rem (48px) - hero elements"
+      }
+    },
+
+    "status_badges": {
+      "NORMAL": {
+        "color": "#b8ff00",
+        "animation": "subtle breathing glow"
+      },
+      "WARNING": {
+        "color": "#ffb800",
+        "animation": "gentle pulse (1.5s cycle), attention-grabbing glow"
+      },
+      "COMPLEX": {
+        "color": "#9d4edd",
+        "animation": "gradient shimmer animation"
+      },
+      "ERROR": {
+        "color": "#ff3366",
+        "animation": "rapid pulse with higher intensity"
+      }
+    },
+
+    "components": {
+      "masthead": {
+        "name": "The Masthead",
+        "features": [
+          "Full-width dark bar with subtle gradient (top-to-bottom fade)",
+          "Title in large monospace with letter-spacing",
+          "Subtitle: COMMAND CENTER v2.0",
+          "Subtle animated underline using CSS gradient",
+          "System status indicator (pulsing dot showing ONLINE state)",
+          "Timestamp showing last scan time",
+          "Logo glyph symbol"
+        ]
+      },
+      "control_panel": {
+        "name": "Mission Control Bar",
+        "features": [
+          "Horizontal bar with command input styling",
+          "Input field: dark inset with cyan border on focus",
+          "Scan button: gradient from cyan to blue, uppercase text",
+          "Project stats summary (file count, connection count)",
+          "Progress indicator during scan operation"
+        ]
+      },
+      "tab_navigation": {
+        "name": "Mission Selector",
+        "states": {
+          "default": "Muted text, no background",
+          "hover": "Text brightens, subtle background fade-in",
+          "active": "Full brightness, cyan underline, elevated surface"
+        }
+      },
+      "explorer_table": {
+        "name": "File Matrix",
+        "features": [
+          "Dark table with alternating row backgrounds",
+          "Column headers with uppercase labels and border-bottom",
+          "Status badges as pill-shaped elements with glow effects",
+          "File paths in monospace with syntax-highlighting-style coloring",
+          "Hover state shows full row highlight",
+          "Selected row has cyan left border accent"
+        ]
+      },
+      "connections_graph": {
+        "name": "Neural Map",
+        "features": [
+          "Enhanced PyVis configuration",
+          "Node styling based on file type",
+          "Edge styling with gradient colors",
+          "Legend panel showing node/edge meanings",
+          "Zoom controls with custom styling",
+          "Connection stats panel"
+        ]
+      },
+      "prd_generator": {
+        "name": "Document Forge",
+        "features": [
+          "Split-pane layout: file info panel (left), generated PRD (right)",
+          "Export button to save PRD as file",
+          "Template selector for different PRD formats"
+        ]
+      },
+      "emperor_terminal": {
+        "name": "Command Throne",
+        "features": [
+          "Terminal-inspired interface",
+          "Mission input as command line with prompt character",
+          "Deploy button with dramatic hover/active states",
+          "Log display as scrollable terminal output",
+          "Color-coded log entries by type"
+        ]
+      }
+    },
+
+    "animations": {
+      "micro_interactions": {
+        "button_hover": "Scale 1.02, shadow increase, 150ms ease",
+        "button_active": "Scale 0.98, shadow decrease, 100ms ease",
+        "tab_switch": "Content fade (200ms) with slight slide (10px)",
+        "badge_pulse": "opacity 0.7-1.0, 2s infinite for warnings",
+        "input_focus": "Border glow animation, 200ms ease"
+      },
+      "page_load_sequence": [
+        "Header fades in (0ms delay)",
+        "Control bar slides down (100ms delay)",
+        "Tabs fade in (200ms delay)",
+        "Content area fades in (300ms delay)"
+      ],
+      "loading_states": [
+        "Skeleton loaders for table rows during scan",
+        "Pulsing placeholder for graph during generation",
+        "Progress bar or spinner for long operations"
+      ]
+    }
+  },
+
+  "implementation_phases": [
+    {
+      "phase": 1,
+      "name": "CSS Foundation & Variables",
+      "goal": "Establish design system foundation"
+    },
+    {
+      "phase": 2,
+      "name": "Header & Control Panel Redesign",
+      "goal": "Transform top section into Mission Control aesthetic"
+    },
+    {
+      "phase": 3,
+      "name": "Tab System Enhancement",
+      "goal": "Create distinctive navigation experience"
+    },
+    {
+      "phase": 4,
+      "name": "Explorer Table Overhaul",
+      "goal": "Make file table a visual centerpiece"
+    },
+    {
+      "phase": 5,
+      "name": "Connection Graph Enhancement",
+      "goal": "Transform graph into neural map visualization"
+    },
+    {
+      "phase": 6,
+      "name": "PRD Generator Refinement",
+      "goal": "Create polished document generation experience"
+    },
+    {
+      "phase": 7,
+      "name": "Emperor Terminal Interface",
+      "goal": "Create ultimate command experience"
+    },
+    {
+      "phase": 8,
+      "name": "Polish & Animation",
+      "goal": "Add finishing touches that make it memorable"
+    }
+  ],
+
+  "acceptance_criteria": [
+    "Visual Impact: Dashboard immediately feels like a premium developer tool",
+    "Consistency: All components follow the established design system",
+    "Responsiveness: UI remains functional at different viewport sizes",
+    "Performance: Animations are smooth (60fps), no jank",
+    "Accessibility: Sufficient color contrast, keyboard navigable",
+    "Delight: At least 3 wow moments in the user experience"
+  ],
+
+  "summary": "The stereOS UI Design PRD defines a comprehensive Mission Control Noir design system with exact specifications for colors (19 CSS variables), typography (4 font families, 7 type scale levels), status badges (4 states with animations), components (7 major sections), animations (micro-interactions, page load sequence, loading states), and 8 implementation phases."
+}
