@@ -1,0 +1,10 @@
+{
+  "name": "Scaffold Parsers (TS)",
+  "description": "TypeScript AST analysis tools powered by Commander.js",
+  "icon": "TS",
+  "base_command": ["npx", "tsx", "frontend/tools/scaffold-cli.ts"],
+  "discovery": {
+    "enabled": true,
+    "command": "list-plugins"
+  }
+}

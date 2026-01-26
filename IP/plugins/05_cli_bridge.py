@@ -19,6 +19,9 @@ import json
 from pathlib import Path
 from datetime import datetime
 
+# Import smart output renderer
+from IP.plugins.output_renderer import detect_and_render_output
+
 PLUGIN_NAME = "🔗 CLI Bridge"
 PLUGIN_ORDER = 5
 
@@ -199,26 +202,23 @@ def render(STATE_MANAGERS):
             # Get result if available
             result = results.get(cmd_type)
             
-            # Build result display
+            # Build result display using smart renderer
             if result:
                 if result.get("success"):
-                    output = result.get("stdout", "")[:2000]  # Truncate long output
-                    result_md = f"""
-**Status:** ✅ Success  
-**Timestamp:** {result.get('timestamp', 'N/A')}
-
-```
-{output}
-```
-                    """
+                    stdout = result.get("stdout", "")
+                    # Use smart JSON/text renderer
+                    result_display = mo.vstack([
+                        mo.md(f"**Status:** ✅ Success | **Timestamp:** {result.get('timestamp', 'N/A')}"),
+                        detect_and_render_output(stdout)
+                    ])
                 else:
                     error_msg = result.get("error") or result.get("stderr", "Unknown error")
-                    result_md = f"""
+                    result_display = mo.md(f"""
 **Status:** ❌ Failed  
 **Error:** {error_msg}
-                    """
+                    """)
             else:
-                result_md = "*Not yet executed*"
+                result_display = mo.md("*Not yet executed*")
             
             # Build card content
             card_content = mo.vstack([
@@ -231,7 +231,7 @@ def render(STATE_MANAGERS):
                 ),
                 mo.md("---"),
                 mo.md("**Result:**"),
-                mo.md(result_md)
+                result_display
             ])
             
             cards.append({

@@ -196,21 +196,36 @@ async function scanPlugins(): Promise<PluginInfo[]> {
 /**
  * Execute list-plugins command.
  * Outputs JSON array of discovered plugins.
+ * Supports silent/machine mode for clean JSON output.
+ * @param jsonMode - Force JSON output mode (no human-readable messages)
  */
-async function listPlugins(): Promise<void> {
+async function listPlugins(jsonMode: boolean = false): Promise<void> {
+    // Detect machine mode: non-TTY or explicit --json flag
+    const isMachineMode = jsonMode || !process.stdout.isTTY;
+    
+    // Human-readable header only in interactive mode
+    if (!isMachineMode) {
+        console.log('Listing available plugins...');
+    }
+    
     const plugins = await scanPlugins();
-    console.log(JSON.stringify(plugins, null, 2));
+    
+    // Compact JSON in machine mode, pretty-printed in human mode
+    const indent = isMachineMode ? 0 : 2;
+    console.log(JSON.stringify(plugins, null, indent));
 }
 
 /**
  * Register the list-plugins command with Commander.
+ * Supports --json flag for machine-readable output.
  */
 function registerListPluginsCommand(): void {
     program
         .command('list-plugins')
         .description('List available parser plugins as JSON')
-        .action(async () => {
-            await listPlugins();
+        .option('--json', 'Output clean JSON without human-readable messages')
+        .action(async (options) => {
+            await listPlugins(options.json || false);
         });
 }
 

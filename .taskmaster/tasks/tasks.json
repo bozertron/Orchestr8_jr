@@ -80,7 +80,7 @@
         "testStrategy": "Test with JSON array: verify sortable mo.ui.table renders. Test JSON object: verify formatted display. Test plain text: verify mo.ui.text_area. Test invalid JSON: graceful fallback.",
         "priority": "medium",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -146,7 +146,7 @@
         "testStrategy": "ls frontend/tools/registry/ should show .gitkeep. Git status should track empty directory.",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -159,7 +159,7 @@
         "dependencies": [
           15
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -170,7 +170,7 @@
         "testStrategy": "npx tsx scaffold-cli.ts list-plugins --json | python -m json.tool parses cleanly. Non-TTY mode outputs only JSON blob.",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
