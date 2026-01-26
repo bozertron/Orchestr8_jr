@@ -421,15 +421,14 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
         `;
 
         // ================================================================
-        // WAVE FIELD CONFIG - Dual interference pattern from AwakeningEngine
+        // WAVE FIELD CONFIG - Smooth landscape morphing (LOW frequency)
         // ================================================================
         const waveField = {
-            sourceLeftX: width * 0.15,   // Left wave source
-            sourceRightX: width * 0.85,  // Right wave source
-            ampBase: 8,                   // Base amplitude
-            ampScale: 12,                 // Additional amplitude during coalescing
-            speedBase: 0.002,             // Wave speed
-            complexity: 0.5               // Third wave complexity
+            sourceLeftX: width * 0.2,    // Left wave source
+            sourceRightX: width * 0.8,   // Right wave source
+            ampBase: 20,                  // Higher amplitude for visible flow
+            speedBase: 0.0008,            // SLOW wave speed for smoothness
+            frequency: 0.004              // LOW frequency for landscape morphing
         };
 
         // ================================================================
@@ -455,14 +454,27 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             entryOffset: Math.random() * 4
         }));
 
-        // Wave field calculation - creates interference pattern
+        // Wave field calculation - smooth mathematical landscape morphing
         function calcWaveDisplacement(x, y, elapsed) {
+            // Use LOW frequency for smooth, flowing landscape effect
+            const freq = waveField.frequency;
+
+            // Distance-based waves from two sources (interference pattern)
             const d1 = Math.sqrt(Math.pow(x - waveField.sourceLeftX, 2) + Math.pow(y - height/2, 2));
             const d2 = Math.sqrt(Math.pow(x - waveField.sourceRightX, 2) + Math.pow(y - height/2, 2));
-            const wave1 = Math.sin(d1 * 0.02 - elapsed * waveField.speedBase) * waveField.ampBase;
-            const wave2 = Math.sin(d2 * 0.018 - elapsed * waveField.speedBase * 0.85) * waveField.ampBase * 0.8;
-            const wave3 = Math.sin((x + y) * 0.01 + elapsed * waveField.speedBase * 0.5) * waveField.ampBase * 0.3 * waveField.complexity;
-            return { dx: (wave1 + wave2) * 0.3, dy: wave3 };
+
+            // Smooth, slow-moving waves
+            const wave1 = Math.sin(d1 * freq - elapsed * waveField.speedBase) * waveField.ampBase;
+            const wave2 = Math.sin(d2 * freq * 0.8 - elapsed * waveField.speedBase * 0.7) * waveField.ampBase * 0.6;
+
+            // Gentle diagonal flow for landscape feel
+            const wave3 = Math.sin((x * 0.003 + y * 0.003) + elapsed * waveField.speedBase * 0.4) * waveField.ampBase * 0.3;
+
+            // Combine for X and Y displacement
+            const dx = (wave1 + wave2) * 0.4;
+            const dy = wave3;
+
+            return { dx, dy };
         }
 
         // ================================================================
@@ -643,13 +655,14 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
                 const state = nodeStates[i];
                 const adjustedProgress = Math.max(0, Math.min(1, (easedProgress - state.delay) / (1 - state.delay)));
 
-                // Calculate wave field distortion (strongest during coalescing)
-                const waveStrength = Math.sin(adjustedProgress * Math.PI); // Peak at 0.5
+                // Wave distortion STRONGEST at beginning, fades as nodes settle
+                // Smooth exponential decay for landscape morphing effect
+                const waveStrength = Math.pow(1 - adjustedProgress, 2); // Strong early, gentle fade
                 const wave = calcWaveDisplacement(state.targetX, state.targetY, elapsed);
 
                 // Lerp from chaos to target with wave distortion
-                const targetX = state.targetX + wave.dx * waveStrength * (1 - adjustedProgress);
-                const targetY = state.targetY + wave.dy * waveStrength * (1 - adjustedProgress);
+                const targetX = state.targetX + wave.dx * waveStrength;
+                const targetY = state.targetY + wave.dy * waveStrength;
 
                 state.currentX = state.currentX + (targetX - state.currentX) * adjustedProgress * 0.1;
                 state.currentY = state.currentY + (targetY - state.currentY) * adjustedProgress * 0.1;
