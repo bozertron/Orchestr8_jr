@@ -63,10 +63,43 @@ PURPLE_COMBAT = "#9D4EDD"  # Combat state - General deployed and active
 # ============================================================================
 MAESTRO_CSS = f"""
 <style>
+/* =========================================================
+   EMERGENCE ANIMATIONS - Things EMERGE, they don't breathe
+   ========================================================= */
+
+@keyframes emergence {{
+    0% {{
+        opacity: 0;
+        transform: translateY(12px);
+    }}
+    100% {{
+        opacity: 1;
+        transform: translateY(0);
+    }}
+}}
+
+@keyframes emergence-fade {{
+    0% {{ opacity: 0; }}
+    100% {{ opacity: 1; }}
+}}
+
+@keyframes emergence-scale {{
+    0% {{
+        opacity: 0;
+        transform: scale(0.95);
+    }}
+    100% {{
+        opacity: 1;
+        transform: scale(1);
+    }}
+}}
+
+/* Apply emergence to key elements with staggered delays */
 .maestro-container {{
     min-height: 70vh;
     display: flex;
     flex-direction: column;
+    animation: emergence-fade 0.3s ease-out forwards;
 }}
 
 .maestro-top-row {{
@@ -75,6 +108,7 @@ MAESTRO_CSS = f"""
     align-items: center;
     padding: 12px 0;
     border-bottom: 1px solid rgba(31, 189, 234, 0.2);
+    animation: emergence 0.4s ease-out 0.1s both;
 }}
 
 .stereos-brand {{
@@ -99,6 +133,7 @@ MAESTRO_CSS = f"""
     align-items: center;
     padding: 40px 20px;
     min-height: 300px;
+    animation: emergence-scale 0.5s ease-out 0.2s both;
 }}
 
 .emerged-message {{
@@ -109,7 +144,12 @@ MAESTRO_CSS = f"""
     margin-bottom: 16px;
     max-width: 700px;
     width: 100%;
+    animation: emergence 0.4s ease-out both;
 }}
+
+.emerged-message:nth-child(1) {{ animation-delay: 0.1s; }}
+.emerged-message:nth-child(2) {{ animation-delay: 0.2s; }}
+.emerged-message:nth-child(3) {{ animation-delay: 0.3s; }}
 
 .emerged-message .content {{
     color: #e8e8e8;
@@ -129,6 +169,7 @@ MAESTRO_CSS = f"""
 .control-surface {{
     border-top: 1px solid rgba(31, 189, 234, 0.2);
     padding: 12px 0;
+    animation: emergence 0.4s ease-out 0.3s both;
 }}
 
 .maestro-btn {{
@@ -179,6 +220,7 @@ MAESTRO_CSS = f"""
     border-radius: 8px;
     padding: 16px;
     margin-bottom: 16px;
+    animation: emergence-scale 0.35s ease-out both;
 }}
 
 .panel-header {{
@@ -201,6 +243,12 @@ MAESTRO_CSS = f"""
     color: rgba(255, 255, 255, 0.3);
     font-style: italic;
     text-align: center;
+    animation: emergence-fade 0.8s ease-out 0.4s both;
+}}
+
+/* Button emergence with subtle scale */
+.maestro-btn, .maestro-center-btn {{
+    animation: emergence 0.3s ease-out both;
 }}
 </style>
 """
