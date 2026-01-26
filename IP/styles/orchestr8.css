@@ -1,0 +1,185 @@
+/* orchestr8.css - MaestroView.vue Alignment */
+
+/* Load fonts */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+    /* Primary Colors - EXACT from MaestroView.vue */
+    --gold-metallic: #D4AF37;
+    --gold-dark: #B8860B;
+    --gold-saffron: #F4C430;
+    --blue-dominant: #1fbdea;
+    --purple-combat: #9D4EDD;
+    
+    /* Backgrounds - The Void */
+    --bg-primary: #0A0A0B;
+    --bg-elevated: #121214;
+    --bg-surface: #1a1a1c;
+    
+    /* Text */
+    --text-primary: #e8e8e8;
+    --text-secondary: #a0a0a0;
+    --text-muted: #666666;
+    
+    /* Status Colors */
+    --status-working: #D4AF37;
+    --status-broken: #1fbdea;
+    --status-combat: #9D4EDD;
+    
+    /* Fonts */
+    --font-mono: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+    --font-ui: 'IBM Plex Mono', monospace;
+    
+    /* Override Marimo defaults */
+    --marimo-heading-font: var(--font-mono);
+    --marimo-monospace-font: var(--font-mono);
+}
+
+/* Global body styling */
+body {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    font-family: var(--font-ui) !important;
+}
+
+/* Remove any white backgrounds */
+.marimo-app, 
+.marimo-notebook,
+[data-marimo-container] {
+    background-color: var(--bg-primary) !important;
+}
+
+/* Primary buttons - Gold */
+button, 
+.marimo-button,
+[data-marimo-element="button"] {
+    background-color: transparent !important;
+    border: 1px solid var(--gold-metallic) !important;
+    color: var(--gold-metallic) !important;
+    font-family: var(--font-mono) !important;
+    transition: all 0.2s ease !important;
+}
+
+button:hover,
+.marimo-button:hover {
+    background-color: var(--gold-metallic) !important;
+    color: var(--bg-primary) !important;
+}
+
+/* Active/Selected state */
+button:active,
+button[data-active="true"] {
+    background-color: var(--gold-saffron) !important;
+    border-color: var(--gold-saffron) !important;
+}
+
+/* Input fields */
+input, 
+textarea,
+select,
+.marimo-input {
+    background-color: var(--bg-elevated) !important;
+    border: 1px solid var(--gold-dark) !important;
+    color: var(--text-primary) !important;
+    font-family: var(--font-mono) !important;
+}
+
+input:focus,
+textarea:focus {
+    border-color: var(--gold-metallic) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 1px var(--gold-metallic) !important;
+}
+
+/* Code cells */
+pre, code,
+.marimo-code,
+[data-marimo-element="code"] {
+    background-color: var(--bg-elevated) !important;
+    font-family: var(--font-mono) !important;
+    border: 1px solid var(--bg-surface) !important;
+}
+
+/* Output areas */
+[data-cell-role="output"] {
+    background-color: var(--bg-primary) !important;
+    border-left: 2px solid var(--gold-dark) !important;
+    padding-left: 1rem !important;
+}
+
+/* Maestro/Void specific cells */
+[data-cell-name='maestro_header'] {
+    background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-primary) 100%) !important;
+    border-bottom: 1px solid var(--gold-dark) !important;
+}
+
+[data-cell-name='fiefdom_list'] {
+    background-color: var(--bg-elevated) !important;
+    border: 1px solid var(--bg-surface) !important;
+}
+
+[data-cell-name='mermaid_graph'] {
+    background-color: var(--bg-primary) !important;
+    border: 1px solid var(--gold-dark) !important;
+}
+
+[data-cell-name='command_input'] {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    background-color: var(--bg-elevated) !important;
+    border-top: 1px solid var(--gold-metallic) !important;
+    z-index: 1000 !important;
+}
+
+/* Status indicators */
+.status-working {
+    color: var(--status-working) !important;
+    border-color: var(--status-working) !important;
+}
+
+.status-broken {
+    color: var(--status-broken) !important;
+    border-color: var(--status-broken) !important;
+}
+
+.status-combat {
+    color: var(--status-combat) !important;
+    border-color: var(--status-combat) !important;
+}
+
+/* Status badges */
+.badge-working {
+    background-color: var(--status-working) !important;
+    color: var(--bg-primary) !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 2px !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+}
+
+.badge-broken {
+    background-color: var(--status-broken) !important;
+    color: var(--bg-primary) !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 2px !important;
+}
+
+.badge-combat {
+    background-color: var(--status-combat) !important;
+    color: white !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 2px !important;
+}
+
+/* Mermaid diagram container */
+.mermaid, 
+[data-marimo-element="mermaid"] {
+    background-color: var(--bg-primary) !important;
+}
+
+/* Override Mermaid internal colors via CSS variables */
+.mermaid .node rect {
+    stroke-width: 2px !important;
+}

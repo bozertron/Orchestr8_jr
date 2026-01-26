@@ -12,11 +12,13 @@
 Orchestr8 is a developer tool that enables a human operator ("The Emperor") to coordinate multiple Claude Code instances ("Generals") across a complex codebase without context window death.
 
 **The Core Problem:**
+
 ```
 Context loaded → Almost ready to execute → Context poisoned/compacted → Unusable output → Repeat
 ```
 
 **The Solution:**
+
 - Generals work in isolated fiefdoms (directories) with focused scope
 - The Emperor sees a Mermaid status graph (gold/blue/purple nodes)
 - Coordination happens through filesystem artifacts, not conversation
@@ -51,6 +53,7 @@ Context loaded → Almost ready to execute → Context poisoned/compacted → Un
 | **Combat** | Purple | `#9D4EDD` | General currently deployed and active |
 
 ### CSS Reference Block
+
 ```css
 :root {
     --gold-metallic: #D4AF37;
@@ -129,6 +132,7 @@ Context loaded → Almost ready to execute → Context poisoned/compacted → Un
 **The Emperor MUST see the subagent choreography.**
 
 This was tested and failed when hidden. The Emperor needs to know:
+
 - Which scouts are analyzing what
 - Which fixers are modifying which files
 - Which validators are running which tests
@@ -205,7 +209,7 @@ This was tested and failed when hidden. The Emperor needs to know:
 
 **actu8** is the terminal component that enables general deployment. It must be imported from stereOS/Orchestr8_sr.
 
-### RESEARCH QUESTIONS FOR TASKMASTER:
+### RESEARCH QUESTIONS FOR TASKMASTER
 
 > **Q1:** Where exactly is the actu8 terminal component located in stereOS? What is the file path?
 
@@ -242,12 +246,13 @@ def spawn_actu8_terminal(fiefdom_path: str, briefing_ready: bool = True) -> None
 ### Overview
 
 The ticket system drives general deployment by capturing:
+
 - What's broken
 - Where it's broken
 - Context for fixing it
 - History of attempts
 
-### RESEARCH QUESTIONS FOR TASKMASTER:
+### RESEARCH QUESTIONS FOR TASKMASTER
 
 > **Q5:** Where is the ticketing system located in stereOS? What files need to be imported?
 
@@ -298,6 +303,7 @@ The ticket system drives general deployment by capturing:
 ### What is a Fiefdom?
 
 A fiefdom is a **directory scope** assigned to a general. It can be:
+
 - A top-level directory: `src/llm/`
 - A subdirectory: `src/modules/generator/`
 - A specific feature area: `src/platform/auth/`
@@ -342,10 +348,12 @@ npm run typecheck
 ```
 
 ## When You're Done
+
 1. Run health check
 2. Update CAMPAIGN_LOG.md with your actions
 3. If VICTORY: Report success, specify what changed
 4. If BLOCKED: Report what's blocking, suggest escalation
+
 ```
 
 ---
@@ -359,6 +367,7 @@ npm run typecheck
 ### How Wisdom Accumulates
 
 ```
+
 General A deployed → Fixes bug → Writes to CAMPAIGN_LOG.md → Departs
          │
          ▼
@@ -369,6 +378,7 @@ General B deployed → Reads CAMPAIGN_LOG.md → Has predecessor's knowledge
          │
          ▼
 General B encounters similar issue → Already knows the gotcha → Fixes faster
+
 ```
 
 ### CAMPAIGN_LOG.md Format
@@ -412,6 +422,7 @@ Fix type errors in generator module.
 **Location:** `IP/carl_core.py`
 
 **Responsibilities:**
+
 - Scan fiefdoms and build file inventory
 - Run health checks (typecheck, tests)
 - Generate Mermaid status graph
@@ -425,6 +436,7 @@ Fix type errors in generator module.
 **Status:** ✅ Already working
 
 **Responsibilities:**
+
 - Convert SQLite databases to LLM-friendly formats
 - Export schemas as JSON, Markdown, or CSV
 - Make opaque data structures readable
@@ -434,6 +446,7 @@ Fix type errors in generator module.
 **Location:** `IP/louis_core.py`
 
 **Responsibilities:**
+
 - Lock files at OS level (chmod 444)
 - Maintain lock registry
 - Integrate with git pre-commit hook
@@ -493,11 +506,12 @@ louis = Louis('.')
 
 ### Files to Migrate from stereOS/Orchestr8_sr
 
-### RESEARCH QUESTIONS FOR TASKMASTER:
+### RESEARCH QUESTIONS FOR TASKMASTER
 
 > **Q9:** What is the file structure of Orchestr8_sr? What valuable IP exists there?
 
 > **Q10:** Which files from stereOS should be migrated to Orchestr8_jr for ChangeChecker?
+>
 > - `unified-context-system.ts` → Translate to Python or call via subprocess?
 > - `verification.rs` → Keep in Rust, call via subprocess?
 > - `ParserPack/*.rs` → Keep in Rust, call via subprocess?
@@ -606,7 +620,7 @@ louis = Louis('.')
 
 **Goal:** Match MaestroView.vue aesthetic within Marimo constraints
 
-### RESEARCH QUESTIONS FOR TASKMASTER:
+### RESEARCH QUESTIONS FOR TASKMASTER
 
 > **Q12:** What CSS injection capabilities does Marimo have? Can we inject custom CSS variables?
 
@@ -690,6 +704,7 @@ When you are deployed to a fiefdom:
 ### When to Escalate
 
 Escalate to the Emperor when:
+
 - You're blocked by a Louis lock that seems incorrect
 - You discover architectural issues beyond your fiefdom
 - Multiple fiefdoms need coordinated changes
@@ -703,23 +718,27 @@ Escalate to the Emperor when:
 The following questions require Taskmaster research mode to answer:
 
 ### actu8 Terminal
+
 1. Where is actu8 located in stereOS?
 2. What are actu8's dependencies?
 3. Does actu8 have Tauri-specific dependencies needing adaptation?
 4. What is actu8's spawn interface/API?
 
 ### Ticket System
+
 5. Where is the ticketing system in stereOS?
 6. What is the ticket data structure/schema?
 7. How does the ticketing system integrate with UI?
 8. Is there a ticket search/filter API?
 
 ### Integration with Orchestr8_sr
+
 9. What is the file structure of Orchestr8_sr?
 10. Which files should migrate for ChangeChecker?
 11. What is the Orchestr8_sr to Orchestr8_jr migration path?
 
 ### Marimo Styling
+
 12. What CSS injection capabilities does Marimo have?
 13. What font loading options exist in Marimo?
 14. What animation capabilities exist in Marimo?
@@ -730,6 +749,7 @@ The following questions require Taskmaster research mode to answer:
 ## XV. Signatures
 
 **Approved by:**
+
 - Ben (Human Emperor) - 2026-01-26
 - Claude (Strategic Council) - 2026-01-26
 
