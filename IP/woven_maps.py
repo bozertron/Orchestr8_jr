@@ -78,11 +78,11 @@ class GraphConfig:
     """Configuration for the visualization."""
     width: int = 800
     height: int = 600
-    max_height: int = 200
-    wire_count: int = 10
+    max_height: int = 250       # Taller cityscape silhouette
+    wire_count: int = 15        # More wireframe layers for richness
     show_particles: bool = True
     show_tooltip: bool = True
-    emergence_duration: float = 2.0  # seconds for emergence animation
+    emergence_duration: float = 2.5  # Slightly longer for drama
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -681,25 +681,69 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             ctx.fillStyle = COLORS.void;
             ctx.fillRect(0, 0, width, height);
 
-            // Draw gradient layers (cityscape) - use current positions during emergence
+            // ============================================================
+            // GORGEOUS MESH RENDERING - Like the Paris cityscapes
+            // ============================================================
             if (edges.length > 0) {
-                ctx.save();
                 const frameColor = emerged ? COLORS.gold : COLORS.teal;
+
+                // Layer 1: Dense gradient base (the "city" silhouette)
+                ctx.save();
                 for (let i = 0; i < maxHeight; i++) {
-                    ctx.translate(0, 0.4);
-                    const alpha = (1 - i / maxHeight) * 0.03;
-                    renderEdges(i * 0.6, frameColor, alpha, !emerged);
+                    ctx.translate(0, 0.5);  // Slightly larger steps for depth
+                    // Exponential falloff for more realistic depth
+                    const alpha = Math.pow(1 - i / maxHeight, 1.5) * 0.04;
+                    // Edge threshold grows slower at bottom (denser base)
+                    const threshold = Math.pow(i / maxHeight, 0.7) * maxHeight * 0.8;
+                    renderEdges(threshold, frameColor, alpha, !emerged);
                 }
                 ctx.restore();
 
-                // Wireframe overlays
+                // Layer 2: Mid-tone wireframe layers
                 for (let i = 0; i < wireCount; i++) {
                     const t = i / wireCount;
                     ctx.save();
-                    ctx.translate(0, maxHeight * (1 - t) * 0.25);
-                    renderEdges(i * 18, emerged ? COLORS.gold : COLORS.teal, 0.02 + 0.08 * t, !emerged);
+                    ctx.translate(0, maxHeight * (1 - t) * 0.3);
+                    ctx.globalAlpha = 0.03 + 0.1 * t;
+                    ctx.strokeStyle = frameColor;
+                    ctx.lineWidth = 0.5;
+                    renderEdges(15 + i * 15, frameColor, 0.03 + 0.1 * t, !emerged);
                     ctx.restore();
                 }
+
+                // Layer 3: Color gradient overlay (screen blend)
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                const gradient = ctx.createLinearGradient(0, height, 0, 0);
+                if (emerged) {
+                    gradient.addColorStop(0, 'rgba(212, 175, 55, 0.15)');  // Gold at bottom
+                    gradient.addColorStop(0.5, 'rgba(184, 134, 11, 0.08)');
+                    gradient.addColorStop(1, 'rgba(244, 196, 48, 0.03)');  // Saffron at top
+                } else {
+                    gradient.addColorStop(0, 'rgba(31, 189, 234, 0.15)');  // Teal at bottom
+                    gradient.addColorStop(0.5, 'rgba(31, 189, 234, 0.06)');
+                    gradient.addColorStop(1, 'rgba(157, 78, 221, 0.02)');  // Hint of purple at top
+                }
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+                ctx.restore();
+
+                // Layer 4: Bright wireframe highlights (the "glow")
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                ctx.strokeStyle = emerged ? '#fff' : COLORS.teal;
+                ctx.lineWidth = 0.8;
+                ctx.globalAlpha = 0.12;
+                renderEdges(40, ctx.strokeStyle, 0.12, !emerged);
+
+                // Layer 5: Soft glow blur
+                ctx.filter = 'blur(3px)';
+                ctx.globalAlpha = 0.15;
+                ctx.strokeStyle = frameColor;
+                ctx.lineWidth = 1.5;
+                renderEdges(60, ctx.strokeStyle, 0.15, !emerged);
+                ctx.filter = 'none';
+                ctx.restore();
             }
 
             // Draw nodes
