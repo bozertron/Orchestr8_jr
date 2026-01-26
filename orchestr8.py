@@ -91,8 +91,15 @@ def scanner_function(os, pd):
 
 @app.cell
 def verifier_function(os, pd, re):
-    """Connection Verifier - Parses imports and checks file health"""
-    # Regex patterns for various import styles
+    """Connection Verifier - Now uses IP/connection_verifier.py for real import resolution"""
+    # Import the real connection verifier
+    try:
+        from IP.connection_verifier import ConnectionVerifier
+        HAS_VERIFIER = True
+    except ImportError:
+        HAS_VERIFIER = False
+    
+    # Fallback regex patterns if connection_verifier not available
     IMPORT_PATTERNS = [
         re.compile(r"(?:from|import)\s+['\"]([^'\"]+)['\"]"),  # JS/TS style
         re.compile(r"^import\s+(\w+)", re.MULTILINE),  # Python: import module
@@ -104,10 +111,50 @@ def verifier_function(os, pd, re):
     def verify_connections(root_path, files_df):
         """
         Analyzes files for imports and health status.
+        Uses IP/connection_verifier.py to ACTUALLY resolve imports.
         Returns: Updated files_df with badges, edges_df with connections
         """
         edges = []
-
+        
+        # Use real verifier if available
+        if HAS_VERIFIER:
+            verifier = ConnectionVerifier(root_path)
+            
+            for index, row in files_df.iterrows():
+                result = verifier.verify_file(row["path"])
+                
+                # Status based on ACTUAL import resolution
+                if result.broken_imports:
+                    files_df.at[index, "status"] = "ERROR"  # Blue - broken imports
+                    files_df.at[index, "issues"] = len(result.broken_imports)
+                elif result.total_imports > 10:
+                    files_df.at[index, "status"] = "COMPLEX"  # Purple - high complexity
+                else:
+                    files_df.at[index, "status"] = "NORMAL"  # Gold - working
+                
+                # Create edges for all imports (with resolution status)
+                for imp in result.broken_imports:
+                    edges.append({
+                        "source": row["path"],
+                        "target": imp.target_module,
+                        "type": "import",
+                        "resolved": False,
+                        "line": imp.line_number
+                    })
+                
+                for imp in result.external_imports:
+                    if imp.resolved_path:
+                        edges.append({
+                            "source": row["path"],
+                            "target": imp.resolved_path,
+                            "type": "import",
+                            "resolved": True,
+                            "line": imp.line_number
+                        })
+            
+            return files_df, pd.DataFrame(edges) if edges else pd.DataFrame()
+        
+        # Fallback: original regex-only approach
         for index, row in files_df.iterrows():
             full_path = os.path.join(root_path, row["path"])
 
@@ -127,10 +174,12 @@ def verifier_function(os, pd, re):
                             "source": row["path"],
                             "target": target,
                             "type": "import",
+                            "resolved": None,  # Unknown
+                            "line": 0
                         }
                         edges.append(edge)
 
-                    # Status badge logic
+                    # Status badge logic (fallback - no resolution check)
                     issues = 0
                     status = "NORMAL"
 
