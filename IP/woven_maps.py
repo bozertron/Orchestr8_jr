@@ -500,6 +500,92 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             color: #D4AF37;
             font-family: monospace;
         }
+
+        /* Keyframe buttons */
+        .ctrl-btn.kf {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            font-weight: 600;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+        .ctrl-btn.kf.saved {
+            border-color: #D4AF37;
+            color: #D4AF37;
+            box-shadow: 0 0 6px rgba(212, 175, 55, 0.3);
+        }
+        .ctrl-btn.kf.active {
+            background: rgba(212, 175, 55, 0.3);
+            transform: scale(1.1);
+        }
+        .ctrl-btn.kf.morphing {
+            animation: kf-pulse 0.5s ease-in-out infinite;
+        }
+        @keyframes kf-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Audio Controls */
+        .audio-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            width: 100%;
+            padding: 6px;
+            border: 1px solid rgba(157, 78, 221, 0.4);
+            background: transparent;
+            border-radius: 4px;
+            color: #9D4EDD;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .audio-btn:hover {
+            border-color: #9D4EDD;
+            background: rgba(157, 78, 221, 0.1);
+        }
+        .audio-btn.active {
+            border-color: #D4AF37;
+            color: #D4AF37;
+            background: rgba(212, 175, 55, 0.15);
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+        }
+        .audio-btn.active::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #D4AF37;
+            border-radius: 50%;
+            animation: audio-pulse 1s ease-in-out infinite;
+        }
+        @keyframes audio-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.8); }
+        }
+
+        /* Frequency Bars */
+        .freq-display {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 24px;
+            margin-top: 6px;
+            padding: 0 2px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 3px;
+        }
+        .freq-bar {
+            width: 18%;
+            min-height: 2px;
+            background: linear-gradient(to top, #1fbdea, #9D4EDD);
+            border-radius: 1px;
+            transition: height 0.05s ease-out;
+        }
+        .freq-bar.low { background: linear-gradient(to top, #1fbdea, #1fbdea); }
+        .freq-bar.mid { background: linear-gradient(to top, #9D4EDD, #9D4EDD); }
+        .freq-bar.high { background: linear-gradient(to top, #D4AF37, #D4AF37); }
     </style>
 </head>
 <body>
@@ -541,6 +627,43 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
                 <input type="range" class="ctrl-slider" id="particleDensity" min="0" max="100" value="25" oninput="updateParticles()">
             </div>
 
+            <!-- Keyframes -->
+            <div class="ctrl-section">
+                <span class="ctrl-label">Keyframes</span>
+                <div class="ctrl-row">
+                    <button class="ctrl-btn kf" id="kf1" onclick="loadKeyframe(0)" ondblclick="saveKeyframe(0)">1</button>
+                    <button class="ctrl-btn kf" id="kf2" onclick="loadKeyframe(1)" ondblclick="saveKeyframe(1)">2</button>
+                    <button class="ctrl-btn kf" id="kf3" onclick="loadKeyframe(2)" ondblclick="saveKeyframe(2)">3</button>
+                    <button class="ctrl-btn kf" id="kf4" onclick="loadKeyframe(3)" ondblclick="saveKeyframe(3)">4</button>
+                </div>
+                <div class="ctrl-row" style="margin-top: 4px;">
+                    <span style="font-size: 8px; color: #555;">click=load, dblclick=save</span>
+                </div>
+            </div>
+
+            <!-- Morph Speed -->
+            <div class="ctrl-section">
+                <span class="ctrl-label">Morph Speed</span>
+                <input type="range" class="ctrl-slider" id="morphSpeed" min="1" max="50" value="20">
+            </div>
+
+            <!-- Audio Reactive -->
+            <div class="ctrl-section">
+                <span class="ctrl-label">Audio Reactive</span>
+                <button class="audio-btn" id="audioToggle" onclick="toggleAudio()">
+                    <span>🎤 Enable Microphone</span>
+                </button>
+                <div class="freq-display" id="freqDisplay">
+                    <div class="freq-bar low" id="freqLow"></div>
+                    <div class="freq-bar low" id="freqLow2"></div>
+                    <div class="freq-bar mid" id="freqMid"></div>
+                    <div class="freq-bar mid" id="freqMid2"></div>
+                    <div class="freq-bar high" id="freqHigh"></div>
+                </div>
+                <span class="ctrl-label" style="margin-top: 8px;">Sensitivity</span>
+                <input type="range" class="ctrl-slider" id="audioSensitivity" min="1" max="100" value="50">
+            </div>
+
             <!-- Actions -->
             <div class="ctrl-section">
                 <div class="ctrl-row">
@@ -574,6 +697,241 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
         // ================================================================
         let activeFrameColor = 'gold';  // 'gold' | 'teal' | 'combat'
         let particleDensityMultiplier = 1.0;
+
+        // ================================================================
+        // KEYFRAME SYSTEM
+        // ================================================================
+        const keyframes = [null, null, null, null];  // 4 slots
+        let currentKeyframe = -1;
+        let morphTarget = null;
+        let morphProgress = 0;
+        let morphStartState = null;
+
+        function captureState() {
+            return {
+                frameColor: activeFrameColor,
+                waveAmp: parseFloat(document.getElementById('waveAmp').value),
+                waveSpeed: parseFloat(document.getElementById('waveSpeed').value),
+                particleDensity: parseFloat(document.getElementById('particleDensity').value),
+                // Store RGB values for smooth morphing
+                frameColorRGB: hexToRgb(getFrameColor())
+            };
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\\d]{2})([a-f\\d]{2})([a-f\\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 212, g: 175, b: 55 };
+        }
+
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(x => {
+                const hex = Math.round(x).toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('');
+        }
+
+        function lerpValue(a, b, t) {
+            return a + (b - a) * t;
+        }
+
+        function saveKeyframe(slot) {
+            keyframes[slot] = captureState();
+            document.getElementById('kf' + (slot + 1)).classList.add('saved');
+            console.log('Saved keyframe', slot + 1, keyframes[slot]);
+        }
+
+        function loadKeyframe(slot) {
+            if (!keyframes[slot]) return;
+
+            const morphSpeed = parseFloat(document.getElementById('morphSpeed').value) / 100;
+
+            // Start morphing
+            morphStartState = captureState();
+            morphTarget = keyframes[slot];
+            morphProgress = 0;
+            currentKeyframe = slot;
+
+            // Update UI
+            document.querySelectorAll('.ctrl-btn.kf').forEach((btn, i) => {
+                btn.classList.remove('active', 'morphing');
+                if (i === slot) btn.classList.add('morphing');
+            });
+        }
+
+        function updateMorph() {
+            if (!morphTarget || morphProgress >= 1) {
+                if (morphTarget && morphProgress >= 1) {
+                    // Morphing complete
+                    document.querySelectorAll('.ctrl-btn.kf').forEach((btn, i) => {
+                        btn.classList.remove('morphing');
+                        if (i === currentKeyframe) btn.classList.add('active');
+                    });
+                    morphTarget = null;
+                }
+                return;
+            }
+
+            const morphSpeed = parseFloat(document.getElementById('morphSpeed').value) / 500;
+            morphProgress = Math.min(1, morphProgress + morphSpeed);
+
+            // Ease function (smooth)
+            const t = 1 - Math.pow(1 - morphProgress, 3);
+
+            // Interpolate all values
+            const amp = lerpValue(morphStartState.waveAmp, morphTarget.waveAmp, t);
+            const speed = lerpValue(morphStartState.waveSpeed, morphTarget.waveSpeed, t);
+            const density = lerpValue(morphStartState.particleDensity, morphTarget.particleDensity, t);
+
+            // Update sliders
+            document.getElementById('waveAmp').value = amp;
+            document.getElementById('waveSpeed').value = speed;
+            document.getElementById('particleDensity').value = density;
+
+            // Update actual values
+            waveField.ampBase = amp;
+            waveField.speedBase = speed / 10000;
+            particleDensityMultiplier = density / 25;
+
+            // Interpolate colors
+            const r = lerpValue(morphStartState.frameColorRGB.r, morphTarget.frameColorRGB.r, t);
+            const g = lerpValue(morphStartState.frameColorRGB.g, morphTarget.frameColorRGB.g, t);
+            const b = lerpValue(morphStartState.frameColorRGB.b, morphTarget.frameColorRGB.b, t);
+            const morphedColor = rgbToHex(r, g, b);
+
+            // Apply morphed color to frame
+            container.style.borderColor = morphedColor;
+            phaseEl.style.color = morphedColor;
+
+            // Update frame color state at end
+            if (morphProgress >= 1) {
+                activeFrameColor = morphTarget.frameColor;
+                setFrameColor(activeFrameColor);
+            }
+        }
+
+        // ================================================================
+        // AUDIO-REACTIVE SYSTEM
+        // ================================================================
+        let audioContext = null;
+        let analyser = null;
+        let audioSource = null;
+        let audioEnabled = false;
+        let frequencyData = { low: 0, mid: 0, high: 0 };
+
+        async function toggleAudio() {
+            const btn = document.getElementById('audioToggle');
+
+            if (!audioEnabled) {
+                try {
+                    // Request microphone access
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                    // Setup audio context
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 256;
+                    analyser.smoothingTimeConstant = 0.8;
+
+                    audioSource = audioContext.createMediaStreamSource(stream);
+                    audioSource.connect(analyser);
+
+                    audioEnabled = true;
+                    btn.classList.add('active');
+                    btn.innerHTML = '<span>🎤 Listening...</span>';
+                    console.log('Audio-reactive mode enabled');
+
+                } catch (err) {
+                    console.error('Microphone access denied:', err);
+                    alert('Microphone access needed for audio-reactive mode!');
+                }
+            } else {
+                // Disable audio
+                if (audioSource) {
+                    audioSource.disconnect();
+                }
+                if (audioContext) {
+                    audioContext.close();
+                }
+                audioEnabled = false;
+                audioContext = null;
+                analyser = null;
+                audioSource = null;
+                frequencyData = { low: 0, mid: 0, high: 0 };
+
+                btn.classList.remove('active');
+                btn.innerHTML = '<span>🎤 Enable Microphone</span>';
+
+                // Reset frequency bars
+                document.getElementById('freqLow').style.height = '2px';
+                document.getElementById('freqLow2').style.height = '2px';
+                document.getElementById('freqMid').style.height = '2px';
+                document.getElementById('freqMid2').style.height = '2px';
+                document.getElementById('freqHigh').style.height = '2px';
+            }
+        }
+
+        function updateAudioReactive() {
+            if (!audioEnabled || !analyser) return;
+
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyser.getByteFrequencyData(dataArray);
+
+            const sensitivity = parseFloat(document.getElementById('audioSensitivity').value) / 50;
+
+            // Calculate frequency bands (low: bass, mid: mids, high: treble)
+            const lowEnd = Math.floor(bufferLength * 0.1);   // 0-10% = bass
+            const midStart = Math.floor(bufferLength * 0.1);
+            const midEnd = Math.floor(bufferLength * 0.5);   // 10-50% = mids
+            const highStart = Math.floor(bufferLength * 0.5);
+
+            // Average each band
+            let lowSum = 0, midSum = 0, highSum = 0;
+            for (let i = 0; i < lowEnd; i++) lowSum += dataArray[i];
+            for (let i = midStart; i < midEnd; i++) midSum += dataArray[i];
+            for (let i = highStart; i < bufferLength; i++) highSum += dataArray[i];
+
+            const low = (lowSum / lowEnd / 255) * sensitivity;
+            const mid = (midSum / (midEnd - midStart) / 255) * sensitivity;
+            const high = (highSum / (bufferLength - highStart) / 255) * sensitivity;
+
+            // Smooth transitions
+            frequencyData.low = frequencyData.low * 0.7 + low * 0.3;
+            frequencyData.mid = frequencyData.mid * 0.7 + mid * 0.3;
+            frequencyData.high = frequencyData.high * 0.7 + high * 0.3;
+
+            // Update frequency display bars
+            document.getElementById('freqLow').style.height = Math.max(2, frequencyData.low * 22) + 'px';
+            document.getElementById('freqLow2').style.height = Math.max(2, frequencyData.low * 18) + 'px';
+            document.getElementById('freqMid').style.height = Math.max(2, frequencyData.mid * 22) + 'px';
+            document.getElementById('freqMid2').style.height = Math.max(2, frequencyData.mid * 18) + 'px';
+            document.getElementById('freqHigh').style.height = Math.max(2, frequencyData.high * 22) + 'px';
+
+            // === MAP AUDIO TO VISUAL PARAMETERS ===
+
+            // Low (bass) → Wave amplitude (landscape rumble)
+            const baseAmp = parseFloat(document.getElementById('waveAmp').value);
+            waveField.ampBase = baseAmp + frequencyData.low * 30;
+
+            // Mid → Particle density boost
+            const baseDensity = parseFloat(document.getElementById('particleDensity').value) / 25;
+            particleDensityMultiplier = baseDensity + frequencyData.mid * 2;
+
+            // High (treble) → Wave speed boost
+            const baseSpeed = parseFloat(document.getElementById('waveSpeed').value) / 10000;
+            waveField.speedBase = baseSpeed + frequencyData.high * 0.002;
+
+            // Strong beats: trigger particle bursts
+            if (frequencyData.low > 0.7) {
+                const burstX = width * (0.2 + Math.random() * 0.6);
+                const burstY = height * (0.2 + Math.random() * 0.6);
+                spawnEmergenceParticles(burstX, burstY, Math.floor(frequencyData.low * 8));
+            }
+        }
 
         // Control panel functions
         function toggleControls() {
@@ -869,6 +1227,12 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
         }
 
         function render(time) {
+            // Update keyframe morphing
+            updateMorph();
+
+            // Update audio-reactive values
+            updateAudioReactive();
+
             // Update emergence progress
             const elapsed = time - emergenceStartTime;
             emergenceProgress = Math.min(1, elapsed / emergenceDurationMs);
