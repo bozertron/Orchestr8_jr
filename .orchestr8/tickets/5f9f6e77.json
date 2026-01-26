@@ -1,0 +1,25 @@
+{
+  "id": "5f9f6e77",
+  "fiefdom": "test/fiefdom",
+  "status": "in_progress",
+  "title": "Test Ticket",
+  "description": "Test description",
+  "errors": [
+    "error1"
+  ],
+  "warnings": [
+    "warning1"
+  ],
+  "context": {
+    "test": "context"
+  },
+  "created_at": "2026-01-26T10:25:16.535803",
+  "updated_at": "2026-01-26T10:25:16.536656",
+  "notes": [
+    {
+      "time": "10:25:16",
+      "author": "Test Author",
+      "text": "Test note"
+    }
+  ]
+}
