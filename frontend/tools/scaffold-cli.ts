@@ -9,6 +9,7 @@
  * Requirements:
  *   - Node.js 22+
  *   - tsx (npm install -g tsx)
+ *   - commander (npm install commander)
  * 
  * Usage:
  *   npx tsx scaffold-cli.ts list-plugins
@@ -20,6 +21,7 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { Command, Option } from 'commander';
 
 // ============================================================================
 // INTERFACES - The Protocol Contract
@@ -125,48 +127,21 @@ const SCRIPT_DIR = path.dirname(new URL(import.meta.url).pathname);
 const PARSERS_DIR = path.join(SCRIPT_DIR, 'parsers');
 const VERSION = '1.0.0';
 
+// Initialize Commander program
+const program = new Command();
+
 // ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================
 
 /**
- * Display help message.
+ * Configure Commander program.
  */
-function showHelp(): void {
-    console.log(`
-Scaffold CLI v${VERSION}
-Orchestr8 v3.0 - The Fortress Factory
-
-Usage:
-  npx tsx scaffold-cli.ts <command> [options]
-
-Commands:
-  list-plugins              List available parser plugins
-  <commandType>             Run a specific parser plugin
-
-Common Options:
-  --target <path>           Target directory to analyze (default: .)
-  --compare-path <path>     Compare with another version
-  --filter <pattern>        Filter results by pattern
-  --output-dir <path>       Output directory for reports
-  --help, -h                Show this help message
-  --version, -v             Show version number
-
-Examples:
-  npx tsx scaffold-cli.ts list-plugins
-  npx tsx scaffold-cli.ts overview --target ./my-project
-  npx tsx scaffold-cli.ts stores --target ./my-project --filter "user"
-
-For plugin-specific options, run:
-  npx tsx scaffold-cli.ts <commandType> --help
-`);
-}
-
-/**
- * Display version.
- */
-function showVersion(): void {
-    console.log(`scaffold-cli v${VERSION}`);
+function setupProgram(): void {
+    program
+        .name('scaffold-cli')
+        .description('Orchestr8 v3.0 - TypeScript Plugin Protocol CLI')
+        .version(VERSION, '-v, --version', 'Display version number');
 }
 
 /**
@@ -220,16 +195,23 @@ async function scanPlugins(): Promise<PluginInfo[]> {
 
 /**
  * Execute list-plugins command.
+ * Outputs JSON array of discovered plugins.
  */
 async function listPlugins(): Promise<void> {
     const plugins = await scanPlugins();
-    
-    if (plugins.length === 0) {
-        console.log(JSON.stringify([], null, 2));
-        return;
-    }
-    
     console.log(JSON.stringify(plugins, null, 2));
+}
+
+/**
+ * Register the list-plugins command with Commander.
+ */
+function registerListPluginsCommand(): void {
+    program
+        .command('list-plugins')
+        .description('List available parser plugins as JSON')
+        .action(async () => {
+            await listPlugins();
+        });
 }
 
 /**
@@ -238,24 +220,34 @@ async function listPlugins(): Promise<void> {
  * @param options - Parser options
  */
 async function executePlugin(commandType: string, options: ParserOptions): Promise<void> {
-    const plugins = await scanPlugins();
-    const plugin = plugins.find(p => p.commandType === commandType);
+    // Try both .ts and .js extensions
+    const extensions = ['.ts', '.js'];
+    let pluginPath: string | null = null;
     
-    if (!plugin) {
+    for (const ext of extensions) {
+        const testPath = path.join(PARSERS_DIR, `${commandType}${ext}`);
+        try {
+            await fs.access(testPath);
+            pluginPath = testPath;
+            break;
+        } catch {
+            continue;
+        }
+    }
+    
+    if (!pluginPath) {
+        const plugins = await scanPlugins();
         console.error(`Error: Plugin '${commandType}' not found.`);
         console.error('Available plugins:', plugins.map(p => p.commandType).join(', ') || 'none');
         process.exit(1);
     }
-    
-    // Load and execute the plugin
-    const pluginPath = path.join(PARSERS_DIR, `${commandType}.js`);
     
     try {
         const pluginModule = await import(pluginPath);
         const loadedPlugin = pluginModule.default || pluginModule;
         
         if (!isScaffoldPlugin(loadedPlugin)) {
-            throw new Error('Invalid plugin structure');
+            throw new Error('Invalid plugin structure - must implement ScaffoldPlugin interface');
         }
         
         const result = await loadedPlugin.parserFunction(options.target, options);
@@ -272,46 +264,65 @@ async function executePlugin(commandType: string, options: ParserOptions): Promi
 }
 
 /**
- * Parse command line arguments.
- * @param args - Command line arguments
- * @returns Parsed options
+ * Register dynamic plugin commands with Commander.
+ * Scans available plugins and creates commands for each.
  */
-function parseArgs(args: string[]): { command: string; options: ParserOptions } {
-    const options: ParserOptions = {
-        target: '.'
-    };
+async function registerPluginCommands(): Promise<void> {
+    const plugins = await scanPlugins();
     
-    let command = '';
-    
-    for (let i = 0; i < args.length; i++) {
-        const arg = args[i];
+    for (const plugin of plugins) {
+        const cmd = program
+            .command(plugin.commandType)
+            .description(plugin.description)
+            .option('-t, --target <path>', 'Target directory to analyze', '.')
+            .option('-c, --compare-path <path>', 'Compare with another version')
+            .option('-f, --filter <pattern>', 'Filter results by pattern')
+            .option('-o, --output-dir <path>', 'Output directory for reports');
         
-        if (arg === '--help' || arg === '-h') {
-            showHelp();
-            process.exit(0);
+        // Add plugin-specific options
+        for (const optName of plugin.specificOptions) {
+            cmd.option(`--${optName} <value>`, `Plugin-specific: ${optName}`);
         }
         
-        if (arg === '--version' || arg === '-v') {
-            showVersion();
-            process.exit(0);
-        }
-        
-        if (arg.startsWith('--')) {
-            const key = arg.slice(2);
-            const nextArg = args[i + 1];
-            
-            if (nextArg && !nextArg.startsWith('--')) {
-                options[key] = nextArg;
-                i++;
-            } else {
-                options[key] = true;
-            }
-        } else if (!arg.startsWith('-') && !command) {
-            command = arg;
-        }
+        cmd.action(async (cmdOptions) => {
+            const options: ParserOptions = {
+                target: cmdOptions.target || '.',
+                comparePath: cmdOptions.comparePath,
+                filter: cmdOptions.filter,
+                ...cmdOptions
+            };
+            await executePlugin(plugin.commandType, options);
+        });
     }
-    
-    return { command, options };
+}
+
+/**
+ * Handle unknown commands by attempting plugin execution.
+ * This allows plugins to be called even if not pre-registered.
+ */
+function setupUnknownCommandHandler(): void {
+    program.on('command:*', async (operands) => {
+        const commandType = operands[0];
+        const args = process.argv.slice(3);
+        
+        // Parse remaining args into options
+        const options: ParserOptions = { target: '.' };
+        for (let i = 0; i < args.length; i++) {
+            const arg = args[i];
+            if (arg.startsWith('--')) {
+                const key = arg.slice(2);
+                const nextArg = args[i + 1];
+                if (nextArg && !nextArg.startsWith('--')) {
+                    options[key] = nextArg;
+                    i++;
+                } else {
+                    options[key] = true;
+                }
+            }
+        }
+        
+        await executePlugin(commandType, options);
+    });
 }
 
 // ============================================================================
@@ -319,23 +330,20 @@ function parseArgs(args: string[]): { command: string; options: ParserOptions } 
 // ============================================================================
 
 async function main(): Promise<void> {
-    const args = process.argv.slice(2);
+    // Setup Commander program
+    setupProgram();
     
-    if (args.length === 0) {
-        showHelp();
-        process.exit(0);
-    }
+    // Register built-in commands
+    registerListPluginsCommand();
     
-    const { command, options } = parseArgs(args);
+    // Register discovered plugin commands
+    await registerPluginCommands();
     
-    if (command === 'list-plugins') {
-        await listPlugins();
-    } else if (command) {
-        await executePlugin(command, options);
-    } else {
-        showHelp();
-        process.exit(1);
-    }
+    // Handle unknown commands (try as plugin)
+    setupUnknownCommandHandler();
+    
+    // Parse command line arguments
+    await program.parseAsync(process.argv);
 }
 
 // Run main function
