@@ -74,6 +74,31 @@ class CodeNode:
 
 
 @dataclass
+class ColorScheme:
+    """Color configuration for Woven Maps - matches stereOS three-state system."""
+    working: str = "#D4AF37"    # Gold - all imports resolve
+    broken: str = "#1fbdea"     # Blue/Teal - has errors
+    combat: str = "#9D4EDD"     # Purple - LLM deployed
+    void: str = "#0A0A0B"       # Background
+    surface: str = "#121214"    # Elevated surfaces
+
+    # Frame colors (teal during scan, gold when complete)
+    frame_scanning: str = "#1fbdea"
+    frame_complete: str = "#D4AF37"
+
+    def to_dict(self) -> Dict[str, str]:
+        return {
+            "working": self.working,
+            "broken": self.broken,
+            "combat": self.combat,
+            "void": self.void,
+            "surface": self.surface,
+            "frameScanning": self.frame_scanning,
+            "frameComplete": self.frame_complete,
+        }
+
+
+@dataclass
 class GraphConfig:
     """Configuration for the visualization."""
     width: int = 800
@@ -83,6 +108,7 @@ class GraphConfig:
     show_particles: bool = True
     show_tooltip: bool = True
     emergence_duration: float = 2.5  # Slightly longer for drama
+    colors: ColorScheme = field(default_factory=ColorScheme)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -93,6 +119,7 @@ class GraphConfig:
             "showParticles": self.show_particles,
             "showTooltip": self.show_tooltip,
             "emergenceDuration": self.emergence_duration,
+            "colors": self.colors.to_dict(),
         }
 
 
@@ -368,6 +395,111 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
         #stats .working { color: #D4AF37; }
         #stats .broken { color: #1fbdea; }
         #stats .combat { color: #9D4EDD; }
+
+        /* Control Panel */
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(18, 18, 20, 0.9);
+            border: 1px solid rgba(31, 189, 234, 0.3);
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 10px;
+            color: #888;
+            max-width: 180px;
+            transition: opacity 0.2s, border-color 0.3s;
+        }
+        #controls:hover { border-color: rgba(212, 175, 55, 0.5); }
+        #controls.collapsed { padding: 6px 10px; }
+        #controls.collapsed .ctrl-body { display: none; }
+
+        .ctrl-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        .ctrl-title {
+            color: #D4AF37;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .ctrl-toggle {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .ctrl-section {
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .ctrl-section:last-child { border-bottom: none; margin-bottom: 0; }
+
+        .ctrl-label {
+            display: block;
+            margin-bottom: 4px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .ctrl-row {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .ctrl-btn {
+            flex: 1;
+            padding: 5px 8px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 3px;
+            color: #888;
+            font-family: inherit;
+            font-size: 9px;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .ctrl-btn:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+        .ctrl-btn.active { border-color: #D4AF37; color: #D4AF37; background: rgba(212,175,55,0.1); }
+        .ctrl-btn.gold { border-color: #D4AF37; color: #D4AF37; }
+        .ctrl-btn.gold.active { background: rgba(212,175,55,0.2); }
+        .ctrl-btn.blue { border-color: #1fbdea; color: #1fbdea; }
+        .ctrl-btn.blue.active { background: rgba(31,189,234,0.2); }
+        .ctrl-btn.purple { border-color: #9D4EDD; color: #9D4EDD; }
+        .ctrl-btn.purple.active { background: rgba(157,78,221,0.2); }
+
+        .ctrl-slider {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            outline: none;
+        }
+        .ctrl-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #D4AF37;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .ctrl-value {
+            display: inline-block;
+            min-width: 30px;
+            text-align: right;
+            color: #D4AF37;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
@@ -377,6 +509,47 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
     </div>
     <div id="tooltip"></div>
     <div id="stats"></div>
+
+    <!-- Control Panel -->
+    <div id="controls">
+        <div class="ctrl-header" onclick="toggleControls()">
+            <span class="ctrl-title">Controls</span>
+            <span class="ctrl-toggle">▼</span>
+        </div>
+        <div class="ctrl-body">
+            <!-- Color Mode -->
+            <div class="ctrl-section">
+                <span class="ctrl-label">Frame Color</span>
+                <div class="ctrl-row">
+                    <button class="ctrl-btn gold active" onclick="setFrameColor('gold')">Gold</button>
+                    <button class="ctrl-btn blue" onclick="setFrameColor('teal')">Teal</button>
+                    <button class="ctrl-btn purple" onclick="setFrameColor('combat')">Purple</button>
+                </div>
+            </div>
+
+            <!-- Wave Controls -->
+            <div class="ctrl-section">
+                <span class="ctrl-label">Wave Amplitude</span>
+                <input type="range" class="ctrl-slider" id="waveAmp" min="0" max="50" value="20" oninput="updateWave()">
+                <span class="ctrl-label">Wave Speed</span>
+                <input type="range" class="ctrl-slider" id="waveSpeed" min="0" max="20" value="8" oninput="updateWave()">
+            </div>
+
+            <!-- Particles -->
+            <div class="ctrl-section">
+                <span class="ctrl-label">Particle Density</span>
+                <input type="range" class="ctrl-slider" id="particleDensity" min="0" max="100" value="25" oninput="updateParticles()">
+            </div>
+
+            <!-- Actions -->
+            <div class="ctrl-section">
+                <div class="ctrl-row">
+                    <button class="ctrl-btn" onclick="reEmergence()">Re-Emerge</button>
+                    <button class="ctrl-btn" onclick="clearParticles()">Clear</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // ================================================================
@@ -395,6 +568,73 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             teal: '#1fbdea',
             gold: '#D4AF37'
         };
+
+        // ================================================================
+        // CONTROL PANEL STATE
+        // ================================================================
+        let activeFrameColor = 'gold';  // 'gold' | 'teal' | 'combat'
+        let particleDensityMultiplier = 1.0;
+
+        // Control panel functions
+        function toggleControls() {
+            const panel = document.getElementById('controls');
+            const toggle = panel.querySelector('.ctrl-toggle');
+            panel.classList.toggle('collapsed');
+            toggle.textContent = panel.classList.contains('collapsed') ? '▶' : '▼';
+        }
+
+        function setFrameColor(color) {
+            activeFrameColor = color;
+            // Update button states
+            document.querySelectorAll('.ctrl-btn.gold, .ctrl-btn.blue, .ctrl-btn.purple').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const colorClass = color === 'teal' ? 'blue' : color === 'combat' ? 'purple' : 'gold';
+            document.querySelector(`.ctrl-btn.${colorClass}`).classList.add('active');
+
+            // Update container border
+            const borderColor = color === 'gold' ? COLORS.gold : color === 'combat' ? COLORS.combat : COLORS.teal;
+            container.style.borderColor = borderColor;
+            phaseEl.style.color = borderColor;
+        }
+
+        function updateWave() {
+            const amp = parseFloat(document.getElementById('waveAmp').value);
+            const speed = parseFloat(document.getElementById('waveSpeed').value);
+            waveField.ampBase = amp;
+            waveField.speedBase = speed / 10000;  // Scale to reasonable range
+        }
+
+        function updateParticles() {
+            const density = parseFloat(document.getElementById('particleDensity').value);
+            particleDensityMultiplier = density / 25;  // Normalize around default
+        }
+
+        function reEmergence() {
+            // Reset emergence state
+            emerged = false;
+            emergenceProgress = 0;
+            emergenceStartTime = performance.now();
+            container.classList.remove('emerged');
+            phaseEl.classList.remove('emerged');
+
+            // Re-scatter nodes
+            for (let i = 0; i < nodeStates.length; i++) {
+                nodeStates[i].currentX = width / 2 + (Math.random() - 0.5) * width * 0.8;
+                nodeStates[i].currentY = height / 2 + (Math.random() - 0.5) * height * 0.8;
+                nodeStates[i].currentAlpha = 0;
+            }
+        }
+
+        function clearParticles() {
+            particles.length = 0;
+        }
+
+        function getFrameColor() {
+            if (activeFrameColor === 'combat') return COLORS.combat;
+            if (activeFrameColor === 'teal') return COLORS.teal;
+            return emerged ? COLORS.gold : COLORS.teal;
+        }
 
         // ================================================================
         // SETUP
@@ -436,7 +676,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
         // ================================================================
         let emergenceProgress = 0;  // 0 to 1
         let emerged = false;
-        const emergenceStartTime = performance.now();
+        let emergenceStartTime = performance.now();
         const emergenceDurationMs = emergenceDuration * 1000;
 
         // Store original positions, start from chaos
@@ -670,7 +910,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
 
                 // Spawn emergence particles during coalescing (more during peak wave)
                 if (!emerged && adjustedProgress > 0.1 && adjustedProgress < 0.9) {
-                    const spawnChance = 0.02 + waveStrength * 0.03;
+                    const spawnChance = (0.02 + waveStrength * 0.03) * particleDensityMultiplier;
                     if (Math.random() < spawnChance) {
                         spawnEmergenceParticles(state.currentX, state.currentY, 2);
                     }
@@ -685,7 +925,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             // GORGEOUS MESH RENDERING - Like the Paris cityscapes
             // ============================================================
             if (edges.length > 0) {
-                const frameColor = emerged ? COLORS.gold : COLORS.teal;
+                const frameColor = getFrameColor();
 
                 // Layer 1: Dense gradient base (the "city" silhouette)
                 ctx.save();
@@ -807,7 +1047,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             // Spawn error particles (only after emerged)
             if (emerged) {
                 for (const node of nodes) {
-                    if (node.status === 'broken' && Math.random() < 0.025) {
+                    if (node.status === 'broken' && Math.random() < 0.025 * particleDensityMultiplier) {
                         spawnErrorParticles(node);
                     }
                 }
