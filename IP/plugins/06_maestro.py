@@ -31,6 +31,41 @@ Three-State System:
 Reference: UI Reference/MaestroView.vue
 """
 
+# ============================================================================
+# PATH RESOLUTION - Ensures IP package is importable when run directly
+# ============================================================================
+# This block allows the plugin to work both:
+# 1. When run directly: python IP/plugins/06_maestro.py
+# 2. When imported as part of the package via orchestr8 app
+#
+# The IP package lives at the project root level, so we need to ensure
+# the project root is in sys.path before importing IP modules.
+# ============================================================================
+import sys
+from pathlib import Path as _Path
+
+# Resolve the project root (3 levels up: 06_maestro.py -> plugins -> IP -> project_root)
+_THIS_FILE = _Path(__file__).resolve()
+_PROJECT_ROOT = _THIS_FILE.parent.parent.parent
+
+# Add project root to sys.path if not already present
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
+
+# Verify IP package is now importable (fail loudly if not, per user request)
+try:
+    import IP  # noqa: F401 - Import to verify package is accessible
+except ImportError as e:
+    raise ImportError(
+        f"Failed to import IP package. "
+        f"Project root '{_PROJECT_ROOT}' was added to sys.path but IP module not found. "
+        f"Ensure the IP package exists at {_PROJECT_ROOT / 'IP'}. "
+        f"Original error: {e}"
+    ) from e
+
+# ============================================================================
+# STANDARD LIBRARY IMPORTS
+# ============================================================================
 from datetime import datetime
 from typing import Any, Optional
 from pathlib import Path
