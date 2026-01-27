@@ -19,26 +19,26 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-PLUGIN_NAME = "📁 Explorer"
+PLUGIN_NAME = "Explorer"
 PLUGIN_ORDER = 2
 
-# File type icons
+# File type icons - text based
 FILE_ICONS = {
-    'py': '🐍',
-    'ts': '📘',
-    'js': '📒',
-    'json': '📋',
-    'md': '📝',
-    'txt': '📄',
-    'yaml': '⚙️',
-    'yml': '⚙️',
-    'toml': '⚙️',
-    'sql': '🗃️',
-    'css': '🎨',
-    'html': '🌐',
-    'vue': '💚',
-    'svelte': '🔥',
-    'default': '📄'
+    'py': '[py]',
+    'ts': '[ts]',
+    'js': '[js]',
+    'json': '[json]',
+    'md': '[md]',
+    'txt': '[txt]',
+    'yaml': '[yaml]',
+    'yml': '[yml]',
+    'toml': '[toml]',
+    'sql': '[sql]',
+    'css': '[css]',
+    'html': '[html]',
+    'vue': '[vue]',
+    'svelte': '[svelte]',
+    'default': '[file]'
 }
 
 # Directories to ignore
@@ -83,7 +83,7 @@ def scan_directory(root_path, max_depth=5):
                 
                 if item.is_dir():
                     files.append({
-                        'icon': '📁',
+                        'icon': '[dir]',
                         'name': item.name,
                         'path': str(rel_path),
                         'type': 'directory',
@@ -154,7 +154,7 @@ def render(STATE_MANAGERS):
     
     # Scan button
     scan_btn = mo.ui.button(
-        label="🔍 Scan Project" if not get_is_scanning() else "⏳ Scanning...",
+        label="Scan Project" if not get_is_scanning() else "Scanning...",
         on_change=lambda _: do_scan(),
         disabled=get_is_scanning()
     )
@@ -207,7 +207,7 @@ def render(STATE_MANAGERS):
         
         # Build context info
         info_lines = [
-            f"### 📄 {full_path.name}",
+            f"### {full_path.name}",
             f"",
             f"**Path:** `{selected}`",
             f"**Type:** {'File' if is_file else 'Directory'}",
@@ -254,7 +254,7 @@ def render(STATE_MANAGERS):
     
     # Layout
     return mo.vstack([
-        mo.md("## 📁 Project Explorer"),
+        mo.md("## Project Explorer"),
         mo.hstack([scan_btn, stats], justify="space-between", align="center"),
         mo.md("---"),
         mo.hstack([

@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
-🎨 CONNIE THE CONVERTER 🎨
+CONNIE THE CONVERTER
 A Desktop Database Conversion Tool for Linux
 
 "Call Connie Causing Conversion!"
 
 Features:
-  ✓ Detects SQLite databases in current folder
-  ✓ Beautiful PyQt6 interface
-  ✓ One-click conversion to multiple formats
-  ✓ Creates "Connie was here" output folder
-  ✓ Intelligent file naming (Connied_[name].[format])
-  ✓ Double-clickable on Fedora Linux
-  ✓ Portable (move anywhere, works everywhere)
+  - Detects SQLite databases in current folder
+  - Beautiful PyQt6 interface
+  - One-click conversion to multiple formats
+  - Creates "Connie was here" output folder
+  - Intelligent file naming (Connied_[name].[format])
+  - Double-clickable on Fedora Linux
+  - Portable (move anywhere, works everywhere)
 
 Usage:
   1. Move Connie to a folder with .db files
@@ -201,7 +201,7 @@ class ConversionEngine:
                 col_name = col[1]
                 col_type = col[2]
                 nullable = "YES" if not col[3] else "NO"
-                pk = "✓" if col[5] else ""
+                pk = "Y" if col[5] else ""
                 md.append(f"| `{col_name}` | {col_type} | {nullable} | {pk} |")
             
             md.append("")
@@ -301,7 +301,7 @@ class ConversionThread(QThread):
             self.progress.emit("Converting to CSV...")
             csv_files = engine.export_csv()
             
-            self.progress.emit("✅ Conversion complete!")
+            self.progress.emit("Conversion complete!")
             
             self.finished.emit({
                 "sql": sql_file,
@@ -331,7 +331,7 @@ class ConnieTheConverter(QMainWindow):
     
     def init_ui(self):
         """Initialize user interface"""
-        self.setWindowTitle("🎨 Connie the Converter 🎨")
+        self.setWindowTitle("Connie the Converter")
         self.setGeometry(100, 100, WINDOW_WIDTH, WINDOW_HEIGHT)
         self.setStyleSheet(self.get_stylesheet())
         
@@ -351,7 +351,7 @@ class ConnieTheConverter(QMainWindow):
         layout.addWidget(header)
         
         # Info label
-        info = QLabel("📁 SQLite Databases in this folder:")
+        info = QLabel("SQLite Databases in this folder:")
         info.setStyleSheet("color: #FFFFFF; font-weight: bold;")
         layout.addWidget(info)
         
@@ -401,7 +401,7 @@ class ConnieTheConverter(QMainWindow):
         button_layout.setSpacing(10)
         
         # Big red conversion button
-        self.convert_btn = QPushButton("🔴 CALL CONNIE CAUSING CONVERSION")
+        self.convert_btn = QPushButton("CALL CONNIE CAUSING CONVERSION")
         self.convert_btn.setFont(QFont("Arial", 12, QFont.Weight.Bold))
         self.convert_btn.setMinimumHeight(60)
         self.convert_btn.setStyleSheet("""
@@ -430,7 +430,7 @@ class ConnieTheConverter(QMainWindow):
         button_layout.addWidget(self.convert_btn)
         
         # Close button
-        self.close_btn = QPushButton("✕")
+        self.close_btn = QPushButton("X")
         self.close_btn.setFont(QFont("Arial", 16, QFont.Weight.Bold))
         self.close_btn.setMaximumWidth(50)
         self.close_btn.setMinimumHeight(60)
@@ -455,11 +455,11 @@ class ConnieTheConverter(QMainWindow):
         
         # Info panel
         info_panel = QLabel(
-            "✨ Connie is a portable database converter.\n"
-            "✓ Move me to any folder with .db files\n"
-            "✓ Double-click to launch\n"
-            "✓ Select a database and convert\n"
-            "✓ Find results in 'Connie was here' folder"
+            "Connie is a portable database converter.\n"
+            "- Move me to any folder with .db files\n"
+            "- Double-click to launch\n"
+            "- Select a database and convert\n"
+            "- Find results in 'Connie was here' folder"
         )
         info_panel.setStyleSheet("""
             background-color: #2D2D2D;
@@ -496,13 +496,13 @@ class ConnieTheConverter(QMainWindow):
         
         if db_files:
             for db_file in sorted(db_files):
-                item = QListWidgetItem(f"📊 {db_file.name}")
+                item = QListWidgetItem(f"[DB] {db_file.name}")
                 item.setData(Qt.ItemDataRole.UserRole, str(db_file))
                 self.db_list.addItem(item)
-            
+
             self.status_label.setText(f"Found {len(db_files)} database(s)")
         else:
-            self.db_list.addItem("❌ No .db or .sqlite files found")
+            self.db_list.addItem("No .db or .sqlite files found")
             self.status_label.setText("Place Connie in a folder with databases")
     
     def on_db_selected(self, item):
@@ -547,18 +547,18 @@ class ConnieTheConverter(QMainWindow):
         
         # Show success message
         output_dir = Path(results["output_dir"])
-        
+
         QMessageBox.information(
             self,
-            "✨ Connie Was Here! ✨",
+            "Connie Was Here!",
             f"Database converted successfully!\n\n"
-            f"📁 Output folder:\n{output_dir}\n\n"
-            f"📄 Files created:\n"
-            f"  • Connied_{Path(self.selected_db).stem}.sql\n"
-            f"  • Connied_{Path(self.selected_db).stem}.json\n"
-            f"  • Connied_{Path(self.selected_db).stem}.md\n"
-            f"  • Connied_{Path(self.selected_db).stem}_CSV/\n\n"
-            f"🎉 Ready to use with LLMs or other tools!"
+            f"Output folder:\n{output_dir}\n\n"
+            f"Files created:\n"
+            f"  - Connied_{Path(self.selected_db).stem}.sql\n"
+            f"  - Connied_{Path(self.selected_db).stem}.json\n"
+            f"  - Connied_{Path(self.selected_db).stem}.md\n"
+            f"  - Connied_{Path(self.selected_db).stem}_CSV/\n\n"
+            f"Ready to use with LLMs or other tools!"
         )
         
         # Reset UI
@@ -574,7 +574,7 @@ class ConnieTheConverter(QMainWindow):
         """Handle conversion error"""
         QMessageBox.critical(
             self,
-            "❌ Conversion Error",
+            "Conversion Error",
             f"Connie encountered an error:\n\n{error}"
         )
         

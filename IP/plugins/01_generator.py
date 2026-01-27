@@ -19,7 +19,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-PLUGIN_NAME = "⚙️ Generator"
+PLUGIN_NAME = "Generator"
 PLUGIN_ORDER = 1
 
 # Phase definitions
@@ -251,9 +251,9 @@ Click **Export** to save as `BUILD_SPEC.json` in your project root.
                 }, f, indent=2)
             logs = get_logs()
             set_logs(logs + [f"[Generator] Exported BUILD_SPEC.json to {output_path}"])
-            return mo.md(f"✅ **Exported successfully!**\n\nSaved to: `{output_path}`")
+            return mo.md(f"**Exported successfully!**\n\nSaved to: `{output_path}`")
         except Exception as e:
-            return mo.md(f"❌ **Export failed:** {str(e)}")
+            return mo.md(f"**Export failed:** {str(e)}")
     
     prev_btn = mo.ui.button(
         label="← Previous",
@@ -268,30 +268,30 @@ Click **Export** to save as `BUILD_SPEC.json` in your project root.
     )
     
     lock_btn = mo.ui.button(
-        label="🔒 Lock Phase",
+        label="Lock Phase",
         on_change=lambda _: lock_phase(),
         disabled=current_phase in locked_phases
     )
-    
+
     export_btn = mo.ui.button(
-        label="📤 Export BUILD_SPEC.json",
+        label="Export BUILD_SPEC.json",
         on_change=lambda _: export_spec()
     ) if current_phase == 7 else None
-    
+
     # Phase indicator
     phase_indicators = " ".join([
-        f"{'🔒' if i+1 in locked_phases else '⬜' if i+1 > current_phase else '✅' if i+1 < current_phase else '🔵'}"
+        f"{'[L]' if i+1 in locked_phases else '[ ]' if i+1 > current_phase else '[x]' if i+1 < current_phase else '[*]'}"
         for i in range(7)
     ])
-    
+
     # Build layout
     nav_row = mo.hstack([prev_btn, lock_btn, next_btn], justify="space-between")
-    
+
     if current_phase == 7 and export_btn:
         nav_row = mo.hstack([prev_btn, export_btn], justify="space-between")
-    
+
     return mo.vstack([
-        mo.md(f"## ⚙️ Project Generator Wizard"),
+        mo.md(f"## Project Generator Wizard"),
         mo.md(f"**Phases:** {phase_indicators}"),
         progress,
         progress_bar,

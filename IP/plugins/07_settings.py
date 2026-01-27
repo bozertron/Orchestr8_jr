@@ -292,15 +292,15 @@ def render(STATE_MANAGERS: Dict) -> Any:
 
     # Tab definitions
     tabs = {
-        "agents": ("🤖 Agents", "Configure AI agents (Director, Professor, Doctor)"),
-        "tools": ("🛠️ Tools", "Configure 888 tools (actu8, senses, cre8, etc.)"),
-        "models": ("🧠 Models", "Configure local AI models"),
-        "integration": ("🔗 Integration", "External application settings"),
-        "ui": ("🎨 UI", "User interface preferences"),
-        "privacy": ("🔒 Privacy", "Privacy and security settings"),
-        "performance": ("⚡ Performance", "System performance tuning"),
-        "experimental": ("🧪 Experimental", "Cutting-edge features"),
-        "backup": ("💾 Backup", "Backup and recovery"),
+        "agents": ("Agents", "Configure AI agents (Director, Professor, Doctor)"),
+        "tools": ("Tools", "Configure 888 tools (actu8, senses, cre8, etc.)"),
+        "models": ("Models", "Configure local AI models"),
+        "integration": ("Integration", "External application settings"),
+        "ui": ("UI", "User interface preferences"),
+        "privacy": ("Privacy", "Privacy and security settings"),
+        "performance": ("Performance", "System performance tuning"),
+        "experimental": ("Experimental", "Cutting-edge features"),
+        "backup": ("Backup", "Backup and recovery"),
     }
 
     def tab_button(tab_key: str, label: str):
@@ -320,7 +320,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
 
         return mo.vstack(
             [
-                mo.md("### 🤖 Director - The General"),
+                mo.md("### Director - The General"),
                 mo.hstack(
                     [
                         mo.ui.checkbox(
@@ -345,7 +345,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                         ),
                     ]
                 ),
-                mo.md("### 🧠 Professor - Breakthrough Analyzer"),
+                mo.md("### Professor - Breakthrough Analyzer"),
                 mo.hstack(
                     [
                         mo.ui.checkbox(
@@ -370,7 +370,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                         ),
                     ]
                 ),
-                mo.md("### 🏥 Doctor - Deep Debugging"),
+                mo.md("### Doctor - Deep Debugging"),
                 mo.hstack(
                     [
                         mo.ui.checkbox(
@@ -400,7 +400,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
 
         return mo.vstack(
             [
-                mo.md("### 📄 actu8 - Document Generation"),
+                mo.md("### actu8 - Document Generation"),
                 mo.hstack(
                     [
                         mo.ui.text(
@@ -421,7 +421,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                         ),
                     ]
                 ),
-                mo.md("### 👁️ senses - Multimodal Input"),
+                mo.md("### senses - Multimodal Input"),
                 mo.hstack(
                     [
                         mo.ui.checkbox(
@@ -442,7 +442,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                         ),
                     ]
                 ),
-                mo.md("### 🎨 cre8 - Creative Suite"),
+                mo.md("### cre8 - Creative Suite"),
                 mo.hstack(
                     [
                         mo.ui.text(
@@ -474,7 +474,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
 
         return mo.vstack(
             [
-                mo.md("### 🎨 General Appearance"),
+                mo.md("### General Appearance"),
                 mo.hstack(
                     [
                         mo.ui.text(
@@ -495,7 +495,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                         ),
                     ]
                 ),
-                mo.md("### 👁️ Maestro Settings"),
+                mo.md("### Maestro Settings"),
                 mo.hstack(
                     [
                         mo.ui.checkbox(
@@ -525,9 +525,9 @@ def render(STATE_MANAGERS: Dict) -> Any:
         """Save current settings"""
         if settings_mgr.save_settings():
             set_modified(False)
-            return mo.md("✅ Settings saved successfully!")
+            return mo.md("Settings saved successfully!")
         else:
-            return mo.md("❌ Error saving settings!")
+            return mo.md("Error saving settings!")
 
     def render_content():
         """Render content based on active tab"""
@@ -564,14 +564,14 @@ def render(STATE_MANAGERS: Dict) -> Any:
     return mo.vstack(
         [
             mo.Html(SETTINGS_CSS),
-            mo.md("## ⚡ Settings"),
+            mo.md("## Settings"),
             mo.md("*Configure Orchestr8 agents, tools, and system settings*"),
             mo.md("---"),
             # Header with waves
             mo.hstack(
                 [
-                    mo.md("### 🌊 Configuration Center"),
-                    mo.md("〰️〰️〰️"),  # Simple waves animation
+                    mo.md("### Configuration Center"),
+                    mo.md("~~~"),  # Simple waves
                 ],
                 justify="space-between",
             ),
@@ -585,7 +585,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
             mo.hstack(
                 [
                     mo.ui.button(
-                        label="💾 Save Settings",
+                        label="Save Settings",
                         on_change=lambda _: save_settings(),
                         style={"background": "rgba(212, 175, 55, 0.2)"},
                     ),

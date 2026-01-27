@@ -44,7 +44,7 @@ from typing import Any, Optional
 # Import smart output renderer
 from IP.plugins.output_renderer import detect_and_render_output
 
-PLUGIN_NAME = "🌉 Universal Bridge"
+PLUGIN_NAME = "Universal Bridge"
 PLUGIN_ORDER = 5
 
 # Configuration
@@ -320,14 +320,14 @@ def render(STATE_MANAGERS: dict) -> Any:
         states[manifest_name]["results"][command_id] = result
         set_tool_states(states)
         
-        status = "✅ Success" if result.get("success") else "❌ Failed"
+        status = "Success" if result.get("success") else "Failed"
         log_message(f"{manifest_name}.{command}: {status}")
     
     def build_tool_accordion(manifest: dict) -> Any:
         """Build accordion content for a single tool."""
         name = manifest.get("name", "Unknown Tool")
         description = manifest.get("description", "No description")
-        icon = manifest.get("icon", "🔧")
+        icon = manifest.get("icon", "[T]")
         base_command = manifest.get("base_command", [])
         static_commands = manifest.get("static_commands", [])
         discovery = manifest.get("discovery", {})
@@ -346,23 +346,23 @@ def render(STATE_MANAGERS: dict) -> Any:
         header_elements = [
             mo.md(f"**Description:** {description}"),
             mo.md(f"**Base Command:** `{' '.join(base_command)}`"),
-            mo.md(f"**Command Status:** {'✅' if cmd_valid else '❌'} {cmd_msg}"),
+            mo.md(f"**Command Status:** {'[OK]' if cmd_valid else '[ERR]'} {cmd_msg}"),
         ]
         
         # Discovery section
         if discovery.get("enabled"):
             discover_btn = mo.ui.button(
-                label="🔍 Run Discovery",
+                label="Run Discovery",
                 on_change=lambda _, m=manifest, n=name: do_discovery(n, m),
                 disabled=not cmd_valid
             )
             header_elements.append(
                 mo.hstack([discover_btn], justify="start")
             )
-            
+
             if discovery_error:
                 header_elements.append(
-                    mo.md(f"⚠️ **Discovery Error:** {discovery_error}")
+                    mo.md(f"**Discovery Error:** {discovery_error}")
                 )
         
         header_elements.append(mo.md("---"))
@@ -380,22 +380,22 @@ def render(STATE_MANAGERS: dict) -> Any:
                 
                 # Button for this command
                 btn = mo.ui.button(
-                    label=f"▶️ {cmd_name}",
+                    label=f"Run {cmd_name}",
                     on_change=lambda _, bc=base_command, c=cmd_value, n=name, cid=cmd_id: run_command(n, bc, c, cid),
                     disabled=not cmd_valid
                 )
-                
+
                 # Result display
                 result = results.get(cmd_id)
                 if result:
                     if result.get("success"):
                         result_ui = mo.vstack([
-                            mo.md(f"**✅ Success** | `{result.get('command', '')}`"),
+                            mo.md(f"**Success** | `{result.get('command', '')}`"),
                             detect_and_render_output(result.get("stdout", ""))
                         ])
                     else:
                         error_msg = result.get("error") or result.get("stderr", "Unknown error")
-                        result_ui = mo.md(f"**❌ Failed:** {error_msg}")
+                        result_ui = mo.md(f"**Failed:** {error_msg}")
                 else:
                     result_ui = mo.md("*Not executed*")
                 
@@ -414,28 +414,28 @@ def render(STATE_MANAGERS: dict) -> Any:
                     cmd_desc = ""
                 
                 cmd_id = f"discovered_{cmd_type}"
-                
-                btn_label = f"▶️ {cmd_type}"
+
+                btn_label = f"Run {cmd_type}"
                 if cmd_desc:
                     btn_label += f" - {cmd_desc[:40]}..."
-                
+
                 btn = mo.ui.button(
                     label=btn_label,
                     on_change=lambda _, bc=base_command, c=cmd_type, n=name, cid=cmd_id: run_command(n, bc, c, cid),
                     disabled=not cmd_valid
                 )
-                
+
                 # Result display
                 result = results.get(cmd_id)
                 if result:
                     if result.get("success"):
                         result_ui = mo.vstack([
-                            mo.md(f"**✅ Success** | `{result.get('command', '')}`"),
+                            mo.md(f"**Success** | `{result.get('command', '')}`"),
                             detect_and_render_output(result.get("stdout", ""))
                         ])
                     else:
                         error_msg = result.get("error") or result.get("stderr", "Unknown error")
-                        result_ui = mo.md(f"**❌ Failed:** {error_msg}")
+                        result_ui = mo.md(f"**Failed:** {error_msg}")
                 else:
                     result_ui = mo.md("*Not executed*")
                 
@@ -469,7 +469,7 @@ def render(STATE_MANAGERS: dict) -> Any:
         accordion_items = {}
         for manifest in manifests:
             name = manifest.get("name", "Unknown")
-            icon = manifest.get("icon", "🔧")
+            icon = manifest.get("icon", "[T]")
             accordion_items[f"{icon} {name}"] = build_tool_accordion(manifest)
         
         tools_accordion = mo.ui.accordion(accordion_items)
@@ -481,7 +481,7 @@ def render(STATE_MANAGERS: dict) -> Any:
     if errors or scan_errors:
         all_errors = list(set(errors + scan_errors))
         error_display = mo.ui.accordion({
-            "⚠️ Registry Warnings": mo.vstack([
+            "Registry Warnings": mo.vstack([
                 mo.md(f"- {err}") for err in all_errors
             ])
         })
@@ -493,7 +493,7 @@ def render(STATE_MANAGERS: dict) -> Any:
     
     # Layout
     return mo.vstack([
-        mo.md("## 🌉 Universal Bridge"),
+        mo.md("## Universal Bridge"),
         mo.md("*Dynamically discovers and executes tools from the registry.*"),
         mo.md("---"),
         mo.hstack([target_input], gap="1rem"),

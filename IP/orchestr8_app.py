@@ -178,7 +178,7 @@ def logs_tab(get_logs, mo):
 def main_layout(mo, get_root, set_root, tabs_content, logs_content, plugins):
     """Main application layout with header, controls, and tabs."""
     # Header
-    header = mo.md("# 🎻 Orchestr8 v3.0: The Fortress Factory")
+    header = mo.md("# Orchestr8 v3.0: The Fortress Factory")
     
     # Project root input
     root_input = mo.ui.text(
@@ -193,11 +193,11 @@ def main_layout(mo, get_root, set_root, tabs_content, logs_content, plugins):
     status_badge = mo.md(f"**Plugins Loaded:** {plugin_count}")
     
     # Build final tabs (plugins + system logs)
-    final_tabs = {**tabs_content, "📜 System Logs": logs_content}
+    final_tabs = {**tabs_content, "System Logs": logs_content}
     
     # Show empty state if no plugins
     if not tabs_content:
-        final_tabs["🔌 Getting Started"] = mo.md("""
+        final_tabs["Getting Started"] = mo.md("""
 ## No Plugins Found
 
 Create plugins in `IP/plugins/` directory. Each plugin needs:

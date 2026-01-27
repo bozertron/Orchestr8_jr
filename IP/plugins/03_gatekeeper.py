@@ -25,7 +25,7 @@ from typing import Any
 # Import Louis Core components
 from IP.louis_core import LouisWarden, LouisConfig
 
-PLUGIN_NAME = "🛡️ Gatekeeper"
+PLUGIN_NAME = "Gatekeeper"
 PLUGIN_ORDER = 3
 
 
@@ -71,16 +71,16 @@ def render(STATE_MANAGERS: dict) -> Any:
     
     # Status badge
     if total_protected == 0:
-        status_label = "⚪ Unprotected"
+        status_label = "[--] Unprotected"
         status_detail = "No files in protection list"
     elif locked_count == total_protected:
-        status_label = "🟢 Fully Locked"
+        status_label = "[OK] Fully Locked"
         status_detail = f"All {total_protected} files locked (0o444)"
     elif locked_count > 0:
-        status_label = "🟡 Partial"
+        status_label = "[..] Partial"
         status_detail = f"{locked_count} locked, {unlocked_count} unlocked"
     else:
-        status_label = "🔓 Unlocked"
+        status_label = "[  ] Unlocked"
         status_detail = f"{total_protected} files tracked but unlocked"
     
     # Check git hook
@@ -92,8 +92,8 @@ def render(STATE_MANAGERS: dict) -> Any:
 
 {status_detail}
 
-**Protected Folders:** {len(config.protected_folders)}  
-**Git Hook:** {'✅ Installed' if hook_installed else '❌ Not Installed'}
+**Protected Folders:** {len(config.protected_folders)}
+**Git Hook:** {'Installed' if hook_installed else 'Not Installed'}
     """)
     
     # === Action Handlers ===
@@ -200,30 +200,30 @@ def render(STATE_MANAGERS: dict) -> Any:
     )
     
     add_folder_btn = mo.ui.button(
-        label="📁 Add Folder",
+        label="Add Folder",
         on_change=lambda _: add_protected_folder()
     )
-    
+
     # Bulk action buttons
     lock_all_btn = mo.ui.button(
-        label="🔒 Lock All Protected",
+        label="Lock All Protected",
         on_change=lambda _: lock_all_protected(),
         disabled=total_protected == 0
     )
-    
+
     unlock_all_btn = mo.ui.button(
-        label="🔓 Unlock All",
+        label="Unlock All",
         on_change=lambda _: unlock_all_protected(),
         disabled=total_protected == 0
     )
-    
+
     rescan_btn = mo.ui.button(
-        label="🔄 Rescan Files",
+        label="Rescan Files",
         on_change=lambda _: rescan_files()
     )
-    
+
     install_hook_btn = mo.ui.button(
-        label="📥 Install Git Hook",
+        label="Install Git Hook",
         on_change=lambda _: install_hook(),
         disabled=hook_installed
     )
@@ -233,22 +233,22 @@ def render(STATE_MANAGERS: dict) -> Any:
     selected_count = len(selected)
     
     lock_selected_btn = mo.ui.button(
-        label=f"🔒 Lock Selected ({selected_count})",
+        label=f"Lock Selected ({selected_count})",
         on_change=lambda _: lock_selected(),
         disabled=selected_count == 0
     )
-    
+
     unlock_selected_btn = mo.ui.button(
-        label=f"🔓 Unlock Selected ({selected_count})",
+        label=f"Unlock Selected ({selected_count})",
         on_change=lambda _: unlock_selected(),
         disabled=selected_count == 0
     )
-    
+
     # Protected folders display
     folders_md = "### Protected Folders\n\n"
     if config.protected_folders:
         for folder in config.protected_folders:
-            folders_md += f"- 📁 `{folder}` "
+            folders_md += f"- `{folder}` "
             # Note: Can't easily add remove buttons inline in MD
         folders_md += "\n\n*Use the input above to add folders.*"
     else:
@@ -267,7 +267,7 @@ def render(STATE_MANAGERS: dict) -> Any:
         
         for rel_path, status in sorted_files:
             is_locked = status.get("locked", False)
-            lock_icon = "🔒" if is_locked else "🔓"
+            lock_icon = "[L]" if is_locked else "[U]"
             is_selected = rel_path in selected
             
             # Create checkbox for selection
@@ -284,7 +284,7 @@ def render(STATE_MANAGERS: dict) -> Any:
     
     # Layout
     return mo.vstack([
-        mo.md("## 🛡️ Louis Gatekeeper"),
+        mo.md("## Louis Gatekeeper"),
         status_badge,
         mo.md("---"),
         

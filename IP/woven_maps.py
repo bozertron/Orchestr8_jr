@@ -1099,7 +1099,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             const panel = document.getElementById('controls');
             const toggle = panel.querySelector('.ctrl-toggle');
             panel.classList.toggle('collapsed');
-            toggle.textContent = panel.classList.contains('collapsed') ? '▶' : '▼';
+            toggle.textContent = panel.classList.contains('collapsed') ? '>' : 'v';
         }
 
         function setFrameColor(color) {

@@ -487,7 +487,7 @@ def render(STATE_MANAGERS: dict) -> Any:
             assistant_msg = {
                 "id": str(uuid.uuid4()),
                 "role": "assistant",
-                "content": f"⚠️ Authentication Error: Invalid ANTHROPIC_API_KEY\n\nPlease check your API key in environment variables.",
+                "content": f"[WARNING] Authentication Error: Invalid ANTHROPIC_API_KEY\n\nPlease check your API key in environment variables.",
                 "timestamp": datetime.now().strftime("%H:%M:%S"),
             }
             messages.append(assistant_msg)
@@ -498,7 +498,7 @@ def render(STATE_MANAGERS: dict) -> Any:
             assistant_msg = {
                 "id": str(uuid.uuid4()),
                 "role": "assistant",
-                "content": f"⚠️ LLM API Error: {str(e)}\n\nPlease check your ANTHROPIC_API_KEY environment variable and network connection.",
+                "content": f"[WARNING] LLM API Error: {str(e)}\n\nPlease check your ANTHROPIC_API_KEY environment variable and network connection.",
                 "timestamp": datetime.now().strftime("%H:%M:%S"),
             }
             messages.append(assistant_msg)
@@ -508,7 +508,7 @@ def render(STATE_MANAGERS: dict) -> Any:
             assistant_msg = {
                 "id": str(uuid.uuid4()),
                 "role": "assistant",
-                "content": f"⚠️ Unexpected Error: {str(e)}",
+                "content": f"[WARNING] Unexpected Error: {str(e)}",
                 "timestamp": datetime.now().strftime("%H:%M:%S"),
             }
             messages.append(assistant_msg)
