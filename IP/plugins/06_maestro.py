@@ -355,7 +355,9 @@ def render(STATE_MANAGERS: dict) -> Any:
 
     # Local state - Selected model
     model_config = get_model_config()
-    default_model = model_config.get("model", available_models[0] if available_models else "claude")
+    config_model = model_config.get("model", "claude")
+    # Ensure default_model is actually in available_models
+    default_model = config_model if config_model in available_models else (available_models[0] if available_models else "claude")
     get_selected_model, set_selected_model = mo.state(default_model)
 
     # Initialize services
