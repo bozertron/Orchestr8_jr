@@ -855,7 +855,7 @@ def render(STATE_MANAGERS: dict) -> Any:
             full_width=True,
         )
 
-        # Left group
+        # Left group - Apps | Matrix | Calendar | Comms | Files
         left_buttons = mo.hstack(
             [
                 mo.ui.button(
@@ -866,6 +866,16 @@ def render(STATE_MANAGERS: dict) -> Any:
                     on_change=lambda _: log_action("Matrix diagnostics opened"),
                 ),
                 mo.ui.button(
+                    label="Calendar",
+                    on_change=lambda _: log_action("Calendar feature coming soon"),
+                    disabled=True,
+                ),
+                mo.ui.button(
+                    label="Comms",
+                    on_change=lambda _: log_action("Comms feature coming soon"),
+                    disabled=True,
+                ),
+                mo.ui.button(
                     label="Files",
                     on_change=lambda _: log_action("Switch to Explorer tab"),
                 ),
@@ -873,15 +883,24 @@ def render(STATE_MANAGERS: dict) -> Any:
             gap="0.25rem",
         )
 
-        # Center - maestro
+        # Center - maestro (summon)
         center_btn = mo.ui.button(label="maestro", on_change=lambda _: handle_summon())
 
-        # Right group
+        # Right group - Search | Record | Playback | Phreak> | Send | Attach
         right_buttons = mo.hstack(
             [
                 mo.ui.button(label="Search", on_change=lambda _: handle_summon()),
                 mo.ui.button(
-                    label="Phreak>",  # Opens actu8 terminal
+                    label="Record",
+                    on_change=lambda _: log_action("Recording toggled"),
+                ),
+                mo.ui.button(
+                    label="Playback",
+                    on_change=lambda _: log_action("Playback feature coming soon"),
+                    disabled=True,
+                ),
+                mo.ui.button(
+                    label="Phreak>",  # Opens terminal
                     on_change=lambda _: handle_terminal(),
                 ),
                 mo.ui.button(label="Send", on_change=lambda _: handle_send()),
