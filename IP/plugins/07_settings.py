@@ -372,7 +372,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                                 )
                             ),
                             on_change=lambda v: update_setting(
-                                "agents.director.check_interval_seconds", int(v)
+                                "agents.director.check_interval_seconds", int(v) if str(v).isdigit() else 30
                             ),
                         ),
                     ]
@@ -397,7 +397,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                                 )
                             ),
                             on_change=lambda v: update_setting(
-                                "agents.professor.analysis_interval_hours", int(v)
+                                "agents.professor.analysis_interval_hours", int(v) if str(v).isdigit() else 24
                             ),
                         ),
                     ]
@@ -523,7 +523,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                                 ui_config.get("general", {}).get("font_size", 12)
                             ),
                             on_change=lambda v: update_setting(
-                                "ui.general.font_size", int(v)
+                                "ui.general.font_size", int(v) if str(v).isdigit() else 12
                             ),
                         ),
                     ]

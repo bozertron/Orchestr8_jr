@@ -74,8 +74,8 @@ def get_model_config() -> dict:
                 "model": doctor.get("model", "claude-sonnet-4-20250514"),
                 "max_tokens": doctor.get("max_tokens", 8192),
             }
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[maestro] Config load error: {e}")
 
     # Fallback defaults
     return {
@@ -331,8 +331,8 @@ def render(STATE_MANAGERS: dict) -> Any:
                 models = settings.get("tools", {}).get("communic8", {}).get("multi_llm", {}).get("default_models", [])
                 if models:
                     return models
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"[maestro] Models config error: {e}")
         return ["claude", "gpt-4", "gemini", "local"]
 
     available_models = get_available_models()
