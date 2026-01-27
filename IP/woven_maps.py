@@ -55,11 +55,18 @@ JS_COLORS = {
 class CodeNode:
     """Represents a file in the codebase."""
     path: str
-    status: str = "working"
+    status: str = "working"   # working | broken | combat
     loc: int = 0
     errors: List[str] = field(default_factory=list)
     x: float = 0.0
     y: float = 0.0
+    # Extended fields for ConnectionGraph integration
+    node_type: str = "file"   # file|component|store|entry|test|route|api|config|type
+    centrality: float = 0.0   # PageRank score (0-1) for sizing
+    in_cycle: bool = False    # Part of circular dependency
+    depth: int = 0            # Distance from entry points
+    incoming_count: int = 0   # Files that import this
+    outgoing_count: int = 0   # Files this imports
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -70,6 +77,31 @@ class CodeNode:
             "y": self.y,
             "loc": self.loc,
             "errors": self.errors,
+            "nodeType": self.node_type,
+            "centrality": self.centrality,
+            "inCycle": self.in_cycle,
+            "depth": self.depth,
+            "incomingCount": self.incoming_count,
+            "outgoingCount": self.outgoing_count,
+        }
+
+
+@dataclass
+class EdgeData:
+    """Represents an import relationship between files."""
+    source: str              # Source file path (importer)
+    target: str              # Target file path (imported)
+    resolved: bool = True    # Whether the import resolves
+    bidirectional: bool = False  # Mutual imports
+    line_number: int = 0     # Source line of import
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "source": self.source,
+            "target": self.target,
+            "resolved": self.resolved,
+            "bidirectional": self.bidirectional,
+            "lineNumber": self.line_number,
         }
 
 
@@ -127,11 +159,13 @@ class GraphConfig:
 class GraphData:
     """Complete data structure for visualization."""
     nodes: List[CodeNode] = field(default_factory=list)
+    edges: List[EdgeData] = field(default_factory=list)
     config: GraphConfig = field(default_factory=GraphConfig)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "nodes": [n.to_dict() for n in self.nodes],
+            "edges": [e.to_dict() for e in self.edges],
             "config": self.config.to_dict(),
         }
 
@@ -309,6 +343,89 @@ def build_graph_data(
         wire_count=wire_count,
     )
     return GraphData(nodes=nodes, config=config)
+
+
+def build_from_connection_graph(
+    project_root: str,
+    width: int = 800,
+    height: int = 600,
+    max_height: int = 250,
+    wire_count: int = 15,
+) -> GraphData:
+    """
+    Build GraphData from ConnectionGraph with real import relationships.
+
+    This provides:
+    - Real import edges (not just Delaunay triangulation)
+    - Node types (component, store, entry, test, etc.)
+    - Centrality-based sizing
+    - Cycle detection
+    - Depth from entry points
+    """
+    # Import here to avoid circular dependency
+    try:
+        from IP.connection_verifier import build_connection_graph
+    except ImportError:
+        # Fallback for standalone use
+        from connection_verifier import build_connection_graph
+
+    # Build the full connection graph with all analysis
+    conn_graph = build_connection_graph(project_root)
+    graph_dict = conn_graph.to_dict()
+
+    # Convert ConnectionGraph nodes to CodeNodes
+    nodes = []
+    node_lookup = {}
+
+    for node_data in graph_dict["nodes"]:
+        metrics = node_data.get("metrics", {})
+
+        # Map status: error → broken, normal → working
+        status = "working"
+        if node_data.get("status") == "error":
+            status = "broken"
+        elif metrics.get("issueCount", 0) > 0:
+            status = "broken"
+
+        code_node = CodeNode(
+            path=node_data["filePath"],
+            status=status,
+            loc=100,  # Will be calculated during layout
+            errors=[],  # Could extract from connection graph
+            node_type=node_data.get("type", "file"),
+            centrality=metrics.get("centrality", 0.0),
+            in_cycle=metrics.get("inCycle", False),
+            depth=metrics.get("depth", 0),
+            incoming_count=metrics.get("incomingCount", 0),
+            outgoing_count=metrics.get("outgoingCount", 0),
+        )
+        nodes.append(code_node)
+        node_lookup[code_node.path] = code_node
+
+    # Apply layout
+    nodes = calculate_layout(nodes, width, height)
+
+    # Convert edges
+    edges = []
+    for edge_data in graph_dict["edges"]:
+        # Only include edges where both source and target exist in our nodes
+        if edge_data["source"] in node_lookup and edge_data["target"] in node_lookup:
+            edges.append(EdgeData(
+                source=edge_data["source"],
+                target=edge_data["target"],
+                resolved=edge_data.get("resolved", True),
+                bidirectional=edge_data.get("bidirectional", False),
+                line_number=edge_data.get("lineNumber", 0),
+            ))
+
+    config = GraphConfig(
+        width=width,
+        height=height,
+        max_height=max_height,
+        wire_count=wire_count,
+    )
+
+    return GraphData(nodes=nodes, edges=edges, config=config)
 
 
 # =============================================================================
@@ -679,7 +796,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
         // DATA & CONFIG
         // ================================================================
         const GRAPH_DATA = __GRAPH_DATA__;
-        const { nodes, config } = GRAPH_DATA;
+        const { nodes, edges = [], config } = GRAPH_DATA;
         const { width, height, maxHeight, wireCount, emergenceDuration = 2.0 } = config;
 
         const COLORS = {
@@ -689,8 +806,28 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             combat: '#9D4EDD',
             wireframe: '#2a2a2a',
             teal: '#1fbdea',
-            gold: '#D4AF37'
+            gold: '#D4AF37',
+            cycle: '#ff4444',       // Red for cycle highlighting
+            edge: '#333333',        // Default edge color
+            edgeBroken: '#ff6b6b'   // Broken import edge
         };
+
+        // Node type shape definitions
+        const NODE_SHAPES = {
+            file: 'circle',
+            component: 'diamond',
+            store: 'hexagon',
+            entry: 'star',
+            test: 'triangle',
+            route: 'pentagon',
+            api: 'triangle',
+            config: 'square',
+            type: 'circle'
+        };
+
+        // Build node lookup for edge rendering
+        const nodeById = {};
+        nodes.forEach(n => { nodeById[n.id] = n; });
 
         // ================================================================
         // CONTROL PANEL STATE
@@ -995,6 +1132,190 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
         }
 
         // ================================================================
+        // NODE TYPE SHAPE DRAWING
+        // ================================================================
+        function drawNodeShape(ctx, x, y, radius, nodeType, color, alpha) {
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+
+            const shape = NODE_SHAPES[nodeType] || 'circle';
+
+            switch (shape) {
+                case 'diamond':
+                    // Component - rotated square
+                    ctx.moveTo(x, y - radius * 1.2);
+                    ctx.lineTo(x + radius, y);
+                    ctx.lineTo(x, y + radius * 1.2);
+                    ctx.lineTo(x - radius, y);
+                    ctx.closePath();
+                    break;
+
+                case 'hexagon':
+                    // Store - hexagon
+                    for (let i = 0; i < 6; i++) {
+                        const angle = (i * Math.PI / 3) - Math.PI / 2;
+                        const px = x + radius * Math.cos(angle);
+                        const py = y + radius * Math.sin(angle);
+                        if (i === 0) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
+                    }
+                    ctx.closePath();
+                    break;
+
+                case 'star':
+                    // Entry point - 5-pointed star
+                    for (let i = 0; i < 10; i++) {
+                        const r = i % 2 === 0 ? radius * 1.2 : radius * 0.5;
+                        const angle = (i * Math.PI / 5) - Math.PI / 2;
+                        const px = x + r * Math.cos(angle);
+                        const py = y + r * Math.sin(angle);
+                        if (i === 0) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
+                    }
+                    ctx.closePath();
+                    break;
+
+                case 'triangle':
+                    // Test/API - triangle
+                    ctx.moveTo(x, y - radius);
+                    ctx.lineTo(x + radius * 0.87, y + radius * 0.5);
+                    ctx.lineTo(x - radius * 0.87, y + radius * 0.5);
+                    ctx.closePath();
+                    break;
+
+                case 'pentagon':
+                    // Route - pentagon
+                    for (let i = 0; i < 5; i++) {
+                        const angle = (i * 2 * Math.PI / 5) - Math.PI / 2;
+                        const px = x + radius * Math.cos(angle);
+                        const py = y + radius * Math.sin(angle);
+                        if (i === 0) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
+                    }
+                    ctx.closePath();
+                    break;
+
+                case 'square':
+                    // Config - square
+                    ctx.rect(x - radius, y - radius, radius * 2, radius * 2);
+                    break;
+
+                default:
+                    // Default circle
+                    ctx.arc(x, y, radius, 0, Math.PI * 2);
+            }
+
+            ctx.fill();
+        }
+
+        // ================================================================
+        // EDGE RENDERING - Real import connections
+        // ================================================================
+        function drawImportEdges(ctx, time) {
+            if (!edges || edges.length === 0) return;
+
+            const elapsed = time - emergenceStartTime;
+
+            for (const edge of edges) {
+                const sourceNode = nodeById[edge.source];
+                const targetNode = nodeById[edge.target];
+                if (!sourceNode || !targetNode) continue;
+
+                const sourceIdx = nodes.indexOf(sourceNode);
+                const targetIdx = nodes.indexOf(targetNode);
+                if (sourceIdx < 0 || targetIdx < 0) continue;
+
+                const sourceState = nodeStates[sourceIdx];
+                const targetState = nodeStates[targetIdx];
+
+                // Use current positions during emergence
+                const x1 = emerged ? sourceNode.x : sourceState.currentX;
+                const y1 = emerged ? sourceNode.y : sourceState.currentY;
+                const x2 = emerged ? targetNode.x : targetState.currentX;
+                const y2 = emerged ? targetNode.y : targetState.currentY;
+
+                // Edge alpha based on emergence progress
+                const edgeAlpha = Math.min(sourceState.currentAlpha, targetState.currentAlpha) * 0.4;
+                if (edgeAlpha < 0.05) continue;
+
+                ctx.globalAlpha = edgeAlpha;
+
+                // Color based on resolved status
+                if (!edge.resolved) {
+                    ctx.strokeStyle = COLORS.edgeBroken;
+                    ctx.setLineDash([4, 4]);  // Dashed for broken
+                } else if (edge.bidirectional) {
+                    ctx.strokeStyle = COLORS.cycle;  // Red for mutual imports
+                    ctx.setLineDash([]);
+                } else {
+                    ctx.strokeStyle = COLORS.edge;
+                    ctx.setLineDash([]);
+                }
+
+                ctx.lineWidth = edge.bidirectional ? 1.5 : 0.8;
+
+                // Draw curved edge (quadratic bezier)
+                const midX = (x1 + x2) / 2;
+                const midY = (y1 + y2) / 2;
+                const dx = x2 - x1;
+                const dy = y2 - y1;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                // Curve outward perpendicular to the line
+                const curveOffset = Math.min(dist * 0.15, 30);
+                const perpX = -dy / dist * curveOffset;
+                const perpY = dx / dist * curveOffset;
+
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.quadraticCurveTo(midX + perpX, midY + perpY, x2, y2);
+                ctx.stroke();
+
+                // Draw arrowhead
+                if (emerged && edgeAlpha > 0.2) {
+                    const arrowSize = 4;
+                    const angle = Math.atan2(y2 - (midY + perpY), x2 - (midX + perpX));
+                    ctx.beginPath();
+                    ctx.moveTo(x2, y2);
+                    ctx.lineTo(
+                        x2 - arrowSize * Math.cos(angle - Math.PI / 6),
+                        y2 - arrowSize * Math.sin(angle - Math.PI / 6)
+                    );
+                    ctx.lineTo(
+                        x2 - arrowSize * Math.cos(angle + Math.PI / 6),
+                        y2 - arrowSize * Math.sin(angle + Math.PI / 6)
+                    );
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            }
+
+            ctx.setLineDash([]);  // Reset
+        }
+
+        // ================================================================
+        // CYCLE HIGHLIGHTING - Pulsing glow for circular dependencies
+        // ================================================================
+        function drawCycleGlow(ctx, node, x, y, radius, time) {
+            if (!node.inCycle) return;
+
+            // Pulsing animation
+            const pulse = 0.5 + 0.5 * Math.sin(time * 0.003);
+            const glowRadius = radius * (2 + pulse);
+
+            ctx.save();
+            ctx.globalAlpha = 0.3 * pulse;
+            ctx.shadowColor = COLORS.cycle;
+            ctx.shadowBlur = 20 + pulse * 10;
+            ctx.fillStyle = COLORS.cycle;
+            ctx.beginPath();
+            ctx.arc(x, y, glowRadius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // ================================================================
         // SETUP
         // ================================================================
         const container = document.getElementById('canvas-container');
@@ -1011,11 +1332,15 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
         const workingCount = nodes.filter(n => n.status === 'working').length;
         const brokenCount = nodes.filter(n => n.status === 'broken').length;
         const combatCount = nodes.filter(n => n.status === 'combat').length;
+        const cycleCount = nodes.filter(n => n.inCycle).length;
+        const edgeCount = edges ? edges.length : 0;
         stats.innerHTML = `
             <span class="working">${workingCount} working</span>
             <span class="broken">${brokenCount} broken</span>
             ${combatCount ? `<span class="combat">${combatCount} combat</span>` : ''}
+            ${cycleCount ? `<span style="color: #ff4444;">${cycleCount} in cycles</span>` : ''}
             <span>${nodes.length} files</span>
+            ${edgeCount ? `<span style="color: #666;">${edgeCount} imports</span>` : ''}
         `;
 
         // ================================================================
@@ -1167,13 +1492,13 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
         }
 
         // ================================================================
-        // DELAUNAY TRIANGULATION
+        // DELAUNAY TRIANGULATION (for mesh background)
         // ================================================================
         function distance(p0, p1) {
             return Math.sqrt(Math.pow(p1.x - p0.x, 2) + Math.pow(p1.y - p0.y, 2));
         }
 
-        let edges = [];
+        let delaunayEdges = [];
         if (nodes.length >= 3) {
             const points = nodes.map(n => [n.x, n.y]);
             const delaunay = d3.Delaunay.from(points);
@@ -1183,7 +1508,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
                 const [i0, i1, i2] = [triangles[i], triangles[i+1], triangles[i+2]];
                 const [p0, p1, p2] = [nodes[i0], nodes[i1], nodes[i2]];
                 if (p0 && p1 && p2) {
-                    edges.push(
+                    delaunayEdges.push(
                         { length: distance(p0, p1), i0, i1 },
                         { length: distance(p1, p2), i0: i1, i1: i2 },
                         { length: distance(p2, p0), i0: i2, i1: i0 }
@@ -1204,14 +1529,14 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
         }
 
-        function renderEdges(minLength, color, alpha, useCurrentPositions = false) {
-            if (edges.length === 0) return;
+        function renderDelaunayEdges(minLength, color, alpha, useCurrentPositions = false) {
+            if (delaunayEdges.length === 0) return;
             ctx.globalAlpha = alpha * emergenceProgress;
             ctx.strokeStyle = color;
             ctx.lineWidth = 0.5;
             ctx.beginPath();
 
-            for (const edge of edges) {
+            for (const edge of delaunayEdges) {
                 if (edge.length < minLength) {
                     const p0 = useCurrentPositions ? nodeStates[edge.i0] : nodes[edge.i0];
                     const p1 = useCurrentPositions ? nodeStates[edge.i1] : nodes[edge.i1];
@@ -1288,7 +1613,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             // ============================================================
             // GORGEOUS MESH RENDERING - Like the Paris cityscapes
             // ============================================================
-            if (edges.length > 0) {
+            if (delaunayEdges.length > 0) {
                 const frameColor = getFrameColor();
 
                 // Layer 1: Dense gradient base (the "city" silhouette)
@@ -1299,7 +1624,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
                     const alpha = Math.pow(1 - i / maxHeight, 1.5) * 0.04;
                     // Edge threshold grows slower at bottom (denser base)
                     const threshold = Math.pow(i / maxHeight, 0.7) * maxHeight * 0.8;
-                    renderEdges(threshold, frameColor, alpha, !emerged);
+                    renderDelaunayEdges(threshold, frameColor, alpha, !emerged);
                 }
                 ctx.restore();
 
@@ -1311,7 +1636,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
                     ctx.globalAlpha = 0.03 + 0.1 * t;
                     ctx.strokeStyle = frameColor;
                     ctx.lineWidth = 0.5;
-                    renderEdges(15 + i * 15, frameColor, 0.03 + 0.1 * t, !emerged);
+                    renderDelaunayEdges(15 + i * 15, frameColor, 0.03 + 0.1 * t, !emerged);
                     ctx.restore();
                 }
 
@@ -1338,24 +1663,33 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
                 ctx.strokeStyle = emerged ? '#fff' : COLORS.teal;
                 ctx.lineWidth = 0.8;
                 ctx.globalAlpha = 0.12;
-                renderEdges(40, ctx.strokeStyle, 0.12, !emerged);
+                renderDelaunayEdges(40, ctx.strokeStyle, 0.12, !emerged);
 
                 // Layer 5: Soft glow blur
                 ctx.filter = 'blur(3px)';
                 ctx.globalAlpha = 0.15;
                 ctx.strokeStyle = frameColor;
                 ctx.lineWidth = 1.5;
-                renderEdges(60, ctx.strokeStyle, 0.15, !emerged);
+                renderDelaunayEdges(60, ctx.strokeStyle, 0.15, !emerged);
                 ctx.filter = 'none';
                 ctx.restore();
             }
 
-            // Draw nodes
+            // ============================================================
+            // IMPORT EDGES - Real connections from ConnectionGraph
+            // ============================================================
+            drawImportEdges(ctx, time);
+
+            // Draw nodes with type shapes and centrality sizing
             for (let i = 0; i < nodes.length; i++) {
                 const node = nodes[i];
                 const state = nodeStates[i];
                 const color = COLORS[node.status];
-                const baseRadius = 2 + Math.min(node.loc / 80, 6);
+
+                // Size based on centrality (if available) + LOC
+                // centrality ranges 0-1, boost important nodes
+                const centralityBoost = (node.centrality || 0) * 8;
+                const baseRadius = 2 + Math.min(node.loc / 80, 6) + centralityBoost;
 
                 // After emergence: subtle energy field displacement (NOT breathing)
                 let x, y;
@@ -1369,11 +1703,16 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
                 }
                 const alpha = state.currentAlpha;
 
-                // Outer glow for non-working
-                if ((node.status === 'broken' || node.status === 'combat') && alpha > 0.5) {
+                // CYCLE HIGHLIGHTING - Red pulsing glow
+                if (node.inCycle && alpha > 0.3) {
+                    drawCycleGlow(ctx, node, x, y, baseRadius, time);
+                }
+
+                // Outer glow for non-working or cycle nodes
+                if ((node.status === 'broken' || node.status === 'combat' || node.inCycle) && alpha > 0.5) {
                     ctx.save();
                     ctx.globalAlpha = 0.25 * alpha;
-                    ctx.shadowColor = color;
+                    ctx.shadowColor = node.inCycle ? COLORS.cycle : color;
                     ctx.shadowBlur = 15;
                     ctx.fillStyle = color;
                     ctx.beginPath();
@@ -1382,20 +1721,30 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
                     ctx.restore();
                 }
 
-                // Core dot
-                ctx.globalAlpha = 0.85 * alpha;
-                ctx.fillStyle = color;
-                ctx.beginPath();
-                ctx.arc(x, y, baseRadius, 0, Math.PI * 2);
-                ctx.fill();
+                // Draw node with type-specific shape
+                const nodeType = node.nodeType || 'file';
+                drawNodeShape(ctx, x, y, baseRadius, nodeType, color, 0.85 * alpha);
 
-                // Inner highlight
-                if (alpha > 0.7) {
+                // Inner highlight for larger nodes
+                if (alpha > 0.7 && baseRadius > 4) {
                     ctx.globalAlpha = 0.4 * alpha;
                     ctx.fillStyle = '#fff';
                     ctx.beginPath();
-                    ctx.arc(x - baseRadius * 0.25, y - baseRadius * 0.25, baseRadius * 0.25, 0, Math.PI * 2);
+                    ctx.arc(x - baseRadius * 0.25, y - baseRadius * 0.25, baseRadius * 0.2, 0, Math.PI * 2);
                     ctx.fill();
+                }
+
+                // Entry point special glow (stars get extra treatment)
+                if (nodeType === 'entry' && emerged && alpha > 0.8) {
+                    ctx.save();
+                    ctx.globalAlpha = 0.15 + 0.1 * Math.sin(time * 0.002);
+                    ctx.shadowColor = COLORS.gold;
+                    ctx.shadowBlur = 20;
+                    ctx.fillStyle = COLORS.gold;
+                    ctx.beginPath();
+                    ctx.arc(x, y, baseRadius * 0.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
                 }
             }
 
@@ -1449,12 +1798,46 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
                     ? `<div class="errors">${node.errors.map(e => `<div class="error-item">• ${e}</div>`).join('')}</div>`
                     : '';
 
+                // Node type badge
+                const nodeType = node.nodeType || 'file';
+                const typeColors = {
+                    entry: '#D4AF37',
+                    component: '#9D4EDD',
+                    store: '#1fbdea',
+                    test: '#888',
+                    route: '#F4C430',
+                    api: '#1fbdea'
+                };
+                const typeColor = typeColors[nodeType] || '#666';
+
+                // Connection info
+                const incoming = node.incomingCount || 0;
+                const outgoing = node.outgoingCount || 0;
+                const connectionInfo = incoming || outgoing
+                    ? `<div style="color: #666; margin-top: 4px; font-size: 10px;">↓${incoming} imports this · ↑${outgoing} imports</div>`
+                    : '';
+
+                // Cycle warning
+                const cycleWarning = node.inCycle
+                    ? `<div style="color: #ff4444; margin-top: 4px; font-size: 10px;">⚠ Part of circular dependency</div>`
+                    : '';
+
+                // Centrality indicator
+                const centrality = node.centrality || 0;
+                const centralityInfo = centrality > 0.01
+                    ? `<div style="color: #888; font-size: 10px;">Centrality: ${(centrality * 100).toFixed(1)}%</div>`
+                    : '';
+
                 tooltip.innerHTML = `
                     <div class="path">${node.path}</div>
                     <div class="meta">
                         <span class="status ${node.status}">${node.status}</span>
+                        <span style="color: ${typeColor}; font-size: 10px; text-transform: uppercase;">${nodeType}</span>
                         <span class="loc">${node.loc} lines</span>
                     </div>
+                    ${connectionInfo}
+                    ${centralityInfo}
+                    ${cycleWarning}
                     ${errorsHtml}
                 `;
 
@@ -1482,9 +1865,19 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             if (node) {
                 window.parent.postMessage({
                     type: 'WOVEN_MAPS_NODE_CLICK',
-                    node: { path: node.path, status: node.status, loc: node.loc, errors: node.errors }
+                    node: {
+                        path: node.path,
+                        status: node.status,
+                        loc: node.loc,
+                        errors: node.errors,
+                        nodeType: node.nodeType,
+                        centrality: node.centrality,
+                        inCycle: node.inCycle,
+                        incomingCount: node.incomingCount,
+                        outgoingCount: node.outgoingCount
+                    }
                 }, '*');
-                console.log('Node clicked:', node.path);
+                console.log('Node clicked:', node.path, node.nodeType);
             }
         });
 
