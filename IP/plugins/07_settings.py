@@ -261,11 +261,26 @@ class SettingsManager:
         """Get a specific section of settings"""
         return self.settings.get(section_name, {})
 
-    def set_value(self, section: str, key: str, value: Any) -> None:
-        """Set a specific setting value"""
-        if section not in self.settings:
-            self.settings[section] = {}
-        self.settings[section][key] = value
+    def set_value(self, path: str, value: Any) -> None:
+        """Set a specific setting value using dotted path notation.
+
+        Args:
+            path: Dotted path like "agents.director.enabled"
+            value: Value to set
+        """
+        parts = path.split(".")
+        if len(parts) < 2:
+            return
+
+        # Navigate to the parent dict, creating nested dicts as needed
+        current = self.settings
+        for part in parts[:-1]:
+            if part not in current:
+                current[part] = {}
+            current = current[part]
+
+        # Set the final value
+        current[parts[-1]] = value
 
     def get_value(self, section: str, key: str, default: Any = None) -> Any:
         """Get a specific setting value"""
@@ -286,21 +301,38 @@ def render(STATE_MANAGERS: Dict) -> Any:
     # Initialize settings manager
     settings_mgr = SettingsManager()
 
+    # Get available models from settings
+    def get_available_models() -> list:
+        """Get available models from settings."""
+        multi_llm = settings_mgr.get_section("tools").get("communic8", {}).get("multi_llm", {})
+        models = multi_llm.get("default_models", [])
+        if models:
+            return models
+        # Fallback - these should be configured in settings
+        return ["claude", "gpt-4", "gemini", "local"]
+
+    available_models = get_available_models()
+
     # Local state for UI
     get_active_tab, set_active_tab = mo.state("agents")
     get_modified, set_modified = mo.state(False)
 
+    def update_setting(path: str, value: Any) -> None:
+        """Update a setting value and mark as modified."""
+        settings_mgr.set_value(path, value)
+        set_modified(True)
+
     # Tab definitions
     tabs = {
-        "agents": ("🤖 Agents", "Configure AI agents (Director, Professor, Doctor)"),
-        "tools": ("🛠️ Tools", "Configure 888 tools (actu8, senses, cre8, etc.)"),
-        "models": ("🧠 Models", "Configure local AI models"),
-        "integration": ("🔗 Integration", "External application settings"),
-        "ui": ("🎨 UI", "User interface preferences"),
-        "privacy": ("🔒 Privacy", "Privacy and security settings"),
-        "performance": ("⚡ Performance", "System performance tuning"),
-        "experimental": ("🧪 Experimental", "Cutting-edge features"),
-        "backup": ("💾 Backup", "Backup and recovery"),
+        "agents": ("Agents", "Configure AI agents (Director, Professor, Doctor)"),
+        "tools": ("Tools", "Configure 888 tools (actu8, senses, cre8, etc.)"),
+        "models": ("Models", "Configure local AI models"),
+        "integration": ("Integration", "External application settings"),
+        "ui": ("UI", "User interface preferences"),
+        "privacy": ("Privacy", "Privacy and security settings"),
+        "performance": ("Performance", "System performance tuning"),
+        "experimental": ("Experimental", "Cutting-edge features"),
+        "backup": ("Backup", "Backup and recovery"),
     }
 
     def tab_button(tab_key: str, label: str):
@@ -320,7 +352,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
 
         return mo.vstack(
             [
-                mo.md("### 🤖 Director - The General"),
+                mo.md("### Director - The General"),
                 mo.hstack(
                     [
                         mo.ui.checkbox(
@@ -328,7 +360,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=agents_config.get("director", {}).get(
                                 "enabled", False
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "agents.director.enabled", v
                             ),
                         ),
@@ -339,13 +371,13 @@ def render(STATE_MANAGERS: Dict) -> Any:
                                     "check_interval_seconds", 30
                                 )
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "agents.director.check_interval_seconds", int(v)
                             ),
                         ),
                     ]
                 ),
-                mo.md("### 🧠 Professor - Breakthrough Analyzer"),
+                mo.md("### Professor - Breakthrough Analyzer"),
                 mo.hstack(
                     [
                         mo.ui.checkbox(
@@ -353,7 +385,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=agents_config.get("professor", {}).get(
                                 "enabled", False
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "agents.professor.enabled", v
                             ),
                         ),
@@ -364,28 +396,29 @@ def render(STATE_MANAGERS: Dict) -> Any:
                                     "analysis_interval_hours", 24
                                 )
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "agents.professor.analysis_interval_hours", int(v)
                             ),
                         ),
                     ]
                 ),
-                mo.md("### 🏥 Doctor - Deep Debugging"),
+                mo.md("### Doctor - Deep Debugging"),
                 mo.hstack(
                     [
                         mo.ui.checkbox(
                             label="Enable Doctor",
                             value=agents_config.get("doctor", {}).get("enabled", False),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "agents.doctor.enabled", v
                             ),
                         ),
-                        mo.ui.text(
-                            label="Model",
+                        mo.ui.dropdown(
+                            options=available_models,
                             value=agents_config.get("doctor", {}).get(
-                                "model", "claude-opus"
+                                "model", available_models[0] if available_models else "claude"
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            label="Model",
+                            on_change=lambda v: update_setting(
                                 "agents.doctor.model", v
                             ),
                         ),
@@ -400,7 +433,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
 
         return mo.vstack(
             [
-                mo.md("### 📄 actu8 - Document Generation"),
+                mo.md("### actu8 - Document Generation"),
                 mo.hstack(
                     [
                         mo.ui.text(
@@ -408,26 +441,26 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=tools_config.get("actu8", {}).get(
                                 "default_mode", "choice"
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "tools.actu8.default_mode", v
                             ),
                         ),
                         mo.ui.checkbox(
                             label="Auto Save",
                             value=tools_config.get("actu8", {}).get("auto_save", True),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "tools.actu8.auto_save", v
                             ),
                         ),
                     ]
                 ),
-                mo.md("### 👁️ senses - Multimodal Input"),
+                mo.md("### senses - Multimodal Input"),
                 mo.hstack(
                     [
                         mo.ui.checkbox(
                             label="Enable Senses",
                             value=tools_config.get("senses", {}).get("enabled", False),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "tools.senses.enabled", v
                             ),
                         ),
@@ -436,13 +469,13 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=tools_config.get("senses", {}).get(
                                 "privacy_indicator", True
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "tools.senses.privacy_indicator", v
                             ),
                         ),
                     ]
                 ),
-                mo.md("### 🎨 cre8 - Creative Suite"),
+                mo.md("### cre8 - Creative Suite"),
                 mo.hstack(
                     [
                         mo.ui.text(
@@ -450,7 +483,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=tools_config.get("cre8", {}).get(
                                 "image_editor", "gimp"
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "tools.cre8.image_editor", v
                             ),
                         ),
@@ -459,7 +492,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=tools_config.get("cre8", {}).get(
                                 "audio_editor", "audacity"
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "tools.cre8.audio_editor", v
                             ),
                         ),
@@ -474,13 +507,13 @@ def render(STATE_MANAGERS: Dict) -> Any:
 
         return mo.vstack(
             [
-                mo.md("### 🎨 General Appearance"),
+                mo.md("### General Appearance"),
                 mo.hstack(
                     [
                         mo.ui.text(
                             label="Theme",
                             value=ui_config.get("general", {}).get("theme", "maestro"),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "ui.general.theme", v
                             ),
                         ),
@@ -489,13 +522,13 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=str(
                                 ui_config.get("general", {}).get("font_size", 12)
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "ui.general.font_size", int(v)
                             ),
                         ),
                     ]
                 ),
-                mo.md("### 👁️ Maestro Settings"),
+                mo.md("### Maestro Settings"),
                 mo.hstack(
                     [
                         mo.ui.checkbox(
@@ -503,7 +536,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=ui_config.get("maestro", {}).get(
                                 "show_agent_status", True
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "ui.maestro.show_agent_status", v
                             ),
                         ),
@@ -512,7 +545,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=ui_config.get("maestro", {}).get(
                                 "show_system_health", True
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "ui.maestro.show_system_health", v
                             ),
                         ),
@@ -525,9 +558,9 @@ def render(STATE_MANAGERS: Dict) -> Any:
         """Save current settings"""
         if settings_mgr.save_settings():
             set_modified(False)
-            return mo.md("✅ Settings saved successfully!")
+            return mo.md("Settings saved successfully!")
         else:
-            return mo.md("❌ Error saving settings!")
+            return mo.md("Error saving settings!")
 
     def render_content():
         """Render content based on active tab"""
@@ -564,14 +597,14 @@ def render(STATE_MANAGERS: Dict) -> Any:
     return mo.vstack(
         [
             mo.Html(SETTINGS_CSS),
-            mo.md("## ⚡ Settings"),
+            mo.md("## Settings"),
             mo.md("*Configure Orchestr8 agents, tools, and system settings*"),
             mo.md("---"),
             # Header with waves
             mo.hstack(
                 [
-                    mo.md("### 🌊 Configuration Center"),
-                    mo.md("〰️〰️〰️"),  # Simple waves animation
+                    mo.md("### Configuration Center"),
+                    mo.md("~~~"),  # Simple waves
                 ],
                 justify="space-between",
             ),
@@ -585,7 +618,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
             mo.hstack(
                 [
                     mo.ui.button(
-                        label="💾 Save Settings",
+                        label="Save Settings",
                         on_change=lambda _: save_settings(),
                         style={"background": "rgba(212, 175, 55, 0.2)"},
                     ),

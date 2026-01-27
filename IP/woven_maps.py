@@ -336,6 +336,18 @@ def build_graph_data(
     """Build complete graph data from a codebase root."""
     nodes = scan_codebase(root)
     nodes = calculate_layout(nodes, width, height)
+
+    # Check combat status - files with active LLM deployments get purple
+    try:
+        from IP.combat_tracker import CombatTracker
+        tracker = CombatTracker(root)
+        combat_files = tracker.get_combat_files()
+        for node in nodes:
+            if node.path in combat_files:
+                node.status = "combat"  # Purple in visualization
+    except ImportError:
+        pass  # CombatTracker not available
+
     config = GraphConfig(
         width=width,
         height=height,
@@ -404,6 +416,17 @@ def build_from_connection_graph(
 
     # Apply layout
     nodes = calculate_layout(nodes, width, height)
+
+    # Check combat status - files with active LLM deployments get purple
+    try:
+        from IP.combat_tracker import CombatTracker
+        tracker = CombatTracker(project_root)
+        combat_files = tracker.get_combat_files()
+        for node in nodes:
+            if node.path in combat_files:
+                node.status = "combat"  # Purple in visualization
+    except ImportError:
+        pass  # CombatTracker not available
 
     # Convert edges
     edges = []
@@ -768,7 +791,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             <div class="ctrl-section">
                 <span class="ctrl-label">Audio Reactive</span>
                 <button class="audio-btn" id="audioToggle" onclick="toggleAudio()">
-                    <span>🎤 Enable Microphone</span>
+                    <span>Enable Microphone</span>
                 </button>
                 <div class="freq-display" id="freqDisplay">
                     <div class="freq-bar low" id="freqLow"></div>
@@ -978,7 +1001,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
 
                     audioEnabled = true;
                     btn.classList.add('active');
-                    btn.innerHTML = '<span>🎤 Listening...</span>';
+                    btn.innerHTML = '<span>Listening...</span>';
                     console.log('Audio-reactive mode enabled');
 
                 } catch (err) {
@@ -1000,7 +1023,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
                 frequencyData = { low: 0, mid: 0, high: 0 };
 
                 btn.classList.remove('active');
-                btn.innerHTML = '<span>🎤 Enable Microphone</span>';
+                btn.innerHTML = '<span>Enable Microphone</span>';
 
                 // Reset frequency bars
                 document.getElementById('freqLow').style.height = '2px';
@@ -1032,9 +1055,10 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             for (let i = midStart; i < midEnd; i++) midSum += dataArray[i];
             for (let i = highStart; i < bufferLength; i++) highSum += dataArray[i];
 
-            const low = (lowSum / lowEnd / 255) * sensitivity;
-            const mid = (midSum / (midEnd - midStart) / 255) * sensitivity;
-            const high = (highSum / (bufferLength - highStart) / 255) * sensitivity;
+            // Guard against division by zero (unlikely but possible with small FFT sizes)
+            const low = lowEnd > 0 ? (lowSum / lowEnd / 255) * sensitivity : 0;
+            const mid = (midEnd - midStart) > 0 ? (midSum / (midEnd - midStart) / 255) * sensitivity : 0;
+            const high = (bufferLength - highStart) > 0 ? (highSum / (bufferLength - highStart) / 255) * sensitivity : 0;
 
             // Smooth transitions
             frequencyData.low = frequencyData.low * 0.7 + low * 0.3;
@@ -1075,7 +1099,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             const panel = document.getElementById('controls');
             const toggle = panel.querySelector('.ctrl-toggle');
             panel.classList.toggle('collapsed');
-            toggle.textContent = panel.classList.contains('collapsed') ? '▶' : '▼';
+            toggle.textContent = panel.classList.contains('collapsed') ? '>' : 'v';
         }
 
         function setFrameColor(color) {
@@ -1819,7 +1843,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
 
                 // Cycle warning
                 const cycleWarning = node.inCycle
-                    ? `<div style="color: #ff4444; margin-top: 4px; font-size: 10px;">⚠ Part of circular dependency</div>`
+                    ? `<div style="color: #ff4444; margin-top: 4px; font-size: 10px;">CYCLE: Part of circular dependency</div>`
                     : '';
 
                 // Centrality indicator
@@ -1934,7 +1958,8 @@ def create_code_city(
                 width="{width}"
                 height="{height}"
                 style="border: none; display: block;"
-                sandbox="allow-scripts"
+                sandbox="allow-scripts allow-same-origin"
+                allow="microphone"
             ></iframe>
         </div>
     ''')

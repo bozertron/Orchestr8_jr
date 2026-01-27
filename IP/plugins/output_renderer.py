@@ -247,7 +247,7 @@ def render_command_output(
     elements = []
     
     # Status header
-    status_icon = "✅" if exit_code == 0 else "❌"
+    status_icon = "[OK]" if exit_code == 0 else "[ERR]"
     if command:
         elements.append(mo.md(f"{status_icon} `{command}` (exit: {exit_code})"))
     

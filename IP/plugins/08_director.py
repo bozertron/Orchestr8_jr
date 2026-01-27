@@ -368,15 +368,15 @@ def render(STATE_MANAGERS: Dict) -> Any:
         """Start Director monitoring"""
         if director.start_monitoring():
             set_monitoring(True)
-            return mo.md("✅ Director monitoring started")
+            return mo.md("Director monitoring started")
         else:
-            return mo.md("❌ Failed to start Director")
+            return mo.md("Failed to start Director")
 
     def stop_director():
         """Stop Director monitoring"""
         director.stop_monitoring()
         set_monitoring(False)
-        return mo.md("⏹️ Director monitoring stopped")
+        return mo.md("Director monitoring stopped")
 
     def render_general_card(general_id: str, general_info: Dict):
         """Render card for a single general"""
@@ -423,7 +423,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
         alerts = director.get_recent_alerts(5)
 
         if not alerts:
-            return mo.md("🎯 No recent alerts - all systems operating normally")
+            return mo.md("No recent alerts - all systems operating normally")
 
         alert_html = ""
         for alert in alerts:
@@ -435,7 +435,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
 
         return mo.Html(f"""
         <div class="alert-section">
-            <div class="alert-header">🚨 Recent Alerts</div>
+            <div class="alert-header">Recent Alerts</div>
             {alert_html}
         </div>
         """)
@@ -445,7 +445,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
         if not get_monitoring():
             return mo.vstack(
                 [
-                    mo.md("### 🤖 Director Agent"),
+                    mo.md("### Director Agent"),
                     mo.md(
                         "The Director monitors all deployed Generals and detects when they get stuck."
                     ),
@@ -453,7 +453,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                     mo.hstack(
                         [
                             mo.ui.button(
-                                label="▶️ Start Monitoring",
+                                label="Start Monitoring",
                                 on_change=lambda _: start_director(),
                                 style={"background": "rgba(34, 197, 94, 0.2)"},
                             ),
@@ -485,7 +485,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
             </div>
             """),
                 # General cards
-                mo.md("### 📋 Deployed Generals"),
+                mo.md("### Deployed Generals"),
                 mo.hstack(
                     [
                         render_general_card(gid, info)
@@ -501,9 +501,9 @@ def render(STATE_MANAGERS: Dict) -> Any:
                 # Control buttons
                 mo.Html("""
             <div class="action-buttons">
-                <button class="director-btn" onclick="window.location.reload()">🔄 Refresh Status</button>
-                <button class="director-btn" onclick="window.open('/settings', '_blank')">⚙️ Settings</button>
-                <button class="director-btn danger" onclick="window.open('/tickets', '_blank')">🎫 Create Ticket</button>
+                <button class="director-btn" onclick="window.location.reload()">Refresh Status</button>
+                <button class="director-btn" onclick="window.open('/settings', '_blank')">Settings</button>
+                <button class="director-btn danger" onclick="window.open('/tickets', '_blank')">Create Ticket</button>
             </div>
             """),
             ]
@@ -512,7 +512,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
     return mo.vstack(
         [
             mo.Html(DIRECTOR_CSS),
-            mo.md("## 🤖 Director Agent"),
+            mo.md("## Director Agent"),
             mo.md("*Monitors all deployed Generals and detects stuck patterns*"),
             mo.md("---"),
             render_content(),

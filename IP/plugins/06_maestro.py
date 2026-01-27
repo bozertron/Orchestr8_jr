@@ -33,6 +33,7 @@ Reference: UI Reference/MaestroView.vue
 
 from datetime import datetime
 from typing import Any, Optional
+from pathlib import Path
 import uuid
 
 # Import new modules
@@ -40,9 +41,40 @@ from IP.mermaid_generator import Fiefdom, FiefdomStatus, generate_empire_mermaid
 from IP.terminal_spawner import TerminalSpawner
 from IP.health_checker import HealthChecker
 from IP.briefing_generator import BriefingGenerator
+from IP.combat_tracker import CombatTracker
+from IP.plugins.components.ticket_panel import TicketPanel
+from IP.plugins.components.calendar_panel import CalendarPanel
+from IP.plugins.components.comms_panel import CommsPanel
+from IP.plugins.components.file_explorer_panel import FileExplorerPanel
+import anthropic
 
 # Import Woven Maps Code City visualization
 from IP.woven_maps import create_code_city, build_graph_data
+
+
+def get_model_config() -> dict:
+    """Get model configuration from orchestr8_settings.toml."""
+    try:
+        import toml
+        settings_file = Path("orchestr8_settings.toml")
+        if settings_file.exists():
+            settings = toml.load(settings_file)
+            # Get director agent config (maestro uses this for chat)
+            director = settings.get("agents", {}).get("director", {})
+            doctor = settings.get("agents", {}).get("doctor", {})
+            return {
+                "model": doctor.get("model", "claude-sonnet-4-20250514"),
+                "max_tokens": doctor.get("max_tokens", 8192),
+            }
+    except Exception:
+        pass
+
+    # Fallback defaults
+    return {
+        "model": "claude-sonnet-4-20250514",
+        "max_tokens": 8192,
+    }
+
 
 PLUGIN_NAME = "The Void"
 PLUGIN_ORDER = 6
@@ -280,6 +312,23 @@ def render(STATE_MANAGERS: dict) -> Any:
     get_selected, set_selected = STATE_MANAGERS["selected"]
     get_logs, set_logs = STATE_MANAGERS["logs"]
 
+    # Get available models from settings
+    def get_available_models() -> list:
+        """Load available models from orchestr8_settings.toml."""
+        try:
+            import toml
+            settings_file = Path("orchestr8_settings.toml")
+            if settings_file.exists():
+                settings = toml.load(settings_file)
+                models = settings.get("tools", {}).get("communic8", {}).get("multi_llm", {}).get("default_models", [])
+                if models:
+                    return models
+        except Exception:
+            pass
+        return ["claude", "gpt-4", "gemini", "local"]
+
+    available_models = get_available_models()
+
     # Local state - Panel visibility
     get_show_agents, set_show_agents = mo.state(False)
     get_show_tasks, set_show_tasks = mo.state(False)
@@ -296,6 +345,33 @@ def render(STATE_MANAGERS: dict) -> Any:
     # Local state - View mode (city vs chat)
     get_view_mode, set_view_mode = mo.state("city")  # "city" | "chat"
 
+    # Local state - Selected model
+    model_config = get_model_config()
+    default_model = model_config.get("model", available_models[0] if available_models else "claude")
+    get_selected_model, set_selected_model = mo.state(default_model)
+
+    # Initialize services
+    project_root_path = get_root()
+    combat_tracker = CombatTracker(project_root_path)
+    briefing_generator = BriefingGenerator(project_root_path)
+    terminal_spawner = TerminalSpawner(project_root_path)
+    ticket_panel = TicketPanel(project_root_path)
+    calendar_panel = CalendarPanel(project_root_path)
+    comms_panel = CommsPanel(project_root_path)
+    file_explorer_panel = FileExplorerPanel(project_root_path)
+
+    # Local state - Ticket panel visibility
+    get_show_tickets, set_show_tickets = mo.state(False)
+
+    # Local state - Calendar, Comms, FileExplorer panel visibility
+    get_show_calendar, set_show_calendar = mo.state(False)
+    get_show_comms, set_show_comms = mo.state(False)
+    get_show_file_explorer, set_show_file_explorer = mo.state(False)
+
+    # Local state - Audio recording
+    get_is_recording, set_is_recording = mo.state(False)
+    get_audio_data, set_audio_data = mo.state(None)  # Stores recorded audio as bytes/numpy
+
     # ========================================================================
     # EVENT HANDLERS (Transliterated from MaestroView.vue)
     # ========================================================================
@@ -305,6 +381,57 @@ def render(STATE_MANAGERS: dict) -> Any:
         logs = get_logs()
         timestamp = datetime.now().strftime("%H:%M:%S")
         set_logs(logs + [f"[{timestamp}] [Maestro] {action}"])
+
+    def toggle_tickets() -> None:
+        """Toggle ticket panel (slides from right)."""
+        current = get_show_tickets()
+        set_show_tickets(not current)
+        ticket_panel.set_visible(not current)
+
+    def toggle_calendar() -> None:
+        """Toggle calendar panel (slides from right)."""
+        current = get_show_calendar()
+        set_show_calendar(not current)
+        calendar_panel.set_visible(not current)
+        # Close other right panels for mutual exclusion
+        if not current:
+            set_show_comms(False)
+            comms_panel.set_visible(False)
+            set_show_file_explorer(False)
+            file_explorer_panel.set_visible(False)
+            log_action("Calendar panel opened")
+        else:
+            log_action("Calendar panel closed")
+
+    def toggle_comms() -> None:
+        """Toggle comms panel (slides from right)."""
+        current = get_show_comms()
+        set_show_comms(not current)
+        comms_panel.set_visible(not current)
+        # Close other right panels for mutual exclusion
+        if not current:
+            set_show_calendar(False)
+            calendar_panel.set_visible(False)
+            set_show_file_explorer(False)
+            file_explorer_panel.set_visible(False)
+            log_action("Comms panel opened")
+        else:
+            log_action("Comms panel closed")
+
+    def toggle_file_explorer() -> None:
+        """Toggle file explorer panel (slides from right)."""
+        current = get_show_file_explorer()
+        set_show_file_explorer(not current)
+        file_explorer_panel.set_visible(not current)
+        # Close other right panels for mutual exclusion
+        if not current:
+            set_show_calendar(False)
+            calendar_panel.set_visible(False)
+            set_show_comms(False)
+            comms_panel.set_visible(False)
+            log_action("File Explorer panel opened")
+        else:
+            log_action("File Explorer panel closed")
 
     def toggle_collabor8() -> None:
         """Toggle agents panel - mutual exclusion with tasks."""
@@ -326,6 +453,43 @@ def render(STATE_MANAGERS: dict) -> Any:
         else:
             log_action("JFDI panel closed")
 
+    def handle_terminal() -> None:
+        """Toggle terminal panel and spawn actu8 if opening."""
+        current = get_show_terminal()
+        set_show_terminal(not current)
+
+        if not current:  # Opening terminal
+            selected = get_selected()
+            # Use selected file's directory or project root
+            fiefdom_path = selected if selected else "."
+
+            # Check if BRIEFING.md exists
+            briefing_path = project_root_path / fiefdom_path
+            if briefing_path.is_file():
+                briefing_path = briefing_path.parent
+            briefing_ready = (briefing_path / "BRIEFING.md").exists()
+
+            # Spawn the terminal
+            success = terminal_spawner.spawn(
+                fiefdom_path=str(fiefdom_path),
+                briefing_ready=briefing_ready,
+                auto_start_claude=False,
+            )
+
+            if success:
+                # Track in CombatTracker if file selected
+                if selected:
+                    combat_tracker.deploy(
+                        file_path=selected,
+                        terminal_id="actu8-terminal",
+                        model="terminal",
+                    )
+                log_action(f"Terminal spawned at {fiefdom_path}")
+            else:
+                log_action(f"Failed to spawn terminal at {fiefdom_path}")
+        else:
+            log_action("Terminal closed")
+
     def handle_home_click() -> None:
         """Reset to home state - clear panels and messages."""
         set_messages([])
@@ -334,6 +498,96 @@ def render(STATE_MANAGERS: dict) -> Any:
         set_show_terminal(False)
         set_show_summon(False)
         log_action("Reset to home state")
+
+    def toggle_recording() -> None:
+        """Toggle audio recording state."""
+        current = get_is_recording()
+        set_is_recording(not current)
+        if not current:
+            log_action("Recording started - speak into microphone")
+            # In browser mode, would use JavaScript MediaRecorder API
+            # For now, just toggle state
+        else:
+            log_action("Recording stopped")
+            # Would capture audio data here
+
+    def handle_playback() -> None:
+        """Play back recorded audio."""
+        audio = get_audio_data()
+        if audio is not None:
+            log_action("Playing audio...")
+            # Would use mo.audio(audio) to play
+        else:
+            log_action("No audio recording available")
+
+    def has_audio_recording() -> bool:
+        """Check if there's audio data to play back."""
+        return get_audio_data() is not None
+
+    def handle_apps() -> None:
+        """Open Linux app store (gnome-software)."""
+        try:
+            import subprocess
+            # Try gnome-software first (Ubuntu/Fedora), fall back to others
+            for app_store in ["gnome-software", "snap-store", "discover", "pamac-manager"]:
+                try:
+                    subprocess.Popen([app_store])
+                    log_action(f"Opened {app_store}")
+                    return
+                except FileNotFoundError:
+                    continue
+            log_action("No app store found - install gnome-software")
+        except Exception as e:
+            log_action(f"Failed to open app store: {e}")
+
+    def handle_matrix() -> None:
+        """
+        Matrix button - raise coding software, LLMs, and Contacts.
+        The unified view of your development environment.
+        """
+        try:
+            import subprocess
+            # Open VS Code or preferred editor
+            editors = ["code", "cursor", "codium", "subl", "atom", "gedit"]
+            for editor in editors:
+                try:
+                    subprocess.Popen([editor, str(project_root_path)])
+                    log_action(f"Opened {editor} at {project_root_path}")
+                    break
+                except FileNotFoundError:
+                    continue
+
+            # Also show the agents panel (LLMs)
+            set_show_agents(True)
+            set_show_tasks(False)
+            log_action("Matrix: Code editor + Collabor8 panel")
+        except Exception as e:
+            log_action(f"Matrix error: {e}")
+
+    def handle_files() -> None:
+        """Open file explorer at project root."""
+        try:
+            import subprocess
+            import platform
+            system = platform.system()
+
+            if system == "Linux":
+                # Try various file managers
+                for fm in ["nautilus", "dolphin", "thunar", "pcmanfm", "nemo"]:
+                    try:
+                        subprocess.Popen([fm, str(project_root_path)])
+                        log_action(f"Opened {fm} at {project_root_path}")
+                        return
+                    except FileNotFoundError:
+                        continue
+            elif system == "Darwin":
+                subprocess.Popen(["open", str(project_root_path)])
+                log_action(f"Opened Finder at {project_root_path}")
+            elif system == "Windows":
+                subprocess.Popen(["explorer", str(project_root_path)])
+                log_action(f"Opened Explorer at {project_root_path}")
+        except Exception as e:
+            log_action(f"Failed to open file explorer: {e}")
 
     def handle_send() -> None:
         """Send message to the void."""
@@ -352,15 +606,96 @@ def render(STATE_MANAGERS: dict) -> Any:
         }
         messages.append(user_msg)
 
-        # TODO: Replace with actual LLM integration
-        # For now, create a placeholder response
-        assistant_msg = {
-            "id": str(uuid.uuid4()),
-            "role": "assistant",
-            "content": f"Acknowledged. Processing request in context of: {get_root()}",
-            "timestamp": datetime.now().strftime("%H:%M:%S"),
-        }
-        messages.append(assistant_msg)
+        # LLM API Integration
+        try:
+            # Initialize Anthropic client
+            client = anthropic.Anthropic()
+
+            # Generate context using BriefingGenerator
+            selected_file = get_selected()
+            context_parts = []
+
+            if selected_file:
+                # Add file context
+                context_parts.append(f"Current file: {selected_file}")
+
+                # Add campaign context if available
+                campaign_context = briefing_generator.load_campaign_log(selected_file)
+                if campaign_context:
+                    context_parts.append("Recent campaign activity:")
+                    for entry in campaign_context[:3]:  # Last 3 entries
+                        context_parts.append(f"- {entry.get('summary', 'No summary')}")
+
+            # Build system prompt
+            system_prompt = """You are the General of the Orchestr8 command system. You provide concise, actionable responses to help developers manage their software projects. Focus on clarity and immediate next steps."""
+
+            if context_parts:
+                system_prompt += f"\n\nContext:\n" + "\n".join(context_parts)
+
+            # Call Claude API with selected model from dropdown
+            selected_model = get_selected_model()
+            model_config = get_model_config()
+            response = client.messages.create(
+                model=selected_model,
+                max_tokens=model_config["max_tokens"],
+                system=system_prompt,
+                messages=[{"role": "user", "content": text}],
+            )
+
+            # Extract response content
+            response_content = (
+                response.content[0].text
+                if hasattr(response.content[0], "text")
+                else str(response.content[0])
+            )
+
+            # Track deployment in CombatTracker if working on selected file
+            if selected_file:
+                combat_tracker.deploy(
+                    file_path=selected_file,
+                    terminal_id="maestro-chat",
+                    model=selected_model,
+                )
+
+            # Create assistant message
+            assistant_msg = {
+                "id": str(uuid.uuid4()),
+                "role": "assistant",
+                "content": response_content,
+                "timestamp": datetime.now().strftime("%H:%M:%S"),
+            }
+            messages.append(assistant_msg)
+
+        except anthropic.AuthenticationError as e:
+            log_action(f"LLM Authentication Error: {str(e)}")
+            assistant_msg = {
+                "id": str(uuid.uuid4()),
+                "role": "assistant",
+                "content": f"[WARNING] Authentication Error: Invalid ANTHROPIC_API_KEY\n\nPlease check your API key in environment variables.",
+                "timestamp": datetime.now().strftime("%H:%M:%S"),
+            }
+            messages.append(assistant_msg)
+        except anthropic.APIError as e:
+            log_action(f"LLM API Error: {str(e)}")
+
+            # Fallback response
+            assistant_msg = {
+                "id": str(uuid.uuid4()),
+                "role": "assistant",
+                "content": f"[WARNING] LLM API Error: {str(e)}\n\nPlease check your ANTHROPIC_API_KEY environment variable and network connection.",
+                "timestamp": datetime.now().strftime("%H:%M:%S"),
+            }
+            messages.append(assistant_msg)
+        except Exception as e:
+            log_action(f"Unexpected Error: {str(e)}")
+
+            assistant_msg = {
+                "id": str(uuid.uuid4()),
+                "role": "assistant",
+                "content": f"[WARNING] Unexpected Error: {str(e)}",
+                "timestamp": datetime.now().strftime("%H:%M:%S"),
+            }
+            messages.append(assistant_msg)
 
         set_messages(messages)
         set_user_input("")
@@ -398,6 +733,14 @@ def render(STATE_MANAGERS: dict) -> Any:
         </div>
         """)
 
+        # Model picker dropdown
+        model_picker = mo.ui.dropdown(
+            options=available_models,
+            value=get_selected_model(),
+            label="General",
+            on_change=set_selected_model,
+        )
+
         # Navigation buttons
         nav_buttons = mo.hstack(
             [
@@ -411,11 +754,19 @@ def render(STATE_MANAGERS: dict) -> Any:
             gap="0.5rem",
         )
 
+        # Ticket panel toggle (slides from right)
+        ticket_btn = mo.ui.button(
+            label="Tickets",
+            on_change=lambda _: toggle_tickets(),
+        )
+
         return mo.hstack(
             [
                 mo.ui.button(label="Home", on_change=lambda _: handle_home_click()),
                 brand,
+                model_picker,
                 nav_buttons,
+                ticket_btn,
             ],
             justify="space-between",
             align="center",
@@ -513,9 +864,9 @@ def render(STATE_MANAGERS: dict) -> Any:
                 font-family: monospace;
                 font-size: 10px;
                 letter-spacing: 0.1em;
-                color: {'#D4AF37' if mode == 'city' else '#1fbdea'};
+                color: {"#D4AF37" if mode == "city" else "#1fbdea"};
             ">
-                {'CODE CITY' if mode == 'city' else 'CHAT'}
+                {"CODE CITY" if mode == "city" else "CHAT"}
             </span>
         </div>
         """)
@@ -526,10 +877,16 @@ def render(STATE_MANAGERS: dict) -> Any:
         else:
             content = build_void_messages()
 
-        return mo.vstack([
-            mo.hstack([mode_indicator, toggle_btn], justify="space-between", align="center"),
-            content,
-        ])
+        return mo.vstack(
+            [
+                mo.hstack(
+                    [mode_indicator, toggle_btn],
+                    justify="space-between",
+                    align="center",
+                ),
+                content,
+            ]
+        )
 
     def build_panels() -> Any:
         """Build conditional overlay panels."""
@@ -648,37 +1005,59 @@ def render(STATE_MANAGERS: dict) -> Any:
             full_width=True,
         )
 
-        # Left group
+        # Left group - Apps | Matrix | Calendar | Comms | Files
         left_buttons = mo.hstack(
             [
                 mo.ui.button(
-                    label="Apps", on_change=lambda _: log_action("Apps grid toggled")
+                    label="Apps",
+                    on_change=lambda _: handle_apps(),  # Opens Linux app store
                 ),
                 mo.ui.button(
                     label="Matrix",
-                    on_change=lambda _: log_action("Matrix diagnostics opened"),
+                    on_change=lambda _: handle_matrix(),  # Code editor + LLMs + Contacts
+                ),
+                mo.ui.button(
+                    label="Calendar",
+                    on_change=lambda _: toggle_calendar(),  # Calendar panel
+                ),
+                mo.ui.button(
+                    label="Comms",
+                    on_change=lambda _: toggle_comms(),  # P2P Comms panel
                 ),
                 mo.ui.button(
                     label="Files",
-                    on_change=lambda _: log_action("Switch to Explorer tab"),
+                    on_change=lambda _: toggle_file_explorer(),  # Inline file explorer
                 ),
             ],
             gap="0.25rem",
         )
 
-        # Center - maestro
+        # Center - maestro (summon)
         center_btn = mo.ui.button(label="maestro", on_change=lambda _: handle_summon())
 
-        # Right group
+        # Right group - Search | Record | Playback | Phreak> | Send | Attach | Settings
         right_buttons = mo.hstack(
             [
                 mo.ui.button(label="Search", on_change=lambda _: handle_summon()),
                 mo.ui.button(
-                    label="Phreak>",  # Opens actu8 terminal
-                    on_change=lambda _: set_show_terminal(not get_show_terminal()),
+                    label="Record",
+                    on_change=lambda _: toggle_recording(),
+                ),
+                mo.ui.button(
+                    label="Playback",
+                    on_change=lambda _: handle_playback(),
+                    disabled=not has_audio_recording(),
+                ),
+                mo.ui.button(
+                    label="Phreak>",  # Opens terminal
+                    on_change=lambda _: handle_terminal(),
                 ),
                 mo.ui.button(label="Send", on_change=lambda _: handle_send()),
                 mo.ui.button(label="Attach", on_change=lambda _: handle_attach()),
+                mo.ui.button(
+                    label="~~~",  # Wave icon for Settings
+                    on_change=lambda _: log_action("Open Settings tab"),
+                ),
             ],
             gap="0.25rem",
         )
@@ -708,6 +1087,18 @@ def render(STATE_MANAGERS: dict) -> Any:
     attachment_bar = build_attachment_bar()
     control_surface = build_control_surface()
 
+    # Ticket panel (slides from right when visible)
+    ticket_panel_content = ticket_panel.render() if get_show_tickets() else mo.md("")
+
+    # Calendar panel (slides from right when visible)
+    calendar_panel_content = calendar_panel.render() if get_show_calendar() else mo.md("")
+
+    # Comms panel (slides from right when visible)
+    comms_panel_content = comms_panel.render() if get_show_comms() else mo.md("")
+
+    # File Explorer panel (slides from right when visible)
+    file_explorer_content = file_explorer_panel.render() if get_show_file_explorer() else mo.md("")
+
     # Status bar
     root = get_root()
     selected = get_selected()
@@ -728,5 +1119,10 @@ def render(STATE_MANAGERS: dict) -> Any:
             control_surface,
             mo.md("---"),
             status_bar,
+            # Right-side sliding panels (mutually exclusive)
+            ticket_panel_content,
+            calendar_panel_content,
+            comms_panel_content,
+            file_explorer_content,
         ]
     )

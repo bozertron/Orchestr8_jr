@@ -399,7 +399,7 @@ class TicketPanel:
         <div class="ticket-panel-overlay">
             <div class="ticket-panel-header">
                 <span class="ticket-panel-title">TICKET PANEL</span>
-                <button class="ticket-panel-close" onclick="window.location.reload()">✕</button>
+                <button class="ticket-panel-close" onclick="window.location.reload()">X</button>
             </div>
             <div class="ticket-panel-body">
                 {self._build_filter_bar()}

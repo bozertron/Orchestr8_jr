@@ -19,7 +19,7 @@ STATE_MANAGERS Pattern:
     }
 """
 
-PLUGIN_NAME = "🏠 Welcome"
+PLUGIN_NAME = "Welcome"
 PLUGIN_ORDER = 0
 
 def render(STATE_MANAGERS):
@@ -45,12 +45,12 @@ def render(STATE_MANAGERS):
 
 | Plugin | Purpose |
 |--------|---------|
-| 🏠 Welcome | Getting started guide (this tab) |
-| 📁 Explorer | Browse and select files |
-| ⚙️ Generator | 7-phase project wizard |
-| 🛡️ Gatekeeper | File protection with Louis |
-| 🗃️ Connie | Database conversion tools |
-| 🔗 CLI Bridge | Execute TypeScript parsers |
+| Welcome | Getting started guide (this tab) |
+| Explorer | Browse and select files |
+| Generator | 7-phase project wizard |
+| Gatekeeper | File protection with Louis |
+| Connie | Database conversion tools |
+| CLI Bridge | Execute TypeScript parsers |
 
 ### Architecture
 

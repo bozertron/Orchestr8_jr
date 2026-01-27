@@ -19,7 +19,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-PLUGIN_NAME = "🗃️ Connie"
+PLUGIN_NAME = "Connie"
 PLUGIN_ORDER = 4
 
 def find_db_files(root_path, max_depth=3):
@@ -192,7 +192,7 @@ def render(STATE_MANAGERS):
         export_format = get_export_format()
         
         if not selected_db or not selected_table:
-            set_export_result("❌ Please select a database and table first")
+            set_export_result("Please select a database and table first")
             return
         
         full_path = Path(root) / selected_db
@@ -218,7 +218,7 @@ def render(STATE_MANAGERS):
                     elif export_format == "sql":
                         output_file = engine.export_to_sql_dump(str(output_dir / f"{Path(selected_db).stem}_{timestamp}.sql"))
                     
-                    set_export_result(f"✅ Exported to: `{output_file}`")
+                    set_export_result(f"Exported to: `{output_file}`")
                     logs = get_logs()
                     set_logs(logs + [f"[Connie] Exported {selected_table} to {export_format.upper()}"])
             except ImportError:
@@ -249,17 +249,17 @@ def render(STATE_MANAGERS):
                             f.write(f"{line}\n")
                     conn.close()
                 
-                set_export_result(f"✅ Exported to: `{output_file}`")
+                set_export_result(f"Exported to: `{output_file}`")
                 logs = get_logs()
                 set_logs(logs + [f"[Connie] Exported {selected_table} (fallback mode)"])
         except Exception as e:
-            set_export_result(f"❌ Export failed: {str(e)}")
+            set_export_result(f"Export failed: {str(e)}")
             logs = get_logs()
             set_logs(logs + [f"[Connie] Export error: {str(e)}"])
     
     # Export button
     export_btn = mo.ui.button(
-        label="📤 Export Table",
+        label="Export Table",
         on_change=lambda _: do_export(),
         disabled=not get_selected_table()
     )
@@ -269,7 +269,7 @@ def render(STATE_MANAGERS):
         selected_db = get_selected_db()
         
         if not selected_db:
-            set_export_result("❌ Please select a database first")
+            set_export_result("Please select a database first")
             return
         
         full_path = Path(root) / selected_db
@@ -283,14 +283,14 @@ def render(STATE_MANAGERS):
             
             with ConversionEngine(str(full_path)) as engine:
                 results = engine.convert_all(str(output_dir))
-                set_export_result(f"✅ Exported all tables: {results}")
+                set_export_result(f"Exported all tables: {results}")
                 logs = get_logs()
                 set_logs(logs + [f"[Connie] Batch export completed"])
         except Exception as e:
-            set_export_result(f"❌ Batch export failed: {str(e)}")
+            set_export_result(f"Batch export failed: {str(e)}")
     
     export_all_btn = mo.ui.button(
-        label="📦 Export All Tables",
+        label="Export All Tables",
         on_change=lambda _: do_export_all(),
         disabled=not get_selected_db()
     )
@@ -304,7 +304,7 @@ def render(STATE_MANAGERS):
     
     # Layout
     return mo.vstack([
-        mo.md("## 🗃️ Connie Database Converter"),
+        mo.md("## Connie Database Converter"),
         mo.md(stats_md),
         mo.md("---"),
         mo.hstack([db_picker, table_dropdown], gap="1rem"),

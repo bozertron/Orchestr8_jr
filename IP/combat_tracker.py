@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
     tracker = CombatTracker(project_root)
 
-    print("🎯 Combat Tracker Status")
+    print("Combat Tracker Status")
     print("=" * 40)
 
     # Clean up stale deployments
@@ -98,17 +98,17 @@ if __name__ == "__main__":
     active = tracker.get_active_deployments()
 
     if active:
-        print(f"📊 Active Deployments: {len(active)}")
+        print(f"Active Deployments: {len(active)}")
         for file_path, deployment in active.items():
             deployed_at = deployment["deployed_at"]
             terminal_id = deployment["terminal_id"]
             model = deployment["model"]
-            print(f"  🔥 {file_path}")
+            print(f"  [COMBAT] {file_path}")
             print(f"     Terminal: {terminal_id}")
             print(f"     Model: {model}")
             print(f"     Deployed: {deployed_at}")
             print()
     else:
-        print("📋 No active deployments")
+        print("No active deployments")
 
     print(f"Combat files: {tracker.get_combat_files()}")

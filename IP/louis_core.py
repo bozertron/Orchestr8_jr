@@ -117,7 +117,7 @@ PROTECTED="{self.config.protected_list}"
 if [ -f "$PROTECTED" ]; then
     STAGED=$(git diff --cached --name-only)
     if echo "$STAGED" | grep -qxF -f "$PROTECTED"; then
-        echo "⛔ LOUIS SAYS: You are trying to commit a protected file!"
+        echo "BLOCKED - LOUIS SAYS: You are trying to commit a protected file!"
         echo "Please unlock it via Orchestr8 first."
         exit 1
     fi

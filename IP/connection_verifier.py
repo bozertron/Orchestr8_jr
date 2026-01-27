@@ -202,13 +202,14 @@ class ConnectionVerifier:
         self.node_modules = Path(node_modules_path) if node_modules_path else self.project_root / "node_modules"
         
         # Regex patterns for extracting imports WITH line numbers
+        # Note: Allow optional leading whitespace for imports inside functions (e.g., Marimo cells)
         self.python_patterns = [
-            # from package.module import thing
-            re.compile(r'^from\s+([\w.]+)\s+import\s+', re.MULTILINE),
-            # import package.module
-            re.compile(r'^import\s+([\w.]+)(?:\s+as\s+\w+)?$', re.MULTILINE),
-            # from . import relative
-            re.compile(r'^from\s+(\.[.\w]*)\s+import\s+', re.MULTILINE),
+            # from package.module import thing (with optional indentation)
+            re.compile(r'^\s*from\s+([\w.]+)\s+import\s+', re.MULTILINE),
+            # import package.module (with optional indentation)
+            re.compile(r'^\s*import\s+([\w.]+)(?:\s+as\s+\w+)?\s*$', re.MULTILINE),
+            # from . import relative (with optional indentation)
+            re.compile(r'^\s*from\s+(\.[.\w]*)\s+import\s+', re.MULTILINE),
         ]
         
         self.js_patterns = [
