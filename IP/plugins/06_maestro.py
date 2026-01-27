@@ -15,12 +15,18 @@ Design Principles (from MaestroView.vue):
 - The Input Bar: Docked at bottom. It NEVER moves.
 
 Colors (EXACT - NO EXCEPTIONS):
---blue-dominant: #1fbdea (UI default)
---gold-metallic: #D4AF37 (UI highlight)
+--blue-dominant: #1fbdea (UI default, Broken state)
+--gold-metallic: #D4AF37 (UI highlight, Working state)
 --gold-dark: #B8860B (Maestro default)
 --gold-saffron: #F4C430 (Maestro highlight)
 --bg-primary: #0A0A0B (The Void)
 --bg-elevated: #121214 (Surface)
+--purple-combat: #9D4EDD (Combat state - General deployed)
+
+Three-State System:
+- Gold (#D4AF37): Working - All imports resolve, typecheck passes
+- Blue (#1fbdea): Broken - Has errors, needs attention
+- Purple (#9D4EDD): Combat - General currently deployed and active
 
 Reference: UI Reference/MaestroView.vue
 """
@@ -28,6 +34,15 @@ Reference: UI Reference/MaestroView.vue
 from datetime import datetime
 from typing import Any, Optional
 import uuid
+
+# Import new modules
+from IP.mermaid_generator import Fiefdom, FiefdomStatus, generate_empire_mermaid
+from IP.terminal_spawner import TerminalSpawner
+from IP.health_checker import HealthChecker
+from IP.briefing_generator import BriefingGenerator
+
+# Import Woven Maps Code City visualization
+from IP.woven_maps import create_code_city, build_graph_data
 
 PLUGIN_NAME = "The Void"
 PLUGIN_ORDER = 6
@@ -41,16 +56,50 @@ GOLD_DARK = "#B8860B"
 GOLD_SAFFRON = "#F4C430"
 BG_PRIMARY = "#0A0A0B"
 BG_ELEVATED = "#121214"
+PURPLE_COMBAT = "#9D4EDD"  # Combat state - General deployed and active
 
 # ============================================================================
 # CSS STYLES - Injected for void aesthetics
 # ============================================================================
 MAESTRO_CSS = f"""
 <style>
+/* =========================================================
+   EMERGENCE ANIMATIONS - Things EMERGE, they don't breathe
+   ========================================================= */
+
+@keyframes emergence {{
+    0% {{
+        opacity: 0;
+        transform: translateY(12px);
+    }}
+    100% {{
+        opacity: 1;
+        transform: translateY(0);
+    }}
+}}
+
+@keyframes emergence-fade {{
+    0% {{ opacity: 0; }}
+    100% {{ opacity: 1; }}
+}}
+
+@keyframes emergence-scale {{
+    0% {{
+        opacity: 0;
+        transform: scale(0.95);
+    }}
+    100% {{
+        opacity: 1;
+        transform: scale(1);
+    }}
+}}
+
+/* Apply emergence to key elements with staggered delays */
 .maestro-container {{
     min-height: 70vh;
     display: flex;
     flex-direction: column;
+    animation: emergence-fade 0.3s ease-out forwards;
 }}
 
 .maestro-top-row {{
@@ -59,6 +108,7 @@ MAESTRO_CSS = f"""
     align-items: center;
     padding: 12px 0;
     border-bottom: 1px solid rgba(31, 189, 234, 0.2);
+    animation: emergence 0.4s ease-out 0.1s both;
 }}
 
 .stereos-brand {{
@@ -83,6 +133,7 @@ MAESTRO_CSS = f"""
     align-items: center;
     padding: 40px 20px;
     min-height: 300px;
+    animation: emergence-scale 0.5s ease-out 0.2s both;
 }}
 
 .emerged-message {{
@@ -93,7 +144,12 @@ MAESTRO_CSS = f"""
     margin-bottom: 16px;
     max-width: 700px;
     width: 100%;
+    animation: emergence 0.4s ease-out both;
 }}
+
+.emerged-message:nth-child(1) {{ animation-delay: 0.1s; }}
+.emerged-message:nth-child(2) {{ animation-delay: 0.2s; }}
+.emerged-message:nth-child(3) {{ animation-delay: 0.3s; }}
 
 .emerged-message .content {{
     color: #e8e8e8;
@@ -113,6 +169,7 @@ MAESTRO_CSS = f"""
 .control-surface {{
     border-top: 1px solid rgba(31, 189, 234, 0.2);
     padding: 12px 0;
+    animation: emergence 0.4s ease-out 0.3s both;
 }}
 
 .maestro-btn {{
@@ -163,6 +220,7 @@ MAESTRO_CSS = f"""
     border-radius: 8px;
     padding: 16px;
     margin-bottom: 16px;
+    animation: emergence-scale 0.35s ease-out both;
 }}
 
 .panel-header {{
@@ -185,6 +243,12 @@ MAESTRO_CSS = f"""
     color: rgba(255, 255, 255, 0.3);
     font-style: italic;
     text-align: center;
+    animation: emergence-fade 0.8s ease-out 0.4s both;
+}}
+
+/* Button emergence with subtle scale */
+.maestro-btn, .maestro-center-btn {{
+    animation: emergence 0.3s ease-out both;
 }}
 </style>
 """
@@ -228,6 +292,9 @@ def render(STATE_MANAGERS: dict) -> Any:
 
     # Local state - Attachments
     get_attached_files, set_attached_files = mo.state([])
+
+    # Local state - View mode (city vs chat)
+    get_view_mode, set_view_mode = mo.state("city")  # "city" | "chat"
 
     # ========================================================================
     # EVENT HANDLERS (Transliterated from MaestroView.vue)
@@ -281,7 +348,7 @@ def render(STATE_MANAGERS: dict) -> Any:
             "id": str(uuid.uuid4()),
             "role": "user",
             "content": text,
-            "timestamp": datetime.now().strftime("%H:%M:%S")
+            "timestamp": datetime.now().strftime("%H:%M:%S"),
         }
         messages.append(user_msg)
 
@@ -291,7 +358,7 @@ def render(STATE_MANAGERS: dict) -> Any:
             "id": str(uuid.uuid4()),
             "role": "assistant",
             "content": f"Acknowledged. Processing request in context of: {get_root()}",
-            "timestamp": datetime.now().strftime("%H:%M:%S")
+            "timestamp": datetime.now().strftime("%H:%M:%S"),
         }
         messages.append(assistant_msg)
 
@@ -332,26 +399,56 @@ def render(STATE_MANAGERS: dict) -> Any:
         """)
 
         # Navigation buttons
-        nav_buttons = mo.hstack([
-            mo.ui.button(
-                label="Collabor8",
-                on_change=lambda _: toggle_collabor8()
-            ),
-            mo.ui.button(
-                label="JFDI",
-                on_change=lambda _: toggle_jfdi()
-            ),
-            mo.ui.button(
-                label="Gener8",
-                on_change=lambda _: log_action("Switch to Generator tab")
-            ),
-        ], gap="0.5rem")
+        nav_buttons = mo.hstack(
+            [
+                mo.ui.button(label="Collabor8", on_change=lambda _: toggle_collabor8()),
+                mo.ui.button(label="JFDI", on_change=lambda _: toggle_jfdi()),
+                mo.ui.button(
+                    label="Gener8",
+                    on_change=lambda _: log_action("Switch to Generator tab"),
+                ),
+            ],
+            gap="0.5rem",
+        )
 
-        return mo.hstack([
-            mo.ui.button(label="Home", on_change=lambda _: handle_home_click()),
-            brand,
-            nav_buttons
-        ], justify="space-between", align="center")
+        return mo.hstack(
+            [
+                mo.ui.button(label="Home", on_change=lambda _: handle_home_click()),
+                brand,
+                nav_buttons,
+            ],
+            justify="space-between",
+            align="center",
+        )
+
+    def build_code_city() -> Any:
+        """
+        Build the Woven Maps Code City visualization.
+        Shows codebase as abstract cityscape with Gold/Blue/Purple status.
+        """
+        root = get_root()
+
+        if not root:
+            return mo.Html("""
+            <div class="void-center">
+                <div class="void-placeholder">
+                    Set a project root to visualize the codebase as a city.
+                </div>
+            </div>
+            """)
+
+        try:
+            # Create the Code City visualization
+            return create_code_city(root, width=850, height=500)
+        except Exception as e:
+            log_action(f"Code City error: {str(e)}")
+            return mo.Html(f"""
+            <div class="void-center">
+                <div class="void-placeholder" style="color: {BLUE_DOMINANT};">
+                    Error rendering Code City: {str(e)}
+                </div>
+            </div>
+            """)
 
     def build_void_messages() -> Any:
         """
@@ -374,8 +471,8 @@ def render(STATE_MANAGERS: dict) -> Any:
         for msg in assistant_msgs:
             message_html += f"""
             <div class="emerged-message">
-                <div class="content">{msg['content']}</div>
-                <div class="meta">{msg['timestamp']}</div>
+                <div class="content">{msg["content"]}</div>
+                <div class="meta">{msg["timestamp"]}</div>
             </div>
             """
 
@@ -386,6 +483,53 @@ def render(STATE_MANAGERS: dict) -> Any:
             </div>
         </div>
         """)
+
+    def build_void_content() -> Any:
+        """
+        Build the main void content based on current view mode.
+        - City mode: Shows Woven Maps Code City visualization
+        - Chat mode: Shows conversation messages
+        """
+        mode = get_view_mode()
+
+        # View mode toggle
+        toggle_label = "View Chat" if mode == "city" else "View City"
+        toggle_btn = mo.ui.button(
+            label=toggle_label,
+            on_change=lambda _: set_view_mode("chat" if mode == "city" else "city"),
+        )
+
+        # Mode indicator
+        mode_indicator = mo.Html(f"""
+        <div style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(31, 189, 234, 0.1);
+        ">
+            <span style="
+                font-family: monospace;
+                font-size: 10px;
+                letter-spacing: 0.1em;
+                color: {'#D4AF37' if mode == 'city' else '#1fbdea'};
+            ">
+                {'CODE CITY' if mode == 'city' else 'CHAT'}
+            </span>
+        </div>
+        """)
+
+        # Content based on mode
+        if mode == "city":
+            content = build_code_city()
+        else:
+            content = build_void_messages()
+
+        return mo.vstack([
+            mo.hstack([mode_indicator, toggle_btn], justify="space-between", align="center"),
+            content,
+        ])
 
     def build_panels() -> Any:
         """Build conditional overlay panels."""
@@ -501,34 +645,54 @@ def render(STATE_MANAGERS: dict) -> Any:
             value=get_user_input(),
             placeholder="What would you like to accomplish?",
             on_change=set_user_input,
-            full_width=True
+            full_width=True,
         )
 
         # Left group
-        left_buttons = mo.hstack([
-            mo.ui.button(label="Apps", on_change=lambda _: log_action("Apps grid toggled")),
-            mo.ui.button(label="Matrix", on_change=lambda _: log_action("Matrix diagnostics opened")),
-            mo.ui.button(label="Files", on_change=lambda _: log_action("Switch to Explorer tab")),
-        ], gap="0.25rem")
-
-        # Center - maestro
-        center_btn = mo.ui.button(
-            label="maestro",
-            on_change=lambda _: handle_summon()
+        left_buttons = mo.hstack(
+            [
+                mo.ui.button(
+                    label="Apps", on_change=lambda _: log_action("Apps grid toggled")
+                ),
+                mo.ui.button(
+                    label="Matrix",
+                    on_change=lambda _: log_action("Matrix diagnostics opened"),
+                ),
+                mo.ui.button(
+                    label="Files",
+                    on_change=lambda _: log_action("Switch to Explorer tab"),
+                ),
+            ],
+            gap="0.25rem",
         )
 
-        # Right group
-        right_buttons = mo.hstack([
-            mo.ui.button(label="Search", on_change=lambda _: handle_summon()),
-            mo.ui.button(label="Terminal", on_change=lambda _: set_show_terminal(not get_show_terminal())),
-            mo.ui.button(label="Send", on_change=lambda _: handle_send()),
-            mo.ui.button(label="Attach", on_change=lambda _: handle_attach()),
-        ], gap="0.25rem")
+        # Center - maestro
+        center_btn = mo.ui.button(label="maestro", on_change=lambda _: handle_summon())
 
-        return mo.vstack([
-            chat_input,
-            mo.hstack([left_buttons, center_btn, right_buttons], justify="space-between", align="center")
-        ])
+        # Right group
+        right_buttons = mo.hstack(
+            [
+                mo.ui.button(label="Search", on_change=lambda _: handle_summon()),
+                mo.ui.button(
+                    label="Phreak>",  # Opens actu8 terminal
+                    on_change=lambda _: set_show_terminal(not get_show_terminal()),
+                ),
+                mo.ui.button(label="Send", on_change=lambda _: handle_send()),
+                mo.ui.button(label="Attach", on_change=lambda _: handle_attach()),
+            ],
+            gap="0.25rem",
+        )
+
+        return mo.vstack(
+            [
+                chat_input,
+                mo.hstack(
+                    [left_buttons, center_btn, right_buttons],
+                    justify="space-between",
+                    align="center",
+                ),
+            ]
+        )
 
     # ========================================================================
     # MAIN LAYOUT
@@ -540,7 +704,7 @@ def render(STATE_MANAGERS: dict) -> Any:
     # Build components
     top_row = build_top_row()
     panels = build_panels()
-    void_messages = build_void_messages()
+    void_content = build_void_content()  # Code City or Chat based on mode
     attachment_bar = build_attachment_bar()
     control_surface = build_control_surface()
 
@@ -549,18 +713,20 @@ def render(STATE_MANAGERS: dict) -> Any:
     selected = get_selected()
     status_bar = mo.md(f"**Root:** `{root}` | **Selected:** `{selected or 'None'}`")
 
-    return mo.vstack([
-        css_injection,
-        mo.md("## The Void"),
-        mo.md("*maestro overlooks the abyss*"),
-        mo.md("---"),
-        top_row,
-        mo.md("---"),
-        panels,
-        void_messages,
-        mo.md("---"),
-        attachment_bar,
-        control_surface,
-        mo.md("---"),
-        status_bar
-    ])
+    return mo.vstack(
+        [
+            css_injection,
+            mo.md("## The Void"),
+            mo.md("*maestro overlooks the abyss*"),
+            mo.md("---"),
+            top_row,
+            mo.md("---"),
+            panels,
+            void_content,  # Code City or Chat based on view mode
+            mo.md("---"),
+            attachment_bar,
+            control_surface,
+            mo.md("---"),
+            status_bar,
+        ]
+    )

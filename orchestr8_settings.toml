@@ -1,0 +1,381 @@
+# Orchestr8 Settings Configuration
+# Generated: 2026-01-26
+# Purpose: Complete 888 integration settings for AI agents and tools
+
+# ============================================================================
+# AGENT CONFIGURATION
+# ============================================================================
+
+[agents]
+# AI agents that run in the background and manage system operations
+
+[agents.director]
+# The General - allocates work, tracks to completion, finds stuck LLMs
+enabled = true
+check_interval_seconds = 30
+stuck_threshold_minutes = 5
+max_concurrent_generals = 10
+escalation_to_doctor = true
+
+[agents.professor]
+# Works at Public Services - studies system for breakthroughs
+enabled = true
+analysis_interval_hours = 24
+breakthrough_threshold = 0.8
+report_to_emperor = true
+learning_rate = 0.1
+
+[agents.doctor]
+# Fixed flagship model - provides fixes no one else figured out
+enabled = true
+model = "claude-opus"  # Flagship model
+max_tokens = 100000
+temperature = 0.1
+deep_analysis_enabled = true
+escalation_only = false
+
+# ============================================================================
+# TOOL CONFIGURATION
+# ============================================================================
+
+[tools]
+# External applications and AI-powered tools integrated into Orchestr8
+
+[tools.actu8]
+# Document Generation - OnlyOffice + Barbara LLM
+default_mode = "choice"  # "onlyoffice", "barbara", "choice"
+document_model = "[local_doc_model]"
+fallback_app = "onlyoffice"
+barbara_model = "[APIlikethis]"
+auto_save = true
+backup_enabled = true
+
+[tools.senses]
+# Multimodal Input - assigned to maestro for privacy
+enabled = false  # Opt-in for privacy
+assigned_to = "maestro"
+gesture_enabled = true
+speech_enabled = true
+spell_manager_enabled = true
+privacy_indicator = true
+capture_warning = true
+
+[tools.cre8]
+# Creative Suite - Audio/Video/Image models + Full Creative Suite
+image_editor = "gimp"
+audio_editor = "audacity"
+video_editor = "blender"  # or "kdenlive"
+3d_editor = "blender"
+
+[tools.cre8.models]
+# AI models for creative work
+image_model = "[local_image_model]"
+audio_model = "[local_audio_model]"
+video_model = "[local_video_model]"
+3d_model = "[local_3d_model]"
+auto_enhance = true
+batch_processing = true
+
+[tools.communic8]
+# ALL Communications - Email + P2P + Multi-LLM queries
+default_mode = "choice"  # "llm", "contacts", "choice"
+email_client = "thunderbird"
+p2p_enabled = true
+calendar_integration = true
+contacts_integration = true
+
+[tools.communic8.multi_llm]
+# Multi-LLM broadcast and consolidation
+enabled = true
+default_models = ["claude", "gpt-4", "gemini"]
+consolidation_mode = "opinions"  # "raw", "opinions", "summary"
+parallel_queries = true
+response_timeout_seconds = 60
+
+[tools.integr8]
+# Code Editor - evaluation needed
+enabled = false  # Evaluate necessity
+editor = "monaco"  # or "zed", "external"
+lsp_enabled = true
+auto_complete = true
+syntax_highlighting = true
+
+[tools.innov8]
+# The Ultimate Looper - experimental sandbox
+enabled = true
+experiment_timeout_hours = 4
+auto_loop = true
+animation_testing = true
+hypothesis_validation = true
+performance_benchmarking = true
+
+# ============================================================================
+# LOCAL MODEL CONFIGURATION
+# ============================================================================
+
+[local_models]
+# Configuration for locally hosted AI models
+
+[local_models.document]
+# Document processing model
+model_path = "[path_to_doc_model]"
+port = 11435
+gpu_enabled = true
+max_context = 8192
+
+[local_models.image]
+# Image generation model
+model_path = "[path_to_image_model]"
+port = 11436
+gpu_enabled = true
+max_resolution = "1024x1024"
+
+[local_models.audio]
+# Audio generation/model
+model_path = "[path_to_audio_model]"
+port = 11437
+sample_rate = 44100
+channels = 2
+
+[local_models.video]
+# Video generation model
+model_path = "[path_to_video_model]"
+port = 11438
+gpu_enabled = true
+max_fps = 30
+max_duration_seconds = 60
+
+[local_models.embedding]
+# Embedding model for vector search
+model_path = "[path_to_embedding_model]"
+port = 11439
+vector_size = 1536
+batch_size = 32
+
+# ============================================================================
+# INTEGRATION SETTINGS
+# ============================================================================
+
+[integration]
+# External application integrations
+
+[integration.onlyoffice]
+# OnlyOffice integration
+executable_path = "/usr/bin/onlyoffice-desktopeditors"
+auto_launch = true
+file_formats = [".docx", ".xlsx", ".pptx"]
+template_directory = "~/.orchestr8/templates/onlyoffice"
+
+[integration.thunderbird]
+# Thunderbird email integration
+executable_path = "/usr/bin/thunderbird"
+profile_path = "~/.thunderbird"
+auto_sync = true
+contact_integration = true
+
+[integration.audacity]
+# Audacity audio integration
+executable_path = "/usr/bin/audacity"
+project_directory = "~/.orchestr8/projects/audio"
+auto_export_format = "wav"
+
+[integration.gimp]
+# GIMP image integration
+executable_path = "/usr/bin/gimp"
+plugin_directory = "~/.orchestr8/plugins/gimp"
+auto_save_format = "png"
+
+[integration.blender]
+# Blender 3D integration
+executable_path = "/usr/bin/blender"
+project_directory = "~/.orchestr8/projects/3d"
+python_scripts_path = "~/.orchestr8/scripts/blender"
+
+# ============================================================================
+# PANEL FOUNDATION SETTINGS
+# ============================================================================
+
+[panel_foundation]
+# Base architecture for all [name]8 tools
+registry_enabled = true
+lifecycle_management = true
+inter_panel_communication = true
+version_checking = true
+health_monitoring = true
+
+[panel_foundation.capabilities]
+# Capability flags for panels
+supports_files = true
+supports_real_time = true
+supports_ai_models = true
+supports_external_apps = true
+supports_multimodal = true
+
+# ============================================================================
+# PUBLIC SERVICES INTEGRATION
+# ============================================================================
+
+[public_services]
+# Connection to SQLite + Vector + Graph memory stores
+
+[public_services.sqlite]
+database_path = ".orchestr8/public_services.db"
+backup_enabled = true
+backup_interval_hours = 24
+max_connections = 10
+
+[public_services.vector]
+embedding_model = "[local_embedding_model]"
+index_type = "faiss"
+dimensions = 1536
+similarity_threshold = 0.8
+
+[public_services.graph]
+database_type = "neo4j"
+url = "bolt://localhost:7687"
+username = "neo4j"
+password = "[neo4j_password]"
+auto_backup = true
+
+# ============================================================================
+# PRIVACY AND SECURITY
+# ============================================================================
+
+[privacy]
+# Privacy settings for sensitive operations
+
+[privacy.senses]
+# Multimodal input privacy
+require_explicit_consent = true
+show_capture_indicator = true
+retain_recordings = false
+encryption_enabled = true
+data_retention_days = 0
+
+[privacy.communic8]
+# Communications privacy
+encrypt_p2p = true
+log_messages = false
+share_contacts = false
+anonymize_queries = true
+
+# ============================================================================
+# PERFORMANCE SETTINGS
+# ============================================================================
+
+[performance]
+# System performance tuning
+
+[performance.general]
+max_concurrent_operations = 5
+memory_limit_mb = 8192
+cpu_limit_percent = 80
+auto_cleanup = true
+
+[performance.ai_models]
+model_cache_size_mb = 2048
+preload_models = ["document", "embedding"]
+batch_processing = true
+gpu_utilization_target = 0.8
+
+# ============================================================================
+# USER INTERFACE
+# ============================================================================
+
+[ui]
+# UI customization and behavior
+
+[ui.general]
+theme = "maestro"  # "maestro", "light", "dark"
+animation_speed = "normal"  # "slow", "normal", "fast"
+font_size = 12
+compact_mode = false
+
+[ui.maestro]
+show_senses_indicator = true
+show_agent_status = true
+show_system_health = true
+auto_hide_panels = false
+panel_animation_speed = 300  # milliseconds
+
+[ui.notifications]
+agent_alerts = true
+system_alerts = true
+tool_alerts = true
+breakthrough_alerts = true
+escalation_alerts = true
+
+# ============================================================================
+# DEBUGGING AND LOGGING
+# ============================================================================
+
+[logging]
+# System logging configuration
+
+[logging.general]
+level = "INFO"  # "DEBUG", "INFO", "WARN", "ERROR"
+file_path = ".orchestr8/logs/system.log"
+max_file_size_mb = 100
+backup_count = 5
+
+[logging.agents]
+director_logging = true
+professor_logging = true
+doctor_logging = true
+escalation_logging = true
+
+[logging.tools]
+tool_startup_logging = true
+integration_logging = true
+error_logging = true
+performance_logging = false
+
+# ============================================================================
+# EXPERIMENTAL FEATURES
+# ============================================================================
+
+[experimental]
+# Experimental features (use with caution)
+
+[experimental.innov8]
+auto_experiments = true
+hypothesis_testing = true
+animation_prototyping = true
+performance_benchmarking = true
+report_findings = true
+
+[experimental.ai]
+multi_model_comparison = true
+automatic_model_selection = true
+context_optimization = true
+token_efficiency_mode = false
+
+# ============================================================================
+# BACKUP AND RECOVERY
+# ============================================================================
+
+[backup]
+# System backup and recovery settings
+
+[backup.general]
+enabled = true
+interval_hours = 6
+compression = true
+encryption = true
+retention_days = 30
+
+[backup.locations]
+primary_backup = "~/.orchestr8/backups/"
+secondary_backup = "[external_drive_path]/orchestr8_backups/"
+cloud_backup = false
+
+# ============================================================================
+# END OF CONFIGURATION
+# ============================================================================
+
+# Notes:
+# 1. Replace all [placeholder] values with actual paths/API keys
+# 2. Set enabled = false for any tools you don't want to use
+# 3. Adjust performance settings based on your system capabilities
+# 4. Review privacy settings before enabling sensitive features
+# 5. Experimental features may be unstable - use with caution
