@@ -305,7 +305,7 @@ def explorer_table_cell(mo, get_files_df, render_badge):
         explorer_table = mo.ui.table(
             display_df[["status_badge", "path", "type", "size", "issues"]],
             selection="single",
-            label="📂 File System",
+            label="File System",
         )
         explorer_content = explorer_table
 
@@ -417,7 +417,7 @@ def prd_generator_cell(
     def build_prd_view():
         selected = get_selected_file()
         if not selected:
-            return mo.md("👈 *Select a file in the Explorer tab to generate a PRD.*")
+            return mo.md("*Select a file in the Explorer tab to generate a PRD.*")
 
         df = get_files_df()
         edges = get_edges_df()
@@ -554,7 +554,7 @@ def emperor_view_cell(
         # Log the deployment
         current_logs = get_agent_logs()
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
-        new_log = f"[{timestamp}] ⚔️ DEPLOYED to '{selected}': {mission_input.value}"
+        new_log = f"[{timestamp}] DEPLOYED to '{selected}': {mission_input.value}"
         set_agent_logs(current_logs + [new_log])
 
         # Trigger UI refresh
@@ -577,19 +577,19 @@ def emperor_view_cell(
         # Log the withdrawal
         current_logs = get_agent_logs()
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
-        new_log = f"[{timestamp}] 🏳️ WITHDRAWN from '{selected}'"
+        new_log = f"[{timestamp}] WITHDRAWN from '{selected}'"
         set_agent_logs(current_logs + [new_log])
 
         # Trigger UI refresh
         set_combat_version(get_combat_version() + 1)
 
     deploy_btn = mo.ui.button(
-        label="⚔️ Deploy Agent",
+        label="Deploy Agent",
         on_change=lambda _: deploy_agent()
     )
 
     withdraw_btn = mo.ui.button(
-        label="🏳️ Withdraw",
+        label="Withdraw",
         on_change=lambda _: withdraw_agent()
     )
 
@@ -619,9 +619,9 @@ def emperor_view_cell(
 
     # Target status indicator
     if selected:
-        status_text = "⚔️ **IN COMBAT**" if is_in_combat else "🟢 Ready for deployment"
+        status_text = "**IN COMBAT**" if is_in_combat else "Ready for deployment"
     else:
-        status_text = "⚪ No target selected"
+        status_text = "No target selected"
 
     emperor_content = mo.vstack(
         [
@@ -630,10 +630,10 @@ def emperor_view_cell(
             mission_input,
             mo.hstack([deploy_btn, withdraw_btn], justify="start", gap=1),
             mo.md("---"),
-            mo.md("### ⚔️ Active Combat Zones"),
+            mo.md("### Active Combat Zones"),
             combat_display,
             mo.md("---"),
-            mo.md("### 📡 Command Center Logs"),
+            mo.md("### Command Center Logs"),
             log_display,
         ]
     )

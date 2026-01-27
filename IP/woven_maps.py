@@ -791,7 +791,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             <div class="ctrl-section">
                 <span class="ctrl-label">Audio Reactive</span>
                 <button class="audio-btn" id="audioToggle" onclick="toggleAudio()">
-                    <span>🎤 Enable Microphone</span>
+                    <span>Enable Microphone</span>
                 </button>
                 <div class="freq-display" id="freqDisplay">
                     <div class="freq-bar low" id="freqLow"></div>
@@ -1001,7 +1001,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
 
                     audioEnabled = true;
                     btn.classList.add('active');
-                    btn.innerHTML = '<span>🎤 Listening...</span>';
+                    btn.innerHTML = '<span>Listening...</span>';
                     console.log('Audio-reactive mode enabled');
 
                 } catch (err) {
@@ -1023,7 +1023,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
                 frequencyData = { low: 0, mid: 0, high: 0 };
 
                 btn.classList.remove('active');
-                btn.innerHTML = '<span>🎤 Enable Microphone</span>';
+                btn.innerHTML = '<span>Enable Microphone</span>';
 
                 // Reset frequency bars
                 document.getElementById('freqLow').style.height = '2px';
@@ -1843,7 +1843,7 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
 
                 // Cycle warning
                 const cycleWarning = node.inCycle
-                    ? `<div style="color: #ff4444; margin-top: 4px; font-size: 10px;">⚠ Part of circular dependency</div>`
+                    ? `<div style="color: #ff4444; margin-top: 4px; font-size: 10px;">CYCLE: Part of circular dependency</div>`
                     : '';
 
                 // Centrality indicator
