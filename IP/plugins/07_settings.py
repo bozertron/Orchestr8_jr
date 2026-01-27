@@ -261,11 +261,26 @@ class SettingsManager:
         """Get a specific section of settings"""
         return self.settings.get(section_name, {})
 
-    def set_value(self, section: str, key: str, value: Any) -> None:
-        """Set a specific setting value"""
-        if section not in self.settings:
-            self.settings[section] = {}
-        self.settings[section][key] = value
+    def set_value(self, path: str, value: Any) -> None:
+        """Set a specific setting value using dotted path notation.
+
+        Args:
+            path: Dotted path like "agents.director.enabled"
+            value: Value to set
+        """
+        parts = path.split(".")
+        if len(parts) < 2:
+            return
+
+        # Navigate to the parent dict, creating nested dicts as needed
+        current = self.settings
+        for part in parts[:-1]:
+            if part not in current:
+                current[part] = {}
+            current = current[part]
+
+        # Set the final value
+        current[parts[-1]] = value
 
     def get_value(self, section: str, key: str, default: Any = None) -> Any:
         """Get a specific setting value"""

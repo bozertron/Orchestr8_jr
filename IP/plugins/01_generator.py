@@ -60,146 +60,185 @@ def render(STATE_MANAGERS):
     progress = mo.md(f"**Phase {current_phase} of 7** - {PHASES[current_phase-1]['name']}")
     progress_bar = mo.ui.progress(value=current_phase/7, show_value=True)
     
+    # Helper to update spec
+    def update_spec(section: str, field: str, value):
+        """Update a field in the spec."""
+        new_spec = spec.copy()
+        new_spec[section] = spec[section].copy()
+        new_spec[section][field] = value
+        set_spec(new_spec)
+
     # Phase content builder
     def build_phase_content():
         phase = PHASES[current_phase - 1]
         is_locked = current_phase in locked_phases
-        
+
         if current_phase == 1:
             # Project Identity
             name_input = mo.ui.text(
                 value=spec["project_identity"]["name"],
                 label="Project Name",
                 placeholder="my-awesome-project",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("project_identity", "name", v)
             )
             desc_input = mo.ui.text_area(
                 value=spec["project_identity"]["description"],
                 label="Description",
                 placeholder="A brief description of your project...",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("project_identity", "description", v)
             )
             type_select = mo.ui.dropdown(
                 options=["application", "library", "service", "cli", "plugin"],
                 value=spec["project_identity"]["type"],
                 label="Project Type",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("project_identity", "type", v)
             )
             version_input = mo.ui.text(
                 value=spec["project_identity"]["version"],
                 label="Initial Version",
                 placeholder="1.0.0",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("project_identity", "version", v)
             )
             return mo.vstack([name_input, desc_input, type_select, version_input])
         
         elif current_phase == 2:
             # Technology Stack
+            def parse_csv(v): return [x.strip() for x in v.split(",") if x.strip()]
             lang_input = mo.ui.text(
                 value=", ".join(spec["technology_stack"]["languages"]),
                 label="Languages (comma-separated)",
                 placeholder="Python, TypeScript, SQL",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("technology_stack", "languages", parse_csv(v))
             )
             fw_input = mo.ui.text(
                 value=", ".join(spec["technology_stack"]["frameworks"]),
                 label="Frameworks",
                 placeholder="Marimo, React, FastAPI",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("technology_stack", "frameworks", parse_csv(v))
             )
             tools_input = mo.ui.text(
                 value=", ".join(spec["technology_stack"]["tools"]),
                 label="Tools",
                 placeholder="pytest, eslint, docker",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("technology_stack", "tools", parse_csv(v))
             )
             return mo.vstack([lang_input, fw_input, tools_input])
         
         elif current_phase == 3:
             # Architecture
+            def parse_csv(v): return [x.strip() for x in v.split(",") if x.strip()]
             struct_select = mo.ui.dropdown(
                 options=["monolithic", "modular", "microservices", "serverless", "plugin-based"],
                 value=spec["architecture"]["structure"],
                 label="Architecture Style",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("architecture", "structure", v)
             )
             patterns_input = mo.ui.text(
                 value=", ".join(spec["architecture"]["patterns"]),
                 label="Design Patterns",
                 placeholder="MVC, Observer, Factory",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("architecture", "patterns", parse_csv(v))
             )
             layers_input = mo.ui.text(
                 value=", ".join(spec["architecture"]["layers"]),
                 label="Architectural Layers",
                 placeholder="UI, Business Logic, Data Access",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("architecture", "layers", parse_csv(v))
             )
             return mo.vstack([struct_select, patterns_input, layers_input])
         
         elif current_phase == 4:
             # Features
+            def parse_csv(v): return [x.strip() for x in v.split(",") if x.strip()]
+            def parse_lines(v): return [x.strip() for x in v.split("\n") if x.strip()]
             features_input = mo.ui.text_area(
                 value="\n".join(spec["features"]["core_features"]),
                 label="Core Features (one per line)",
                 placeholder="User authentication\nData visualization\nAPI integration",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("features", "core_features", parse_lines(v))
             )
             modules_input = mo.ui.text(
                 value=", ".join(spec["features"]["modules"]),
                 label="Modules",
                 placeholder="auth, dashboard, api",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("features", "modules", parse_csv(v))
             )
             integrations_input = mo.ui.text(
                 value=", ".join(spec["features"]["integrations"]),
                 label="Integrations",
                 placeholder="GitHub, Stripe, AWS",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("features", "integrations", parse_csv(v))
             )
             return mo.vstack([features_input, modules_input, integrations_input])
         
         elif current_phase == 5:
             # Dependencies
+            def parse_csv(v): return [x.strip() for x in v.split(",") if x.strip()]
+            def parse_lines(v): return [x.strip() for x in v.split("\n") if x.strip()]
             packages_input = mo.ui.text_area(
                 value="\n".join(spec["dependencies"]["packages"]),
                 label="Packages (one per line)",
                 placeholder="pandas>=2.0.0\nrequests\nfastapi",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("dependencies", "packages", parse_lines(v))
             )
             apis_input = mo.ui.text(
                 value=", ".join(spec["dependencies"]["apis"]),
                 label="External APIs",
                 placeholder="REST, GraphQL, WebSocket",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("dependencies", "apis", parse_csv(v))
             )
             services_input = mo.ui.text(
                 value=", ".join(spec["dependencies"]["services"]),
                 label="Services",
                 placeholder="PostgreSQL, Redis, S3",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("dependencies", "services", parse_csv(v))
             )
             return mo.vstack([packages_input, apis_input, services_input])
         
         elif current_phase == 6:
             # Configuration
+            def parse_csv(v): return [x.strip() for x in v.split(",") if x.strip()]
+            def parse_json(v):
+                try:
+                    return json.loads(v) if v.strip() else {}
+                except:
+                    return {}
             env_select = mo.ui.dropdown(
                 options=["development", "staging", "production"],
                 value=spec["configuration"]["environment"],
                 label="Default Environment",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("configuration", "environment", v)
             )
             settings_input = mo.ui.text_area(
                 value=json.dumps(spec["configuration"]["settings"], indent=2) if spec["configuration"]["settings"] else "{}",
                 label="Default Settings (JSON)",
                 placeholder='{"debug": true, "log_level": "INFO"}',
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("configuration", "settings", parse_json(v))
             )
             secrets_input = mo.ui.text(
                 value=", ".join(spec["configuration"]["secrets"]),
                 label="Required Secrets/Env Vars",
                 placeholder="DATABASE_URL, API_KEY, SECRET_KEY",
-                disabled=is_locked
+                disabled=is_locked,
+                on_change=lambda v: update_spec("configuration", "secrets", parse_csv(v))
             )
             return mo.vstack([env_select, settings_input, secrets_input])
         
