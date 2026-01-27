@@ -1055,9 +1055,10 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
             for (let i = midStart; i < midEnd; i++) midSum += dataArray[i];
             for (let i = highStart; i < bufferLength; i++) highSum += dataArray[i];
 
-            const low = (lowSum / lowEnd / 255) * sensitivity;
-            const mid = (midSum / (midEnd - midStart) / 255) * sensitivity;
-            const high = (highSum / (bufferLength - highStart) / 255) * sensitivity;
+            // Guard against division by zero (unlikely but possible with small FFT sizes)
+            const low = lowEnd > 0 ? (lowSum / lowEnd / 255) * sensitivity : 0;
+            const mid = (midEnd - midStart) > 0 ? (midSum / (midEnd - midStart) / 255) * sensitivity : 0;
+            const high = (bufferLength - highStart) > 0 ? (highSum / (bufferLength - highStart) / 255) * sensitivity : 0;
 
             // Smooth transitions
             frequencyData.low = frequencyData.low * 0.7 + low * 0.3;
