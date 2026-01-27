@@ -43,6 +43,9 @@ from IP.health_checker import HealthChecker
 from IP.briefing_generator import BriefingGenerator
 from IP.combat_tracker import CombatTracker
 from IP.plugins.components.ticket_panel import TicketPanel
+from IP.plugins.components.calendar_panel import CalendarPanel
+from IP.plugins.components.comms_panel import CommsPanel
+from IP.plugins.components.file_explorer_panel import FileExplorerPanel
 import anthropic
 
 # Import Woven Maps Code City visualization
@@ -353,9 +356,17 @@ def render(STATE_MANAGERS: dict) -> Any:
     briefing_generator = BriefingGenerator(project_root_path)
     terminal_spawner = TerminalSpawner(project_root_path)
     ticket_panel = TicketPanel(project_root_path)
+    calendar_panel = CalendarPanel(project_root_path)
+    comms_panel = CommsPanel(project_root_path)
+    file_explorer_panel = FileExplorerPanel(project_root_path)
 
     # Local state - Ticket panel visibility
     get_show_tickets, set_show_tickets = mo.state(False)
+
+    # Local state - Calendar, Comms, FileExplorer panel visibility
+    get_show_calendar, set_show_calendar = mo.state(False)
+    get_show_comms, set_show_comms = mo.state(False)
+    get_show_file_explorer, set_show_file_explorer = mo.state(False)
 
     # Local state - Audio recording
     get_is_recording, set_is_recording = mo.state(False)
@@ -376,6 +387,51 @@ def render(STATE_MANAGERS: dict) -> Any:
         current = get_show_tickets()
         set_show_tickets(not current)
         ticket_panel.set_visible(not current)
+
+    def toggle_calendar() -> None:
+        """Toggle calendar panel (slides from right)."""
+        current = get_show_calendar()
+        set_show_calendar(not current)
+        calendar_panel.set_visible(not current)
+        # Close other right panels for mutual exclusion
+        if not current:
+            set_show_comms(False)
+            comms_panel.set_visible(False)
+            set_show_file_explorer(False)
+            file_explorer_panel.set_visible(False)
+            log_action("Calendar panel opened")
+        else:
+            log_action("Calendar panel closed")
+
+    def toggle_comms() -> None:
+        """Toggle comms panel (slides from right)."""
+        current = get_show_comms()
+        set_show_comms(not current)
+        comms_panel.set_visible(not current)
+        # Close other right panels for mutual exclusion
+        if not current:
+            set_show_calendar(False)
+            calendar_panel.set_visible(False)
+            set_show_file_explorer(False)
+            file_explorer_panel.set_visible(False)
+            log_action("Comms panel opened")
+        else:
+            log_action("Comms panel closed")
+
+    def toggle_file_explorer() -> None:
+        """Toggle file explorer panel (slides from right)."""
+        current = get_show_file_explorer()
+        set_show_file_explorer(not current)
+        file_explorer_panel.set_visible(not current)
+        # Close other right panels for mutual exclusion
+        if not current:
+            set_show_calendar(False)
+            calendar_panel.set_visible(False)
+            set_show_comms(False)
+            comms_panel.set_visible(False)
+            log_action("File Explorer panel opened")
+        else:
+            log_action("File Explorer panel closed")
 
     def toggle_collabor8() -> None:
         """Toggle agents panel - mutual exclusion with tasks."""
@@ -962,17 +1018,15 @@ def render(STATE_MANAGERS: dict) -> Any:
                 ),
                 mo.ui.button(
                     label="Calendar",
-                    on_change=lambda _: log_action("Calendar - wire to calendar component"),
-                    disabled=True,  # Enable when Calendar component ready
+                    on_change=lambda _: toggle_calendar(),  # Calendar panel
                 ),
                 mo.ui.button(
                     label="Comms",
-                    on_change=lambda _: log_action("Comms - wire to communic8"),
-                    disabled=True,  # Enable when Comms component ready
+                    on_change=lambda _: toggle_comms(),  # P2P Comms panel
                 ),
                 mo.ui.button(
                     label="Files",
-                    on_change=lambda _: handle_files(),  # Opens native file explorer
+                    on_change=lambda _: toggle_file_explorer(),  # Inline file explorer
                 ),
             ],
             gap="0.25rem",
@@ -1036,6 +1090,15 @@ def render(STATE_MANAGERS: dict) -> Any:
     # Ticket panel (slides from right when visible)
     ticket_panel_content = ticket_panel.render() if get_show_tickets() else mo.md("")
 
+    # Calendar panel (slides from right when visible)
+    calendar_panel_content = calendar_panel.render() if get_show_calendar() else mo.md("")
+
+    # Comms panel (slides from right when visible)
+    comms_panel_content = comms_panel.render() if get_show_comms() else mo.md("")
+
+    # File Explorer panel (slides from right when visible)
+    file_explorer_content = file_explorer_panel.render() if get_show_file_explorer() else mo.md("")
+
     # Status bar
     root = get_root()
     selected = get_selected()
@@ -1056,6 +1119,10 @@ def render(STATE_MANAGERS: dict) -> Any:
             control_surface,
             mo.md("---"),
             status_bar,
-            ticket_panel_content,  # Slides from right when visible
+            # Right-side sliding panels (mutually exclusive)
+            ticket_panel_content,
+            calendar_panel_content,
+            comms_panel_content,
+            file_explorer_content,
         ]
     )
