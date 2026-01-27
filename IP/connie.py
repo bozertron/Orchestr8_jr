@@ -271,7 +271,7 @@ class ConversionEngine:
             
             for _, col in schema_df.iterrows():
                 nullable = "YES" if not col["not_null"] else "NO"
-                pk = "✓" if col["primary_key"] else ""
+                pk = "Y" if col["primary_key"] else ""
                 md_lines.append(f"| `{col['name']}` | {col['type']} | {nullable} | {pk} |")
             
             md_lines.append("")
