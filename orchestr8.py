@@ -258,33 +258,57 @@ def control_panel(
 
 
 @app.cell
-def explorer_view_cell(
-    mo, get_files_df, get_selected_file, set_selected_file, render_badge
-):
+def explorer_table_cell(mo, get_files_df, render_badge):
     """Explorer Tab - File system table with selection"""
+    df = get_files_df()
 
-    def build_explorer_view():
-        df = get_files_df()
-        if df.empty:
-            return mo.md("*No project loaded. Enter a path and click Scan.*")
-
+    if df.empty:
+        explorer_table = None
+        explorer_content = mo.md("*No project loaded. Enter a path and click Scan.*")
+    else:
         # Add visual badges
         display_df = df.copy()
         display_df["status_badge"] = display_df["status"].apply(render_badge)
 
-        # Create interactive table
-        table = mo.ui.table(
+        # Create interactive table - returned so selection can be accessed
+        explorer_table = mo.ui.table(
             display_df[["status_badge", "path", "type", "size", "issues"]],
             selection="single",
             label="📂 File System",
         )
+        explorer_content = explorer_table
 
-        return mo.vstack(
-            [table, mo.md(f"**Selected:** `{get_selected_file() or 'None'}`")]
-        )
+    return explorer_content, explorer_table
 
-    explorer_content = build_explorer_view()
-    return (explorer_content,)
+
+@app.cell
+def explorer_selection_cell(mo, explorer_table, set_selected_file, get_selected_file):
+    """Handle explorer table selection and update state"""
+    selected_path = None
+
+    if explorer_table is not None and explorer_table.value:
+        # table.value returns list of selected row dicts
+        selected_rows = explorer_table.value
+        if len(selected_rows) > 0:
+            selected_path = selected_rows[0].get("path")
+            set_selected_file(selected_path)
+
+    # Display current selection
+    current = get_selected_file()
+    selection_display = mo.md(f"**Selected:** `{current or 'None'}`")
+    return (selection_display,)
+
+
+@app.cell
+def explorer_view_cell(mo, explorer_content, selection_display):
+    """Combine explorer table and selection display"""
+    if hasattr(explorer_content, '_mime_'):
+        # It's a UI element (table)
+        combined = mo.vstack([explorer_content, selection_display])
+    else:
+        # It's the empty state markdown
+        combined = explorer_content
+    return (combined,)
 
 
 @app.cell
@@ -342,27 +366,10 @@ def code_city_cell(mo, get_project_root, get_files_df, create_code_city):
         if df.empty:
             return mo.md("*No project loaded. Scan a project to see the Code City.*")
 
-        # Build nodes from files DataFrame
-        nodes = []
-        for _, row in df.iterrows():
-            # Map status to Code City status colors
-            status_map = {
-                "NORMAL": "working",   # Gold
-                "ERROR": "broken",     # Teal/Blue
-                "COMPLEX": "combat",   # Purple
-                "WARNING": "broken"    # Teal/Blue
-            }
-            nodes.append({
-                "path": row["path"],
-                "status": status_map.get(row["status"], "working"),
-                "loc": row.get("size", 100),  # Use file size as proxy for LOC
-                "errors": []
-            })
-
-        # Generate the Code City HTML
+        # Pass the project root to create_code_city - it handles scanning internally
+        # with its own Code City node analysis (LOC, TODO detection, etc.)
         try:
-            html_content = create_code_city(nodes)
-            return mo.Html(f'<div style="width:100%; height:700px;">{html_content}</div>')
+            return create_code_city(root, width=900, height=650)
         except Exception as e:
             return mo.md(f"Code City generation error: {str(e)}")
 
@@ -515,7 +522,7 @@ def main_layout(
     mo,
     app_title,
     control_row,
-    explorer_content,
+    combined,
     graph_content,
     code_city_content,
     prd_content,
@@ -524,7 +531,7 @@ def main_layout(
     """Main Application Layout with Tabs"""
     tabs = mo.ui.tabs(
         {
-            "Explorer": explorer_content,
+            "Explorer": combined,
             "Connections": graph_content,
             "Code City": code_city_content,
             "PRD Generator": prd_content,

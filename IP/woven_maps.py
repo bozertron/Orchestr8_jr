@@ -1934,7 +1934,8 @@ def create_code_city(
                 width="{width}"
                 height="{height}"
                 style="border: none; display: block;"
-                sandbox="allow-scripts"
+                sandbox="allow-scripts allow-same-origin"
+                allow="microphone"
             ></iframe>
         </div>
     ''')
