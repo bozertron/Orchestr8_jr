@@ -468,6 +468,71 @@ def render(STATE_MANAGERS: dict) -> Any:
         """Check if there's audio data to play back."""
         return get_audio_data() is not None
 
+    def handle_apps() -> None:
+        """Open Linux app store (gnome-software)."""
+        try:
+            import subprocess
+            # Try gnome-software first (Ubuntu/Fedora), fall back to others
+            for app_store in ["gnome-software", "snap-store", "discover", "pamac-manager"]:
+                try:
+                    subprocess.Popen([app_store])
+                    log_action(f"Opened {app_store}")
+                    return
+                except FileNotFoundError:
+                    continue
+            log_action("No app store found - install gnome-software")
+        except Exception as e:
+            log_action(f"Failed to open app store: {e}")
+
+    def handle_matrix() -> None:
+        """
+        Matrix button - raise coding software, LLMs, and Contacts.
+        The unified view of your development environment.
+        """
+        try:
+            import subprocess
+            # Open VS Code or preferred editor
+            editors = ["code", "cursor", "codium", "subl", "atom", "gedit"]
+            for editor in editors:
+                try:
+                    subprocess.Popen([editor, str(project_root_path)])
+                    log_action(f"Opened {editor} at {project_root_path}")
+                    break
+                except FileNotFoundError:
+                    continue
+
+            # Also show the agents panel (LLMs)
+            set_show_agents(True)
+            set_show_tasks(False)
+            log_action("Matrix: Code editor + Collabor8 panel")
+        except Exception as e:
+            log_action(f"Matrix error: {e}")
+
+    def handle_files() -> None:
+        """Open file explorer at project root."""
+        try:
+            import subprocess
+            import platform
+            system = platform.system()
+
+            if system == "Linux":
+                # Try various file managers
+                for fm in ["nautilus", "dolphin", "thunar", "pcmanfm", "nemo"]:
+                    try:
+                        subprocess.Popen([fm, str(project_root_path)])
+                        log_action(f"Opened {fm} at {project_root_path}")
+                        return
+                    except FileNotFoundError:
+                        continue
+            elif system == "Darwin":
+                subprocess.Popen(["open", str(project_root_path)])
+                log_action(f"Opened Finder at {project_root_path}")
+            elif system == "Windows":
+                subprocess.Popen(["explorer", str(project_root_path)])
+                log_action(f"Opened Explorer at {project_root_path}")
+        except Exception as e:
+            log_action(f"Failed to open file explorer: {e}")
+
     def handle_send() -> None:
         """Send message to the void."""
         text = get_user_input().strip()
@@ -888,25 +953,26 @@ def render(STATE_MANAGERS: dict) -> Any:
         left_buttons = mo.hstack(
             [
                 mo.ui.button(
-                    label="Apps", on_change=lambda _: log_action("Apps grid toggled")
+                    label="Apps",
+                    on_change=lambda _: handle_apps(),  # Opens Linux app store
                 ),
                 mo.ui.button(
                     label="Matrix",
-                    on_change=lambda _: log_action("Matrix diagnostics opened"),
+                    on_change=lambda _: handle_matrix(),  # Code editor + LLMs + Contacts
                 ),
                 mo.ui.button(
                     label="Calendar",
-                    on_change=lambda _: log_action("Calendar feature coming soon"),
-                    disabled=True,
+                    on_change=lambda _: log_action("Calendar - wire to calendar component"),
+                    disabled=True,  # Enable when Calendar component ready
                 ),
                 mo.ui.button(
                     label="Comms",
-                    on_change=lambda _: log_action("Comms feature coming soon"),
-                    disabled=True,
+                    on_change=lambda _: log_action("Comms - wire to communic8"),
+                    disabled=True,  # Enable when Comms component ready
                 ),
                 mo.ui.button(
                     label="Files",
-                    on_change=lambda _: log_action("Switch to Explorer tab"),
+                    on_change=lambda _: handle_files(),  # Opens native file explorer
                 ),
             ],
             gap="0.25rem",
