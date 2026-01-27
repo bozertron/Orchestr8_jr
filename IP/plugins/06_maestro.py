@@ -47,7 +47,14 @@ from IP.plugins.components.calendar_panel import CalendarPanel
 from IP.plugins.components.comms_panel import CommsPanel
 from IP.plugins.components.file_explorer_panel import FileExplorerPanel
 from IP.plugins.components.deploy_panel import DeployPanel
-import anthropic
+
+# Optional: anthropic SDK for chat functionality
+try:
+    import anthropic
+    HAS_ANTHROPIC = True
+except ImportError:
+    anthropic = None
+    HAS_ANTHROPIC = False
 
 # Import Woven Maps Code City visualization
 from IP.woven_maps import create_code_city, build_graph_data
@@ -348,7 +355,9 @@ def render(STATE_MANAGERS: dict) -> Any:
 
     # Local state - Selected model
     model_config = get_model_config()
-    default_model = model_config.get("model", available_models[0] if available_models else "claude")
+    config_model = model_config.get("model", "claude")
+    # Ensure default_model is actually in available_models
+    default_model = config_model if config_model in available_models else (available_models[0] if available_models else "claude")
     get_selected_model, set_selected_model = mo.state(default_model)
 
     # Initialize services
@@ -693,6 +702,19 @@ def render(STATE_MANAGERS: dict) -> Any:
         messages.append(user_msg)
 
         # LLM API Integration
+        if not HAS_ANTHROPIC:
+            # Anthropic not installed - graceful fallback
+            assistant_msg = {
+                "id": str(uuid.uuid4()),
+                "role": "assistant",
+                "content": "[INFO] Chat requires the anthropic SDK.\n\nInstall with: `pip install anthropic`\n\nCode City visualization still works!",
+                "timestamp": datetime.now().strftime("%H:%M:%S"),
+            }
+            messages.append(assistant_msg)
+            set_messages(messages)
+            set_user_input("")
+            return
+
         try:
             # Initialize Anthropic client
             client = anthropic.Anthropic()
@@ -752,36 +774,35 @@ def render(STATE_MANAGERS: dict) -> Any:
             }
             messages.append(assistant_msg)
 
-        except anthropic.AuthenticationError as e:
-            log_action(f"LLM Authentication Error: {str(e)}")
-            assistant_msg = {
-                "id": str(uuid.uuid4()),
-                "role": "assistant",
-                "content": f"[WARNING] Authentication Error: Invalid ANTHROPIC_API_KEY\n\nPlease check your API key in environment variables.",
-                "timestamp": datetime.now().strftime("%H:%M:%S"),
-            }
-            messages.append(assistant_msg)
-        except anthropic.APIError as e:
-            log_action(f"LLM API Error: {str(e)}")
-
-            # Fallback response
-            assistant_msg = {
-                "id": str(uuid.uuid4()),
-                "role": "assistant",
-                "content": f"[WARNING] LLM API Error: {str(e)}\n\nPlease check your ANTHROPIC_API_KEY environment variable and network connection.",
-                "timestamp": datetime.now().strftime("%H:%M:%S"),
-            }
-            messages.append(assistant_msg)
         except Exception as e:
-            log_action(f"Unexpected Error: {str(e)}")
-
-            assistant_msg = {
-                "id": str(uuid.uuid4()),
-                "role": "assistant",
-                "content": f"[WARNING] Unexpected Error: {str(e)}",
-                "timestamp": datetime.now().strftime("%H:%M:%S"),
-            }
-            messages.append(assistant_msg)
+            error_name = type(e).__name__
+            if "AuthenticationError" in error_name:
+                log_action(f"LLM Authentication Error: {str(e)}")
+                assistant_msg = {
+                    "id": str(uuid.uuid4()),
+                    "role": "assistant",
+                    "content": f"[WARNING] Authentication Error: Invalid ANTHROPIC_API_KEY\n\nPlease check your API key in environment variables.",
+                    "timestamp": datetime.now().strftime("%H:%M:%S"),
+                }
+                messages.append(assistant_msg)
+            elif "APIError" in error_name:
+                log_action(f"LLM API Error: {str(e)}")
+                assistant_msg = {
+                    "id": str(uuid.uuid4()),
+                    "role": "assistant",
+                    "content": f"[WARNING] LLM API Error: {str(e)}\n\nPlease check your ANTHROPIC_API_KEY environment variable and network connection.",
+                    "timestamp": datetime.now().strftime("%H:%M:%S"),
+                }
+                messages.append(assistant_msg)
+            else:
+                log_action(f"Unexpected Error: {str(e)}")
+                assistant_msg = {
+                    "id": str(uuid.uuid4()),
+                    "role": "assistant",
+                    "content": f"[WARNING] Unexpected Error: {str(e)}",
+                    "timestamp": datetime.now().strftime("%H:%M:%S"),
+                }
+                messages.append(assistant_msg)
 
         set_messages(messages)
         set_user_input("")
