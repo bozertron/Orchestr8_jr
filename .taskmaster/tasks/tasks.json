@@ -481,11 +481,176 @@
         ],
         "status": "pending",
         "subtasks": []
+      },
+      {
+        "id": 33,
+        "title": "Wire LLM API Integration in Maestro",
+        "description": "Replace placeholder handle_send() with actual Claude API call using anthropic package",
+        "details": "In IP/plugins/06_maestro.py line 355, replace the TODO placeholder. Import anthropic, create client using ANTHROPIC_API_KEY env var. Use BriefingGenerator to create context. Call client.messages.create() with claude-sonnet-4-20250514. Track deployment in CombatTracker when working on selected file. Handle errors gracefully with log_action().",
+        "testStrategy": "Type message in maestro chat, verify real Claude response appears (not placeholder). Check CombatTracker.get_combat_files() includes selected file after send.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add anthropic import and client initialization",
+            "description": "Import anthropic package and create client in handle_send()",
+            "dependencies": [],
+            "details": "Add 'import anthropic' at top of file. In handle_send(), create client = anthropic.Anthropic() which reads ANTHROPIC_API_KEY from env.",
+            "status": "pending",
+            "testStrategy": "Verify no import errors when loading plugin."
+          },
+          {
+            "id": 2,
+            "title": "Generate context using BriefingGenerator",
+            "description": "Use existing BriefingGenerator to create system prompt context",
+            "dependencies": [1],
+            "details": "briefing = BriefingGenerator(root); context = briefing.generate_context(selected or root). Pass as system parameter to Claude.",
+            "status": "pending",
+            "testStrategy": "Verify context includes file inventory and relevant project info."
+          },
+          {
+            "id": 3,
+            "title": "Implement Claude API call",
+            "description": "Replace placeholder response with actual client.messages.create() call",
+            "dependencies": [1, 2],
+            "details": "response = client.messages.create(model='claude-sonnet-4-20250514', max_tokens=8192, system=context, messages=[...]). Extract response.content[0].text.",
+            "status": "pending",
+            "testStrategy": "Send message, verify non-placeholder response. Check response format matches expected assistant message structure."
+          },
+          {
+            "id": 4,
+            "title": "Wire CombatTracker for deployment tracking",
+            "description": "Track file as 'in combat' when LLM is actively working on it",
+            "dependencies": [3],
+            "details": "from IP.combat_tracker import CombatTracker; tracker = CombatTracker(root); tracker.deploy(selected, 'maestro-chat', 'claude-sonnet-4'). Only deploy if selected file exists.",
+            "status": "pending",
+            "testStrategy": "After sending message with file selected, verify tracker.is_in_combat(selected) returns True."
+          },
+          {
+            "id": 5,
+            "title": "Add error handling and logging",
+            "description": "Wrap API call in try/except, log errors via log_action()",
+            "dependencies": [3],
+            "details": "Catch anthropic.APIError, anthropic.AuthenticationError. On error, set assistant_content to error message. Always call log_action() with result status.",
+            "status": "pending",
+            "testStrategy": "Test with invalid API key, verify graceful error message appears in chat instead of crash."
+          }
+        ]
+      },
+      {
+        "id": 34,
+        "title": "Wire Terminal Spawner to Phreak Button",
+        "description": "Connect Phreak> button to TerminalSpawner to actually spawn actu8 terminal",
+        "details": "In IP/plugins/06_maestro.py, modify the Phreak> button handler (line 677-679). When opening terminal (!current), call spawner = TerminalSpawner(root); terminal_id = spawner.spawn_terminal(working_dir=root, title=f'actu8 - {selected or maestro}'). Track in CombatTracker. On close, call tracker.withdraw().",
+        "testStrategy": "Click Phreak> button, verify terminal window spawns. Verify file shows purple in Code City if selected.",
+        "priority": "high",
+        "dependencies": [33],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create handle_terminal function",
+            "description": "Extract terminal toggle logic into dedicated handler function",
+            "dependencies": [],
+            "details": "Create def handle_terminal() that gets current state, calls TerminalSpawner on open, logs action.",
+            "status": "pending",
+            "testStrategy": "Button click triggers handle_terminal function."
+          },
+          {
+            "id": 2,
+            "title": "Call TerminalSpawner.spawn_terminal",
+            "description": "When opening terminal, instantiate spawner and call spawn method",
+            "dependencies": [1],
+            "details": "spawner = TerminalSpawner(root); terminal_id = spawner.spawn_terminal(working_dir=root, title=f'actu8 - {selected}')",
+            "status": "pending",
+            "testStrategy": "Terminal window appears with correct title and working directory."
+          },
+          {
+            "id": 3,
+            "title": "Track terminal in CombatTracker",
+            "description": "Deploy to CombatTracker when terminal spawns, withdraw on close",
+            "dependencies": [2],
+            "details": "tracker.deploy(selected, terminal_id, 'terminal') on open. tracker.withdraw(selected) on close.",
+            "status": "pending",
+            "testStrategy": "Combat status shows during terminal session, clears after close."
+          }
+        ]
+      },
+      {
+        "id": 35,
+        "title": "Wire Combat Status to Woven Maps Purple Glow",
+        "description": "Query CombatTracker in woven_maps.py and set status='combat' for active files",
+        "details": "In IP/woven_maps.py build_graph_data() function, after creating nodes: from IP.combat_tracker import CombatTracker; tracker = CombatTracker(root); combat_files = tracker.get_combat_files(). For each node, if node.path in combat_files: node.status = 'combat'. Purple color already defined in JS template.",
+        "testStrategy": "Deploy terminal to file, open Code City visualization, verify file shows purple glow instead of gold/blue.",
+        "priority": "high",
+        "dependencies": [34],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Import CombatTracker in woven_maps.py",
+            "description": "Add import for CombatTracker at top of woven_maps.py",
+            "dependencies": [],
+            "details": "from IP.combat_tracker import CombatTracker wrapped in try/except ImportError",
+            "status": "pending",
+            "testStrategy": "No import errors when loading woven_maps module."
+          },
+          {
+            "id": 2,
+            "title": "Query combat files in build_graph_data",
+            "description": "After node creation, get list of combat files from tracker",
+            "dependencies": [1],
+            "details": "tracker = CombatTracker(root); combat_files = set(tracker.get_combat_files())",
+            "status": "pending",
+            "testStrategy": "combat_files set populated correctly with active deployments."
+          },
+          {
+            "id": 3,
+            "title": "Set node.status to combat for active files",
+            "description": "Loop through nodes and set status='combat' if in combat_files",
+            "dependencies": [2],
+            "details": "for node in nodes: if node.path in combat_files: node.status = 'combat'",
+            "status": "pending",
+            "testStrategy": "Node with active deployment has status='combat', renders purple in visualization."
+          }
+        ]
+      },
+      {
+        "id": 36,
+        "title": "Wire Settings Panel to LLM Configuration",
+        "description": "Read model/API settings from orchestr8_settings.toml in LLM integration",
+        "details": "In IP/plugins/06_maestro.py, add get_model_config() function that reads orchestr8_settings.toml. Use settings for model name and max_tokens in API call. Fallback to hardcoded defaults if settings unavailable.",
+        "testStrategy": "Change model in Settings panel, verify next API call uses new model. Test fallback with missing settings file.",
+        "priority": "medium",
+        "dependencies": [33],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create get_model_config function",
+            "description": "Add function to read model settings from TOML file",
+            "dependencies": [],
+            "details": "def get_model_config() -> dict: loads orchestr8_settings.toml, returns agents.director settings or defaults",
+            "status": "pending",
+            "testStrategy": "Function returns dict with model, max_tokens keys."
+          },
+          {
+            "id": 2,
+            "title": "Use config in API call",
+            "description": "Replace hardcoded model name with config values",
+            "dependencies": [1],
+            "details": "config = get_model_config(); model=config.get('model', 'claude-sonnet-4-20250514')",
+            "status": "pending",
+            "testStrategy": "API call uses model from settings file."
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2026-01-26T05:47:32.622Z",
-      "updated": "2026-01-26T14:48:02.265Z",
+      "updated": "2026-01-25T23:30:00.000Z",
       "description": "Tasks for master context"
     }
   }
