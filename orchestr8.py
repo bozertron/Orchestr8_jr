@@ -317,11 +317,11 @@ def explorer_selection_cell(mo, explorer_table, set_selected_file, get_selected_
     """Handle explorer table selection and update state"""
     selected_path = None
 
-    if explorer_table is not None and explorer_table.value:
-        # table.value returns list of selected row dicts
+    if explorer_table is not None and hasattr(explorer_table, 'value') and explorer_table.value is not None:
+        # table.value returns DataFrame of selected rows
         selected_rows = explorer_table.value
-        if len(selected_rows) > 0:
-            selected_path = selected_rows[0].get("path")
+        if not selected_rows.empty and len(selected_rows) > 0:
+            selected_path = selected_rows.iloc[0].get("path")
             set_selected_file(selected_path)
 
     # Display current selection
