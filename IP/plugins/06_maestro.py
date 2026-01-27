@@ -308,6 +308,23 @@ def render(STATE_MANAGERS: dict) -> Any:
     get_selected, set_selected = STATE_MANAGERS["selected"]
     get_logs, set_logs = STATE_MANAGERS["logs"]
 
+    # Get available models from settings
+    def get_available_models() -> list:
+        """Load available models from orchestr8_settings.toml."""
+        try:
+            import toml
+            settings_file = Path("orchestr8_settings.toml")
+            if settings_file.exists():
+                settings = toml.load(settings_file)
+                models = settings.get("tools", {}).get("communic8", {}).get("multi_llm", {}).get("default_models", [])
+                if models:
+                    return models
+        except Exception:
+            pass
+        return ["claude", "gpt-4", "gemini", "local"]
+
+    available_models = get_available_models()
+
     # Local state - Panel visibility
     get_show_agents, set_show_agents = mo.state(False)
     get_show_tasks, set_show_tasks = mo.state(False)
@@ -323,6 +340,11 @@ def render(STATE_MANAGERS: dict) -> Any:
 
     # Local state - View mode (city vs chat)
     get_view_mode, set_view_mode = mo.state("city")  # "city" | "chat"
+
+    # Local state - Selected model
+    model_config = get_model_config()
+    default_model = model_config.get("model", available_models[0] if available_models else "claude")
+    get_selected_model, set_selected_model = mo.state(default_model)
 
     # Initialize services
     project_root_path = get_root()
@@ -449,10 +471,11 @@ def render(STATE_MANAGERS: dict) -> Any:
             if context_parts:
                 system_prompt += f"\n\nContext:\n" + "\n".join(context_parts)
 
-            # Call Claude API with settings from TOML
+            # Call Claude API with selected model from dropdown
+            selected_model = get_selected_model()
             model_config = get_model_config()
             response = client.messages.create(
-                model=model_config["model"],
+                model=selected_model,
                 max_tokens=model_config["max_tokens"],
                 system=system_prompt,
                 messages=[{"role": "user", "content": text}],
@@ -470,7 +493,7 @@ def render(STATE_MANAGERS: dict) -> Any:
                 combat_tracker.deploy(
                     file_path=selected_file,
                     terminal_id="maestro-chat",
-                    model=model_config["model"],
+                    model=selected_model,
                 )
 
             # Create assistant message
@@ -549,6 +572,14 @@ def render(STATE_MANAGERS: dict) -> Any:
         </div>
         """)
 
+        # Model picker dropdown
+        model_picker = mo.ui.dropdown(
+            options=available_models,
+            value=get_selected_model(),
+            label="General",
+            on_change=set_selected_model,
+        )
+
         # Navigation buttons
         nav_buttons = mo.hstack(
             [
@@ -566,6 +597,7 @@ def render(STATE_MANAGERS: dict) -> Any:
             [
                 mo.ui.button(label="Home", on_change=lambda _: handle_home_click()),
                 brand,
+                model_picker,
                 nav_buttons,
             ],
             justify="space-between",
