@@ -144,7 +144,18 @@ def verifier_function(os, pd, re):
                         "resolved": False,
                         "line": imp.line_number
                     })
-                
+
+                # Add resolved local imports (THE ACTUAL CONNECTIONS!)
+                for imp in result.local_imports:
+                    edges.append({
+                        "source": row["path"],
+                        "target": imp.resolved_path,
+                        "type": "import",
+                        "resolved": True,
+                        "line": imp.line_number
+                    })
+
+                # External imports with resolved paths (rare, usually None)
                 for imp in result.external_imports:
                     if imp.resolved_path:
                         edges.append({
