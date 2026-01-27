@@ -302,6 +302,7 @@ def render(STATE_MANAGERS: dict) -> Any:
     project_root_path = get_root()
     combat_tracker = CombatTracker(project_root_path)
     briefing_generator = BriefingGenerator(project_root_path)
+    terminal_spawner = TerminalSpawner(project_root_path)
 
     # ========================================================================
     # EVENT HANDLERS (Transliterated from MaestroView.vue)
@@ -394,7 +395,11 @@ def render(STATE_MANAGERS: dict) -> Any:
             )
 
             # Extract response content
-            response_content = response.content[0].text
+            response_content = (
+                response.content[0].text
+                if hasattr(response.content[0], "text")
+                else str(response.content[0])
+            )
 
             # Track deployment in CombatTracker if working on selected file
             if selected_file:
