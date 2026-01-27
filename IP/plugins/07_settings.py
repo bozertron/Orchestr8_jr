@@ -301,13 +301,25 @@ def render(STATE_MANAGERS: Dict) -> Any:
     # Initialize settings manager
     settings_mgr = SettingsManager()
 
+    # Get available models from settings
+    def get_available_models() -> list:
+        """Get available models from settings."""
+        multi_llm = settings_mgr.get_section("tools").get("communic8", {}).get("multi_llm", {})
+        models = multi_llm.get("default_models", [])
+        if models:
+            return models
+        # Fallback - these should be configured in settings
+        return ["claude", "gpt-4", "gemini", "local"]
+
+    available_models = get_available_models()
+
     # Local state for UI
     get_active_tab, set_active_tab = mo.state("agents")
     get_modified, set_modified = mo.state(False)
 
     def update_setting(path: str, value: Any) -> None:
         """Update a setting value and mark as modified."""
-        update_setting(path, value)
+        settings_mgr.set_value(path, value)
         set_modified(True)
 
     # Tab definitions
@@ -400,11 +412,12 @@ def render(STATE_MANAGERS: Dict) -> Any:
                                 "agents.doctor.enabled", v
                             ),
                         ),
-                        mo.ui.text(
-                            label="Model",
+                        mo.ui.dropdown(
+                            options=available_models,
                             value=agents_config.get("doctor", {}).get(
-                                "model", "claude-opus"
+                                "model", available_models[0] if available_models else "claude"
                             ),
+                            label="Model",
                             on_change=lambda v: update_setting(
                                 "agents.doctor.model", v
                             ),

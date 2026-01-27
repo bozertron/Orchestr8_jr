@@ -506,6 +506,24 @@ This file is imported by:
     return (prd_content,)
 
 
+def get_available_models():
+    """Load available models from orchestr8_settings.toml."""
+    try:
+        import toml
+        from pathlib import Path
+        settings_file = Path("orchestr8_settings.toml")
+        if settings_file.exists():
+            settings = toml.load(settings_file)
+            # Get from communic8.multi_llm.default_models
+            models = settings.get("tools", {}).get("communic8", {}).get("multi_llm", {}).get("default_models", [])
+            if models:
+                return models
+    except Exception:
+        pass
+    # Fallback - user should configure in settings
+    return ["claude", "gpt-4", "gemini", "local"]
+
+
 @app.cell
 def emperor_view_cell(
     mo,
@@ -527,6 +545,10 @@ def emperor_view_cell(
     # Initialize combat tracker
     combat_tracker = CombatTracker(root)
 
+    # Get available models from settings
+    available_models = get_available_models()
+    get_selected_model, set_selected_model = mo.state(available_models[0] if available_models else "claude")
+
     # Force reactivity on combat_version changes
     _ = get_combat_version()
 
@@ -536,13 +558,22 @@ def emperor_view_cell(
         full_width=True,
     )
 
+    # Model selector dropdown - populated from settings
+    model_selector = mo.ui.dropdown(
+        options=available_models,
+        value=get_selected_model(),
+        label="Deploy Model",
+        on_change=set_selected_model,
+    )
+
     def deploy_agent():
         if not selected:
             return
 
         # Deploy via CombatTracker - file goes PURPLE
         terminal_id = f"emperor-{datetime.datetime.now().strftime('%H%M%S')}"
-        combat_tracker.deploy(selected, terminal_id, model="claude")
+        selected_model = get_selected_model()
+        combat_tracker.deploy(selected, terminal_id, model=selected_model)
 
         # Update files_df to show COMBAT status
         df = get_files_df()
@@ -628,7 +659,7 @@ def emperor_view_cell(
             mo.md(f"### Target: `{selected or 'None selected'}`"),
             mo.md(status_text),
             mission_input,
-            mo.hstack([deploy_btn, withdraw_btn], justify="start", gap=1),
+            mo.hstack([model_selector, deploy_btn, withdraw_btn], justify="start", gap="1rem"),
             mo.md("---"),
             mo.md("### Active Combat Zones"),
             combat_display,
@@ -637,7 +668,7 @@ def emperor_view_cell(
             log_display,
         ]
     )
-    return deploy_btn, emperor_content, mission_input, withdraw_btn
+    return deploy_btn, emperor_content, mission_input, model_selector, withdraw_btn
 
 
 @app.cell
