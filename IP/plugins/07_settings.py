@@ -305,6 +305,11 @@ def render(STATE_MANAGERS: Dict) -> Any:
     get_active_tab, set_active_tab = mo.state("agents")
     get_modified, set_modified = mo.state(False)
 
+    def update_setting(path: str, value: Any) -> None:
+        """Update a setting value and mark as modified."""
+        update_setting(path, value)
+        set_modified(True)
+
     # Tab definitions
     tabs = {
         "agents": ("Agents", "Configure AI agents (Director, Professor, Doctor)"),
@@ -343,7 +348,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=agents_config.get("director", {}).get(
                                 "enabled", False
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "agents.director.enabled", v
                             ),
                         ),
@@ -354,7 +359,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                                     "check_interval_seconds", 30
                                 )
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "agents.director.check_interval_seconds", int(v)
                             ),
                         ),
@@ -368,7 +373,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=agents_config.get("professor", {}).get(
                                 "enabled", False
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "agents.professor.enabled", v
                             ),
                         ),
@@ -379,7 +384,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                                     "analysis_interval_hours", 24
                                 )
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "agents.professor.analysis_interval_hours", int(v)
                             ),
                         ),
@@ -391,7 +396,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                         mo.ui.checkbox(
                             label="Enable Doctor",
                             value=agents_config.get("doctor", {}).get("enabled", False),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "agents.doctor.enabled", v
                             ),
                         ),
@@ -400,7 +405,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=agents_config.get("doctor", {}).get(
                                 "model", "claude-opus"
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "agents.doctor.model", v
                             ),
                         ),
@@ -423,14 +428,14 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=tools_config.get("actu8", {}).get(
                                 "default_mode", "choice"
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "tools.actu8.default_mode", v
                             ),
                         ),
                         mo.ui.checkbox(
                             label="Auto Save",
                             value=tools_config.get("actu8", {}).get("auto_save", True),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "tools.actu8.auto_save", v
                             ),
                         ),
@@ -442,7 +447,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                         mo.ui.checkbox(
                             label="Enable Senses",
                             value=tools_config.get("senses", {}).get("enabled", False),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "tools.senses.enabled", v
                             ),
                         ),
@@ -451,7 +456,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=tools_config.get("senses", {}).get(
                                 "privacy_indicator", True
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "tools.senses.privacy_indicator", v
                             ),
                         ),
@@ -465,7 +470,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=tools_config.get("cre8", {}).get(
                                 "image_editor", "gimp"
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "tools.cre8.image_editor", v
                             ),
                         ),
@@ -474,7 +479,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=tools_config.get("cre8", {}).get(
                                 "audio_editor", "audacity"
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "tools.cre8.audio_editor", v
                             ),
                         ),
@@ -495,7 +500,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                         mo.ui.text(
                             label="Theme",
                             value=ui_config.get("general", {}).get("theme", "maestro"),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "ui.general.theme", v
                             ),
                         ),
@@ -504,7 +509,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=str(
                                 ui_config.get("general", {}).get("font_size", 12)
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "ui.general.font_size", int(v)
                             ),
                         ),
@@ -518,7 +523,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=ui_config.get("maestro", {}).get(
                                 "show_agent_status", True
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "ui.maestro.show_agent_status", v
                             ),
                         ),
@@ -527,7 +532,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             value=ui_config.get("maestro", {}).get(
                                 "show_system_health", True
                             ),
-                            on_change=lambda v: settings_mgr.set_value(
+                            on_change=lambda v: update_setting(
                                 "ui.maestro.show_system_health", v
                             ),
                         ),
