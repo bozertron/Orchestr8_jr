@@ -357,6 +357,10 @@ def render(STATE_MANAGERS: dict) -> Any:
     # Local state - Ticket panel visibility
     get_show_tickets, set_show_tickets = mo.state(False)
 
+    # Local state - Audio recording
+    get_is_recording, set_is_recording = mo.state(False)
+    get_audio_data, set_audio_data = mo.state(None)  # Stores recorded audio as bytes/numpy
+
     # ========================================================================
     # EVENT HANDLERS (Transliterated from MaestroView.vue)
     # ========================================================================
@@ -438,6 +442,31 @@ def render(STATE_MANAGERS: dict) -> Any:
         set_show_terminal(False)
         set_show_summon(False)
         log_action("Reset to home state")
+
+    def toggle_recording() -> None:
+        """Toggle audio recording state."""
+        current = get_is_recording()
+        set_is_recording(not current)
+        if not current:
+            log_action("Recording started - speak into microphone")
+            # In browser mode, would use JavaScript MediaRecorder API
+            # For now, just toggle state
+        else:
+            log_action("Recording stopped")
+            # Would capture audio data here
+
+    def handle_playback() -> None:
+        """Play back recorded audio."""
+        audio = get_audio_data()
+        if audio is not None:
+            log_action("Playing audio...")
+            # Would use mo.audio(audio) to play
+        else:
+            log_action("No audio recording available")
+
+    def has_audio_recording() -> bool:
+        """Check if there's audio data to play back."""
+        return get_audio_data() is not None
 
     def handle_send() -> None:
         """Send message to the void."""
@@ -886,18 +915,18 @@ def render(STATE_MANAGERS: dict) -> Any:
         # Center - maestro (summon)
         center_btn = mo.ui.button(label="maestro", on_change=lambda _: handle_summon())
 
-        # Right group - Search | Record | Playback | Phreak> | Send | Attach
+        # Right group - Search | Record | Playback | Phreak> | Send | Attach | Settings
         right_buttons = mo.hstack(
             [
                 mo.ui.button(label="Search", on_change=lambda _: handle_summon()),
                 mo.ui.button(
                     label="Record",
-                    on_change=lambda _: log_action("Recording toggled"),
+                    on_change=lambda _: toggle_recording(),
                 ),
                 mo.ui.button(
                     label="Playback",
-                    on_change=lambda _: log_action("Playback feature coming soon"),
-                    disabled=True,
+                    on_change=lambda _: handle_playback(),
+                    disabled=not has_audio_recording(),
                 ),
                 mo.ui.button(
                     label="Phreak>",  # Opens terminal
@@ -905,6 +934,10 @@ def render(STATE_MANAGERS: dict) -> Any:
                 ),
                 mo.ui.button(label="Send", on_change=lambda _: handle_send()),
                 mo.ui.button(label="Attach", on_change=lambda _: handle_attach()),
+                mo.ui.button(
+                    label="~~~",  # Wave icon for Settings
+                    on_change=lambda _: log_action("Open Settings tab"),
+                ),
             ],
             gap="0.25rem",
         )
