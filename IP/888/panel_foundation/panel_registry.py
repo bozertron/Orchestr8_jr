@@ -10,7 +10,7 @@ import threading
 import time
 import logging
 
-from .base_panel import BasePanel, PanelSession, PanelStatus
+from .base_panel import BasePanel, PanelSession, PanelStatus, PanelCapabilities
 
 # Setup logging
 logger = logging.getLogger(__name__)
@@ -314,6 +314,46 @@ class PanelRegistry:
                     handler(data, source_panel)
                 except Exception as e:
                     logger.error(f"Inter-panel handler failed for {event_type}: {e}")
+
+    # --- Restored from 888 version: Default capabilities per panel type ---
+    def _get_default_capabilities(self, panel_name: str) -> PanelCapabilities:
+        """Get default capabilities for a panel type."""
+        defaults = {
+            'orchestr8': PanelCapabilities(
+                supports_sessions=True,
+                supports_real_time=True,
+                supports_collaboration=False
+            ),
+            'integr8': PanelCapabilities(
+                supports_files=True,
+                supports_sessions=True,
+                supports_real_time=False,
+                supports_collaboration=True
+            ),
+            'communic8': PanelCapabilities(
+                supports_sessions=True,
+                supports_real_time=True,
+                supports_collaboration=True
+            ),
+            'actu8': PanelCapabilities(
+                supports_files=True,
+                supports_sessions=True,
+                supports_real_time=False
+            ),
+            'cre8': PanelCapabilities(
+                supports_files=True,
+                supports_sessions=True,
+                supports_real_time=True,
+                supports_plugins=True
+            ),
+            'innov8': PanelCapabilities(
+                supports_sessions=True,
+                supports_real_time=True,
+                supports_plugins=True,
+                custom_capabilities={'experimental': True}
+            )
+        }
+        return defaults.get(panel_name, PanelCapabilities())
 
 
 # Global registry instance

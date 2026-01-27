@@ -93,9 +93,7 @@ def render(STATE_MANAGERS):
         try:
             # Try to use ConversionEngine from connie.py
             try:
-                import sys
-                sys.path.insert(0, str(Path(__file__).parent.parent))
-                from connie import ConversionEngine
+                from IP.connie import ConversionEngine
                 
                 with ConversionEngine(str(full_path)) as engine:
                     tables_df = engine.list_tables()

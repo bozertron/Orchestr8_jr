@@ -6,7 +6,11 @@ app = marimo.App(width="full")
 
 @app.cell
 def imports():
-    """Core imports for Orchestr8"""
+    """Core imports for Orchestr8 - THE LIGHT SWITCH
+    
+    When this cell runs, the entire building turns on.
+    All IP modules are imported here, activating the full library chain.
+    """
     import marimo as mo
     import pandas as pd
     import networkx as nx
@@ -17,13 +21,83 @@ def imports():
     import datetime
     from jinja2 import Template
 
-    # Code City visualization
-    from IP.woven_maps import create_code_city
+    # =========================================================================
+    # THE BUILDING - All IP modules activated on startup
+    # =========================================================================
+    
+    # Code City visualization - The Skyscape
+    from IP.woven_maps import create_code_city, build_graph_data
 
     # Combat tracking for LLM deployments
     from IP.combat_tracker import CombatTracker
+    
+    # Connection verification - import graph analysis
+    from IP.connection_verifier import ConnectionVerifier
+    
+    # Health monitoring
+    from IP.health_checker import HealthChecker
+    
+    # Mermaid diagram generation
+    from IP.mermaid_generator import Fiefdom, FiefdomStatus, generate_empire_mermaid
+    
+    # Terminal spawning for agent deployment
+    from IP.terminal_spawner import TerminalSpawner
+    
+    # Briefing generation for context
+    from IP.briefing_generator import BriefingGenerator
+    
+    # Ticket management
+    from IP.ticket_manager import TicketManager
+    
+    # Carl - TypeScript context bridge
+    from IP.carl_core import CarlContextualizer
+    
+    # Louis - The Warden (validation)
+    from IP.louis_core import LouisWarden, LouisConfig
+    
+    # Connie - Database conversion engine
+    from IP.connie import ConversionEngine
+    
+    # Log successful activation
+    print("⚡ THE BUILDING IS ON - All IP modules activated")
+    print(f"   ├── woven_maps (Code City)")
+    print(f"   ├── combat_tracker (Deployments)")
+    print(f"   ├── connection_verifier (Import Graph)")
+    print(f"   ├── health_checker (System Health)")
+    print(f"   ├── mermaid_generator (Diagrams)")
+    print(f"   ├── terminal_spawner (Terminals)")
+    print(f"   ├── briefing_generator (Context)")
+    print(f"   ├── ticket_manager (Tickets)")
+    print(f"   ├── carl_core (TypeScript Bridge)")
+    print(f"   ├── louis_core (Validation)")
+    print(f"   └── connie (DB Conversion)")
 
-    return CombatTracker, Network, Template, create_code_city, datetime, json, mo, nx, os, pd, re
+    return (
+        BriefingGenerator,
+        CarlContextualizer,
+        CombatTracker,
+        ConnectionVerifier,
+        ConversionEngine,
+        Fiefdom,
+        FiefdomStatus,
+        HealthChecker,
+        LouisConfig,
+        LouisWarden,
+        Network,
+        Template,
+        TerminalSpawner,
+        TicketManager,
+        build_graph_data,
+        create_code_city,
+        datetime,
+        generate_empire_mermaid,
+        json,
+        mo,
+        nx,
+        os,
+        pd,
+        re,
+    )
 
 
 @app.cell
@@ -102,14 +176,10 @@ def scanner_function(os, pd):
 
 
 @app.cell
-def verifier_function(os, pd, re):
-    """Connection Verifier - Now uses IP/connection_verifier.py for real import resolution"""
-    # Import the real connection verifier
-    try:
-        from IP.connection_verifier import ConnectionVerifier
-        HAS_VERIFIER = True
-    except ImportError:
-        HAS_VERIFIER = False
+def verifier_function(os, pd, re, ConnectionVerifier):
+    """Connection Verifier - Uses IP/connection_verifier.py for real import resolution"""
+    # ConnectionVerifier is now passed from imports() - always available
+    HAS_VERIFIER = True
     
     # Fallback regex patterns if connection_verifier not available
     IMPORT_PATTERNS = [
@@ -688,19 +758,258 @@ def main_layout(
     prd_content,
     emperor_content,
 ):
-    """Main Application Layout with Tabs"""
+    """Main Application Layout - MAESTRO STYLE
+    
+    Implements MaestroView.vue spatial UI pattern:
+    - Top row navigation with brand
+    - Central void for content emergence
+    - Bottom control surface
+    
+    Colors (EXACT - NO EXCEPTIONS):
+    --blue-dominant: #1fbdea (UI default, Broken state)
+    --gold-metallic: #D4AF37 (UI highlight, Working state)
+    --gold-dark: #B8860B (Maestro default)
+    --gold-saffron: #F4C430 (Maestro highlight)
+    --bg-primary: #0A0A0B (The Void)
+    --bg-elevated: #121214 (Surface)
+    --purple-combat: #9D4EDD (Combat state - General deployed)
+    """
+    
+    # Color constants
+    BLUE_DOMINANT = "#1fbdea"
+    GOLD_METALLIC = "#D4AF37"
+    GOLD_DARK = "#B8860B"
+    GOLD_SAFFRON = "#F4C430"
+    BG_PRIMARY = "#0A0A0B"
+    BG_ELEVATED = "#121214"
+    PURPLE_COMBAT = "#9D4EDD"
+    
+    # Maestro CSS - The styling that makes it look like MaestroView.vue
+    MAESTRO_CSS = f"""
+    <style>
+    /* =========================================================
+       EMERGENCE ANIMATIONS - Things EMERGE, they don't breathe
+       ========================================================= */
+    
+    @keyframes emergence {{
+        0% {{
+            opacity: 0;
+            transform: translateY(12px);
+        }}
+        100% {{
+            opacity: 1;
+            transform: translateY(0);
+        }}
+    }}
+    
+    @keyframes emergence-fade {{
+        0% {{ opacity: 0; }}
+        100% {{ opacity: 1; }}
+    }}
+    
+    @keyframes emergence-scale {{
+        0% {{
+            opacity: 0;
+            transform: scale(0.95);
+        }}
+        100% {{
+            opacity: 1;
+            transform: scale(1);
+        }}
+    }}
+    
+    /* Apply emergence to key elements with staggered delays */
+    .maestro-container {{
+        min-height: 70vh;
+        display: flex;
+        flex-direction: column;
+        animation: emergence-fade 0.3s ease-out forwards;
+        background: {BG_PRIMARY};
+        padding: 16px;
+        border-radius: 8px;
+    }}
+    
+    .maestro-top-row {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(31, 189, 234, 0.2);
+        animation: emergence 0.4s ease-out 0.1s both;
+    }}
+    
+    .stereos-brand {{
+        font-family: monospace;
+        font-size: 18px;
+        letter-spacing: 0.08em;
+    }}
+    
+    .stereos-prefix {{
+        color: {BLUE_DOMINANT};
+    }}
+    
+    .stereos-suffix {{
+        color: {GOLD_METALLIC};
+    }}
+    
+    .void-center {{
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        min-height: 400px;
+        animation: emergence-scale 0.5s ease-out 0.2s both;
+    }}
+    
+    .control-surface {{
+        border-top: 1px solid rgba(31, 189, 234, 0.2);
+        padding: 12px 0;
+        animation: emergence 0.4s ease-out 0.3s both;
+    }}
+    
+    .maestro-btn {{
+        padding: 8px 16px;
+        background: transparent;
+        border: 1px solid rgba(31, 189, 234, 0.3);
+        border-radius: 4px;
+        color: {BLUE_DOMINANT};
+        font-family: monospace;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        cursor: pointer;
+        transition: all 150ms ease-out;
+    }}
+    
+    .maestro-btn:hover {{
+        color: {GOLD_METALLIC};
+        border-color: {GOLD_METALLIC};
+        background: rgba(212, 175, 55, 0.1);
+    }}
+    
+    .maestro-btn.active {{
+        color: {GOLD_METALLIC};
+        border-color: {GOLD_METALLIC};
+    }}
+    
+    .maestro-center-btn {{
+        padding: 12px 40px;
+        background: none;
+        border: 1px solid rgba(184, 134, 11, 0.3);
+        border-radius: 4px;
+        color: {GOLD_DARK};
+        font-family: monospace;
+        font-size: 14px;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+    }}
+    
+    .maestro-center-btn:hover {{
+        color: {GOLD_SAFFRON};
+        border-color: rgba(244, 196, 48, 0.4);
+        background: rgba(184, 134, 11, 0.1);
+    }}
+    
+    .panel-overlay {{
+        background: rgba(18, 18, 20, 0.95);
+        border: 1px solid rgba(31, 189, 234, 0.3);
+        border-radius: 8px;
+        padding: 16px;
+        margin: 8px 0;
+        animation: emergence-scale 0.35s ease-out both;
+    }}
+    
+    .panel-header {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(31, 189, 234, 0.2);
+    }}
+    
+    .panel-title {{
+        color: {GOLD_METALLIC};
+        font-family: monospace;
+        font-size: 12px;
+        letter-spacing: 0.1em;
+    }}
+    
+    .maestro-tabs {{
+        display: flex;
+        gap: 8px;
+        margin: 12px 0;
+    }}
+    
+    .void-title {{
+        color: {GOLD_METALLIC};
+        font-family: monospace;
+        font-size: 24px;
+        letter-spacing: 0.15em;
+        margin-bottom: 4px;
+    }}
+    
+    .void-subtitle {{
+        color: rgba(255, 255, 255, 0.4);
+        font-style: italic;
+        font-size: 12px;
+        margin-bottom: 16px;
+    }}
+    </style>
+    """
+    
+    # Inject CSS
+    css_injection = mo.Html(MAESTRO_CSS)
+    
+    # Brand header
+    brand = mo.Html(f"""
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <div class="stereos-brand">
+            <span class="stereos-prefix">Orchestr</span><span class="stereos-suffix">8</span>
+        </div>
+        <div style="color: {GOLD_DARK}; font-family: monospace; font-size: 11px;">
+            THE VOID
+        </div>
+    </div>
+    """)
+    
+    # Title
+    void_header = mo.Html(f"""
+    <div style="text-align: center; padding: 8px 0;">
+        <div class="void-title">The Command Center</div>
+        <div class="void-subtitle">maestro overlooks the abyss</div>
+    </div>
+    """)
+    
+    # Build tabs with Maestro styling
     tabs = mo.ui.tabs(
         {
+            "Code City": code_city_content,
             "Explorer": combined,
             "Connections": graph_content,
-            "Code City": code_city_content,
             "PRD Generator": prd_content,
             "Emperor": emperor_content,
         }
     )
 
-    # Final layout
-    mo.vstack([app_title, control_row, tabs])
+    # Final Maestro-style layout
+    layout = mo.Html(f"""
+    <div class="maestro-container">
+    </div>
+    """)
+    
+    # Assemble with emergence pattern
+    mo.vstack([
+        css_injection,
+        brand,
+        mo.Html(f'<div style="border-bottom: 1px solid rgba(31, 189, 234, 0.2); margin: 8px 0;"></div>'),
+        void_header,
+        control_row,
+        mo.Html(f'<div style="border-bottom: 1px solid rgba(31, 189, 234, 0.2); margin: 8px 0;"></div>'),
+        tabs,
+    ])
+    
     return (tabs,)
 
 

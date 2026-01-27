@@ -1,5 +1,5 @@
 """
-01_generator Plugin - 7-Phase Project Wizard
+02_generator Plugin - 7-Phase Project Wizard
 Orchestr8 v3.0 - The Fortress Factory
 
 A comprehensive project generation wizard that guides users through
@@ -20,7 +20,7 @@ from pathlib import Path
 from datetime import datetime
 
 PLUGIN_NAME = "Generator"
-PLUGIN_ORDER = 1
+PLUGIN_ORDER = 2
 
 # Phase definitions
 PHASES = [

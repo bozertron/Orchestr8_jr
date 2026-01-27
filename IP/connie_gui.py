@@ -63,8 +63,12 @@ COLOR_PANEL = "#2D2D2D"    # Darker gray
 # CONVERSION ENGINE
 # ============================================================================
 
-class ConversionEngine:
-    """Handles all database conversion logic"""
+class GUIConversionEngine:
+    """GUI-specific database conversion engine with output directory management.
+    
+    Note: This is distinct from IP.connie.ConversionEngine which provides
+    headless pandas-based conversion with context manager support.
+    """
     
     def __init__(self, db_path: str, output_dir: str):
         self.db_path = db_path
@@ -287,7 +291,7 @@ class ConversionThread(QThread):
     def run(self):
         try:
             self.progress.emit("Initializing Connie...")
-            engine = ConversionEngine(self.db_path, self.output_dir)
+            engine = GUIConversionEngine(self.db_path, self.output_dir)
             
             self.progress.emit("Converting to SQL...")
             sql_file = engine.export_sql_dump()

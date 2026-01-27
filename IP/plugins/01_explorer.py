@@ -13,14 +13,14 @@ Features:
     - Status badges for file states
 """
 
-import os
-import subprocess
+import os  # pyright: ignore[reportUnusedImport]
+import subprocess  # pyright: ignore[reportUnusedImport, reportUnusedImport, reportUnusedImport]
 import json
 from pathlib import Path
 from datetime import datetime
 
 PLUGIN_NAME = "Explorer"
-PLUGIN_ORDER = 2
+PLUGIN_ORDER = 1
 
 # File type icons - text based
 FILE_ICONS = {
@@ -138,7 +138,7 @@ def render(STATE_MANAGERS):
             
             # Try deep scan with Carl if available
             try:
-                from carl_core import CarlContextualizer
+                from IP.carl_core import CarlContextualizer
                 carl = CarlContextualizer(root)
                 context = carl.run_deep_scan()
                 set_scan_result(context)

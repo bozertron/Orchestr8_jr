@@ -5,11 +5,11 @@ Provides standardized interface and global registry for panel lifecycle manageme
 """
 
 try:
-    from .base_panel import BasePanel, PanelCapabilities
+    from .base_panel import BasePanel, PanelCapabilities, PanelStatus, PanelSession
     from .panel_registry import PanelRegistry, get_panel_registry
 except ImportError:
     # Fallback for direct execution
-    from IP_888.panel_foundation.base_panel import BasePanel, PanelCapabilities
+    from IP_888.panel_foundation.base_panel import BasePanel, PanelCapabilities, PanelStatus, PanelSession
     from IP_888.panel_foundation.panel_registry import PanelRegistry, get_panel_registry
 
-__all__ = ["BasePanel", "PanelCapabilities", "PanelRegistry", "get_panel_registry"]
+__all__ = ["BasePanel", "PanelCapabilities", "PanelStatus", "PanelSession", "PanelRegistry", "get_panel_registry"]

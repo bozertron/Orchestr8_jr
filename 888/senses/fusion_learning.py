@@ -7,7 +7,7 @@ through usage analytics, pattern learning, and intelligent suggestions.
 Key Features:
 - SpellUsageAnalytics for usage pattern analysis
 - UserPatternLearner for behavioral learning
-- DirectorIntegration for cross-application intelligence
+- SensesDirectorBridge for cross-application intelligence
 - MLOptimizer for performance optimization
 - Predictive spell recommendations
 """
@@ -74,7 +74,7 @@ class UserPatternLearner:
         return cls(**data)
 
 
-class DirectorIntegration:
+class SensesDirectorBridge:
     """Integration with Enhanced Director Intelligence for context awareness."""
     
     def __init__(self):
@@ -295,7 +295,7 @@ class FusionLearningEngine:
             adaptation_rate=0.1
         )
         
-        self.director_integration = DirectorIntegration()
+        self.director_integration = SensesDirectorBridge()
         self.ml_optimizer = MLOptimizer()
         
         # Load existing data

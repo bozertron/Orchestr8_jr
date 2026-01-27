@@ -16,18 +16,23 @@ class PanelCapabilities:
     """Capability flags for panels"""
 
     supports_files: bool = False
+    supports_sessions: bool = True  # Restored from 888 version
     supports_real_time: bool = False
     supports_ai_models: bool = False
     supports_external_apps: bool = False
     supports_multimodal: bool = False
     supports_collaboration: bool = False
     supports_streaming: bool = False
+    supports_plugins: bool = False  # Restored from 888 version
     max_file_size_mb: Optional[int] = None
     supported_formats: List[str] = None
+    custom_capabilities: Dict[str, Any] = None  # Restored from 888 version - flexible extension
 
     def __post_init__(self):
         if self.supported_formats is None:
             self.supported_formats = []
+        if self.custom_capabilities is None:
+            self.custom_capabilities = {}
 
 
 @dataclass
@@ -267,6 +272,79 @@ class BasePanel(ABC):
         return any(
             file_ext in fmt.lower() for fmt in self.capabilities.supported_formats
         )
+
+    # --- Restored from 888 version: Optional file operation methods ---
+    def open_file(self, session_id: str, file_path: str) -> Dict[str, Any]:
+        """Open a file (if panel supports files)."""
+        if not self.capabilities.supports_files:
+            return {
+                'success': False,
+                'error': f'{self.name} does not support file operations'
+            }
+        return {'success': False, 'error': 'Not implemented'}
+
+    def save_file(self, session_id: str, file_path: str, content: Optional[str] = None) -> Dict[str, Any]:
+        """Save a file (if panel supports files)."""
+        if not self.capabilities.supports_files:
+            return {
+                'success': False,
+                'error': f'{self.name} does not support file operations'
+            }
+        return {'success': False, 'error': 'Not implemented'}
+
+    def get_real_time_data(self, session_id: str, data_type: str) -> Dict[str, Any]:
+        """Get real-time data (if panel supports real-time)."""
+        if not self.capabilities.supports_real_time:
+            return {
+                'success': False,
+                'error': f'{self.name} does not support real-time data'
+            }
+        return {'success': False, 'error': 'Not implemented'}
+
+    def generate_session_id(self) -> str:
+        """Generate a unique session ID."""
+        return f"{self.name}_session_{int(datetime.now().timestamp() * 1000)}"
+
+    def validate_session(self, session_id: str) -> bool:
+        """Validate that a session exists."""
+        return session_id in self.sessions
+
+    def get_session_info(self, session_id: str) -> Dict[str, Any]:
+        """Get information about a specific session."""
+        session = self.sessions.get(session_id)
+        if not session:
+            return {'success': False, 'error': f'Session {session_id} not found'}
+        return {
+            'success': True,
+            'session_id': session.session_id,
+            'panel_id': session.panel_id,
+            'created_at': session.created_at,
+            'active': session.active,
+            'metadata': session.metadata
+        }
+
+    def list_sessions(self) -> Dict[str, Any]:
+        """List all active sessions."""
+        return {
+            'success': True,
+            'sessions': [self.get_session_info(sid) for sid in self.sessions.keys()],
+            'total': len(self.sessions)
+        }
+
+    def get_capabilities_dict(self) -> Dict[str, Any]:
+        """Get panel capabilities as dictionary (for API responses)."""
+        return {
+            'panel_id': self.panel_id,
+            'panel_name': self.name,
+            'supports_files': self.capabilities.supports_files,
+            'supports_sessions': self.capabilities.supports_sessions,
+            'supports_real_time': self.capabilities.supports_real_time,
+            'supports_collaboration': self.capabilities.supports_collaboration,
+            'supports_plugins': self.capabilities.supports_plugins,
+            'supports_ai_models': self.capabilities.supports_ai_models,
+            'supports_streaming': self.capabilities.supports_streaming,
+            'custom_capabilities': self.capabilities.custom_capabilities or {}
+        }
 
     def __str__(self) -> str:
         return f"{self.name} (v{self.version}) - {self.status.status}"
