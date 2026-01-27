@@ -49,6 +49,7 @@
 ```
 
 **Five Interaction Layers:**
+
 1. **Code Map** - Central canvas (Woven Maps visualization)
 2. **Top Panel** - Drops on blue-spot click (General assignment)
 3. **Bottom Panel** - maestro + programmable button grid
@@ -102,6 +103,7 @@ Step 6: Dynamic Focus
 ### Blue Spot Behavior
 
 When code is broken:
+
 1. Building/district turns blue
 2. Errors float up like pollution (text particles)
 3. Errors are easily legible
@@ -174,6 +176,7 @@ Arrival = Panel fully deployed
 ```
 
 **Features:**
+
 - Infinite scroll for problem history
 - Big up close (like small chat window)
 - Three participants: Human, LLM, System
@@ -222,11 +225,13 @@ Future errors in neighborhood surface this content
 **Click to cycle:** OFF → OBSERVE → ON → OFF
 
 **OBSERVE Mode:**
+
 - Like planning/read-only
 - Can @ maestro (or any LLM) for explicit questions
 - They answer/act on that explicit thing only
 
 **ON Mode:**
+
 - Tier 2 access (Standard)
 - Full agency within tier restrictions
 - Only computer owner has Tier 1 (nuke capability)
@@ -234,6 +239,7 @@ Future errors in neighborhood surface this content
 ### Programmable Button Grid
 
 **Left Side (confirmed):**
+
 | Button | Source | Function |
 |--------|--------|----------|
 | **File** | stereOS File Explorer | Browse project files |
@@ -242,6 +248,7 @@ Future errors in neighborhood surface this content
 | **[___]** | TBD | Open slot |
 
 **Right Side (confirmed):**
+
 | Button | Function |
 |--------|----------|
 | **[___]** | Open slot |
@@ -293,6 +300,7 @@ Future errors in neighborhood surface this content
 ```
 
 **Ticket Auto-Population:**
+
 - Triggers on: Warnings, Errors, Test failures, Blue spots
 - Contains: ALL data on that circuit
   - Error message(s)
@@ -348,6 +356,7 @@ Future errors in neighborhood surface this content
 ```
 
 **Features:**
+
 - **Environments:** Activate/deactivate venvs, conda, nvm, etc.
 - **Hardware:** Monitor system resources, adjust settings
 - **Browser:** Launch browser in different modes (research, testing, preview)
@@ -514,26 +523,31 @@ From maestroview.vue:
 ## Implementation Phases
 
 ### Phase 1: Foundation
+
 - [ ] Bottom panel with maestro + button grid
 - [ ] Basic Code Map (Mermaid-driven, flat visualization)
 - [ ] Settings panel (providers, keys)
 
 ### Phase 2: Interaction
+
 - [ ] Blue spot click → top panel drop
 - [ ] General assignment flow
 - [ ] Chat interface in top panel
 
 ### Phase 3: Persistence
+
 - [ ] SQLite ticket storage
 - [ ] Vector embedding pipeline
 - [ ] Knowledge graph structure
 
 ### Phase 4: Advanced Visualization
+
 - [ ] 2D→3D cityscape conversion
 - [ ] Mesh draping
 - [ ] Error pollution particles
 
 ### Phase 5: Living Memory
+
 - [ ] Past resolution surfacing
 - [ ] Campaign/sprint memory
 - [ ] Cross-project learning

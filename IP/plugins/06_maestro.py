@@ -40,6 +40,8 @@ from IP.mermaid_generator import Fiefdom, FiefdomStatus, generate_empire_mermaid
 from IP.terminal_spawner import TerminalSpawner
 from IP.health_checker import HealthChecker
 from IP.briefing_generator import BriefingGenerator
+from IP.combat_tracker import CombatTracker
+import anthropic
 
 # Import Woven Maps Code City visualization
 from IP.woven_maps import create_code_city, build_graph_data
@@ -296,6 +298,11 @@ def render(STATE_MANAGERS: dict) -> Any:
     # Local state - View mode (city vs chat)
     get_view_mode, set_view_mode = mo.state("city")  # "city" | "chat"
 
+    # Initialize services
+    project_root_path = get_root()
+    combat_tracker = CombatTracker(project_root_path)
+    briefing_generator = BriefingGenerator(project_root_path)
+
     # ========================================================================
     # EVENT HANDLERS (Transliterated from MaestroView.vue)
     # ========================================================================
@@ -352,15 +359,90 @@ def render(STATE_MANAGERS: dict) -> Any:
         }
         messages.append(user_msg)
 
-        # TODO: Replace with actual LLM integration
-        # For now, create a placeholder response
-        assistant_msg = {
-            "id": str(uuid.uuid4()),
-            "role": "assistant",
-            "content": f"Acknowledged. Processing request in context of: {get_root()}",
-            "timestamp": datetime.now().strftime("%H:%M:%S"),
-        }
-        messages.append(assistant_msg)
+        # LLM API Integration
+        try:
+            # Initialize Anthropic client
+            client = anthropic.Anthropic()
+
+            # Generate context using BriefingGenerator
+            selected_file = get_selected()
+            context_parts = []
+
+            if selected_file:
+                # Add file context
+                context_parts.append(f"Current file: {selected_file}")
+
+                # Add campaign context if available
+                campaign_context = briefing_generator.load_campaign_log(selected_file)
+                if campaign_context:
+                    context_parts.append("Recent campaign activity:")
+                    for entry in campaign_context[:3]:  # Last 3 entries
+                        context_parts.append(f"- {entry.get('summary', 'No summary')}")
+
+            # Build system prompt
+            system_prompt = """You are the General of the Orchestr8 command system. You provide concise, actionable responses to help developers manage their software projects. Focus on clarity and immediate next steps."""
+
+            if context_parts:
+                system_prompt += f"\n\nContext:\n" + "\n".join(context_parts)
+
+            # Call Claude API
+            response = client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=8192,
+                system=system_prompt,
+                messages=[{"role": "user", "content": text}],
+            )
+
+            # Extract response content
+            response_content = response.content[0].text
+
+            # Track deployment in CombatTracker if working on selected file
+            if selected_file:
+                combat_tracker.deploy(
+                    file_path=selected_file,
+                    terminal_id="maestro-chat",
+                    model="claude-sonnet-4",
+                )
+
+            # Create assistant message
+            assistant_msg = {
+                "id": str(uuid.uuid4()),
+                "role": "assistant",
+                "content": response_content,
+                "timestamp": datetime.now().strftime("%H:%M:%S"),
+            }
+            messages.append(assistant_msg)
+
+        except anthropic.AuthenticationError as e:
+            log_action(f"LLM Authentication Error: {str(e)}")
+            assistant_msg = {
+                "id": str(uuid.uuid4()),
+                "role": "assistant",
+                "content": f"⚠️ Authentication Error: Invalid ANTHROPIC_API_KEY\n\nPlease check your API key in environment variables.",
+                "timestamp": datetime.now().strftime("%H:%M:%S"),
+            }
+            messages.append(assistant_msg)
+        except anthropic.APIError as e:
+            log_action(f"LLM API Error: {str(e)}")
+
+            # Fallback response
+            assistant_msg = {
+                "id": str(uuid.uuid4()),
+                "role": "assistant",
+                "content": f"⚠️ LLM API Error: {str(e)}\n\nPlease check your ANTHROPIC_API_KEY environment variable and network connection.",
+                "timestamp": datetime.now().strftime("%H:%M:%S"),
+            }
+            messages.append(assistant_msg)
+        except Exception as e:
+            log_action(f"Unexpected Error: {str(e)}")
+
+            assistant_msg = {
+                "id": str(uuid.uuid4()),
+                "role": "assistant",
+                "content": f"⚠️ Unexpected Error: {str(e)}",
+                "timestamp": datetime.now().strftime("%H:%M:%S"),
+            }
+            messages.append(assistant_msg)
 
         set_messages(messages)
         set_user_input("")
@@ -513,9 +595,9 @@ def render(STATE_MANAGERS: dict) -> Any:
                 font-family: monospace;
                 font-size: 10px;
                 letter-spacing: 0.1em;
-                color: {'#D4AF37' if mode == 'city' else '#1fbdea'};
+                color: {"#D4AF37" if mode == "city" else "#1fbdea"};
             ">
-                {'CODE CITY' if mode == 'city' else 'CHAT'}
+                {"CODE CITY" if mode == "city" else "CHAT"}
             </span>
         </div>
         """)
@@ -526,10 +608,16 @@ def render(STATE_MANAGERS: dict) -> Any:
         else:
             content = build_void_messages()
 
-        return mo.vstack([
-            mo.hstack([mode_indicator, toggle_btn], justify="space-between", align="center"),
-            content,
-        ])
+        return mo.vstack(
+            [
+                mo.hstack(
+                    [mode_indicator, toggle_btn],
+                    justify="space-between",
+                    align="center",
+                ),
+                content,
+            ]
+        )
 
     def build_panels() -> Any:
         """Build conditional overlay panels."""

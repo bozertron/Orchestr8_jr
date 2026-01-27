@@ -2,7 +2,7 @@
   "master": {
     "tasks": [
       {
-        "id": 13,
+        "id": "13",
         "title": "Refactor Gatekeeper Plugin for Louis Core Integration",
         "description": "Replace duplicate config management in 03_gatekeeper.py with LouisWarden and LouisConfig from louis_core.py",
         "details": "Import LouisWarden, LouisConfig from IP/louis_core.py. Remove all existing config code. Use project .louis-control/ path. Add 'Lock All Protected' button: iterate STATE_MANAGERS['selected'] and call warden.lock_file(path). Add 'Unlock All' button: iterate and call warden.unlock_file(path). Add per-file toggle checkboxes bound to STATE_MANAGERS['selected']. Use Python 3.12+ json module for state management. Ensure permissions: locked=0o444, unlocked=0o644.",
@@ -18,7 +18,8 @@
             "dependencies": [],
             "details": "Insert 'from IP.louis_core import LouisWarden, LouisConfig' after existing imports. Verify no import errors by running the file directly.",
             "status": "pending",
-            "testStrategy": "Run 'python 03_gatekeeper.py' to confirm imports succeed without errors."
+            "testStrategy": "Run 'python 03_gatekeeper.py' to confirm imports succeed without errors.",
+            "parentId": "undefined"
           },
           {
             "id": 2,
@@ -29,7 +30,8 @@
             ],
             "details": "Search for and remove all config-related variables/functions (config dicts, load/save functions). Replace with: config = LouisConfig('.louis-control/'). Ensure no references remain to old config.",
             "status": "pending",
-            "testStrategy": "Use git diff to verify all config code removed. Run file to check no NameError on config usage."
+            "testStrategy": "Use git diff to verify all config code removed. Run file to check no NameError on config usage.",
+            "parentId": "undefined"
           },
           {
             "id": 3,
@@ -41,7 +43,8 @@
             ],
             "details": "Create warden = LouisWarden(config). Add mo.ui.button('Lock All Protected', on_click=lambda: [warden.lock_file(path) for path in STATE_MANAGERS['selected']]). Add similar Unlock All button with warden.unlock_file(). Use Python 3.12+ json module for state serialization.",
             "status": "pending",
-            "testStrategy": "Click buttons with selected files, verify os.stat(file).st_mode & 0o777 == 0o444 for lock, 0o644 for unlock."
+            "testStrategy": "Click buttons with selected files, verify os.stat(file).st_mode & 0o777 == 0o444 for lock, 0o644 for unlock.",
+            "parentId": "undefined"
           },
           {
             "id": 4,
@@ -54,7 +57,8 @@
             ],
             "details": "For each file in STATE_MANAGERS['selected'], create mo.ui.checkbox(label=path, value=is_locked(path), on_change=lambda checked, path: warden.lock_file(path) if checked else warden.unlock_file(path)). Update state management with json module.",
             "status": "pending",
-            "testStrategy": "Toggle checkbox on/off, verify file permissions change immediately to 0o444/0o644 matching checkbox state."
+            "testStrategy": "Toggle checkbox on/off, verify file permissions change immediately to 0o444/0o644 matching checkbox state.",
+            "parentId": "undefined"
           },
           {
             "id": 5,
@@ -68,12 +72,13 @@
             ],
             "details": "Verify lock_file sets 0o444, unlock_file sets 0o644 using os.chmod. Persist state to .louis-control/ using config.save_state() with json.dump (indent=2). Handle all edge cases like non-existent files.",
             "status": "pending",
-            "testStrategy": "Full end-to-end: select files, toggle individual + bulk buttons, restart Marimo, verify state persists and permissions match UI state."
+            "testStrategy": "Full end-to-end: select files, toggle individual + bulk buttons, restart Marimo, verify state persists and permissions match UI state.",
+            "parentId": "undefined"
           }
         ]
       },
       {
-        "id": 14,
+        "id": "14",
         "title": "Implement JSON Table Rendering Utility",
         "description": "Create detect_and_render_output() function for smart output rendering in IP/plugins/",
         "details": "Create IP/plugins/output_renderer.py. Use Python 3.12+ json module: try json.loads(stdout_text) except JSONDecodeError: return mo.ui.text_area(stdout_text). For JSON array: mo.ui.table(data=json_data, sortable=True). For JSON object: mo.ui.json(json_data) or mo.ui.text_area(json.dumps(json_data, indent=2)). Integrate into 05_cli_bridge.py and future universal_bridge.py output pipeline. Handle large JSON with pagination if >1000 rows.",
@@ -89,7 +94,8 @@
             "dependencies": [],
             "details": "Include imports: import json, from json.decoder import JSONDecodeError, import mo. Add function signature def detect_and_render_output(stdout_text: str) -> None: pass. Ensure Python 3.12+ compatibility.",
             "status": "pending",
-            "testStrategy": "Verify file created at IP/plugins/output_renderer.py with correct imports and function skeleton."
+            "testStrategy": "Verify file created at IP/plugins/output_renderer.py with correct imports and function skeleton.",
+            "parentId": "undefined"
           },
           {
             "id": 2,
@@ -100,7 +106,8 @@
             ],
             "details": "Implement try: json_data = json.loads(stdout_text) except JSONDecodeError: return mo.ui.text_area(stdout_text). For JSON array (isinstance(json_data, list)): mo.ui.table(data=json_data, sortable=True). For JSON object (dict): mo.ui.json(json_data) or mo.ui.text_area(json.dumps(json_data, indent=2)).",
             "status": "pending",
-            "testStrategy": "Test invalid JSON falls back to text_area. Test valid JSON array renders sortable table. Test JSON object renders formatted JSON."
+            "testStrategy": "Test invalid JSON falls back to text_area. Test valid JSON array renders sortable table. Test JSON object renders formatted JSON.",
+            "parentId": "undefined"
           },
           {
             "id": 3,
@@ -111,7 +118,8 @@
             ],
             "details": "After detecting list and len(json_data) > 1000, implement pagination using mo.ui components (e.g., paginated table or sliced data with navigation). Add configurable threshold (default 1000). Preserve sortable=True where possible.",
             "status": "pending",
-            "testStrategy": "Test JSON array with 1001+ rows triggers pagination. Verify data slicing works correctly and navigation functions."
+            "testStrategy": "Test JSON array with 1001+ rows triggers pagination. Verify data slicing works correctly and navigation functions.",
+            "parentId": "undefined"
           },
           {
             "id": 4,
@@ -122,7 +130,8 @@
             ],
             "details": "Locate stdout/output rendering section in 05_cli_bridge.py. Replace existing output display with: from IP.plugins.output_renderer import detect_and_render_output; detect_and_render_output(stdout_text). Ensure seamless integration without breaking existing flow.",
             "status": "pending",
-            "testStrategy": "Run 05_cli_bridge.py with JSON output: verify smart rendering. Test plain text: verify text_area fallback. Test large JSON: verify pagination."
+            "testStrategy": "Run 05_cli_bridge.py with JSON output: verify smart rendering. Test plain text: verify text_area fallback. Test large JSON: verify pagination.",
+            "parentId": "undefined"
           },
           {
             "id": 5,
@@ -134,12 +143,13 @@
             ],
             "details": "Add docstring to detect_and_render_output() explaining parameters, return types, rendering logic, and pagination. Create test suite covering: valid JSON array (sortable table), JSON object (formatted), invalid JSON (fallback), large array (>1000 rows pagination), empty JSON []. Document integration points for universal_bridge.py.",
             "status": "pending",
-            "testStrategy": "Run full test suite: verify all rendering paths work. Test edge cases: empty arrays/objects, malformed JSON, extremely large datasets. Verify 05_cli_bridge.py integration doesn't break existing functionality."
+            "testStrategy": "Run full test suite: verify all rendering paths work. Test edge cases: empty arrays/objects, malformed JSON, extremely large datasets. Verify 05_cli_bridge.py integration doesn't break existing functionality.",
+            "parentId": "undefined"
           }
         ]
       },
       {
-        "id": 15,
+        "id": "15",
         "title": "Create Registry Directory Structure",
         "description": "Setup frontend/tools/registry/ directory with .gitkeep",
         "details": "mkdir -p frontend/tools/registry/. Touch frontend/tools/registry/.gitkeep. Ensure .gitkeep prevents empty directory deletion in git. Verify structure: frontend/tools/registry/, parsers/, scaffold-cli.ts. Use Python pathlib for directory creation in setup script if needed.",
@@ -150,20 +160,20 @@
         "subtasks": []
       },
       {
-        "id": 16,
+        "id": "16",
         "title": "Create Scaffold Manifest 01_scaffold.json",
         "description": "Generate first registry manifest for TypeScript Scaffold parsers",
         "details": "Create frontend/tools/registry/01_scaffold.json exactly as specified: {name:\"Scaffold Parsers (TS)\", description:\"TypeScript AST analysis tools powered by Commander.js\", icon:\"TS\", base_command:[\"npx\",\"tsx\",\"frontend/tools/scaffold-cli.ts\"], discovery:{enabled:true, command:\"list-plugins\"}}. Validate with python -m json.tool < file.",
         "testStrategy": "python -m json.tool frontend/tools/registry/01_scaffold.json should parse without errors.",
         "priority": "high",
         "dependencies": [
-          15
+          "15"
         ],
         "status": "done",
         "subtasks": []
       },
       {
-        "id": 17,
+        "id": "17",
         "title": "Add Silent JSON Mode to scaffold-cli.ts",
         "description": "Modify scaffold-cli.ts to output clean JSON in machine mode without console logs",
         "details": "Use Node.js 22+ with tsx. Add at list-plugins command start: const isMachineMode = !process.stdout.isTTY || process.argv.includes('--json'); if(!isMachineMode) console.log('Listing available plugins...');. Output: console.log(JSON.stringify(plugins, null, isMachineMode ? 0 : 2));. No emoji prefixes, no extra messages. Test: npx tsx scaffold-cli.ts list-plugins --json | python -m json.tool.",
@@ -179,7 +189,8 @@
             "dependencies": [],
             "details": "Insert at list-plugins command start: const isMachineMode = !process.stdout.isTTY || process.argv.includes('--json');. This detects non-interactive TTY or explicit --json flag for JSON output.",
             "status": "pending",
-            "testStrategy": "Verify isMachineMode=true when running with --json flag and false in interactive TTY."
+            "testStrategy": "Verify isMachineMode=true when running with --json flag and false in interactive TTY.",
+            "parentId": "undefined"
           },
           {
             "id": 2,
@@ -190,7 +201,8 @@
             ],
             "details": "After machine mode detection, add: if(!isMachineMode) console.log('Listing available plugins...');. Ensures clean JSON output in machine mode without extra messages.",
             "status": "pending",
-            "testStrategy": "Check header appears in TTY mode without --json, absent with --json."
+            "testStrategy": "Check header appears in TTY mode without --json, absent with --json.",
+            "parentId": "undefined"
           },
           {
             "id": 3,
@@ -201,7 +213,8 @@
             ],
             "details": "Change output to: console.log(JSON.stringify(plugins, null, isMachineMode ? 0 : 2));. Uses compact JSON (no indent) in machine mode, pretty-printed (2 spaces) in human mode.",
             "status": "pending",
-            "testStrategy": "Verify compact JSON with --json, pretty JSON without flag."
+            "testStrategy": "Verify compact JSON with --json, pretty JSON without flag.",
+            "parentId": "undefined"
           },
           {
             "id": 4,
@@ -213,7 +226,8 @@
             ],
             "details": "Scan list-plugins command for emoji prefixes (🚀, ✅, etc.) and non-essential messages. Ensure only the conditional header and final JSON output remain. No extra messages in machine mode.",
             "status": "pending",
-            "testStrategy": "Confirm no emojis or extra text in --json output."
+            "testStrategy": "Confirm no emojis or extra text in --json output.",
+            "parentId": "undefined"
           },
           {
             "id": 5,
@@ -227,21 +241,22 @@
             ],
             "details": "Run: npx tsx scaffold-cli.ts list-plugins --json | python -m json.tool. Verify output is valid JSON with no extra text. Test non-TTY piping and interactive modes separately.",
             "status": "pending",
-            "testStrategy": "JSON parses cleanly via python -m json.tool. Non-TTY outputs only JSON blob without headers."
+            "testStrategy": "JSON parses cleanly via python -m json.tool. Non-TTY outputs only JSON blob without headers.",
+            "parentId": "undefined"
           }
         ]
       },
       {
-        "id": 18,
+        "id": "18",
         "title": "Develop Universal Bridge Plugin 05_universal_bridge.py",
         "description": "Create core Universal Bridge that dynamically scans registry and generates UI",
         "details": "PLUGIN_ORDER=5, PLUGIN_NAME='Universal Bridge'. Scan frontend/tools/registry/*.json (skip .template). Validate REQUIRED_FIELDS=['name','base_command'], OPTIONAL_FIELDS=['description','icon','discovery','static_commands']. For each valid manifest: mo.ui.accordion() with manifest.name. If discovery.enabled: subprocess.run(manifest.base_command + [discovery.command], timeout=30, capture_output=True), parse JSON with json.loads(), generate mo.ui.button() per item. If static_commands: generate buttons from array. Execution: subprocess.run(full_command, timeout=30, capture_output=True), then detect_and_render_output(stdout). Use Python 3.12+ pathlib.glob('**/*.json'), shutil.which() for command validation.",
         "testStrategy": "Create test manifest, restart Marimo, verify dynamic accordion appears, execute discovery and static commands, verify JSON table/text rendering.",
         "priority": "high",
         "dependencies": [
-          14,
-          16,
-          17
+          "14",
+          "16",
+          "17"
         ],
         "status": "done",
         "subtasks": [
@@ -252,7 +267,8 @@
             "dependencies": [],
             "details": "Create the Python file in the plugins directory. Define constants at module top: PLUGIN_ORDER=5, PLUGIN_NAME='Universal Bridge'. Add basic imports: pathlib, json, subprocess, shutil, mo.ui.",
             "status": "pending",
-            "testStrategy": "Verify file exists and constants print correctly when imported."
+            "testStrategy": "Verify file exists and constants print correctly when imported.",
+            "parentId": "undefined"
           },
           {
             "id": 2,
@@ -263,7 +279,8 @@
             ],
             "details": "Use pathlib.glob('frontend/tools/registry/**/*.json') excluding paths with '.template'. Load JSON, check for required keys ['name','base_command'], optional ['description','icon','discovery','static_commands']. Collect valid manifests in list.",
             "status": "pending",
-            "testStrategy": "Create test JSON files, assert valid manifests list has correct entries, invalid ones skipped."
+            "testStrategy": "Create test JSON files, assert valid manifests list has correct entries, invalid ones skipped.",
+            "parentId": "undefined"
           },
           {
             "id": 3,
@@ -274,7 +291,8 @@
             ],
             "details": "Loop through valid manifests. Use mo.ui.accordion(manifest.get('name', 'Unknown'), contents=[]) initially. Store accordion references for later population. Render accordions in main UI.",
             "status": "pending",
-            "testStrategy": "Restart Marimo, verify accordions appear with correct names from manifests."
+            "testStrategy": "Restart Marimo, verify accordions appear with correct names from manifests.",
+            "parentId": "undefined"
           },
           {
             "id": 4,
@@ -285,7 +303,8 @@
             ],
             "details": "If 'discovery' in manifest and discovery.get('enabled'): run subprocess.run([base_command, discovery.command], timeout=30, capture_output=True), parse json.loads(stdout). Create mo.ui.button() per item. If 'static_commands': generate buttons from array.",
             "status": "pending",
-            "testStrategy": "Verify buttons appear in accordions after discovery/static commands processed."
+            "testStrategy": "Verify buttons appear in accordions after discovery/static commands processed.",
+            "parentId": "undefined"
           },
           {
             "id": 5,
@@ -296,64 +315,65 @@
             ],
             "details": "On button click: validate shutil.which(base_command[0]), run subprocess.run(full_command, timeout=30, capture_output=True). Call detect_and_render_output(stdout) for JSON table/text rendering.",
             "status": "pending",
-            "testStrategy": "Click buttons, verify commands execute, output renders as JSON table or text correctly."
+            "testStrategy": "Click buttons, verify commands execute, output renders as JSON table or text correctly.",
+            "parentId": "undefined"
           }
         ]
       },
       {
-        "id": 19,
+        "id": "19",
         "title": "Retire Old CLI Bridge Plugin",
         "description": "Deprecate 05_cli_bridge.py after Universal Bridge verification",
         "details": "Rename IP/plugins/05_cli_bridge.py to 05_cli_bridge.py.deprecated. Verify no duplicate tabs in Marimo UI. Preserve git history. Update any references if needed.",
         "testStrategy": "Restart marimo edit IP/orchestr8_app.py, verify only Universal Bridge tab appears, no CLI Bridge tab.",
         "priority": "low",
         "dependencies": [
-          18
+          "18"
         ],
         "status": "done",
         "subtasks": []
       },
       {
-        "id": 20,
+        "id": "20",
         "title": "Create Daco Rust Manifest Template",
         "description": "Generate 02_daco.json.template for future Rust integration",
         "details": "Create frontend/tools/registry/02_daco.json.template exactly as specified with static_commands for 'Overview' and 'Routes'. Use .template extension to prevent loading by Universal Bridge. Validate JSON syntax.",
         "testStrategy": "python -m json.tool 02_daco.json.template succeeds. Restart Marimo, verify Universal Bridge ignores .template files.",
         "priority": "low",
         "dependencies": [
-          15
+          "15"
         ],
         "status": "done",
         "subtasks": []
       },
       {
-        "id": 21,
+        "id": "21",
         "title": "End-to-End Universal Bridge Integration Test",
         "description": "Complete E2E test of Scaffold Parsers integration",
         "details": "marimo edit IP/orchestr8_app.py → Universal Bridge tab → Verify 'Scaffold Parsers (TS)' accordion → Expand → Verify discovered plugins as buttons → Execute 'overview' parser → Verify JSON table rendering. Document failures in test log.",
         "testStrategy": "Manual walkthrough: accordion appears, plugins discovered, execution succeeds, output renders correctly.",
         "priority": "high",
         "dependencies": [
-          18
+          "18"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 22,
+        "id": "22",
         "title": "Multi-Manifest and Dynamic UI Test",
         "description": "Verify multiple manifests and dynamic UI updates",
         "details": "Create 99_test.json with static_commands. Restart Marimo: verify both Scaffold + Test accordions. Execute test command. Remove 99_test.json, restart: verify only Scaffold remains. Test hot reload capability.",
         "testStrategy": "Add/remove manifests, verify UI updates on Marimo restart. Multiple accordions render correctly without conflicts.",
         "priority": "medium",
         "dependencies": [
-          21
+          "21"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 23,
+        "id": "23",
         "title": "Apply MaestroView Color Palette to 06_maestro.py",
         "description": "Inject exact CSS color variables into the primary Void interface using Marimo's CSS capabilities",
         "details": "Use Marimo's `mo.html` with `<style>` injection for `:root` CSS variables. Exact hex values: `--blue-dominant: #1fbdea`, `--gold-metallic: #D4AF37`, `--gold-dark: #B8860B`, `--gold-saffron: #F4C430`, `--purple-combat: #9D4EDD`, `--bg-primary: #0A0A0B`, `--bg-elevated: #121214`. Apply to background (`#0A0A0B`), panels (`#121214`), and status indicators. Use `mo.css` for scoped styling. Test with Marimo 2025.11.0+ for CSS variable support.",
@@ -364,47 +384,47 @@
         "subtasks": []
       },
       {
-        "id": 24,
+        "id": "24",
         "title": "Implement Mermaid Status Graph in Void Dashboard",
         "description": "Create interactive Mermaid graph showing fiefdoms with gold/blue/purple states in left panel",
         "details": "Use `mermaid==10.9.1` library in Marimo. Generate graph from Carl's `fiefdom-status.json`. Nodes: `src/llm`, `src/modules`, `src/platform`, `src/generator`, `src/maestro`. Edges show dependencies. Colors: gold (`fill:#D4AF37`), blue (`fill:#1fbdea`), purple (`fill:#9D4EDD`). Click handlers open fiefdom details. Cache in `.orchestr8/mermaid-cache.md`. Reactive updates via Marimo `reactive` state.",
         "testStrategy": "Graph renders 5+ fiefdoms correctly. Node colors match health states. Click opens fiefdom card. Updates when Carl refreshes status.",
         "priority": "high",
         "dependencies": [
-          23
+          "23"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 25,
+        "id": "25",
         "title": "Build Fiefdom List with Health Indicators",
         "description": "Right panel showing stackable fiefdom cards with WORKING/BROKEN/COMBAT status and Deploy button",
         "details": "Marimo `mo.ui.card()` components styled with CSS vars. Each card: path, emoji+color status (🟡🔵🟣), notes stack, [DEPLOY ▼] dropdown. Data from `Carl.get_fiefdom_status()`. Deploy triggers `spawn_actu8_terminal()`. Fixed height scrollable list. Use `mo.ui.vstack()` for stacking.",
         "testStrategy": "List shows all fiefdoms. Status colors match graph. Deploy button changes status to purple. Cards stack without overflow.",
         "priority": "high",
         "dependencies": [
-          23,
-          24
+          "23",
+          "24"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 26,
+        "id": "26",
         "title": "Integrate Carl Health Checks with Status Aggregation",
         "description": "Connect Carl's `check_health_all_fiefdoms()` to update fiefdom states and Mermaid graph",
         "details": "Import `IP/carl_core.py`. Add `[🔄 REFRESH]` button calling `carl.check_health_all_fiefdoms()` → `carl.update_mermaid_graph()` → save `.orchestr8/state/fiefdom-status.json`. Parse `npm run typecheck` output for scope-specific errors. States: 'working' (gold), 'broken' (blue). Auto-create tickets for broken fiefdoms.",
         "testStrategy": "Manual typecheck errors appear as blue nodes. Fixed errors turn gold. Graph and list sync instantly.",
         "priority": "high",
         "dependencies": [
-          24
+          "24"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 27,
+        "id": "27",
         "title": "Create Runtime Directories and Initial State Files",
         "description": "Setup `.orchestr8/` structure with tickets, state, and CLAUDE.md templates",
         "details": "`os.makedirs('.orchestr8/{tickets, tickets/archive, state}', exist_ok=True)`. Init `fiefdom-status.json` with default fiefdoms. Generate `CLAUDE.md` templates for `src/llm/`, `src/modules/`, `src/generator/` using Jinja2 3.1.4 template from PRD spec. Include health check commands.",
@@ -415,82 +435,82 @@
         "subtasks": []
       },
       {
-        "id": 28,
+        "id": "28",
         "title": "Implement Fixed Overton Anchor Input Bar",
         "description": "Bottom 5th fixed input bar with [Files][Matrix][Graph]═══[maestro]═══[Search][Deploy][⏎]",
         "details": "Marimo `mo.ui.hstack(spacing='small')` with `position: fixed; bottom: 0; height: 20vh`. Never moves. Style with `--bg-elevated`. Buttons trigger panels. `[⏎]` sends Emperor command to active fiefdom. Use `mo.ui.text_area` for command input.",
         "testStrategy": "Bar stays fixed on scroll/resize. All buttons functional. Input persists across panel changes.",
         "priority": "medium",
         "dependencies": [
-          23
+          "23"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 29,
+        "id": "29",
         "title": "Build Tickets Panel with Slide-Right Animation",
         "description": "Clickable 'Tickets' nav spawns searchable ticket list from `.orchestr8/tickets/`",
         "details": "Marimo `mo.ui.transition()` for slide-right (CSS `transform: translateX(100%)` → `0`). List `.md` files as cards: TICKET-###.md. Search/filter by status/keyword using `re` module. States: PENDING|IN_PROGRESS|RESOLVED|BLOCKED. Archive to `tickets/archive/`.",
         "testStrategy": "Click 'Tickets' → slides from right. Search filters instantly. 5+ sample tickets display correctly.",
         "priority": "medium",
         "dependencies": [
-          25,
-          27
+          "25",
+          "27"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 30,
+        "id": "30",
         "title": "Generate BRIEFING.md for General Deployment",
         "description": "Auto-generate mission briefing injecting Carl context + CAMPAIGN_LOG wisdom",
         "details": "`def generate_briefing(fiefdom_path):` combines `CLAUDE.md` + Carl file inventory + open TICKET-###.md + `CAMPAIGN_LOG.md` tail(10). Write to `{fiefdom_path}/BRIEFING.md`. Template format specified in PRD. Trigger before `spawn_actu8_terminal()`.",
         "testStrategy": "BRIEFING.md contains all 4 components. File created before terminal spawn. Content mission-specific.",
         "priority": "medium",
         "dependencies": [
-          26,
-          27
+          "26",
+          "27"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 31,
+        "id": "31",
         "title": "Implement CAMPAIGN_LOG.md Wisdom System",
         "description": "Append-only wisdom accumulation per fiefdom with standardized format",
         "details": "`def append_campaign_log(fiefdom_path, ticket_id, status, actions, lessons):` using PRD template. Timestamp `[YYYY-MM-DD HH:MM] TICKET-###`. Sections: General, Status, Duration, Mission, Actions Taken, Lessons Learned, Watch List. Atomic writes with Louis lock.",
         "testStrategy": "Log appends without duplication. Format matches PRD spec. Multi-entry log readable by next general.",
         "priority": "medium",
         "dependencies": [
-          27,
-          30
+          "27",
+          "30"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 32,
+        "id": "32",
         "title": "Setup Git Hooks for Louis and Carl Enforcement",
         "description": "Pre-commit (Louis validation) + post-commit (Carl health check) integration",
         "details": "Create `.git/hooks/pre-commit`: `python3 -c \"from IP.louis_core import Louis; Louis('.').validate_staged()\"`. Post-commit: `Carl('.').check_health_all_fiefdoms(); Carl('.').update_mermaid_graph()`. Make executable `chmod +x`. Test with dummy commits.",
         "testStrategy": "Hooks trigger on git commit. Invalid changes blocked. Post-commit updates graph automatically.",
         "priority": "medium",
         "dependencies": [
-          26
+          "26"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 33,
+        "id": "33",
         "title": "Wire LLM API Integration in Maestro",
         "description": "Replace placeholder handle_send() with actual Claude API call using anthropic package",
         "details": "In IP/plugins/06_maestro.py line 355, replace the TODO placeholder. Import anthropic, create client using ANTHROPIC_API_KEY env var. Use BriefingGenerator to create context. Call client.messages.create() with claude-sonnet-4-20250514. Track deployment in CombatTracker when working on selected file. Handle errors gracefully with log_action().",
         "testStrategy": "Type message in maestro chat, verify real Claude response appears (not placeholder). Check CombatTracker.get_combat_files() includes selected file after send.",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -498,56 +518,78 @@
             "description": "Import anthropic package and create client in handle_send()",
             "dependencies": [],
             "details": "Add 'import anthropic' at top of file. In handle_send(), create client = anthropic.Anthropic() which reads ANTHROPIC_API_KEY from env.",
-            "status": "pending",
-            "testStrategy": "Verify no import errors when loading plugin."
+            "status": "done",
+            "testStrategy": "Verify no import errors when loading plugin.",
+            "parentId": "undefined",
+            "updatedAt": "2026-01-27T00:24:45.280Z"
           },
           {
             "id": 2,
             "title": "Generate context using BriefingGenerator",
             "description": "Use existing BriefingGenerator to create system prompt context",
-            "dependencies": [1],
+            "dependencies": [
+              1
+            ],
             "details": "briefing = BriefingGenerator(root); context = briefing.generate_context(selected or root). Pass as system parameter to Claude.",
-            "status": "pending",
-            "testStrategy": "Verify context includes file inventory and relevant project info."
+            "status": "done",
+            "testStrategy": "Verify context includes file inventory and relevant project info.",
+            "parentId": "undefined",
+            "updatedAt": "2026-01-27T00:26:16.294Z"
           },
           {
             "id": 3,
             "title": "Implement Claude API call",
             "description": "Replace placeholder response with actual client.messages.create() call",
-            "dependencies": [1, 2],
+            "dependencies": [
+              1,
+              2
+            ],
             "details": "response = client.messages.create(model='claude-sonnet-4-20250514', max_tokens=8192, system=context, messages=[...]). Extract response.content[0].text.",
-            "status": "pending",
-            "testStrategy": "Send message, verify non-placeholder response. Check response format matches expected assistant message structure."
+            "status": "done",
+            "testStrategy": "Send message, verify non-placeholder response. Check response format matches expected assistant message structure.",
+            "parentId": "undefined",
+            "updatedAt": "2026-01-27T00:26:21.926Z"
           },
           {
             "id": 4,
             "title": "Wire CombatTracker for deployment tracking",
             "description": "Track file as 'in combat' when LLM is actively working on it",
-            "dependencies": [3],
+            "dependencies": [
+              3
+            ],
             "details": "from IP.combat_tracker import CombatTracker; tracker = CombatTracker(root); tracker.deploy(selected, 'maestro-chat', 'claude-sonnet-4'). Only deploy if selected file exists.",
-            "status": "pending",
-            "testStrategy": "After sending message with file selected, verify tracker.is_in_combat(selected) returns True."
+            "status": "done",
+            "testStrategy": "After sending message with file selected, verify tracker.is_in_combat(selected) returns True.",
+            "parentId": "undefined",
+            "updatedAt": "2026-01-27T00:26:27.683Z"
           },
           {
             "id": 5,
             "title": "Add error handling and logging",
             "description": "Wrap API call in try/except, log errors via log_action()",
-            "dependencies": [3],
+            "dependencies": [
+              3
+            ],
             "details": "Catch anthropic.APIError, anthropic.AuthenticationError. On error, set assistant_content to error message. Always call log_action() with result status.",
-            "status": "pending",
-            "testStrategy": "Test with invalid API key, verify graceful error message appears in chat instead of crash."
+            "status": "done",
+            "testStrategy": "Test with invalid API key, verify graceful error message appears in chat instead of crash.",
+            "parentId": "undefined",
+            "updatedAt": "2026-01-27T00:26:33.896Z"
           }
-        ]
+        ],
+        "updatedAt": "2026-01-27T00:26:33.896Z"
       },
       {
-        "id": 34,
+        "id": "34",
         "title": "Wire Terminal Spawner to Phreak Button",
         "description": "Connect Phreak> button to TerminalSpawner to actually spawn actu8 terminal",
         "details": "In IP/plugins/06_maestro.py, modify the Phreak> button handler (line 677-679). When opening terminal (!current), call spawner = TerminalSpawner(root); terminal_id = spawner.spawn_terminal(working_dir=root, title=f'actu8 - {selected or maestro}'). Track in CombatTracker. On close, call tracker.withdraw().",
         "testStrategy": "Click Phreak> button, verify terminal window spawns. Verify file shows purple in Code City if selected.",
         "priority": "high",
-        "dependencies": [33],
-        "status": "pending",
+        "dependencies": [
+          "33"
+        ],
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
@@ -556,36 +598,46 @@
             "dependencies": [],
             "details": "Create def handle_terminal() that gets current state, calls TerminalSpawner on open, logs action.",
             "status": "pending",
-            "testStrategy": "Button click triggers handle_terminal function."
+            "testStrategy": "Button click triggers handle_terminal function.",
+            "parentId": "undefined"
           },
           {
             "id": 2,
             "title": "Call TerminalSpawner.spawn_terminal",
             "description": "When opening terminal, instantiate spawner and call spawn method",
-            "dependencies": [1],
+            "dependencies": [
+              1
+            ],
             "details": "spawner = TerminalSpawner(root); terminal_id = spawner.spawn_terminal(working_dir=root, title=f'actu8 - {selected}')",
             "status": "pending",
-            "testStrategy": "Terminal window appears with correct title and working directory."
+            "testStrategy": "Terminal window appears with correct title and working directory.",
+            "parentId": "undefined"
           },
           {
             "id": 3,
             "title": "Track terminal in CombatTracker",
             "description": "Deploy to CombatTracker when terminal spawns, withdraw on close",
-            "dependencies": [2],
+            "dependencies": [
+              2
+            ],
             "details": "tracker.deploy(selected, terminal_id, 'terminal') on open. tracker.withdraw(selected) on close.",
             "status": "pending",
-            "testStrategy": "Combat status shows during terminal session, clears after close."
+            "testStrategy": "Combat status shows during terminal session, clears after close.",
+            "parentId": "undefined"
           }
-        ]
+        ],
+        "updatedAt": "2026-01-27T00:27:31.970Z"
       },
       {
-        "id": 35,
+        "id": "35",
         "title": "Wire Combat Status to Woven Maps Purple Glow",
         "description": "Query CombatTracker in woven_maps.py and set status='combat' for active files",
         "details": "In IP/woven_maps.py build_graph_data() function, after creating nodes: from IP.combat_tracker import CombatTracker; tracker = CombatTracker(root); combat_files = tracker.get_combat_files(). For each node, if node.path in combat_files: node.status = 'combat'. Purple color already defined in JS template.",
         "testStrategy": "Deploy terminal to file, open Code City visualization, verify file shows purple glow instead of gold/blue.",
         "priority": "high",
-        "dependencies": [34],
+        "dependencies": [
+          "34"
+        ],
         "status": "pending",
         "subtasks": [
           {
@@ -595,36 +647,45 @@
             "dependencies": [],
             "details": "from IP.combat_tracker import CombatTracker wrapped in try/except ImportError",
             "status": "pending",
-            "testStrategy": "No import errors when loading woven_maps module."
+            "testStrategy": "No import errors when loading woven_maps module.",
+            "parentId": "undefined"
           },
           {
             "id": 2,
             "title": "Query combat files in build_graph_data",
             "description": "After node creation, get list of combat files from tracker",
-            "dependencies": [1],
+            "dependencies": [
+              1
+            ],
             "details": "tracker = CombatTracker(root); combat_files = set(tracker.get_combat_files())",
             "status": "pending",
-            "testStrategy": "combat_files set populated correctly with active deployments."
+            "testStrategy": "combat_files set populated correctly with active deployments.",
+            "parentId": "undefined"
           },
           {
             "id": 3,
             "title": "Set node.status to combat for active files",
             "description": "Loop through nodes and set status='combat' if in combat_files",
-            "dependencies": [2],
+            "dependencies": [
+              2
+            ],
             "details": "for node in nodes: if node.path in combat_files: node.status = 'combat'",
             "status": "pending",
-            "testStrategy": "Node with active deployment has status='combat', renders purple in visualization."
+            "testStrategy": "Node with active deployment has status='combat', renders purple in visualization.",
+            "parentId": "undefined"
           }
         ]
       },
       {
-        "id": 36,
+        "id": "36",
         "title": "Wire Settings Panel to LLM Configuration",
         "description": "Read model/API settings from orchestr8_settings.toml in LLM integration",
         "details": "In IP/plugins/06_maestro.py, add get_model_config() function that reads orchestr8_settings.toml. Use settings for model name and max_tokens in API call. Fallback to hardcoded defaults if settings unavailable.",
         "testStrategy": "Change model in Settings panel, verify next API call uses new model. Test fallback with missing settings file.",
         "priority": "medium",
-        "dependencies": [33],
+        "dependencies": [
+          "33"
+        ],
         "status": "pending",
         "subtasks": [
           {
@@ -634,24 +695,32 @@
             "dependencies": [],
             "details": "def get_model_config() -> dict: loads orchestr8_settings.toml, returns agents.director settings or defaults",
             "status": "pending",
-            "testStrategy": "Function returns dict with model, max_tokens keys."
+            "testStrategy": "Function returns dict with model, max_tokens keys.",
+            "parentId": "undefined"
           },
           {
             "id": 2,
             "title": "Use config in API call",
             "description": "Replace hardcoded model name with config values",
-            "dependencies": [1],
+            "dependencies": [
+              1
+            ],
             "details": "config = get_model_config(); model=config.get('model', 'claude-sonnet-4-20250514')",
             "status": "pending",
-            "testStrategy": "API call uses model from settings file."
+            "testStrategy": "API call uses model from settings file.",
+            "parentId": "undefined"
           }
         ]
       }
     ],
     "metadata": {
-      "created": "2026-01-26T05:47:32.622Z",
-      "updated": "2026-01-25T23:30:00.000Z",
-      "description": "Tasks for master context"
+      "version": "1.0.0",
+      "lastModified": "2026-01-27T00:27:31.971Z",
+      "taskCount": 24,
+      "completedCount": 9,
+      "tags": [
+        "master"
+      ]
     }
   }
 }
