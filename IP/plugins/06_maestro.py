@@ -46,6 +46,7 @@ from IP.plugins.components.ticket_panel import TicketPanel
 from IP.plugins.components.calendar_panel import CalendarPanel
 from IP.plugins.components.comms_panel import CommsPanel
 from IP.plugins.components.file_explorer_panel import FileExplorerPanel
+from IP.plugins.components.deploy_panel import DeployPanel
 import anthropic
 
 # Import Woven Maps Code City visualization
@@ -359,6 +360,7 @@ def render(STATE_MANAGERS: dict) -> Any:
     calendar_panel = CalendarPanel(project_root_path)
     comms_panel = CommsPanel(project_root_path)
     file_explorer_panel = FileExplorerPanel(project_root_path)
+    deploy_panel = DeployPanel(project_root_path)
 
     # Local state - Ticket panel visibility
     get_show_tickets, set_show_tickets = mo.state(False)
@@ -367,6 +369,10 @@ def render(STATE_MANAGERS: dict) -> Any:
     get_show_calendar, set_show_calendar = mo.state(False)
     get_show_comms, set_show_comms = mo.state(False)
     get_show_file_explorer, set_show_file_explorer = mo.state(False)
+
+    # Local state - Deploy panel (House a Digital Native?)
+    get_show_deploy, set_show_deploy = mo.state(False)
+    get_clicked_node, set_clicked_node = mo.state(None)  # Node data from Code City click
 
     # Local state - Audio recording
     get_is_recording, set_is_recording = mo.state(False)
@@ -432,6 +438,86 @@ def render(STATE_MANAGERS: dict) -> Any:
             log_action("File Explorer panel opened")
         else:
             log_action("File Explorer panel closed")
+
+    def handle_node_click(node_data: dict) -> None:
+        """
+        Handle click on Code City building node.
+        If broken (blue), show the deploy panel to "House a Digital Native?"
+        """
+        if not node_data:
+            return
+
+        status = node_data.get("status", "working")
+        file_path = node_data.get("path", "")
+
+        log_action(f"Building clicked: {file_path} ({status})")
+
+        if status == "broken":
+            # Show deploy panel for broken buildings
+            set_clicked_node(node_data)
+            deploy_panel.show(
+                file_path=file_path,
+                status=status,
+                errors=node_data.get("errors", []),
+            )
+            set_show_deploy(True)
+            log_action(f"Deploy panel opened for {file_path}")
+        elif status == "combat":
+            # Already in combat - show status
+            log_action(f"{file_path} is already in COMBAT - general deployed")
+        else:
+            # Working file - just select it
+            set_selected(file_path)
+            log_action(f"Selected: {file_path}")
+
+    def handle_deploy() -> None:
+        """
+        Deploy the selected general to fix broken code.
+        Building goes PURPLE. Joy ensues.
+        """
+        result = deploy_panel.deploy()
+
+        if not result.get("success"):
+            log_action(f"Deploy failed: {result.get('error')}")
+            return
+
+        file_path = result["file_path"]
+        general = result["general"]
+        mode = result["mode"]
+
+        # Track deployment in combat tracker (building goes purple)
+        combat_tracker.deploy(
+            file_path=file_path,
+            terminal_id=f"deploy-{datetime.now().strftime('%H%M%S')}",
+            model=general,
+        )
+
+        log_action(f"DEPLOYED {general} to {file_path} ({mode} mode)")
+
+        if mode == "terminal":
+            # Spawn terminal with the general
+            briefing_path = project_root_path / file_path
+            if briefing_path.is_file():
+                briefing_path = briefing_path.parent
+
+            terminal_spawner.spawn(
+                fiefdom_path=str(briefing_path),
+                briefing_ready=True,
+                auto_start_claude=True,
+            )
+            log_action(f"Terminal spawned for {file_path}")
+
+        # Close deploy panel
+        deploy_panel.hide()
+        set_show_deploy(False)
+        set_clicked_node(None)
+
+    def close_deploy_panel() -> None:
+        """Close the deploy panel without deploying."""
+        deploy_panel.hide()
+        set_show_deploy(False)
+        set_clicked_node(None)
+        log_action("Deploy panel closed")
 
     def toggle_collabor8() -> None:
         """Toggle agents panel - mutual exclusion with tasks."""
@@ -1099,14 +1185,39 @@ def render(STATE_MANAGERS: dict) -> Any:
     # File Explorer panel (slides from right when visible)
     file_explorer_content = file_explorer_panel.render() if get_show_file_explorer() else mo.md("")
 
+    # Deploy panel (House a Digital Native?) - modal overlay
+    deploy_panel_content = deploy_panel.render() if get_show_deploy() else mo.md("")
+
     # Status bar
     root = get_root()
     selected = get_selected()
     status_bar = mo.md(f"**Root:** `{root}` | **Selected:** `{selected or 'None'}`")
 
+    # JavaScript to listen for Code City node clicks
+    # The Code City iframe sends postMessage when a building is clicked
+    node_click_js = mo.Html("""
+    <script>
+    (function() {
+        // Listen for messages from Code City iframe
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'WOVEN_MAPS_NODE_CLICK') {
+                console.log('Node clicked:', event.data.node);
+                // Store in a global for Marimo to pick up
+                window.__clicked_node__ = event.data.node;
+                // Dispatch custom event for Marimo reactivity
+                window.dispatchEvent(new CustomEvent('node-clicked', {
+                    detail: event.data.node
+                }));
+            }
+        });
+    })();
+    </script>
+    """)
+
     return mo.vstack(
         [
             css_injection,
+            node_click_js,
             mo.md("## The Void"),
             mo.md("*maestro overlooks the abyss*"),
             mo.md("---"),
@@ -1124,5 +1235,7 @@ def render(STATE_MANAGERS: dict) -> Any:
             calendar_panel_content,
             comms_panel_content,
             file_explorer_content,
+            # Deploy panel (modal overlay on top)
+            deploy_panel_content,
         ]
     )
