@@ -506,22 +506,27 @@ This file is imported by:
     return (prd_content,)
 
 
-def get_available_models():
-    """Load available models from orchestr8_settings.toml."""
-    try:
-        import toml
-        from pathlib import Path
-        settings_file = Path("orchestr8_settings.toml")
-        if settings_file.exists():
-            settings = toml.load(settings_file)
-            # Get from communic8.multi_llm.default_models
-            models = settings.get("tools", {}).get("communic8", {}).get("multi_llm", {}).get("default_models", [])
-            if models:
-                return models
-    except Exception:
-        pass
-    # Fallback - user should configure in settings
-    return ["claude", "gpt-4", "gemini", "local"]
+@app.cell
+def model_loader_cell():
+    """Load available models from settings."""
+    def get_available_models():
+        """Load available models from orchestr8_settings.toml."""
+        try:
+            import toml
+            from pathlib import Path
+            settings_file = Path("orchestr8_settings.toml")
+            if settings_file.exists():
+                settings = toml.load(settings_file)
+                # Get from communic8.multi_llm.default_models
+                models = settings.get("tools", {}).get("communic8", {}).get("multi_llm", {}).get("default_models", [])
+                if models:
+                    return models
+        except Exception:
+            pass
+        # Fallback - user should configure in settings
+        return ["claude", "gpt-4", "gemini", "local"]
+
+    return (get_available_models,)
 
 
 @app.cell
@@ -537,6 +542,7 @@ def emperor_view_cell(
     set_combat_version,
     set_files_df,
     get_files_df,
+    get_available_models,
 ):
     """Emperor Tab - Command interface with COMBAT deployment tracking"""
     selected = get_selected_file()
