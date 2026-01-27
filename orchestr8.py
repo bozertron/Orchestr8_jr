@@ -20,7 +20,10 @@ def imports():
     # Code City visualization
     from IP.woven_maps import create_code_city
 
-    return Network, Template, create_code_city, datetime, json, mo, nx, os, pd, re
+    # Combat tracking for LLM deployments
+    from IP.combat_tracker import CombatTracker
+
+    return CombatTracker, Network, Template, create_code_city, datetime, json, mo, nx, os, pd, re
 
 
 @app.cell
@@ -32,13 +35,19 @@ def state_management(mo, pd):
     get_edges_df, set_edges_df = mo.state(pd.DataFrame())
     get_selected_file, set_selected_file = mo.state(None)
     get_agent_logs, set_agent_logs = mo.state([])
+
+    # Combat state - version counter triggers UI refresh on deploy/withdraw
+    get_combat_version, set_combat_version = mo.state(0)
+
     return (
         get_agent_logs,
+        get_combat_version,
         get_edges_df,
         get_files_df,
         get_project_root,
         get_selected_file,
         set_agent_logs,
+        set_combat_version,
         set_edges_df,
         set_files_df,
         set_project_root,
@@ -221,10 +230,11 @@ def badge_renderer():
 
     def render_badge(status):
         colors = {
-            "NORMAL": "#22c55e",  # green
-            "WARNING": "#f97316",  # orange
-            "COMPLEX": "#a855f7",  # purple
-            "ERROR": "#ef4444",  # red
+            "NORMAL": "#D4AF37",   # Gold - working (matches Woven Maps)
+            "WARNING": "#f97316",  # Orange
+            "COMPLEX": "#a855f7",  # Purple - high complexity
+            "ERROR": "#1fbdea",    # Teal/Blue - broken (matches Woven Maps)
+            "COMBAT": "#9D4EDD",   # Purple - LLM deployed (matches Woven Maps)
         }
         color = colors.get(status, "#6b7280")
         return f"<span style='background-color:{color}; color:white; padding:2px 8px; border-radius:4px; font-size:0.85em; font-weight:500'>{status}</span>"
@@ -248,6 +258,7 @@ def control_panel(
     set_edges_df,
     scan_project,
     verify_connections,
+    CombatTracker,
 ):
     """Control Panel - Path input and scan button"""
     path_input = mo.ui.text(value=".", label="Project Root", full_width=True)
@@ -257,6 +268,15 @@ def control_panel(
         set_project_root(root)
         df = scan_project(root)
         df, edges = verify_connections(root, df)
+
+        # Apply COMBAT status for files with active deployments
+        combat_tracker = CombatTracker(root)
+        combat_files = combat_tracker.get_combat_files()
+        for combat_file in combat_files:
+            mask = df["path"] == combat_file
+            if mask.any():
+                df.loc[mask, "status"] = "COMBAT"
+
         set_files_df(df)
         set_edges_df(edges)
 
@@ -487,9 +507,28 @@ This file is imported by:
 
 
 @app.cell
-def emperor_view_cell(mo, datetime, get_selected_file, get_agent_logs, set_agent_logs):
-    """Emperor Tab - Command interface and logging"""
+def emperor_view_cell(
+    mo,
+    datetime,
+    get_selected_file,
+    get_agent_logs,
+    set_agent_logs,
+    get_project_root,
+    CombatTracker,
+    get_combat_version,
+    set_combat_version,
+    set_files_df,
+    get_files_df,
+):
+    """Emperor Tab - Command interface with COMBAT deployment tracking"""
     selected = get_selected_file()
+    root = get_project_root()
+
+    # Initialize combat tracker
+    combat_tracker = CombatTracker(root)
+
+    # Force reactivity on combat_version changes
+    _ = get_combat_version()
 
     mission_input = mo.ui.text_area(
         label="Mission Briefing",
@@ -500,32 +539,105 @@ def emperor_view_cell(mo, datetime, get_selected_file, get_agent_logs, set_agent
     def deploy_agent():
         if not selected:
             return
+
+        # Deploy via CombatTracker - file goes PURPLE
+        terminal_id = f"emperor-{datetime.datetime.now().strftime('%H%M%S')}"
+        combat_tracker.deploy(selected, terminal_id, model="claude")
+
+        # Update files_df to show COMBAT status
+        df = get_files_df()
+        if not df.empty:
+            mask = df["path"] == selected
+            df.loc[mask, "status"] = "COMBAT"
+            set_files_df(df.copy())
+
+        # Log the deployment
         current_logs = get_agent_logs()
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
-        new_log = f"[{timestamp}] DEPLOYING to '{selected}': {mission_input.value}"
+        new_log = f"[{timestamp}] ⚔️ DEPLOYED to '{selected}': {mission_input.value}"
         set_agent_logs(current_logs + [new_log])
 
-    deploy_btn = mo.ui.button(label="Deploy Agent", on_change=lambda _: deploy_agent())
+        # Trigger UI refresh
+        set_combat_version(get_combat_version() + 1)
+
+    def withdraw_agent():
+        if not selected:
+            return
+
+        # Withdraw via CombatTracker - file returns to normal status
+        combat_tracker.withdraw(selected)
+
+        # Update files_df - set back to NORMAL (will be rechecked on next scan)
+        df = get_files_df()
+        if not df.empty:
+            mask = df["path"] == selected
+            df.loc[mask, "status"] = "NORMAL"
+            set_files_df(df.copy())
+
+        # Log the withdrawal
+        current_logs = get_agent_logs()
+        timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+        new_log = f"[{timestamp}] 🏳️ WITHDRAWN from '{selected}'"
+        set_agent_logs(current_logs + [new_log])
+
+        # Trigger UI refresh
+        set_combat_version(get_combat_version() + 1)
+
+    deploy_btn = mo.ui.button(
+        label="⚔️ Deploy Agent",
+        on_change=lambda _: deploy_agent()
+    )
+
+    withdraw_btn = mo.ui.button(
+        label="🏳️ Withdraw",
+        on_change=lambda _: withdraw_agent()
+    )
+
+    # Check if selected file is in combat
+    is_in_combat = combat_tracker.is_in_combat(selected) if selected else False
+
+    # Get all active deployments
+    active_deployments = combat_tracker.get_active_deployments()
+
+    # Build combat status display
+    if active_deployments:
+        combat_list = "\n".join([
+            f"- `{path}` (deployed {info.get('deployed_at', 'unknown')[:19]})"
+            for path, info in active_deployments.items()
+        ])
+        combat_display = mo.md(f"**Active Deployments ({len(active_deployments)}):**\n{combat_list}")
+    else:
+        combat_display = mo.md("*No active deployments.*")
 
     # Build log display
     logs = get_agent_logs()
     if logs:
-        log_items = "\n".join([f"- {log}" for log in logs])
+        log_items = "\n".join([f"- {log}" for log in logs[-10:]])  # Last 10 logs
         log_display = mo.md(log_items)
     else:
         log_display = mo.md("*No deployments yet.*")
 
+    # Target status indicator
+    if selected:
+        status_text = "⚔️ **IN COMBAT**" if is_in_combat else "🟢 Ready for deployment"
+    else:
+        status_text = "⚪ No target selected"
+
     emperor_content = mo.vstack(
         [
             mo.md(f"### Target: `{selected or 'None selected'}`"),
+            mo.md(status_text),
             mission_input,
-            deploy_btn,
+            mo.hstack([deploy_btn, withdraw_btn], justify="start", gap=1),
+            mo.md("---"),
+            mo.md("### ⚔️ Active Combat Zones"),
+            combat_display,
             mo.md("---"),
             mo.md("### 📡 Command Center Logs"),
             log_display,
         ]
     )
-    return deploy_btn, emperor_content, mission_input
+    return deploy_btn, emperor_content, mission_input, withdraw_btn
 
 
 @app.cell
