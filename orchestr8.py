@@ -17,7 +17,10 @@ def imports():
     import datetime
     from jinja2 import Template
 
-    return Network, Template, datetime, json, mo, nx, os, pd, re
+    # Code City visualization
+    from IP.woven_maps import create_code_city
+
+    return Network, Template, create_code_city, datetime, json, mo, nx, os, pd, re
 
 
 @app.cell
@@ -329,6 +332,45 @@ def connection_graph_cell(mo, nx, Network, get_edges_df, get_files_df):
 
 
 @app.cell
+def code_city_cell(mo, get_project_root, get_files_df, create_code_city):
+    """Code City Tab - Woven Maps visualization with emergence animations"""
+
+    def build_code_city_view():
+        df = get_files_df()
+        root = get_project_root()
+
+        if df.empty:
+            return mo.md("*No project loaded. Scan a project to see the Code City.*")
+
+        # Build nodes from files DataFrame
+        nodes = []
+        for _, row in df.iterrows():
+            # Map status to Code City status colors
+            status_map = {
+                "NORMAL": "working",   # Gold
+                "ERROR": "broken",     # Teal/Blue
+                "COMPLEX": "combat",   # Purple
+                "WARNING": "broken"    # Teal/Blue
+            }
+            nodes.append({
+                "path": row["path"],
+                "status": status_map.get(row["status"], "working"),
+                "loc": row.get("size", 100),  # Use file size as proxy for LOC
+                "errors": []
+            })
+
+        # Generate the Code City HTML
+        try:
+            html_content = create_code_city(nodes)
+            return mo.Html(f'<div style="width:100%; height:700px;">{html_content}</div>')
+        except Exception as e:
+            return mo.md(f"Code City generation error: {str(e)}")
+
+    code_city_content = build_code_city_view()
+    return (code_city_content,)
+
+
+@app.cell
 def prd_generator_cell(
     mo, Template, datetime, get_selected_file, get_files_df, get_edges_df
 ):
@@ -475,6 +517,7 @@ def main_layout(
     control_row,
     explorer_content,
     graph_content,
+    code_city_content,
     prd_content,
     emperor_content,
 ):
@@ -483,6 +526,7 @@ def main_layout(
         {
             "Explorer": explorer_content,
             "Connections": graph_content,
+            "Code City": code_city_content,
             "PRD Generator": prd_content,
             "Emperor": emperor_content,
         }
