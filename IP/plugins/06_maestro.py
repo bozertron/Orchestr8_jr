@@ -42,6 +42,7 @@ from IP.terminal_spawner import TerminalSpawner
 from IP.health_checker import HealthChecker
 from IP.briefing_generator import BriefingGenerator
 from IP.combat_tracker import CombatTracker
+from IP.plugins.components.ticket_panel import TicketPanel
 import anthropic
 
 # Import Woven Maps Code City visualization
@@ -351,6 +352,10 @@ def render(STATE_MANAGERS: dict) -> Any:
     combat_tracker = CombatTracker(project_root_path)
     briefing_generator = BriefingGenerator(project_root_path)
     terminal_spawner = TerminalSpawner(project_root_path)
+    ticket_panel = TicketPanel(project_root_path)
+
+    # Local state - Ticket panel visibility
+    get_show_tickets, set_show_tickets = mo.state(False)
 
     # ========================================================================
     # EVENT HANDLERS (Transliterated from MaestroView.vue)
@@ -361,6 +366,12 @@ def render(STATE_MANAGERS: dict) -> Any:
         logs = get_logs()
         timestamp = datetime.now().strftime("%H:%M:%S")
         set_logs(logs + [f"[{timestamp}] [Maestro] {action}"])
+
+    def toggle_tickets() -> None:
+        """Toggle ticket panel (slides from right)."""
+        current = get_show_tickets()
+        set_show_tickets(not current)
+        ticket_panel.set_visible(not current)
 
     def toggle_collabor8() -> None:
         """Toggle agents panel - mutual exclusion with tasks."""
@@ -593,12 +604,19 @@ def render(STATE_MANAGERS: dict) -> Any:
             gap="0.5rem",
         )
 
+        # Ticket panel toggle (slides from right)
+        ticket_btn = mo.ui.button(
+            label="Tickets",
+            on_change=lambda _: toggle_tickets(),
+        )
+
         return mo.hstack(
             [
                 mo.ui.button(label="Home", on_change=lambda _: handle_home_click()),
                 brand,
                 model_picker,
                 nav_buttons,
+                ticket_btn,
             ],
             justify="space-between",
             align="center",
@@ -897,6 +915,9 @@ def render(STATE_MANAGERS: dict) -> Any:
     attachment_bar = build_attachment_bar()
     control_surface = build_control_surface()
 
+    # Ticket panel (slides from right when visible)
+    ticket_panel_content = ticket_panel.render() if get_show_tickets() else mo.md("")
+
     # Status bar
     root = get_root()
     selected = get_selected()
@@ -917,5 +938,6 @@ def render(STATE_MANAGERS: dict) -> Any:
             control_surface,
             mo.md("---"),
             status_bar,
+            ticket_panel_content,  # Slides from right when visible
         ]
     )
