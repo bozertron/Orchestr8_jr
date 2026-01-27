@@ -33,6 +33,7 @@ Reference: UI Reference/MaestroView.vue
 
 from datetime import datetime
 from typing import Any, Optional
+from pathlib import Path
 import uuid
 
 # Import new modules
@@ -45,6 +46,31 @@ import anthropic
 
 # Import Woven Maps Code City visualization
 from IP.woven_maps import create_code_city, build_graph_data
+
+
+def get_model_config() -> dict:
+    """Get model configuration from orchestr8_settings.toml."""
+    try:
+        import toml
+        settings_file = Path("orchestr8_settings.toml")
+        if settings_file.exists():
+            settings = toml.load(settings_file)
+            # Get director agent config (maestro uses this for chat)
+            director = settings.get("agents", {}).get("director", {})
+            doctor = settings.get("agents", {}).get("doctor", {})
+            return {
+                "model": doctor.get("model", "claude-sonnet-4-20250514"),
+                "max_tokens": doctor.get("max_tokens", 8192),
+            }
+    except Exception:
+        pass
+
+    # Fallback defaults
+    return {
+        "model": "claude-sonnet-4-20250514",
+        "max_tokens": 8192,
+    }
+
 
 PLUGIN_NAME = "The Void"
 PLUGIN_ORDER = 6
@@ -334,6 +360,43 @@ def render(STATE_MANAGERS: dict) -> Any:
         else:
             log_action("JFDI panel closed")
 
+    def handle_terminal() -> None:
+        """Toggle terminal panel and spawn actu8 if opening."""
+        current = get_show_terminal()
+        set_show_terminal(not current)
+
+        if not current:  # Opening terminal
+            selected = get_selected()
+            # Use selected file's directory or project root
+            fiefdom_path = selected if selected else "."
+
+            # Check if BRIEFING.md exists
+            briefing_path = project_root_path / fiefdom_path
+            if briefing_path.is_file():
+                briefing_path = briefing_path.parent
+            briefing_ready = (briefing_path / "BRIEFING.md").exists()
+
+            # Spawn the terminal
+            success = terminal_spawner.spawn(
+                fiefdom_path=str(fiefdom_path),
+                briefing_ready=briefing_ready,
+                auto_start_claude=False,
+            )
+
+            if success:
+                # Track in CombatTracker if file selected
+                if selected:
+                    combat_tracker.deploy(
+                        file_path=selected,
+                        terminal_id="actu8-terminal",
+                        model="terminal",
+                    )
+                log_action(f"Terminal spawned at {fiefdom_path}")
+            else:
+                log_action(f"Failed to spawn terminal at {fiefdom_path}")
+        else:
+            log_action("Terminal closed")
+
     def handle_home_click() -> None:
         """Reset to home state - clear panels and messages."""
         set_messages([])
@@ -386,10 +449,11 @@ def render(STATE_MANAGERS: dict) -> Any:
             if context_parts:
                 system_prompt += f"\n\nContext:\n" + "\n".join(context_parts)
 
-            # Call Claude API
+            # Call Claude API with settings from TOML
+            model_config = get_model_config()
             response = client.messages.create(
-                model="claude-sonnet-4-20250514",
-                max_tokens=8192,
+                model=model_config["model"],
+                max_tokens=model_config["max_tokens"],
                 system=system_prompt,
                 messages=[{"role": "user", "content": text}],
             )
@@ -406,7 +470,7 @@ def render(STATE_MANAGERS: dict) -> Any:
                 combat_tracker.deploy(
                     file_path=selected_file,
                     terminal_id="maestro-chat",
-                    model="claude-sonnet-4",
+                    model=model_config["model"],
                 )
 
             # Create assistant message
@@ -768,7 +832,7 @@ def render(STATE_MANAGERS: dict) -> Any:
                 mo.ui.button(label="Search", on_change=lambda _: handle_summon()),
                 mo.ui.button(
                     label="Phreak>",  # Opens actu8 terminal
-                    on_change=lambda _: set_show_terminal(not get_show_terminal()),
+                    on_change=lambda _: handle_terminal(),
                 ),
                 mo.ui.button(label="Send", on_change=lambda _: handle_send()),
                 mo.ui.button(label="Attach", on_change=lambda _: handle_attach()),

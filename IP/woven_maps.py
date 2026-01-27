@@ -336,6 +336,18 @@ def build_graph_data(
     """Build complete graph data from a codebase root."""
     nodes = scan_codebase(root)
     nodes = calculate_layout(nodes, width, height)
+
+    # Check combat status - files with active LLM deployments get purple
+    try:
+        from IP.combat_tracker import CombatTracker
+        tracker = CombatTracker(root)
+        combat_files = tracker.get_combat_files()
+        for node in nodes:
+            if node.path in combat_files:
+                node.status = "combat"  # Purple in visualization
+    except ImportError:
+        pass  # CombatTracker not available
+
     config = GraphConfig(
         width=width,
         height=height,
@@ -404,6 +416,17 @@ def build_from_connection_graph(
 
     # Apply layout
     nodes = calculate_layout(nodes, width, height)
+
+    # Check combat status - files with active LLM deployments get purple
+    try:
+        from IP.combat_tracker import CombatTracker
+        tracker = CombatTracker(project_root)
+        combat_files = tracker.get_combat_files()
+        for node in nodes:
+            if node.path in combat_files:
+                node.status = "combat"  # Purple in visualization
+    except ImportError:
+        pass  # CombatTracker not available
 
     # Convert edges
     edges = []
