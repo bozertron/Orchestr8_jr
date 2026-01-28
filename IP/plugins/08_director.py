@@ -204,8 +204,11 @@ class DirectorIntegration:
         try:
             import sys
             import os
+            from pathlib import Path
 
-            sys.path.insert(0, os.path.join(os.getcwd(), "888"))
+            # Use __file__ to get correct path regardless of cwd
+            _project_root = Path(__file__).parent.parent.parent
+            sys.path.insert(0, str(_project_root / "888"))
             from director.adapter import (
                 _get_engine,
                 get_active_generals,

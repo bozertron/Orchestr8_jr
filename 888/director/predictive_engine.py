@@ -12,7 +12,7 @@ import statistics
 from collections import defaultdict, Counter
 from .user_context import UserContext
 from .pattern_recognition import WorkflowPattern, BehavioralInsight
-from .ooda_engine import Suggestion
+from .models import Suggestion
 
 
 @dataclass

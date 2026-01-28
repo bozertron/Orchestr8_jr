@@ -6,6 +6,7 @@ based on behavioral analysis across all wrapped applications using telemetry dat
 """
 
 from .user_context import UserContext
-from .ooda_engine import OODAEngine, Suggestion
+from .ooda_engine import OODAEngine
+from .models import Suggestion
 
 __all__ = ['UserContext', 'OODAEngine', 'Suggestion']

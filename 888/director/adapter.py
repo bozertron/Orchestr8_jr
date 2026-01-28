@@ -10,7 +10,8 @@ from typing import Dict, List, Optional, Any, Union
 import json
 import time
 from .user_context import UserContext
-from .ooda_engine import OODAEngine, Suggestion
+from .ooda_engine import OODAEngine
+from .models import Suggestion
 
 
 # Global state for the Director
@@ -456,3 +457,30 @@ def health_check() -> Dict[str, Any]:
             'error': str(e),
             'checked_at': int(time.time() * 1000)
         }
+
+
+def get_active_generals() -> List[Dict[str, Any]]:
+    """
+    Get list of active AI generals (agents) in the system.
+    
+    Returns:
+        List of general status dictionaries
+    """
+    # Stub - return empty list for now
+    # TODO: Implement actual general tracking
+    return []
+
+
+def detect_stuck_patterns(generals: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Detect generals that appear to be stuck or unresponsive.
+    
+    Args:
+        generals: List of general status dictionaries
+        
+    Returns:
+        List of generals detected as stuck
+    """
+    # Stub - return empty list for now
+    # TODO: Implement stuck pattern detection
+    return []
