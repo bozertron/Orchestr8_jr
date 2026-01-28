@@ -1,0 +1,61 @@
+Mapping the Metaphor:
+
+
+
+Orchestr8 Concept 
+
+
+
+Barradeau Visual - This is a **CRITICAL** concept to grok because it's walks the razors edge of art and technology = I chose the Barradeau style as a visual because LLMs can see the dots, and humans can't. To a human eye, it's an etherial fantasy city representing their codebase, and providing the capabilities to visually interact with - and therefore quickly diagnose and debug issues in their code. This concept is critical so we don't veer too far off course in either direction. Those images I shared are the targets, ultra dense pixels, creating an ethereal look for humans, while retaining an ability to see and identify connection points deep in the code for LLMs, for example, an improperly written routine will [at MVP time] show up as a blue blob for humans unless they go into a 'data room' to review the code, to an LLM, the architectural or syntax mistake will be immediately obvious.
+
+
+
+Fiefdom (directory)= Building footprint: ***INCORRECT***
+
+
+
+A fiefdom is a subsystem, say, the P2P messaging system directory. Each BUILDING represents 1 file. In the real world a building has utilities connected to it with pipes and wires. In this virtual world, each building has it's imports, exports, APIs, routines, and dependencies [See: all file elements] represented by some sort of a 'utility panel' on the building. And then, at the edge of the fiefdom, a master panel visually illustrates the connections out to other fiefdoms [security, auth, contacts, what-have-you]. 
+
+
+
+
+
+File = Particle cluster at a node: ***INCORRECT***
+
+
+
+The file = the entire building. A bigger file is a bigger building, because it needs to showcase more activity, connections, etc..   If a file has an  import that  isn't connected, or a connection is producing some sort of error, it turns blue. In our little fantasy universe there are only 3 states of being 1. golden = good, 2. Purple = repair work needed or  underway [needed = it's connected properly, nothing is happening], 3. blue = broken.  
+
+
+
+
+
+Import/dependency  =  Edge between nodes: The edge is not defined in advance, it is rendered based on the activity required by the building/file; in the same way a file for an application can not be pre-defined. Every element of the file that 'comes or goes' is demonstrated and maintained by 'the panel'. All of the logic, algos, etc.. are represented inside the building in 'rooms'. So, if you wanted to refine an algo for a file, you go into the building [click on the door] see all the rooms, click on the room you want, and that rooms contents are transferred to 'the sitting room' where that becomes the focus on the effort, and LLMs and humans can work on it in isolation understanding perfectly 'what the edges are'.  
+
+
+
+Health status = Color (gold/teal/purple): Correct. Keep it simple. 
+
+
+
+Active agent  =  Particle animation/breathing: Any animations should be on the roadmap, not MVP, if an area [building or buildings] light up Purple, we know what's happening. 
+
+
+
+Locked file = Solid glow,  no breathing :  I'm thinking we should put something else to make sure it's obvious, maybe a gold 'block [like a padlock]' at it's input and output connection points on the panel. 
+
+
+
+Scout roaming = Particles drifting along edges :  A Scout doesn't roam without purpose. However we present LLMs, that's how they should be presented. 
+
+
+
+Error location =  Particles pulsing red :  Incorrect, remember; We're now able to SEE all the connection points, the ones that are causing a problem should be blue, the rest are gold, we know simply by observation that it's working or it isn't. 
+
+
+
+"Buildings rotate slowly. Gold ones are solid. Blue ones have particles drifting. Purple ones have edges fragmenting." = All questions for the roadmap, before  any of that happens, we need to nail the style, and the infrastructure + architecture, keep it simple in the beginning. 
+
+
+
+Please address all these points, and refactor appropriately, my suggestion is that you present me with a combination spec + roadmap so that it's all captured in one place, and when that's done, we can determine the next steps.

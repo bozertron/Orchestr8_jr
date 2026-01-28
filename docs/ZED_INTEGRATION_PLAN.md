@@ -9,6 +9,7 @@
 ## Executive Summary
 
 Orchestr8 becomes a **Zed extension** that wraps our MCP server and provides:
+
 1. Code Map visualization (Mermaid → eventually 3D metropolis)
 2. maestro AI orchestration layer
 3. Slash commands for codebase analysis
@@ -222,6 +223,7 @@ Zed's Agent Panel can use MCP servers for context. Our `orchestr8_mcp.py` provid
 ### 2. Slash Commands → Quick Actions
 
 In Zed's assistant, users can type:
+
 - `/codemap src/` → Generate Code Map
 - `/scan .` → Scan current project  
 - `/analyze --pattern "*.py"` → Analyze Python imports
@@ -237,6 +239,7 @@ In Zed's assistant, users can type:
 ## stereOS Codebase Transition Plan
 
 ### Current Location
+
 ```
 /home/bozertron/Orchestr8_jr/
 ├── IP/                      # stereOS components
@@ -254,6 +257,7 @@ In Zed's assistant, users can type:
 #### TODAY (Phase 0: Foundation)
 
 1. **Create Zed extension scaffold**
+
    ```bash
    mkdir -p ~/Orchestr8_jr/orchestr8-zed/src
    cd ~/Orchestr8_jr/orchestr8-zed
@@ -299,6 +303,7 @@ In Zed's assistant, users can type:
 ## What Runs Where
 
 ### In Zed (Native)
+
 - All text editing
 - LSP (basedpyright for Python)
 - Debugging (debugpy)
@@ -307,19 +312,23 @@ In Zed's assistant, users can type:
 - File tree
 
 ### In Orchestr8 Extension (WASM)
+
 - Slash command handling
 - MCP server spawning
 - Status bar updates
 - Theme/styling
 
 ### In orchestr8_mcp.py (Python subprocess)
+
 - Directory scanning
 - Mermaid generation
 - Import analysis
 - File metadata
 
 ### TBD: Marimo vs Zed
+
 The Marimo app (`IP/orchestr8_app.py`) could:
+
 1. **Option A:** Run alongside Zed as separate window for rich visualizations
 2. **Option B:** Be deprecated in favor of Zed webviews (if supported)
 3. **Option C:** Become the "standalone mode" for non-Zed users
@@ -424,21 +433,25 @@ EOF
 ## Success Criteria
 
 ### Immediate (Today)
+
 - [ ] Extension scaffold created
 - [ ] Installs in Zed without errors
 - [ ] MCP server connects to Agent Panel
 
 ### Short-term (This Week)
+
 - [ ] /codemap slash command works
 - [ ] /scan slash command works
 - [ ] Tools appear in Agent Panel
 
 ### Medium-term (This Month)
+
 - [ ] Status bar integration
 - [ ] Custom Orchestr8 theme for Zed
 - [ ] Full 888 skills accessible via MCP
 
 ### Long-term (Q2 2026)
+
 - [ ] Code Map 3D visualization (webview or separate window)
 - [ ] Public Services integration
 - [ ] Complete stereOS → Zed migration
