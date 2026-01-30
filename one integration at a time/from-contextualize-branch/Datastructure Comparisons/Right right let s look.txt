@@ -1,0 +1,78 @@
+Right right, let's look at the plumbing.
+
+You are asking for the "Shape of the Data" that the other file hallucinates it has. This is the root cause of the bug: Type Mismatch.
+
+Here is the precise specification of the data structures involved.
+
+1. What the "Other One" Thinks It Has (The Fantasy)
+
+The other file writes code expecting a Python List of Dictionaries. This is what standard JSON look likes, and what some UI libraries return.
+
+The Structure: List[Dict]
+
+code
+JSON
+download
+content_copy
+expand_less
+[
+  {
+    "status_badge": "<span style='...'>NORMAL</span>",
+    "path": "IP/combat_tracker.py",
+    "type": ".py",
+    "size": 4096,
+    "issues": 0
+  }
+]
+
+The Syntax It Uses:
+
+code
+Python
+download
+content_copy
+expand_less
+selected_rows[0]  # "Give me the first item in the list."
+
+Result: Returns the dictionary object. Success.
+
+2. What You Actually Have (The Reality)
+
+Because you fed mo.ui.table a Pandas DataFrame, Marimo preserves that type. You are holding a Pandas DataFrame object.
+
+The Structure: pandas.DataFrame
+
+code
+Text
+download
+content_copy
+expand_less
+status_badge                path type  size  issues
+14  <span ...>  IP/combat_tracker.py  .py  4096       0
+
+The Syntax The "Other One" Uses (The Bug):
+
+code
+Python
+download
+content_copy
+expand_less
+selected_rows[0]  # "Give me the COLUMN named '0'."
+
+Result: KeyError: 0.
+(Because there is no column named 0. There are columns named path, type, etc.)
+
+The Syntax You Use (The Fix):
+
+code
+Python
+download
+content_copy
+expand_less
+selected_rows.iloc[0] # "Give me the ROW at index 0."
+
+Result: Returns the Series (row) object. Success.
+
+Summary
+
+The other file is trying to peel an orange with a screwdriver because it thinks it's holding a screw. You, correctly, recognized it's a piece of fruit.

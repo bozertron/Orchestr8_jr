@@ -1,0 +1,73 @@
+import marimo as mo
+import pandas as pd
+import os
+import re
+
+PLUGIN_NAME = "Explorer"
+PLUGIN_ORDER = 1
+
+def render(STATE_MANAGERS):
+    get_root, _ = STATE_MANAGERS["root"]
+    get_files, set_files = STATE_MANAGERS["files"]
+    get_edges, set_edges = STATE_MANAGERS["edges"]
+    get_selected, set_selected = STATE_MANAGERS["selected"]
+
+    # --- LOGIC: Scanner ---
+    def run_scan():
+        root_path = get_root()
+        exclusions = {"node_modules", ".git", "__pycache__", ".venv", "venv", ".env"}
+        file_list = []
+        
+        for root, dirs, files in os.walk(root_path):
+            dirs[:] = [d for d in dirs if d not in exclusions]
+            for file in files:
+                full = os.path.join(root, file)
+                try: size = os.path.getsize(full)
+                except: size = 0
+                file_list.append({
+                    "path": os.path.relpath(full, root_path),
+                    "type": os.path.splitext(file)[1],
+                    "size": size,
+                    "status": "NORMAL",
+                    "issues": 0
+                })
+        
+        df = pd.DataFrame(file_list)
+        # Basic Verification (Regex Fallback)
+        edges = []
+        pattern = re.compile(r"^(?:from|import)\s+([\w.]+)", re.MULTILINE)
+        
+        for idx, row in df.iterrows():
+            try:
+                with open(os.path.join(root_path, row["path"]), "r", errors="ignore") as f:
+                    content = f.read()
+                    imports = pattern.findall(content)
+                    if len(imports) > 10: df.at[idx, "status"] = "COMPLEX"
+                    for imp in imports:
+                        edges.append({"source": row["path"], "target": imp})
+            except: pass
+            
+        set_files(df)
+        set_edges(pd.DataFrame(edges))
+
+    # --- UI ---
+    scan_btn = mo.ui.button(label="Scan Project", on_change=lambda _: run_scan())
+    
+    df = get_files()
+    if df is None or df.empty:
+        return mo.vstack([scan_btn, mo.md("*No files loaded.*")])
+
+    # Table with Selection
+    table = mo.ui.table(df, selection="single", page_size=10)
+    
+    # THE BUG FIX: Check for DataFrame type explicitly
+    if table.value is not None and not table.value.empty:
+        # Use .iloc[0] because table.value is a DataFrame
+        selected = table.value.iloc[0].get("path")
+        if selected != get_selected():
+            set_selected(selected)
+
+    return mo.vstack([
+        scan_btn,
+        mo.hstack([table, mo.md(f"**Selected:** `{get_selected()}`")])
+    ])
