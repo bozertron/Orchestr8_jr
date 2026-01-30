@@ -472,7 +472,7 @@ def render(STATE_MANAGERS: dict) -> Any:
             icon = manifest.get("icon", "[T]")
             accordion_items[f"{icon} {name}"] = build_tool_accordion(manifest)
         
-        tools_accordion = mo.ui.accordion(accordion_items)
+        tools_accordion = mo.accordion(accordion_items)  # mo.accordion, not mo.ui.accordion
     else:
         tools_accordion = mo.md("*No tool manifests found in registry.*")
     
@@ -480,7 +480,7 @@ def render(STATE_MANAGERS: dict) -> Any:
     errors = get_scan_errors()
     if errors or scan_errors:
         all_errors = list(set(errors + scan_errors))
-        error_display = mo.ui.accordion({
+        error_display = mo.accordion({  # mo.accordion, not mo.ui.accordion
             "Registry Warnings": mo.vstack([
                 mo.md(f"- {err}") for err in all_errors
             ])

@@ -336,14 +336,13 @@ def render(STATE_MANAGERS: Dict) -> Any:
     }
 
     def tab_button(tab_key: str, label: str):
+        # Note: style param removed (not supported in marimo 0.19.6)
+        # Active state indicated by label prefix instead
+        is_active = get_active_tab() == tab_key
+        display_label = f"[{label}]" if is_active else label
         return mo.ui.button(
-            label=label,
+            label=display_label,
             on_change=lambda _: set_active_tab(tab_key),
-            style={
-                "background": "rgba(212, 175, 55, 0.2)"
-                if get_active_tab() == tab_key
-                else "transparent"
-            },
         )
 
     def render_agents_tab():
@@ -581,16 +580,12 @@ def render(STATE_MANAGERS: Dict) -> Any:
     tab_buttons = []
     for tab_key, (label, _) in tabs.items():
         is_active = get_active_tab() == tab_key
-        button_class = "settings-tab active" if is_active else "settings-tab"
+        # Note: style param removed (not supported in marimo 0.19.6)
+        display_label = f"[{label}]" if is_active else label
         tab_buttons.append(
             mo.ui.button(
-                label=label,
+                label=display_label,
                 on_change=lambda v, tk=tab_key: set_active_tab(tk),
-                style={
-                    "background": "rgba(212, 175, 55, 0.2)"
-                    if is_active
-                    else "transparent"
-                },
             )
         )
 
@@ -620,7 +615,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                     mo.ui.button(
                         label="Save Settings",
                         on_change=lambda _: save_settings(),
-                        style={"background": "rgba(212, 175, 55, 0.2)"},
+                        kind="success",  # Use kind instead of style
                     ),
                     mo.md(f"*Modified: {get_modified()}*"),
                 ]

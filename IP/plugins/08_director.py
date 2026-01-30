@@ -455,7 +455,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             mo.ui.button(
                                 label="Start Monitoring",
                                 on_change=lambda _: start_director(),
-                                style={"background": "rgba(34, 197, 94, 0.2)"},
+                                kind="success",  # Use kind instead of style
                             ),
                             mo.md("*Monitors all active Generals for stuck patterns*"),
                         ],
