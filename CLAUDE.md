@@ -2,9 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## CRITICAL: Read SOT.md First
+
+**The Source of Truth is `SOT.md`** - read it before making any changes.
+
 ## Project Overview
 
-Orchestr8 is a reactive Python dashboard built with Marimo that provides a "God View" of software projects. It consolidates file exploration, dependency analysis, connection visualization, and PRD generation into a single interface.
+Orchestr8 is a reactive Python dashboard built with Marimo that provides a "God View" of software projects. The UI goal is the stereOS layout implemented in `IP/plugins/06_maestro.py`.
 
 ## Running the Application
 
@@ -17,43 +21,44 @@ For development mode with hot reloading:
 marimo edit orchestr8.py
 ```
 
+## Architecture
+
+- **Entry Point:** `orchestr8.py` (loads plugins from `IP/plugins/`)
+- **UI Goal:** `IP/plugins/06_maestro.py` (stereOS layout with Woven Maps Code City)
+- **Config:** `pyproject_orchestr8_settings.toml`
+
+### Plugin System
+
+Plugins are loaded from `IP/plugins/` in order (00_, 01_, etc.). Each plugin exports:
+- `PLUGIN_NAME` - Display name for tab
+- `PLUGIN_ORDER` - Sort order
+- `render(STATE_MANAGERS)` - Returns UI content
+
+### Key Modules in IP/
+
+- `woven_maps.py` - Code City visualization (COMPLETE)
+- `combat_tracker.py` - LLM deployment tracking
+- `connection_verifier.py` - Import graph builder
+- `louis_core.py` - File protection system
+
+## Color System
+
+| State | Color | Hex |
+|-------|-------|-----|
+| Working | Gold | #D4AF37 |
+| Broken | Blue | #1fbdea |
+| Combat | Purple | #9D4EDD |
+
+## Integration Policy
+
+All future integrations are staged in `one integration at a time/`.
+
+**EVERY integration requires Ben's approval before proceeding.**
+
+See `one integration at a time/INTEGRATION_QUEUE.md` for the queue.
+
 ## Dependencies
 
-- marimo (reactive notebook runtime)
-- pandas (DataFrames for file/edge data)
-- networkx (graph topology)
-- pyvis (interactive graph visualization)
-- jinja2 (PRD templating)
-
-Install with:
 ```bash
 pip install marimo pandas networkx pyvis jinja2
 ```
-
-## Architecture
-
-### State Management
-The app uses Marimo's `mo.state()` hooks to manage global reactive state:
-- `project_root` - target directory path
-- `files_df` - DataFrame of scanned files with metadata and status badges
-- `edges_df` - DataFrame of import dependencies (source -> target)
-- `selected_file` - currently selected file in UI
-- `agent_logs` - command log entries
-
-### Core Components
-
-**Data Layer (Harvesters)**
-- `scan_project()` - walks directory tree, builds files DataFrame (excludes node_modules, .git, __pycache__)
-- `verify_connections()` - parses imports via regex, assigns status badges (NORMAL/WARNING/COMPLEX), builds edges DataFrame
-
-**UI Layer (Tabs)**
-- Explorer: interactive table with status badges, single-row selection updates `selected_file`
-- Connections: PyVis force-directed graph of import dependencies
-- PRD Generator: Jinja2 template renders context for selected file
-- Emperor: mission input + agent deployment logging
-
-### Status Badge System
-Files are classified by heuristics:
-- NORMAL (green): default
-- WARNING (orange): contains TODO/FIXME
-- COMPLEX (purple): >10 imports
