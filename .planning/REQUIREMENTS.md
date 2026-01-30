@@ -9,9 +9,9 @@ Requirements for v1.0 Wiring Phase. Each maps to roadmap phases.
 
 ### Branding
 
-- [ ] **BRAND-01**: Application displays "orchestr8" instead of "stereOS" in all visible text
-- [ ] **BRAND-02**: CSS classes use `.orchestr8-*` prefix instead of `.stereos-*`
-- [ ] **BRAND-03**: Docstrings reference "orchestr8" not "stereOS"
+- [x] **BRAND-01**: Application displays "orchestr8" instead of "stereOS" in all visible text
+- [x] **BRAND-02**: CSS classes use `.orchestr8-*` prefix instead of `.stereos-*`
+- [x] **BRAND-03**: Docstrings reference "orchestr8" not "stereOS"
 
 ### Navigation
 
@@ -74,9 +74,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BRAND-01 | Phase 1 | Pending |
-| BRAND-02 | Phase 1 | Pending |
-| BRAND-03 | Phase 1 | Pending |
+| BRAND-01 | Phase 1 | Complete |
+| BRAND-02 | Phase 1 | Complete |
+| BRAND-03 | Phase 1 | Complete |
 | NAV-01 | Phase 2 | Pending |
 | NAV-02 | Phase 2 | Pending |
 | NAV-03 | Phase 2 | Pending |
@@ -96,4 +96,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-30*
-*Last updated: 2026-01-30 after initial definition*
+*Last updated: 2026-01-30 after Phase 1 completion*
