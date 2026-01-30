@@ -1,0 +1,15 @@
+        // 2. COMPUTE PASS (Update Physics)
+        // Set current simulation texture
+        compute.simMaterial.uniforms.tPositions.value = compute.target.texture;
+        compute.simMaterial.uniforms.time.value = time;
+        compute.simMaterial.uniforms.dt.value = dt;
+        
+        // --- ADD THESE LINES ---
+        compute.simMaterial.uniforms.uInputVector.value.set(inputState.x, inputState.y);
+        compute.simMaterial.uniforms.uAudioBass.value = uBass;
+        compute.simMaterial.uniforms.uAudioTreble.value = uTreble;
+        // -----------------------
+
+        // Render simulation to target
+        renderer.setRenderTarget(compute.target);
+        renderer.render(compute.simScene, compute.simCamera);
