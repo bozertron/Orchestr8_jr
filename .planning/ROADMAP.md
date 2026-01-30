@@ -32,10 +32,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Browser DevTools shows CSS classes prefixed with `.orchestr8-*` (not `.stereos-*`)
   3. Developer reading code sees "orchestr8" references in docstrings and comments
 
-**Plans**: TBD
+**Plans:** 1 plan
 
 Plans:
-- [ ] TBD after planning
+- [ ] 01-01-PLAN.md — Replace stereOS branding with orchestr8 (text, CSS, docstrings)
 
 ### Phase 2: Navigation
 **Goal**: Top row navigation matches UI specification with all buttons wired to correct components
@@ -116,11 +116,11 @@ Phases execute sequentially: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Branding | 0/TBD | Not started | - |
+| 1. Branding | 0/1 | Planned | - |
 | 2. Navigation | 0/TBD | Not started | - |
 | 3. Health Integration | 0/TBD | Not started | - |
 | 4. Briefing Data | 0/TBD | Not started | - |
 | 5. Combat Cleanup | 0/TBD | Not started | - |
 
 ---
-*Last updated: 2026-01-30 after roadmap creation*
+*Last updated: 2026-01-30 after Phase 1 planning*
