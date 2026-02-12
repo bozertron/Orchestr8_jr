@@ -2,55 +2,41 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-30)
+See: .planning/PROJECT.md (updated 2026-02-12)
 
-**Core value:** Code City visualization must render with accurate health status colors
+**Core value:** Code City visualization as accurate, interactive spatial representation — human and AI co-inhabiting the same space
 
-**Current focus:** Phase 2: Navigation
+**Current focus:** v2.0 Vision Audit + Full Wiring
 
 ## Current Position
 
-Phase: 2 of 5 (Navigation)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-01-30 — Phase 1 complete, verified
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-12 — Milestone v2.0 started
 
-Progress: [██░░░░░░░░] 20%
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
+- Total plans completed: 1 (from v1.0)
 - Average duration: 2m 2s
-- Total execution time: 0.03 hours
-
-**By Phase:**
-
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 01-branding | 1 | 2m 2s | 2m 2s |
-
-**Recent Trend:**
-- Last 5 plans: 01-01 (2m 2s)
-- Trend: Just started
-
-*Updated after each plan completion*
 
 ## Accumulated Context
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
-
-- **BRAND-01**: Use 'orchestr8' as primary brand identity (established consistent product naming across UI and documentation)
-- Phase 1: Top row buttons standardized to [orchestr8] [collabor8] [JFDI] [gener8] per UI spec
-- Phase 2: JFDI wires to existing TicketPanel component (not new panel)
-- Phase 2: gener8 button opens Settings panel per user decision
+- **v1.0**: Brand replaced stereOS → orchestr8 (Phase 1 complete)
+- **v2.0**: Settlement System (30 agents) installed to ~/.claude/
+- **v2.0**: Vision captured in CLAUDE.md and SOT.md
+- **v2.0**: Founder terminology (not Emperor) in Settlement context
 
 ### Pending Todos
 
-None yet.
+- Complete v1.0 wiring work (nav, health, briefing, combat)
+- Audit every file against ∅明nos vision
+- Connect Settlement System to Code City
 
 ### Blockers/Concerns
 
@@ -58,6 +44,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-30 (Phase 1 execution)
-Stopped at: Phase 1 complete, ready for Phase 2 planning
+Last session: 2026-02-12 (v2.0 milestone initialization)
+Stopped at: Defining requirements for v2.0
 Resume file: None
