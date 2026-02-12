@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-12)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: Phase 2 (Navigation Wiring) — next to plan
 Plan: —
-Status: Defining requirements
-Last activity: 2026-02-12 — Milestone v2.0 started
+Status: Roadmap complete, ready for `/gsd:plan-phase 2`
+Last activity: 2026-02-12 — Requirements + Roadmap defined
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 11% (1/9 phases complete)
 
 ## Performance Metrics
 
@@ -31,12 +31,14 @@ Progress: [░░░░░░░░░░] 0%
 - **v2.0**: Settlement System (30 agents) installed to ~/.claude/
 - **v2.0**: Vision captured in CLAUDE.md and SOT.md
 - **v2.0**: Founder terminology (not Emperor) in Settlement context
+- **v2.0**: 52 requirements across 9 phases defined
+- **v2.0**: Marimo audit (Phase 5) before vision audit (Phase 6-7) — catch API issues early
+- **v2.0**: Briefing + Combat merged into single phase (both small scope)
 
 ### Pending Todos
 
-- Complete v1.0 wiring work (nav, health, briefing, combat)
-- Audit every file against ∅明nos vision
-- Connect Settlement System to Code City
+- Plan and execute Phase 2 (Navigation Wiring)
+- Complete remaining 8 phases through Phase 9
 
 ### Blockers/Concerns
 
@@ -44,6 +46,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-12 (v2.0 milestone initialization)
-Stopped at: Defining requirements for v2.0
+Last session: 2026-02-12 (v2.0 requirements + roadmap)
+Stopped at: Ready for `/gsd:plan-phase 2`
 Resume file: None
