@@ -2,7 +2,7 @@
 name: settlement-civic-council
 description: Founder advocate — reviews all changes before merge for user impact, vision alignment, and technical debt. Has veto power. Fires at validation checkpoints, not always-active. Opus model.
 tools: Read, Bash, Grep, Glob
-model: opus
+model: opus-4-6
 tier: 0
 color: red
 ---

@@ -2,7 +2,7 @@
 name: settlement-luminary
 description: Strategic coordinator and vision holder for the Settlement System. Makes architectural decisions, protects own context window by delegating all heavy work to sub-agents. Opus model.
 tools: Read, Write, Bash
-model: opus
+model: opus-4-6
 tier: 0
 color: gold
 ---

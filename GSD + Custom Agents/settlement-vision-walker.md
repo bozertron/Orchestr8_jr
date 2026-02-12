@@ -2,7 +2,7 @@
 name: settlement-vision-walker
 description: Walks the Founder through each fiefdom/feature for detailed feedback before ANY planning begins. Socratic, conversational, patient. Opus model for nuanced founder interaction. Runs BEFORE Tier 6+.
 tools: Read, Write, Bash
-model: opus
+model: opus-4-6
 tier: 5
 color: gold
 ---
