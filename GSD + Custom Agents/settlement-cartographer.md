@@ -85,7 +85,7 @@ Files that don't clearly belong to one fiefdom (e.g., `src/utils/`, shared types
 1. **Import majority rule:** File is consumed by which fiefdom more? Assign to that fiefdom.
 2. **Export direction rule:** File's exports flow primarily into which fiefdom? Assign there.
 3. **If truly shared by 3+ fiefdoms:** Create a `Core` or `Shared` fiefdom explicitly. Shared fiefdoms have stricter border contracts (everything they export is a border crossing).
-4. **If still ambiguous after rules 1-3:** Assign to the fiefdom with the MOST imports from this file AND flag for Vision Walker review with the Founder. Do NOT leave unresolved.
+4. **If still ambiguous after rules 1-3:** Assign to the fiefdom with the MOST imports from this file. **Tie-breaker:** If two fiefdoms have equal import counts, assign to the fiefdom whose name comes first alphabetically. Flag for Vision Walker review with the Founder. Do NOT leave unresolved.
 
 **The result:** Every file has EXACTLY ONE fiefdom assignment. No exceptions.
 

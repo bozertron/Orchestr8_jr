@@ -36,7 +36,7 @@ ENRICHED FACTORS (from Surveyor signature data):
   generic_score    = generic_type_count × 0.2         (cap at 1.0)
 
 CROSS-CUTTING FACTORS:
-  cross_fiefdom    = cross_fiefdom_imports × 1.5       (multiplied, not added)
+  cross_fiefdom_multiplier = 1 + (cross_fiefdom_imports × 0.1)  (applied to raw_score)
 
 FORMULA:
   raw_score = nesting_score + cyclomatic_score + dependency_score 
@@ -79,8 +79,9 @@ FORMULA:
 - Deeply nested generics (e.g., `Record<string, Array<Partial<User>>>`) score higher
 - Source: Surveyor return types and param types
 
-**Cross-Fiefdom Dependencies (×1.5 multiplier)**
-- Every import that crosses a fiefdom boundary multiplies complexity
+**Cross-Fiefdom Dependencies (×0.1 per import, applied as multiplier)**
+- Each cross-fiefdom import adds 0.1 to the multiplier: `adjusted = raw_score × (1 + imports × 0.1)`
+- Example: 3 cross-fiefdom imports → ×1.3 multiplier; 5 imports → ×1.5
 - These are the most fragile connections — border contract changes break them
 - Source: Surveyor imports flagged as cross-fiefdom by Import/Export Mapper (or by fiefdom_hint)
 </complexity_factors>

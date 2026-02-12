@@ -82,8 +82,8 @@ A "room" is one logic block:
 For each room, calculate token count:
 
 **Method (in priority order):**
-1. If tiktoken is available: Use `tiktoken.encoding_for_model("gpt-4")` for precise count
-2. If not: Use character count ÷ 4 as approximation (consistently conservative)
+1. If a tokenizer tool is available (e.g., Anthropic token counting API): Use it for precise count
+2. If not: Use character count ÷ 4 as approximation (consistently conservative for English/code text)
 
 **Aggregation hierarchy:**
 ```

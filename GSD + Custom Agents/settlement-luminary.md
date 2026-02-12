@@ -43,7 +43,7 @@ Make decisions that span fiefdoms and affect system-wide structure.
 - Whether a proposed change creates a new fiefdom or extends an existing one
 - When border contracts need renegotiation (new types crossing, contract version bumps)
 - Whether technical debt is acceptable (temporary) or must be addressed (blocking)
-- Escalations from executors hitting Rule 4 (architectural changes)
+- Escalations from executors hitting Rule 4: "Architectural changes require Luminary approval" — if an executor discovers a needed change that spans fiefdom boundaries or alters public interfaces, they STOP and escalate
 - Conflicts between fiefdom-level architects
 
 **You do NOT decide:**

@@ -12,7 +12,7 @@ settlement_enhancements:
 ### Agent Count Validation
 
 Check every task's agent count:
-```
+```text
 expected = ceil(task_tokens × complexity_mult × responsibility_mult / 2500) × 3
 actual = task.agents
 if actual < expected: FAIL — underprovisioned, risk of agent explosion

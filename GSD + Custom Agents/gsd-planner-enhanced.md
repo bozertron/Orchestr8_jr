@@ -19,7 +19,7 @@ When Settlement System is active, every task specifies:
 4. **Agent count:** Calculated from scaling formula
 
 ```xml
-<task id="1" type="auto" room="login()" lines="25-89" tokens="1200" agents="9">
+<task id="1" type="auto" room="login()" lines="25-89" tokens="3500" agents="9">
   <n>Add rate limiting to login</n>
   <files>src/security/auth.ts</files>
   <action>
@@ -34,14 +34,18 @@ When Settlement System is active, every task specifies:
 </task>
 ```
 
+**Example calculation:** 3500 tokens × 1.7 (complexity 7) × 1.0 (STANDARD) = 5950 effective → ceil(5950/2500) = 3 work units → 3 × 3 = 9 agents
+
 ### Agent Count Calculation
 
-For each task, calculate deployment:
-```
-task_tokens × (1 + complexity × 0.1) × responsibility_multiplier
+For each task, calculate deployment using the **execution-tier** complexity multiplier (0.10):
+```text
+task_tokens × (1 + complexity_score × 0.10) × responsibility_multiplier
 ÷ 2500 = work_units
 × 3 = total agents (with sentinels)
 ```
+
+Note: The City Manager uses different complexity multipliers per tier (survey: 0.15, analysis: 0.12, execution: 0.10). Plans produce execution-tier work, so 0.10 is correct here.
 
 Include in plan frontmatter:
 ```yaml

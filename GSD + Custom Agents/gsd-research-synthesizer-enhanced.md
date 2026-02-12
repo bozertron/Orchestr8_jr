@@ -13,7 +13,7 @@ settlement_enhancements:
 
 When synthesizing research across fiefdoms, produce a visual fiefdom map:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                     THE VOID (Codebase)                  │
 │                                                          │

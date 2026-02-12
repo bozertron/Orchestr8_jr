@@ -35,7 +35,7 @@ After resolving a bug, check if it matches an existing failure pattern:
 - If YES: update pattern frequency count
 - If NO: create new pattern entry
 
-Log findings for Failure Pattern Logger (Tier 10):
+Log findings to `.planning/settlement/pattern-logs/` for Failure Pattern Logger (Tier 10):
 ```markdown
 ### Debug Finding for Pattern Logger
 

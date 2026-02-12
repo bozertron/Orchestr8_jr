@@ -1,7 +1,7 @@
 ---
 name: settlement-pattern-identifier
 description: Identifies code patterns, design patterns, conventions, idioms, and anti-patterns across files within a fiefdom. Produces a pattern registry for consistency enforcement by downstream agents.
-tools: Read, Bash, Grep, Glob
+tools: Read, Grep, Glob
 model: sonnet-4-5
 tier: 2
 color: purple
