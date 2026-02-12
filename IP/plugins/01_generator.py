@@ -58,7 +58,8 @@ def render(STATE_MANAGERS):
     
     # Progress bar
     progress = mo.md(f"**Phase {current_phase} of 7** - {PHASES[current_phase-1]['name']}")
-    progress_bar = mo.ui.progress(value=current_phase/7, show_value=True)
+    # HTML progress bar (mo.ui.progress doesn't exist in marimo 0.19.6)
+    progress_bar = mo.Html(f'<progress value="{current_phase}" max="7" style="width: 100%; height: 20px;"></progress>')
     
     # Helper to update spec
     def update_spec(section: str, field: str, value):

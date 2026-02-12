@@ -1,0 +1,91 @@
+// ==================== INPUT & AUDIO SYSTEM ====================
+let audioContext, analyser, dataArray;
+let audioLevel = 0;
+let uBass = 0;
+let uTreble = 0;
+
+// JOYSTICK STATE
+const inputState = {
+    x: 0, // -1 to 1
+    y: 0, // -1 to 1
+    isPressed: false
+};
+
+function initInput() {
+    // 1. MOUSE INTERACTION (Desktop)
+    window.addEventListener('mousedown', () => inputState.isPressed = true);
+    window.addEventListener('mouseup', () => {
+        inputState.isPressed = false;
+        inputState.x = 0;
+        inputState.y = 0;
+    });
+    window.addEventListener('mousemove', (e) => {
+        if (inputState.isPressed) {
+            // Convert screen coordinates to -1 to 1
+            // Center of screen is (0,0)
+            inputState.x = (e.clientX / window.innerWidth) * 2 - 1;
+            inputState.y = -(e.clientY / window.innerHeight) * 2 + 1; // Flip Y
+        }
+    });
+
+    // 2. TOUCH INTERACTION (Mobile "Virtual Joystick")
+    window.addEventListener('touchstart', (e) => {
+        inputState.isPressed = true;
+        updateTouch(e.touches[0]);
+    }, {passive: false});
+
+    window.addEventListener('touchend', () => {
+        inputState.isPressed = false;
+        inputState.x = 0;
+        inputState.y = 0;
+    });
+
+    window.addEventListener('touchmove', (e) => {
+        e.preventDefault(); // Stop scrolling
+        updateTouch(e.touches[0]);
+    }, {passive: false});
+}
+
+function updateTouch(touch) {
+    inputState.x = (touch.clientX / window.innerWidth) * 2 - 1;
+    inputState.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+}
+
+function initAudio() {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 64; // Small size for performance
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+    
+    // Dummy oscillator for visual test if you don't have a mic file
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    osc.connect(gain);
+    gain.connect(analyser);
+    gain.gain.value = 0; // Silent by default
+    osc.start();
+}
+
+function updateAudio() {
+    if (analyser) {
+        analyser.getByteFrequencyData(dataArray);
+        
+        // Calculate Bass (Lower half of array)
+        let bassSum = 0;
+        for(let i=0; i<dataArray.length/2; i++) bassSum += dataArray[i];
+        uBass = (bassSum / (dataArray.length/2)) / 255.0;
+
+        // Calculate Treble (Upper half of array)
+        let trebleSum = 0;
+        for(let i=Math.floor(dataArray.length/2); i<dataArray.length; i++) trebleSum += dataArray[i];
+        uTreble = (trebleSum / (dataArray.length/2)) / 255.0;
+
+        // Smooth values
+        uBass = THREE.MathUtils.lerp(uBass, 0, 0.1); // Decay
+        uTreble = THREE.MathUtils.lerp(uTreble, 0, 0.1);
+    }
+}
+
+// Initialize Inputs
+initInput();
+initAudio();

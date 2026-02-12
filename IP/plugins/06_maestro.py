@@ -2,9 +2,9 @@
 06_maestro Plugin - The Void
 Orchestr8 v3.0 - Central Command Interface
 
-The heart of Orchestr8 - a unified command center inspired by stereOS MaestroView.
+The heart of Orchestr8 - a unified command center inspired by MaestroView.
 Implements the spatial UI pattern with:
-- Top navigation bar (stereOS | Collabor8 | JFDI | Gener8)
+- Top navigation bar (orchestr8 | Collabor8 | JFDI | Gener8)
 - Central void for AI conversation emergence
 - Bottom control surface (the Overton anchor)
 
@@ -186,17 +186,17 @@ MAESTRO_CSS = f"""
     animation: emergence 0.4s ease-out 0.1s both;
 }}
 
-.stereos-brand {{
+.orchestr8-brand {{
     font-family: monospace;
     font-size: 14px;
     letter-spacing: 0.08em;
 }}
 
-.stereos-prefix {{
+.orchestr8-prefix {{
     color: {BLUE_DOMINANT};
 }}
 
-.stereos-suffix {{
+.orchestr8-suffix {{
     color: {GOLD_METALLIC};
 }}
 
@@ -870,8 +870,8 @@ def render(STATE_MANAGERS: dict) -> Any:
         """Build the top navigation row."""
         # Brand
         brand = mo.Html(f"""
-        <div class="stereos-brand">
-            <span class="stereos-prefix">stere</span><span class="stereos-suffix">OS</span>
+        <div class="orchestr8-brand">
+            <span class="orchestr8-prefix">orchestr</span><span class="orchestr8-suffix">8</span>
         </div>
         """)
 

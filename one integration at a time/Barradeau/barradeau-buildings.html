@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Barradeau Building Generator</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #0A0A0B; 
+            overflow: hidden;
+            font-family: 'Futura', 'Avenir', sans-serif;
+        }
+        
+        #canvas {
+            display: block;
+            cursor: crosshair;
+        }
+        
+        #ui {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            color: rgba(201, 169, 98, 0.7);
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            pointer-events: none;
+        }
+        
+        #controls {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            display: flex;
+            gap: 12px;
+        }
+        
+        button {
+            background: transparent;
+            border: 1px solid rgba(201, 169, 98, 0.3);
+            color: #C9A962;
+            padding: 10px 20px;
+            font-family: 'Futura', 'Avenir', sans-serif;
+            font-size: 10px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: rgba(201, 169, 98, 0.1);
+            border-color: #C9A962;
+        }
+        
+        #info {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            color: rgba(26, 188, 156, 0.5);
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div id="ui">
+        <div>BARRADEAU WOVEN BUILDINGS</div>
+        <div style="margin-top: 8px; opacity: 0.5;">click to add points · right-click to clear</div>
+    </div>
+    
+    <div id="controls">
+        <button id="btn-tower">TOWER</button>
+        <button id="btn-cathedral">CATHEDRAL</button>
+        <button id="btn-neighborhood">NEIGHBORHOOD</button>
+        <button id="btn-clear">CLEAR</button>
+    </div>
+    
+    <div id="info">
+        <div>points: <span id="point-count">0</span></div>
+        <div>edges: <span id="edge-count">0</span></div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════
+        // DELAUNAY TRIANGULATION (Bowyer-Watson algorithm)
+        // ═══════════════════════════════════════════════════════════
+        class Delaunay {
+            static triangulate(points) {
+                if (points.length < 3) return [];
+                
+                // Create super triangle that contains all points
+                const minX = Math.min(...points.map(p => p.x));
+                const minY = Math.min(...points.map(p => p.y));
+                const maxX = Math.max(...points.map(p => p.x));
+                const maxY = Math.max(...points.map(p => p.y));
+                
+                const dx = maxX - minX;
+                const dy = maxY - minY;
+                const deltaMax = Math.max(dx, dy) * 2;
+                
+                const p1 = { x: minX - deltaMax, y: minY - deltaMax };
+                const p2 = { x: minX + deltaMax * 2, y: minY - deltaMax };
+                const p3 = { x: minX + dx / 2, y: maxY + deltaMax };
+                
+                let triangles = [{ p1, p2, p3 }];
+                
+                // Add points one at a time
+                for (const point of points) {
+                    const badTriangles = [];
+                    
+                    // Find triangles whose circumcircle contains the point
+                    for (const tri of triangles) {
+                        if (this.pointInCircumcircle(point, tri)) {
+                            badTriangles.push(tri);
+                        }
+                    }
+                    
+                    // Find boundary of polygonal hole
+                    const polygon = [];
+                    for (const tri of badTriangles) {
+                        const edges = [
+                            [tri.p1, tri.p2],
+                            [tri.p2, tri.p3],
+                            [tri.p3, tri.p1]
+                        ];
+                        
+                        for (const edge of edges) {
+                            let shared = false;
+                            for (const other of badTriangles) {
+                                if (other === tri) continue;
+                                if (this.edgeInTriangle(edge, other)) {
+                                    shared = true;
+                                    break;
+                                }
+                            }
+                            if (!shared) polygon.push(edge);
+                        }
+                    }
+                    
+                    // Remove bad triangles
+                    triangles = triangles.filter(t => !badTriangles.includes(t));
+                    
+                    // Create new triangles from polygon edges to point
+                    for (const edge of polygon) {
+                        triangles.push({
+                            p1: edge[0],
+                            p2: edge[1],
+                            p3: point
+                        });
+                    }
+                }
+                
+                // Remove triangles that share vertices with super triangle
+                return triangles.filter(tri => {
+                    return tri.p1 !== p1 && tri.p1 !== p2 && tri.p1 !== p3 &&
+                           tri.p2 !== p1 && tri.p2 !== p2 && tri.p2 !== p3 &&
+                           tri.p3 !== p1 && tri.p3 !== p2 && tri.p3 !== p3;
+                });
+            }
+            
+            static pointInCircumcircle(point, tri) {
+                const ax = tri.p1.x - point.x;
+                const ay = tri.p1.y - point.y;
+                const bx = tri.p2.x - point.x;
+                const by = tri.p2.y - point.y;
+                const cx = tri.p3.x - point.x;
+                const cy = tri.p3.y - point.y;
+                
+                const det = (ax * ax + ay * ay) * (bx * cy - cx * by) -
+                           (bx * bx + by * by) * (ax * cy - cx * ay) +
+                           (cx * cx + cy * cy) * (ax * by - bx * ay);
+                
+                return det > 0;
+            }
+            
+            static edgeInTriangle(edge, tri) {
+                const edges = [
+                    [tri.p1, tri.p2],
+                    [tri.p2, tri.p3],
+                    [tri.p3, tri.p1]
+                ];
+                
+                for (const e of edges) {
+                    if ((e[0] === edge[0] && e[1] === edge[1]) ||
+                        (e[0] === edge[1] && e[1] === edge[0])) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // BARRADEAU RENDERER
+        // ═══════════════════════════════════════════════════════════
+        class BarradeauRenderer {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.points = [];
+                this.edges = [];  // [length, p1, p2]
+                
+                this.config = {
+                    height: 200,           // Vertical extrusion height
+                    wireCount: 12,         // Number of wireframe layers
+                    glowSize: 80,          // Max edge length for glow
+                    baseColor: '#1ABC9C',  // Teal
+                    accentColor: '#C9A962', // Gold
+                    backgroundColor: '#0A0A0B'
+                };
+                
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+            }
+            
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                this.render();
+            }
+            
+            // Add a single point
+            addPoint(x, y) {
+                // Check for duplicates
+                const threshold = 5;
+                for (const p of this.points) {
+                    if (Math.abs(p.x - x) < threshold && Math.abs(p.y - y) < threshold) {
+                        return;
+                    }
+                }
+                this.points.push({ x, y });
+                this.process();
+            }
+            
+            // Add multiple points
+            addPoints(newPoints) {
+                for (const p of newPoints) {
+                    this.addPoint(p.x, p.y);
+                }
+            }
+            
+            clear() {
+                this.points = [];
+                this.edges = [];
+                this.render();
+            }
+            
+            // Process: triangulate and extract edges with lengths
+            process() {
+                if (this.points.length < 3) {
+                    this.edges = [];
+                    this.render();
+                    return;
+                }
+                
+                const triangles = Delaunay.triangulate(this.points);
+                
+                // Extract edges with lengths (Barradeau's key insight)
+                const edgeMap = new Map();
+                
+                for (const tri of triangles) {
+                    const triEdges = [
+                        [tri.p1, tri.p2],
+                        [tri.p2, tri.p3],
+                        [tri.p3, tri.p1]
+                    ];
+                    
+                    for (const [p1, p2] of triEdges) {
+                        // Create unique key for edge
+                        const key = p1.x < p2.x || (p1.x === p2.x && p1.y < p2.y)
+                            ? `${p1.x},${p1.y}-${p2.x},${p2.y}`
+                            : `${p2.x},${p2.y}-${p1.x},${p1.y}`;
+                        
+                        if (!edgeMap.has(key)) {
+                            const length = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+                            edgeMap.set(key, [length, p1, p2]);
+                        }
+                    }
+                }
+                
+                this.edges = Array.from(edgeMap.values());
+                
+                // Update UI
+                document.getElementById('point-count').textContent = this.points.length;
+                document.getElementById('edge-count').textContent = this.edges.length;
+                
+                this.render();
+            }
+            
+            // Render edges where length < min threshold
+            renderEdges(min, strokeStyle = '#000', lineWidth = 1) {
+                if (this.edges.length === 0) return;
+                
+                this.ctx.beginPath();
+                this.ctx.strokeStyle = strokeStyle;
+                this.ctx.lineWidth = lineWidth;
+                
+                for (const [length, p1, p2] of this.edges) {
+                    if (length < min) {
+                        this.ctx.moveTo(p1.x, p1.y);
+                        this.ctx.lineTo(p2.x, p2.y);
+                    }
+                }
+                
+                this.ctx.stroke();
+            }
+            
+            render() {
+                const { ctx, canvas, config } = this;
+                const { width: w, height: h } = canvas;
+                
+                // Clear
+                ctx.fillStyle = config.backgroundColor;
+                ctx.fillRect(0, 0, w, h);
+                
+                if (this.edges.length === 0) return;
+                
+                // ─── STEP 4: Draw the gradient (Barradeau's core technique) ───
+                ctx.save();
+                const max = config.height;
+                
+                for (let i = 0; i < max; i++) {
+                    ctx.translate(0, -1);  // Move up each iteration
+                    ctx.globalAlpha = (1 - i / max) * 0.04;
+                    
+                    // Threshold increases with height = sparser mesh at top
+                    this.renderEdges(i * 0.8, config.baseColor, 1);
+                }
+                ctx.restore();
+                
+                // ─── STEP 5: Render wireframes at discrete heights ───
+                if (config.wireCount > 0) {
+                    const m = config.wireCount;
+                    
+                    for (let i = 0; i < m; i++) {
+                        const t = i / m;
+                        
+                        ctx.save();
+                        ctx.translate(0, -max * (1 - t));
+                        ctx.globalAlpha = 0.03 + 0.12 * t;
+                        
+                        // Jump threshold by larger increments
+                        this.renderEdges(i * 15, config.accentColor, 0.5);
+                        ctx.restore();
+                    }
+                }
+                
+                // ─── STEP 7: Glow effect ───
+                ctx.save();
+                
+                // Solid white wireframe
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.globalAlpha = 0.15;
+                this.renderEdges(config.glowSize / 2, '#FFF', 1);
+                
+                // Blurred glow (screen blend)
+                ctx.globalCompositeOperation = 'screen';
+                ctx.globalAlpha = 0.6;
+                ctx.filter = 'blur(4px)';
+                this.renderEdges(config.glowSize, config.accentColor, 2);
+                
+                // Reset
+                ctx.filter = 'none';
+                ctx.restore();
+                
+                // ─── Draw points (subtle) ───
+                ctx.globalAlpha = 0.3;
+                ctx.fillStyle = config.accentColor;
+                for (const p of this.points) {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // BUILDING GENERATORS
+        // ═══════════════════════════════════════════════════════════
+        const Generators = {
+            // Gothic tower with flying buttresses
+            tower(cx, cy, scale = 1) {
+                const points = [];
+                const s = scale * 80;
+                
+                // Main tower body (rectangular)
+                const w = s * 0.4;
+                const h = s * 0.8;
+                const density = 8;
+                
+                // Perimeter
+                for (let i = 0; i <= density; i++) {
+                    const t = i / density;
+                    points.push({ x: cx - w + t * w * 2, y: cy + h / 2 });
+                    points.push({ x: cx - w + t * w * 2, y: cy - h / 2 });
+                }
+                for (let i = 1; i < density; i++) {
+                    const t = i / density;
+                    points.push({ x: cx - w, y: cy - h / 2 + t * h });
+                    points.push({ x: cx + w, y: cy - h / 2 + t * h });
+                }
+                
+                // Internal structure (floors)
+                for (let floor = 1; floor < 6; floor++) {
+                    const y = cy + h / 2 - (floor / 6) * h;
+                    for (let i = 1; i < density; i++) {
+                        const t = i / density;
+                        points.push({ x: cx - w + t * w * 2, y: y + (Math.random() - 0.5) * 5 });
+                    }
+                }
+                
+                // Spire
+                const spireBase = cy - h / 2;
+                const spireHeight = s * 0.5;
+                for (let i = 0; i < 8; i++) {
+                    const t = i / 8;
+                    const narrowing = 1 - t * 0.9;
+                    points.push({ x: cx - w * narrowing, y: spireBase - t * spireHeight });
+                    points.push({ x: cx + w * narrowing, y: spireBase - t * spireHeight });
+                }
+                points.push({ x: cx, y: spireBase - spireHeight });
+                
+                // Flying buttresses
+                for (let side of [-1, 1]) {
+                    for (let i = 0; i < 3; i++) {
+                        const baseY = cy + h / 4 - i * (h / 4);
+                        const outerX = cx + side * (w + s * 0.3);
+                        points.push({ x: outerX, y: baseY + s * 0.15 });
+                        points.push({ x: cx + side * w, y: baseY - s * 0.1 });
+                        points.push({ x: outerX, y: baseY });
+                    }
+                }
+                
+                return points;
+            },
+            
+            // Cathedral with nave, transepts, apse
+            cathedral(cx, cy, scale = 1) {
+                const points = [];
+                const s = scale * 100;
+                
+                // Nave
+                const naveW = s * 0.25;
+                const naveL = s * 0.8;
+                const density = 15;
+                
+                // Nave outline
+                for (let i = 0; i <= density; i++) {
+                    const t = i / density;
+                    points.push({ x: cx - naveW, y: cy + naveL / 2 - t * naveL });
+                    points.push({ x: cx + naveW, y: cy + naveL / 2 - t * naveL });
+                }
+                
+                // Transepts
+                const transeptY = cy - naveL * 0.1;
+                const transeptW = s * 0.4;
+                const transeptH = s * 0.15;
+                
+                for (let side of [-1, 1]) {
+                    for (let i = 0; i <= 6; i++) {
+                        const t = i / 6;
+                        const x = cx + side * (naveW + t * (transeptW - naveW));
+                        points.push({ x, y: transeptY - transeptH });
+                        points.push({ x, y: transeptY + transeptH });
+                    }
+                    // Transept ends
+                    for (let i = 1; i < 4; i++) {
+                        const t = i / 4;
+                        points.push({ 
+                            x: cx + side * transeptW, 
+                            y: transeptY - transeptH + t * transeptH * 2 
+                        });
+                    }
+                }
+                
+                // Apse (semicircular)
+                const apseY = cy - naveL / 2;
+                const apseR = naveW * 1.2;
+                for (let i = 0; i <= 12; i++) {
+                    const angle = Math.PI + (i / 12) * Math.PI;
+                    points.push({
+                        x: cx + Math.cos(angle) * apseR,
+                        y: apseY + Math.sin(angle) * apseR * 0.6
+                    });
+                }
+                
+                // Interior columns (two rows)
+                for (let row of [-0.6, 0.6]) {
+                    for (let i = 0; i < 8; i++) {
+                        const y = cy + naveL * 0.35 - (i / 8) * naveL * 0.7;
+                        points.push({ x: cx + naveW * row, y });
+                        // Small column detail
+                        points.push({ x: cx + naveW * row + 3, y: y - 3 });
+                        points.push({ x: cx + naveW * row - 3, y: y - 3 });
+                    }
+                }
+                
+                // Rose window (circular points at front)
+                const roseY = cy + naveL / 2 - s * 0.1;
+                const roseR = naveW * 0.6;
+                for (let i = 0; i < 16; i++) {
+                    const angle = (i / 16) * Math.PI * 2;
+                    points.push({
+                        x: cx + Math.cos(angle) * roseR,
+                        y: roseY + Math.sin(angle) * roseR * 0.5
+                    });
+                }
+                
+                return points;
+            },
+            
+            // Neighborhood of buildings
+            neighborhood(cx, cy, scale = 1) {
+                const points = [];
+                const s = scale * 60;
+                
+                // Generate multiple building footprints
+                const buildings = [
+                    { x: -1.5, y: -1, w: 0.8, h: 1.2 },
+                    { x: 0, y: -0.8, w: 1.0, h: 0.9 },
+                    { x: 1.5, y: -1.1, w: 0.7, h: 1.4 },
+                    { x: -1.2, y: 0.8, w: 0.9, h: 0.7 },
+                    { x: 0.5, y: 1, w: 1.1, h: 0.8 },
+                    { x: -0.3, y: 0, w: 0.5, h: 0.5 },
+                    { x: 1.8, y: 0.5, w: 0.6, h: 1.0 },
+                ];
+                
+                for (const b of buildings) {
+                    const bx = cx + b.x * s;
+                    const by = cy + b.y * s;
+                    const bw = b.w * s;
+                    const bh = b.h * s;
+                    
+                    // Building perimeter
+                    const density = Math.floor(4 + Math.random() * 4);
+                    for (let i = 0; i <= density; i++) {
+                        const t = i / density;
+                        points.push({ x: bx - bw / 2 + t * bw, y: by - bh / 2 });
+                        points.push({ x: bx - bw / 2 + t * bw, y: by + bh / 2 });
+                    }
+                    for (let i = 1; i < density; i++) {
+                        const t = i / density;
+                        points.push({ x: bx - bw / 2, y: by - bh / 2 + t * bh });
+                        points.push({ x: bx + bw / 2, y: by - bh / 2 + t * bh });
+                    }
+                    
+                    // Some interior points
+                    for (let j = 0; j < 3; j++) {
+                        points.push({
+                            x: bx + (Math.random() - 0.5) * bw * 0.6,
+                            y: by + (Math.random() - 0.5) * bh * 0.6
+                        });
+                    }
+                }
+                
+                // Streets (lines of points between buildings)
+                for (let i = 0; i < 20; i++) {
+                    points.push({
+                        x: cx + (Math.random() - 0.5) * s * 4,
+                        y: cy + (Math.random() - 0.5) * s * 3
+                    });
+                }
+                
+                return points;
+            }
+        };
+
+        // ═══════════════════════════════════════════════════════════
+        // INITIALIZATION
+        // ═══════════════════════════════════════════════════════════
+        const canvas = document.getElementById('canvas');
+        const renderer = new BarradeauRenderer(canvas);
+        
+        // Mouse interaction
+        canvas.addEventListener('click', (e) => {
+            if (e.button === 0) {
+                renderer.addPoint(e.clientX, e.clientY);
+            }
+        });
+        
+        canvas.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            renderer.clear();
+        });
+        
+        // Touch support
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            renderer.addPoint(touch.clientX, touch.clientY);
+        }, { passive: false });
+        
+        // Buttons
+        document.getElementById('btn-tower').addEventListener('click', () => {
+            renderer.clear();
+            const cx = window.innerWidth / 2;
+            const cy = window.innerHeight / 2 + 50;
+            renderer.addPoints(Generators.tower(cx, cy, 1.5));
+        });
+        
+        document.getElementById('btn-cathedral').addEventListener('click', () => {
+            renderer.clear();
+            const cx = window.innerWidth / 2;
+            const cy = window.innerHeight / 2;
+            renderer.addPoints(Generators.cathedral(cx, cy, 1.8));
+        });
+        
+        document.getElementById('btn-neighborhood').addEventListener('click', () => {
+            renderer.clear();
+            const cx = window.innerWidth / 2;
+            const cy = window.innerHeight / 2;
+            renderer.addPoints(Generators.neighborhood(cx, cy, 2));
+        });
+        
+        document.getElementById('btn-clear').addEventListener('click', () => {
+            renderer.clear();
+        });
+        
+        // Start with a cathedral
+        setTimeout(() => {
+            document.getElementById('btn-cathedral').click();
+        }, 100);
+
+    </script>
+</body>
+</html>
