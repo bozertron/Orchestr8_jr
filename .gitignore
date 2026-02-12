@@ -69,3 +69,6 @@ htmlcov/
 # Jupyter
 .ipynb_checkpoints/
 __marimo__/
+
+# Reference repositories (cloned for study, not part of this repo)
+gsd-reference/
