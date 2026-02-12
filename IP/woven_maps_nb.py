@@ -17,7 +17,7 @@ def _():
     - Phase-based initialization (tuning → coalescing → emergence)
 
     Based on Nicolas Barradeau's "Woven Maps" algorithm
-    Aligned with stereOS Maestro vision (M14.jpg reference)
+    Aligned with Maestro vision (M14.jpg reference)
     """
 
     from __future__ import annotations
@@ -115,7 +115,7 @@ def _():
 
     @dataclass
     class ColorScheme:
-        """Color configuration for Woven Maps - matches stereOS three-state system."""
+        """Color configuration for Woven Maps - matches orchestr8 three-state system."""
         working: str = "#D4AF37"    # Gold - all imports resolve
         broken: str = "#1fbdea"     # Blue/Teal - has errors
         combat: str = "#9D4EDD"     # Purple - LLM deployed

@@ -258,7 +258,7 @@ def render(STATE_MANAGERS):
         mo.hstack([scan_btn, stats], justify="space-between", align="center"),
         mo.md("---"),
         mo.hstack([
-            mo.vstack([file_table], style={"flex": "2"}),
-            mo.vstack([context_panel], style={"flex": "1", "padding-left": "1rem"})
-        ], gap="1rem"),
+            mo.vstack([file_table]),
+            mo.vstack([context_panel])
+        ], gap=1, widths=[2, 1]),  # widths replaces style flex
     ])
