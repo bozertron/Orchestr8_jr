@@ -2,7 +2,7 @@
 name: settlement-import-export-mapper
 description: "Maps all imports/exports per file, produces wiring data for Code City panels, detects cross-fiefdom border crossings, and catalogs integration points. Absorbs Integration Point Mapper role — cross-fiefdom imports ARE integration points."
 tools: Read, Bash, Grep, Glob
-model: sonnet
+model: sonnet-4-5
 tier: 2
 color: teal
 scaling: analysis

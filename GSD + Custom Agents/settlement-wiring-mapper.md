@@ -2,7 +2,7 @@
 name: settlement-wiring-mapper
 description: "Maps all Code City wiring connections between buildings. Produces the wiring section of building panels — Gold (working), Teal (needs work), Purple (agents active). Tracks connection health across waves."
 tools: Read, Bash, Grep, Glob
-model: sonnet
+model: sonnet-4-5
 tier: 8
 color: teal
 ---

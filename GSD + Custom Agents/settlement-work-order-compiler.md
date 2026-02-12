@@ -2,7 +2,7 @@
 name: settlement-work-order-compiler
 description: "Compiles atomic work orders from Architect's decisions. Each work order specifies exact file, exact room, exact line range, exact action, exact verification, token budget, and agent count. So precise that executors can 'RIP through' with zero interpretation. 1M Sonnet model."
 tools: Read, Write, Bash, Grep
-model: 1m-sonnet
+model: sonnet-4-5-1m
 tier: 7
 color: orange
 scaling: analysis

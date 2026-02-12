@@ -2,7 +2,7 @@
 name: settlement-surveyor
 description: "Comprehensive file surveyor (Super-Surveyor). Single read pass produces: room identification with line ranges, token counts with hierarchy aggregation, internal room relationships, function signatures with params/returns/JSDoc. Absorbs Token Counter, File Structure Mapper, and Function Cataloger. 1M Sonnet model for large file capacity."
 tools: Read, Bash, Grep, Glob
-model: 1m-sonnet
+model: sonnet-4-5-1m
 tier: 1
 color: cyan
 scaling: survey

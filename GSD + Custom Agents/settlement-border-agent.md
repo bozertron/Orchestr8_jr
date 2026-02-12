@@ -2,7 +2,7 @@
 name: settlement-border-agent
 description: Defines and enforces border contracts between fiefdoms — what types, functions, and data SHOULD and SHOULD NOT cross each boundary. Architectural judgment, not measurement. Critical for system integrity.
 tools: Read, Write, Bash, Grep
-model: sonnet
+model: sonnet-4-5
 tier: 3
 color: red
 scaling: analysis

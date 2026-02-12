@@ -2,7 +2,7 @@
 name: settlement-complexity-analyzer
 description: Calculates complexity scores (1-10) per room and per file using Surveyor output plus targeted code inspection. Factors in nesting depth, cyclomatic complexity, dependency count, cross-fiefdom dependencies, and enriched signature data. Scores feed the Universal Scaling Formula.
 tools: Read, Bash, Grep
-model: sonnet
+model: sonnet-4-5
 tier: 1
 color: orange
 scaling: analysis

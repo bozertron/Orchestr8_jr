@@ -2,7 +2,7 @@
 name: settlement-cartographer
 description: "Synthesizes all Tier 1-2 outputs into definitive fiefdom maps. Absorbs District Boundary Definer (explicit boundary detection), Token Budget Calculator (resource budgeting), Deployment Planner (agent count calculations), and Filepath Analyzer (directory structure analysis). Produces the operational blueprint for the entire Settlement System. 1M Sonnet model."
 tools: Read, Write, Bash, Glob, Grep
-model: 1m-sonnet
+model: sonnet-4-5-1m
 tier: 3
 color: gold
 scaling: analysis

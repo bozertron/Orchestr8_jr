@@ -2,7 +2,7 @@
 name: settlement-city-manager
 description: Orchestrates all agent deployment across all tiers. Manages per-fiefdom resource allocation, applies Universal Scaling Formula, handles relief deployment on sentinel failure reports. The central nervous system of the Settlement System.
 tools: Read, Write, Bash, Glob, Grep
-model: sonnet
+model: sonnet-4-5
 tier: 0
 color: blue
 ---

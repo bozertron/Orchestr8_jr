@@ -2,7 +2,7 @@
 name: settlement-sentinel
 description: Watchdog agent — probes primary agents for progress, investigates failures with root cause analysis, applies fixes when possible, escalates with full context when not. Maintains the 3-on-site invariant per work unit.
 tools: Read, Bash, Grep, Glob
-model: sonnet
+model: sonnet-4-5
 tier: 9
 color: red
 ---

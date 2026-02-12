@@ -2,7 +2,7 @@
 name: settlement-integration-researcher
 description: Deep research on how fiefdoms currently integrate and how they should integrate. Produces integration research documents per border, informing Architect decisions and border contract refinements.
 tools: Read, Bash, Grep, Glob, WebFetch
-model: sonnet
+model: sonnet-4-5
 tier: 4
 color: green
 scaling: analysis

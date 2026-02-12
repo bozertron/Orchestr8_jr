@@ -2,7 +2,7 @@
 name: settlement-failure-pattern-logger
 description: Pattern archivist — analyzes all sentinel failure reports to identify recurring failure patterns, categorize them, document successful fixes, and produce prevention recommendations. Future agents read FAILURE_PATTERNS.md before starting.
 tools: Read, Write, Bash, Grep, Glob
-model: sonnet
+model: sonnet-4-5
 tier: 10
 color: orange
 ---
