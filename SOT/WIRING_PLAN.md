@@ -30,10 +30,12 @@ Replace all "stereOS" references with "orchestr8" in the codebase.
 ## Priority 1: Top Row Button Fixes
 
 ### Issue 1.1: JFDI Button Opens Wrong Panel
+
 **Current:** Opens placeholder "coming soon" panel (Lines 1059-1079)
 **Expected:** Opens the fully-built `TicketPanel` component
 
 **Fix:**
+
 ```python
 # In build_panels(), replace JFDI placeholder with:
 if get_show_tasks():
@@ -45,12 +47,14 @@ if get_show_tasks():
 **Or simpler:** Wire `toggle_jfdi()` to `toggle_tickets()` since they're the same thing.
 
 ### Issue 1.2: Gener8 Button Does Nothing
+
 **Current:** Only logs "Switch to Generator tab" (Line 893)
 **Expected:** Should open Settings (per user decision)
 
 **Fix:** Change to navigate to settings or open settings panel.
 
 ### Issue 1.3: Waves Button (~~~) Should Be Removed
+
 **Current:** Line 1200-1202 shows `~~~` for settings
 **Expected:** Remove waves, use `gener8` in top row for settings
 
@@ -61,10 +65,12 @@ if get_show_tasks():
 ## Priority 2: Health Checker Integration
 
 ### Issue 2.1: HealthChecker Never Instantiated
+
 **Current:** Imported but never used (Line 77)
 **Expected:** Run health checks and update node colors
 
 **Fix:**
+
 ```python
 # In render(), add:
 health_checker = HealthChecker(project_root_path)
@@ -78,6 +84,7 @@ def refresh_health():
 ```
 
 ### Issue 2.2: Mermaid Generator Unused
+
 **Current:** Imported but Woven Maps replaced it entirely
 **Expected:** Either use it as fallback or remove import
 
@@ -90,11 +97,13 @@ def refresh_health():
 ## Priority 3: Briefing Generator Stub
 
 ### Issue 3.1: `load_campaign_log()` Returns Empty
+
 **Location:** `IP/briefing_generator.py` Lines 18-21
 **Current:** Has `# ... parsing logic ...` comment, returns empty list
 **Expected:** Actually parse CAMPAIGN_LOG.md
 
 **Fix:** Implement the markdown parser:
+
 ```python
 def load_campaign_log(self, fiefdom_path: str, limit: int = 5) -> List[Dict]:
     log_path = self.project_root / fiefdom_path / "CAMPAIGN_LOG.md"
@@ -119,10 +128,12 @@ def load_campaign_log(self, fiefdom_path: str, limit: int = 5) -> List[Dict]:
 ## Priority 4: State Synchronization
 
 ### Issue 4.1: Tickets/Combat/Briefings Not Linked
+
 **Current:** Three separate systems for the same mission
 **Expected:** Creating ticket should be linked to combat deployment
 
 **Fix:** Create a `MissionManager` that coordinates:
+
 ```python
 class MissionManager:
     def __init__(self, project_root):
@@ -146,21 +157,25 @@ class MissionManager:
 ## Priority 5: Panel Placeholder Replacement
 
 ### Issue 5.1: Collabor8 Panel is Placeholder
+
 **Location:** Lines 1037-1057
 **Current:** Static "coming soon" HTML
 **Expected:** Actual agent management UI
 
 **Fix options:**
+
 1. Wire to existing agent definitions from `Agent Deployment Strategy/`
 2. Create simple agent picker dropdown
 3. Integrate with get-shit-done patterns
 
 ### Issue 5.2: Summon Panel is Placeholder
+
 **Location:** Lines 1081-1095
 **Current:** Static HTML mentioning Carl
 **Expected:** Actual search with Carl integration
 
 **Fix:** Wire to `CarlContextualizer`:
+
 ```python
 if get_show_summon():
     from IP.carl_core import CarlContextualizer
@@ -175,21 +190,25 @@ if get_show_summon():
 ## Priority 6: Background Process Fixes
 
 ### Issue 6.1: Director Monitor Thread Disconnect
+
 **Location:** `08_director.py` Lines 239-247
 **Current:** Background thread updates don't trigger UI refresh
 **Expected:** UI should react to background changes
 
 **Fix options:**
+
 1. Use polling with Marimo's reactive state
 2. Use file-based signaling (.orchestr8/state.json)
 3. Accept manual refresh requirement (MVP approach)
 
 ### Issue 6.2: Combat State Cleanup
+
 **Location:** `IP/combat_tracker.py` Lines 60-75
 **Current:** `cleanup_stale_deployments()` must be called manually
 **Expected:** Auto-cleanup on app start
 
 **Fix:** Call cleanup in render() initialization:
+
 ```python
 # In render(), add at start:
 combat_tracker.cleanup_stale_deployments()
@@ -202,11 +221,13 @@ combat_tracker.cleanup_stale_deployments()
 ## Priority 7: Platform Hardcoding
 
 ### Issue 7.1: Hardcoded gnome-terminal
+
 **Location:** `IP/terminal_spawner.py` Line 73-87
 **Current:** Tries gnome-terminal first
 **Fix:** Already has fallback chain, just document
 
 ### Issue 7.2: Hardcoded npm run typecheck
+
 **Location:** `IP/health_checker.py`, `IP/briefing_generator.py`
 **Current:** Assumes TypeScript project
 **Fix:** Already supports Python, just need proper detection
@@ -218,11 +239,13 @@ combat_tracker.cleanup_stale_deployments()
 ## Priority 8: Path Resolution
 
 ### Issue 8.1: sys.path Manipulation
+
 **Location:** Multiple plugins
 **Current:** Using `sys.path.insert()` to resolve imports
 **Fix:** This is actually handled correctly now with project root detection
 
 ### Issue 8.2: Alias Resolution (@/ mapping)
+
 **Location:** `IP/connection_verifier.py` Lines 356-359
 **Current:** Assumes @/ -> src/
 **Fix:** Make configurable via orchestr8_settings.toml

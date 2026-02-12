@@ -135,6 +135,46 @@ After EVERY integration from `one integration at a time/`:
 
 ---
 
+## Grand Vision: stereOS → ∅明nos
+
+Orchestr8 is the initial settlement of ∅明nos — a collaborative spatial environment for human and machine intelligence. The pipeline:
+
+1. **Orchestr8** (current) — Marimo dashboard + Code City visualization
+2. **stereOS** — Full Marimo-native reactive UI with correct methods and seamless integration
+3. **vscode-marimo plugin** — Modified plugin at `vscode-marimo/` driving stereOS within VS Code
+4. **∅明nos** — The destination: shared spatial experience at scale
+
+See `GSD + Custom Agents/The_Story_of_Mingos_A_Tale_of_Emergence.md` for the origin story and vision.
+
+---
+
+## Settlement System
+
+The multi-agent architecture for scaled codebase work. 30 agents across 10 tiers.
+
+| Category | Count | Source |
+|----------|-------|--------|
+| New settlement agents | 19 | `GSD + Custom Agents/settlement-*.md` |
+| Enhanced GSD agents | 11 | `GSD + Custom Agents/gsd-*-enhanced.md` |
+| Settlement workflows | 5 | `GSD + Custom Agents/` (workflow files) |
+| Settlement templates | 6 | `GSD + Custom Agents/` (template files) |
+
+**Architecture spec:** `GSD + Custom Agents/SETTLEMENT_SYSTEM_PRESSURE_TEST.md`
+**Integration spec:** `GSD + Custom Agents/INTEGRATION_PROMPT.md`
+
+**Installation target:** Local `~/.claude/` (not upstream GSD repo)
+
+---
+
+## vscode-marimo Plugin
+
+**Location:** `vscode-marimo/`
+**Status:** Scaffold only (empty src/ directory)
+**Purpose:** Modified Marimo VS Code plugin that integrates stereOS as the development environment
+**Future work:** Build from Marimo's official VS Code extension, adapted for stereOS spatial UI
+
+---
+
 ## Louis (File Protection)
 
 Louis prevents accidental modification of critical files:

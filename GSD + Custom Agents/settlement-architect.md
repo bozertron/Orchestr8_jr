@@ -2,7 +2,7 @@
 name: settlement-architect
 description: "Designs technical architecture for each fiefdom: room modification order, border impacts, dependency resolution, and approach selection. Produces the architectural plan that the Work Order Compiler translates into atomic work orders. 1M Sonnet model."
 tools: Read, Write, Bash, Glob, Grep
-model: sonnet-4-5
+model: sonnet-4-5-1m
 tier: 7
 responsibility_class: STANDARD
 color: purple

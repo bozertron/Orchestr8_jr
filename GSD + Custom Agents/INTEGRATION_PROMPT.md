@@ -1,8 +1,11 @@
 # SETTLEMENT SYSTEM → GSD INTEGRATION PROMPT
 
 ## For: Local Claude Code Instance
+
 ## Date: 2025-02-12
-## Source Repository: https://github.com/gsd-build/get-shit-done.git
+
+## Source Repository: <https://github.com/gsd-build/get-shit-done.git>
+
 ## Integration Source: `GSD + Custom Agents/` folder in this repo
 
 ---
@@ -40,6 +43,7 @@ The Settlement System is a **"Code City" metaphor** for managing large codebases
 It operates in **10 tiers**, from raw survey (Tier 1) through execution (Tier 9) to post-mortem (Tier 10), with a **City Manager** (Tier 0) orchestrating everything and a **Luminary** providing strategic oversight.
 
 The Settlement System introduces:
+
 - **Universal Scaling Formula** — Calculates exactly how many agents to deploy per file based on token count, complexity score, and responsibility class
 - **Sentinel Protocol** — Every work unit has 3 agents (1 primary + 2 sentinels) for fault tolerance
 - **Border Contracts** — Explicit allowed/forbidden crossings between fiefdoms
@@ -79,6 +83,7 @@ These are NEW agent files that go alongside the existing `gsd-*.md` agents. They
 **Deployment:** Copy each file to the GSD `agents/` directory. They should be installed alongside `gsd-*.md` agents.
 
 **Frontmatter format:** These files use extended YAML frontmatter:
+
 ```yaml
 ---
 name: settlement-agent-name
@@ -98,6 +103,7 @@ absorbed:                               # optional: list of agents absorbed into
 ```
 
 **IMPORTANT:** The GSD installer currently only handles `gsd-*.md` agents in its uninstall logic. The installer's `removeOldAgents()` function specifically looks for files matching the `gsd-` prefix. Settlement agents use the `settlement-` prefix, so:
+
 1. The installer needs to be updated to also handle `settlement-*.md` agents
 2. OR settlement agents can be installed in a separate step/directory
 
@@ -120,6 +126,7 @@ These are NOT standalone agents. Each `gsd-*-enhanced.md` file contains **Settle
 | `gsd-roadmapper-enhanced.md` | `agents/gsd-roadmapper.md` | Settlement tier ordering in roadmaps, fiefdom-aware phase decomposition |
 
 **Integration approach for each enhanced file:**
+
 1. Read the base GSD agent file from the GSD repo
 2. Read the corresponding `gsd-*-enhanced.md` file
 3. Update the base agent's `description` field to include "SETTLEMENT ENHANCED" notation
@@ -127,6 +134,7 @@ These are NOT standalone agents. Each `gsd-*-enhanced.md` file contains **Settle
 5. The base agent's existing content must remain UNCHANGED — only additive modifications
 
 **Example merge result:**
+
 ```markdown
 ---
 name: gsd-executor
@@ -201,11 +209,13 @@ The GSD installer needs modifications to handle Settlement System files:
 ### 1. Agent Installation
 
 Currently, `removeOldAgents()` (around line 467) specifically removes `gsd-*.md` files:
+
 ```javascript
 const isGsdAgent = file.startsWith('gsd-') && file.endsWith('.md');
 ```
 
 **Required change:** Also handle `settlement-*.md` agents:
+
 ```javascript
 const isGsdAgent = file.startsWith('gsd-') && file.endsWith('.md');
 const isSettlementAgent = file.startsWith('settlement-') && file.endsWith('.md');
@@ -217,6 +227,7 @@ if (isGsdAgent || isSettlementAgent) { ... }
 Currently, workflows are copied from `get-shit-done/workflows/*.md` (flat directory).
 
 **Required change:** Also copy `get-shit-done/workflows/settlement/*.md` to `~/.claude/get-shit-done/workflows/settlement/`. The installer should:
+
 1. Create the `settlement/` subdirectory if it doesn't exist
 2. Copy all settlement workflow files
 3. Include them in the manifest for tracking
@@ -232,6 +243,7 @@ The installer's manifest system tracks all installed files. Settlement files nee
 ### 5. Frontmatter Handling
 
 The installer converts frontmatter for different runtimes (OpenCode, Gemini). Settlement agent frontmatter includes additional fields (`model`, `tier`, `responsibility_class`, etc.) that the base GSD frontmatter doesn't have. The installer should:
+
 - Preserve these fields for Claude Code (they're used by the Settlement System's orchestration)
 - Strip or convert them appropriately for other runtimes
 
@@ -242,11 +254,14 @@ The installer converts frontmatter for different runtimes (OpenCode, Gemini). Se
 Execute these steps in order:
 
 ### Step 1: Clone and Understand
+
 ```bash
 git clone https://github.com/gsd-build/get-shit-done.git
 cd get-shit-done
 ```
+
 Read `bin/install.js` to understand the current installation flow. Key functions:
+
 - `installGlobal()` / `installLocal()` — Main installation paths
 - `removeOldAgents()` — Cleans old agent files before installing new ones
 - `copyAgents()` — Copies agent .md files to ~/.claude/agents/
@@ -255,10 +270,13 @@ Read `bin/install.js` to understand the current installation flow. Key functions
 - `updateManifest()` — Tracks installed files
 
 ### Step 2: Add Settlement Agents to `agents/`
+
 Copy all 19 `settlement-*.md` files into the GSD repo's `agents/` directory.
 
 ### Step 3: Merge Enhancements into Base GSD Agents
+
 For each of the 11 `gsd-*-enhanced.md` files:
+
 1. Open the corresponding base agent in `agents/gsd-*.md`
 2. Add "SETTLEMENT ENHANCED" to the description
 3. Add the `settlement_enhancements` list to the frontmatter
@@ -266,32 +284,41 @@ For each of the 11 `gsd-*-enhanced.md` files:
 5. Verify the base agent's original content is completely unchanged
 
 ### Step 4: Create Settlement Workflow Directory
+
 ```bash
 mkdir -p get-shit-done/workflows/settlement
 ```
+
 Copy the 5 workflow/protocol files there. Update `vision-alignment.md`'s model field from `opus` to `opus-4-6`.
 
 ### Step 5: Create Settlement Template Directory
+
 ```bash
 mkdir -p get-shit-done/templates/settlement
 ```
+
 Copy the 6 template files there.
 
 ### Step 6: Update Installer
+
 Modify `bin/install.js` to:
+
 1. Handle `settlement-*.md` agents in removal/installation
 2. Copy settlement workflows subdirectory
 3. Copy settlement templates subdirectory
 4. Update manifest to include settlement files
 
 ### Step 7: Create Settlement Commands (Optional — Future Work)
+
 Consider creating slash commands for Settlement operations:
+
 - `/gsd:settlement-survey` — Run the survey-codebase workflow
 - `/gsd:settlement-plan` — Run vision alignment + planning tiers
 - `/gsd:settlement-execute` — Run execution tiers with sentinel deployment
 - `/gsd:settlement-status` — Show fiefdom status and deployment progress
 
 ### Step 8: Test
+
 1. Run `npm install` (or the GSD install process) in a test environment
 2. Verify all existing GSD agents still install and work correctly
 3. Verify settlement agents are installed to `~/.claude/agents/`
@@ -304,6 +331,7 @@ Consider creating slash commands for Settlement operations:
 ## ARCHITECTURAL PRINCIPLES TO PRESERVE
 
 ### GSD Principles (DO NOT BREAK)
+
 1. **Plans are prompts** — PLAN.md IS the prompt, not a document that becomes one
 2. **2-3 tasks per plan** — Context budget management (50% target)
 3. **Goal-backward methodology** — Derive requirements from observable truths
@@ -313,6 +341,7 @@ Consider creating slash commands for Settlement operations:
 7. **Checkpoint protocol** — human-verify / decision / human-action types
 
 ### Settlement Principles (NEW — must coexist)
+
 1. **Universal Scaling Formula** — `effective_tokens = file_tokens × complexity_multiplier × responsibility_multiplier; agents = ceil(effective_tokens / 2500) × 3`
 2. **Sentinel invariant** — Always 3 agents per active work unit (1 primary + 2 sentinels)
 3. **Explicit boundaries** — Every file has exactly ONE fiefdom assignment. No ambiguity.
@@ -322,6 +351,7 @@ Consider creating slash commands for Settlement operations:
 7. **Founder terminology** — The human user is "Founder" in the Settlement metaphor (not "Emperor")
 
 ### Coexistence Rules
+
 - When Settlement System is NOT active, GSD operates exactly as before — no behavioral changes
 - When Settlement System IS active (triggered by survey-codebase workflow or settlement commands), the enhanced sections in GSD agents activate
 - Settlement agents are only spawned by the City Manager or Settlement workflows — they don't interfere with normal GSD agent spawning

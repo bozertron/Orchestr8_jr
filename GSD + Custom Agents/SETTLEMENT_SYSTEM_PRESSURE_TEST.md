@@ -1,7 +1,9 @@
 # Settlement System Pressure Test & Architecture Decision Record
 
 ## Date: 2026-02-12
+
 ## Authors: Ben Webster & Sol (Opus Instance)
+
 ## Status: APPROVED — Ready for Implementation
 
 ---
@@ -17,14 +19,17 @@ The original OPUS_HANDOFF_PROMPT.md specified 44 agents (11 enhanced GSD + 33 ne
 ## BEN'S CRITICAL NOTES (Integrated Throughout)
 
 ### Note 1: No Ambiguity in Boundary Detection
+>
 > "Ambiguity is a no go: full stop. Probably is not in our charter. I don't mind integrating the function elsewhere, but explicit boundaries are important because that's when guesses happen, which is plausibly a cascade failure point."
 
 **Resolution:** Explicit boundary detection is preserved as a dedicated function within the Cartographer agent. The Cartographer MUST produce explicit, unambiguous fiefdom boundaries — not suggestions, not "probably." Boundary detection uses coupling analysis (high internal coupling, low external coupling) combined with directory structure analysis, import/export flow analysis, and cross-fiefdom dependency mapping. The output is definitive boundary contracts, not heuristics.
 
 ### Note 2: Enriched Surveyor Needs Commensurate Scaling
+>
 > "Less agent-types is ok, as long as their deployment volume is commensurate with the problem."
 
 **Resolution:** The Universal Scaling Formula is updated with a COMPLEXITY_MULTIPLIER adjustment for the enriched Surveyor. Because the Super-Surveyor now captures rooms, token counts, internal relationships, AND function signatures in a single pass, its per-file workload is heavier. The complexity scoring accounts for this:
+
 - Original Surveyor: `COMPLEXITY_MULTIPLIER = 1.0 + (complexity_score × 0.1)`
 - Enriched Surveyor: `COMPLEXITY_MULTIPLIER = 1.0 + (complexity_score × 0.15)` (50% higher multiplier)
 - This means a complexity-7 file gets `× 2.05` instead of `× 1.7`, producing more work units and therefore more agents deployed
@@ -45,11 +50,13 @@ The original OPUS_HANDOFF_PROMPT.md specified 44 agents (11 enhanced GSD + 33 ne
 | **Civic Council** | KEEP | Quality gate / founder advocate. Fires at validation checkpoints, not always-active |
 
 **What City Manager absorbs:**
+
 - District Planner's per-fiefdom resource allocation (City Manager already tracks progress per fiefdom in pipeline model)
 - Relief Deployer's failure recovery deployment (City Manager already "spawns agents, tracks progress, handles failures")
 - Scaler's formula (embedded as a calculation step, not a separate agent call)
 
 **What's preserved:**
+
 - Per-fiefdom resource tracking (from District Planner)
 - Relief deployment with failure context forwarding (from Relief Deployer)
 - Universal Scaling Formula calculations (from Scaler)
@@ -67,6 +74,7 @@ The original OPUS_HANDOFF_PROMPT.md specified 44 agents (11 enhanced GSD + 33 ne
 | **Token Counter** | MERGE → Surveyor | Surveyor already counts tokens; aggregation (room → file → fiefdom) added as post-processing step |
 
 **What Super-Surveyor produces (single read pass per file):**
+
 ```json
 {
   "file": "path/to/file.ts",
@@ -99,6 +107,7 @@ The original OPUS_HANDOFF_PROMPT.md specified 44 agents (11 enhanced GSD + 33 ne
 
 **Scaling adjustment (per Ben's Note 2):**
 The enriched Surveyor does more work per file than the original spec's lean Surveyor. The Universal Scaling Formula compensates:
+
 - `COMPLEXITY_MULTIPLIER = 1.0 + (complexity_score × 0.15)` (was 0.1)
 - This ensures more agents are deployed for complex files, preventing the "I've got this" failure mode
 
@@ -117,12 +126,14 @@ The Surveyor now captures function signatures, parameters, return types, and JSD
 | **Function Cataloger** | MERGE → Surveyor (Tier 1) | Signatures/params/returns captured during Surveyor's read pass |
 
 **What Import/Export Mapper absorbs:**
+
 - Integration Point Mapper's cross-fiefdom connection mapping (cross-fiefdom imports ARE integration points)
 - The Mapper's output, filtered to cross-boundary connections, IS the integration point registry
 - Explicit flagging of every cross-fiefdom import with source/destination fiefdom labels
 
 **Filepath Analyzer → Cartographer detail (per Ben's Note 1):**
 The filepath analysis function is NOT removed — it's relocated to the Cartographer where it serves as ONE INPUT among several for boundary detection. Critically, the Cartographer does NOT rely on path structure alone (that would be "probably" territory). It combines:
+
 1. Directory structure analysis (from filepath patterns)
 2. Coupling analysis (high internal, low external — from Import/Export Mapper data)
 3. Cross-fiefdom dependency weighting (from Complexity Analyzer scores)
@@ -144,6 +155,7 @@ The result is EXPLICIT boundaries, not suggestions.
 | **Border Agent** | KEEP | Genuinely distinct: defines contracts (what SHOULD/SHOULDN'T cross), not just maps what does |
 
 **What Super-Cartographer produces:**
+
 ```markdown
 # FIEFDOM MAP: [Project Name]
 
@@ -171,6 +183,7 @@ The result is EXPLICIT boundaries, not suggestions.
 
 **Explicit boundary detection (per Ben's Note 1):**
 The Cartographer's boundary detection is DETERMINISTIC, not heuristic:
+
 1. Calculate coupling ratio for each directory cluster: `internal_imports / total_imports`
 2. Threshold: ≥ 70% internal coupling = fiefdom candidate
 3. Validate against directory structure (path analysis confirms or challenges)
@@ -206,6 +219,7 @@ The Cartographer's boundary detection is DETERMINISTIC, not heuristic:
 | **Context Writer** | MERGE → Context Analyst | Same agent reads transcript, extracts decisions, writes CONTEXT.md |
 
 **What Context Analyst produces:**
+
 - Reads Vision Walker conversation transcript
 - Extracts structured decisions, constraints, preferences
 - Writes CONTEXT.md with LOCKED decisions, Claude's Discretion areas, Deferred Ideas
@@ -232,6 +246,7 @@ The Cartographer's boundary detection is DETERMINISTIC, not heuristic:
 | **Atomic Task Generator** | MERGE → Instruction Writer | Identical output format — both produce exact file/line/action/verification packets |
 
 **Redundancy evidence:**
+
 - Instruction Writer output: `FILE: ... ROOM: ... LINES: ... DO THIS: ... DO NOT: ... VERIFY: ...`
 - Atomic Task Generator output: `exact file path, exact line range, exact action, exact verification, no dependencies`
 - These are the same artifact described twice with different names.
@@ -246,6 +261,7 @@ The Cartographer's boundary detection is DETERMINISTIC, not heuristic:
 | **Relief Deployer** | MERGE → City Manager (Tier 0) | City Manager already handles spawning, progress tracking, and failure recovery |
 
 **Relief deployment preserved in City Manager:**
+
 - On sentinel failure report: City Manager deploys replacement agent with current work unit context + failure notes + "watch out for" patterns
 - Maintains invariant: always 3 agents on site per active work unit
 - This is just what the City Manager does when a sentinel reports a failure — not a separate agent
@@ -347,7 +363,9 @@ EXAMPLES (138KB file, 35K tokens, complexity 7):
 ## ARTIFACTS TO CREATE
 
 ### New Settlement Agent Files (19 files)
+
 Create in `~/.claude/agents/settlement/`:
+
 - [ ] settlement-luminary.md
 - [ ] settlement-city-manager.md
 - [ ] settlement-civic-council.md
@@ -369,7 +387,9 @@ Create in `~/.claude/agents/settlement/`:
 - [ ] settlement-failure-pattern-logger.md
 
 ### Enhanced GSD Agent Files (11 files)
+
 Modify existing files in `~/.claude/agents/`:
+
 - [ ] gsd-codebase-mapper.md
 - [ ] gsd-project-researcher.md
 - [ ] gsd-research-synthesizer.md
@@ -383,7 +403,9 @@ Modify existing files in `~/.claude/agents/`:
 - [ ] gsd-debugger.md
 
 ### New Workflows (5 files)
+
 Create in `~/.claude/get-shit-done/workflows/settlement/`:
+
 - [ ] survey-codebase.md
 - [ ] vision-alignment.md
 - [ ] deploy-scaled-agents.md
@@ -391,7 +413,9 @@ Create in `~/.claude/get-shit-done/workflows/settlement/`:
 - [ ] border-validation.md
 
 ### New Templates (6 files)
+
 Create in `~/.claude/get-shit-done/templates/settlement/`:
+
 - [ ] fiefdom-map.md
 - [ ] border-contract.md
 - [ ] work-order.md
@@ -406,6 +430,7 @@ Create in `~/.claude/get-shit-done/templates/settlement/`:
 ## GSD PATTERNS STUDIED (Reference for Implementation)
 
 ### GSD Executor Pattern (Key Elements to Preserve)
+
 - XML-structured prompts with `<role>`, `<execution_flow>`, `<step>` tags
 - Frontmatter with name, description, tools, color
 - Deviation rules (4 rules with clear priority)
@@ -416,6 +441,7 @@ Create in `~/.claude/get-shit-done/templates/settlement/`:
 - Continuation handling for multi-session execution
 
 ### GSD Planner Pattern (Key Elements to Preserve)
+
 - Context fidelity: LOCKED decisions are NON-NEGOTIABLE
 - Plans ARE prompts (not documents that become prompts)
 - Quality degradation curve awareness (complete within ~50% context)
@@ -426,6 +452,7 @@ Create in `~/.claude/get-shit-done/templates/settlement/`:
 - Frontmatter validation via gsd-tools.js
 
 ### GSD Verifier Pattern (Key Elements to Preserve)
+
 - Goal-backward verification (outcome, not task completion)
 - "Do NOT trust SUMMARY.md claims" — verify against actual codebase
 - Three-level verification: truths → artifacts → wiring
@@ -439,6 +466,7 @@ Create in `~/.claude/get-shit-done/templates/settlement/`:
 Build tier by tier, starting from Tier 0 (coordination) through Tier 10 (validation). Each agent file follows GSD's XML-structured prompt format with frontmatter. Settlement enhancements to GSD agents are additive — new sections added, existing patterns preserved.
 
 All agents reference the Settlement concepts consistently:
+
 - **Fiefdom** = feature neighborhood (directory cluster with high internal coupling)
 - **Building** = file (height = exports, footprint = lines)
 - **Room** = logic block (function, class, significant code block)

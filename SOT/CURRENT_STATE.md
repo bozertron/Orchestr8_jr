@@ -62,6 +62,7 @@ The gap is not implementation - it's integration.
 ## II. What's Wired in 06_maestro.py
 
 ### Services Instantiated (Lines 400-407)
+
 ```python
 combat_tracker = CombatTracker(project_root_path)      # USED
 briefing_generator = BriefingGenerator(project_root_path)  # USED (partially)
@@ -74,12 +75,14 @@ deploy_panel = DeployPanel(project_root_path)          # USED
 ```
 
 ### Imports That Are NEVER Used
+
 ```python
 from IP.health_checker import HealthChecker           # IMPORTED, NEVER INSTANTIATED
 from IP.mermaid_generator import Fiefdom, FiefdomStatus, generate_empire_mermaid  # IMPORTED, NEVER USED
 ```
 
 ### What Works
+
 - Code City visualization (`create_code_city()`) - Line 935
 - Chat with Claude API - Lines 753-843
 - Terminal spawning - Lines 586-621
@@ -140,6 +143,7 @@ From `one integration at a time/Big Pickle/wiring_problems.md`:
 ## V. Summary
 
 ### What Works Today
+
 - Code City renders (Woven Maps)
 - Chat with Claude works (if API key set)
 - Terminal spawning works
@@ -147,6 +151,7 @@ From `one integration at a time/Big Pickle/wiring_problems.md`:
 - Slide-out panels (Calendar, Comms, Files) render
 
 ### Critical Gaps
+
 1. Top row buttons don't match spec
 2. JFDI doesn't use TicketPanel
 3. HealthChecker never runs
@@ -155,4 +160,5 @@ From `one integration at a time/Big Pickle/wiring_problems.md`:
 6. Brand still says "stereOS"
 
 ### Path Forward
+
 See `SOT/WIRING_PLAN.md` for the comprehensive fix plan.
