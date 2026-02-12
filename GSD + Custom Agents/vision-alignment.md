@@ -3,7 +3,7 @@ name: vision-alignment
 description: "Run Tier 5: Vision Walker walks Founder through each fiefdom for alignment. BEFORE any planning."
 triggers: City Manager (after survey-codebase completes)
 tiers: 5
-model: opus
+model: opus-4-6
 ---
 
 # Vision Alignment Workflow

@@ -27,7 +27,7 @@ When executing Settlement work orders:
 ### Git Commit Convention
 
 ```bash
-git commit -m "[Tier 9][${FIEFDOM}][${ROOM}] ${description}
+git commit -m "[Tier ${TIER}][${FIEFDOM}][${ROOM}] ${description}
 
 ${type}(${scope}): ${concise_description}
 - ${key_change_1}

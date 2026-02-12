@@ -17,7 +17,7 @@ Standard procedure for deploying the correct number of agents to any target.
 ## Procedure
 
 ### 1. Calculate Scale
-```
+```text
 RESPONSIBILITY_MULTIPLIERS:
   STANDARD  = 1.0
   ENRICHED  = 1.2

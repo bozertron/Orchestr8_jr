@@ -39,7 +39,7 @@
 - `[TEST COMMAND]`
 
 ## Git Commit
-```
+```text
 [Tier N][FIEFDOM][ROOM] description
 type(scope): concise description
 - key change 1

@@ -12,8 +12,8 @@ Standard operating procedure for sentinel watchdog agents during execution.
 ## Deployment Configuration
 Per work unit: 2 sentinels + 1 primary = 3 agents on site
 
-- Sentinel A: probes at T+30s, T+90s, T+150s, ...
-- Sentinel B: probes at T+15s, T+75s, T+135s, ... (15s offset)
+- Sentinel A: probes at T+30s, T+60s, T+90s, T+120s, ... (every 30s)
+- Sentinel B: probes at T+15s, T+45s, T+75s, T+105s, ... (every 30s, 15s offset)
 - Combined coverage: probe every 15 seconds
 
 ## Probe Checklist

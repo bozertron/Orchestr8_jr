@@ -7,7 +7,7 @@
 
 ## Universal Scaling Formula
 
-```
+```text
 INPUTS:
   file_tokens          = approximate token count of target
   complexity_score     = 1-10 based on nesting, dependencies, patterns
@@ -48,12 +48,12 @@ the Settlement System exists to prevent.
 A Surveyor processing a 138KB file (35K tokens, complexity 7):
 
 **Without responsibility scaling (WRONG):**
-```
+```text
 35000 × 1.7 = 59,500 → 24 work units → 72 agents
 ```
 
 **With responsibility scaling (CORRECT):**
-```
+```text
 35000 × 1.7 × 1.6 = 95,200 → 39 work units → 117 agents
 ```
 
@@ -66,7 +66,7 @@ Anything less recreates the "agent thinks it's got this, then explodes" failure 
 
 **Always 3 agents on site per work unit.**
 
-```
+```text
 INITIAL STATE:
   Agent 1 = PRIMARY (attempts work)
   Agent 2 = SENTINEL (probes Agent 1 every 30s)
@@ -99,47 +99,47 @@ INVARIANT: There are ALWAYS 3 agents on site for any active work unit
 
 ## Model Assignments
 
-| Role | Model | Reason |
-|------|-------|--------|
-| Luminary | Opus | Deep reasoning, architectural decisions |
-| Vision Walker | Opus | Nuanced founder interaction |
-| Civic Council | Opus | Quality verification, cleanup |
-| Surveyors | 1M Sonnet | Need to read lots of files |
-| Cartographers | 1M Sonnet | Synthesize massive survey data |
-| Integration Synthesizers | 1M Sonnet | Hold all connection points |
-| Architects | 1M Sonnet | Complex design spanning fiefdoms |
-| Work Order Compiler | 1M Sonnet | Needs full picture |
-| All execution agents | Sonnet | Fast, focused, atomic tasks |
-| Sentinels | Sonnet | Quick probe/investigate cycles |
-| Border Agents | Sonnet | Focused contract validation |
+| Role | Model | Model ID | Reason |
+|------|-------|----------|--------|
+| Luminary | Opus | opus-4-6 | Deep reasoning, architectural decisions |
+| Vision Walker | Opus | opus-4-6 | Nuanced founder interaction |
+| Civic Council | Opus | opus-4-6 | Quality verification, cleanup |
+| Surveyors | 1M Sonnet | sonnet-4-5-1m | Need to read lots of files |
+| Cartographers | 1M Sonnet | sonnet-4-5-1m | Synthesize massive survey data |
+| Integration Synthesizers | 1M Sonnet | sonnet-4-5-1m | Hold all connection points |
+| Architects | 1M Sonnet | sonnet-4-5-1m | Complex design spanning fiefdoms |
+| Work Order Compiler | 1M Sonnet | sonnet-4-5-1m | Needs full picture |
+| All execution agents | Sonnet | sonnet-4-5 | Fast, focused, atomic tasks |
+| Sentinels | Sonnet | sonnet-4-5 | Quick probe/investigate cycles |
+| Border Agents | Sonnet | sonnet-4-5 | Focused contract validation |
 
 ---
 
 ## Scaling Examples
 
 ### Small utility (2.5K tokens, complexity 3, STANDARD agent):
-```
+```text
 effective = 2500 × 1.3 × 1.0 = 3,250
 work_units = ceil(3250 / 2500) = 2
 TOTAL_AGENTS = 2 × 3 = 6 agents
 ```
 
 ### Medium file (10K tokens, complexity 5, SURVEY agent):
-```
+```text
 effective = 10000 × 1.5 × 1.6 = 24,000
 work_units = ceil(24000 / 2500) = 10
 TOTAL_AGENTS = 10 × 3 = 30 agents
 ```
 
 ### Large file (35K tokens, complexity 7, SURVEY agent):
-```
+```text
 effective = 35000 × 1.7 × 1.6 = 95,200
 work_units = ceil(95200 / 2500) = 39
 TOTAL_AGENTS = 39 × 3 = 117 agents
 ```
 
 ### P2P module (200K tokens, complexity 9, SYNTHESIS agent):
-```
+```text
 effective = 200000 × 1.9 × 1.8 = 684,000
 work_units = ceil(684000 / 2500) = 274
 TOTAL_AGENTS = 274 × 3 = 822 agents
@@ -155,7 +155,7 @@ If TOTAL_AGENTS > 500 for a single target: ESCALATE to Luminary. May need to sub
 
 ### Git Commit Convention
 All executors follow this commit message format:
-```
+```text
 [Tier X][Fiefdom][Room] description
 
 type(scope): concise description
