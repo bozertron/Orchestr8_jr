@@ -83,6 +83,7 @@ from IP.plugins.components.calendar_panel import CalendarPanel
 from IP.plugins.components.comms_panel import CommsPanel
 from IP.plugins.components.file_explorer_panel import FileExplorerPanel
 from IP.plugins.components.deploy_panel import DeployPanel
+from IP.carl_core import CarlContextualizer
 
 # Optional: anthropic SDK for chat functionality
 try:
@@ -419,6 +420,8 @@ def render(STATE_MANAGERS: dict) -> Any:
     comms_panel = CommsPanel(project_root_path)
     file_explorer_panel = FileExplorerPanel(project_root_path)
     deploy_panel = DeployPanel(project_root_path)
+
+    carl = CarlContextualizer(str(project_root_path))
 
     def on_health_change(results: dict) -> None:
         """Callback when health check completes - updates health state."""
@@ -1129,18 +1132,27 @@ def render(STATE_MANAGERS: dict) -> Any:
             """)
             panels.append(tasks_panel)
 
-        # Summon (Search) Panel
+        # Summon (Search) Panel - with Carl integration
         if get_show_summon():
+            selected_fiefdom = get_selected() or "IP"
+            try:
+                context_json = carl.gather_context_json(selected_fiefdom)
+                context_display = f"<pre style='color:#888;font-size:10px;white-space:pre-wrap;max-height:300px;overflow:auto;'>{context_json}</pre>"
+            except Exception as e:
+                context_display = (
+                    f"<span style='color:#1fbdea;'>Error loading context: {e}</span>"
+                )
+
             summon_panel = mo.Html(f"""
             <div class="panel-overlay">
                 <div class="panel-header">
-                    <span class="panel-title">SUMMON - Global Search</span>
+                    <span class="panel-title">SUMMON - Neighborhood Context</span>
                 </div>
-                <div style="color: #999; font-size: 12px;">
-                    Search across codebase, tasks, and agents.
-                    <br><br>
-                    <em>Integration with Carl contextualizer pending.</em>
+                <div style="margin-bottom: 12px;">
+                    <span style="color:#666;font-size:11px;">Selected: </span>
+                    <span style="color:#D4AF37;font-family:monospace;">{selected_fiefdom}</span>
                 </div>
+                {context_display}
             </div>
             """)
             panels.append(summon_panel)
