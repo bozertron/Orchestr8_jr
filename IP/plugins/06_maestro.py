@@ -419,6 +419,13 @@ def render(STATE_MANAGERS: dict) -> Any:
     file_explorer_panel = FileExplorerPanel(project_root_path)
     deploy_panel = DeployPanel(project_root_path)
 
+    def refresh_health() -> None:
+        """Run HealthChecker on project root and update health state."""
+        health_checker = HealthChecker(str(project_root_path))
+        result = health_checker.check_fiefdom("IP")
+        set_health({"IP": result})
+        log_action(f"Health check complete: {result.status}")
+
     # Local state - Ticket panel visibility
     get_show_tickets, set_show_tickets = mo.state(False)
 
