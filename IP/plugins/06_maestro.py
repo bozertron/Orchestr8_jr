@@ -997,6 +997,69 @@ def render(STATE_MANAGERS: dict) -> Any:
             </div>
             """)
 
+    def build_summon_results() -> Any:
+        """
+        Render search results as emergent cards.
+        Things EMERGE from the void - no breathing animations.
+        """
+        query = get_summon_query()
+        results = get_summon_results()
+        loading = get_summon_loading()
+
+        if not query or len(query) < 2:
+            return mo.Html("""
+            <div class="void-placeholder">
+                Type at least 2 characters to search the codebase...
+            </div>
+            """)
+
+        if loading:
+            return mo.Html("""
+            <div class="void-placeholder" style="color: #D4AF37;">
+                Scanning the Void...
+            </div>
+            """)
+
+        if not results:
+            return mo.Html(f"""
+            <div class="void-placeholder">
+                No results found for "{query}"
+            </div>
+            """)
+
+        cards_html = ""
+        for result in results[:10]:
+            fiefdom = result.get("fiefdom", "Unknown")
+            health = result.get("health", {})
+            status = health.get("status", "working")
+
+            status_color = "#D4AF37" if status == "working" else "#1fbdea"
+
+            error_count = len(health.get("errors", []))
+            warning_count = len(health.get("warnings", []))
+
+            cards_html += f"""
+            <div class="emerged-message" style="border-left: 3px solid {status_color};">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: {status_color}; font-family: monospace; font-weight: 600;">
+                        {fiefdom}
+                    </span>
+                    <span style="color: #666; font-size: 10px;">
+                        {status.upper()}
+                    </span>
+                </div>
+                <div style="margin-top: 8px; font-size: 12px; color: #888;">
+                    {error_count} errors, {warning_count} warnings
+                </div>
+            </div>
+            """
+
+        return mo.Html(f"""
+        <div style="width: 100%; max-width: 700px;">
+            {cards_html}
+        </div>
+        """)
+
     def build_void_messages() -> Any:
         """
         Build the void emergence display.
