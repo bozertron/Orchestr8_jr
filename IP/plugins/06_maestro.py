@@ -1255,30 +1255,49 @@ def render(STATE_MANAGERS: dict) -> Any:
             """)
             panels.append(tasks_panel)
 
-        # Summon (Search) Panel - with Carl integration
+        # Summon (Search) Panel - with Carl integration + Search
         if get_show_summon():
+
+            def _on_summon_change(q: str) -> None:
+                set_summon_query(q)
+                trigger_carl_search(q)
+
+            summon_input = mo.ui.text(
+                value=get_summon_query(),
+                placeholder="Search codebase, tasks, agents...",
+                on_change=_on_summon_change,
+                full_width=True,
+            )
+
+            results_display = build_summon_results()
+
             selected_fiefdom = get_selected() or "IP"
             try:
                 context_json = carl.gather_context_json(selected_fiefdom)
-                context_display = f"<pre style='color:#888;font-size:10px;white-space:pre-wrap;max-height:300px;overflow:auto;'>{context_json}</pre>"
+                context_footer = f"""<details style="margin-top: 16px;">
+                    <summary style="color: #666; font-size: 11px; cursor: pointer;">
+                        View Raw Context JSON
+                    </summary>
+                    <pre style='color:#888;font-size:9px;white-space:pre-wrap;max-height:200px;overflow:auto;background:#0A0A0B;padding:8px;border-radius:4px;margin-top:8px;'>{context_json}</pre>
+                </details>"""
             except Exception as e:
-                context_display = (
-                    f"<span style='color:#1fbdea;'>Error loading context: {e}</span>"
-                )
+                context_footer = f"<span style='color:#1fbdea;font-size:10px;'>Context error: {e}</span>"
 
             summon_panel = mo.Html(f"""
-            <div class="panel-overlay">
+            <div class="panel-overlay" style="animation: emergence-scale 0.4s ease-out both;">
                 <div class="panel-header">
-                    <span class="panel-title">SUMMON - Neighborhood Context</span>
+                    <span class="panel-title">SUMMON - Neighborhood Search</span>
                 </div>
                 <div style="margin-bottom: 12px;">
                     <span style="color:#666;font-size:11px;">Selected: </span>
                     <span style="color:#D4AF37;font-family:monospace;">{selected_fiefdom}</span>
                 </div>
-                {context_display}
             </div>
             """)
             panels.append(summon_panel)
+            panels.append(summon_input)
+            panels.append(results_display)
+            panels.append(mo.Html(context_footer))
 
         if panels:
             return mo.vstack(panels)
