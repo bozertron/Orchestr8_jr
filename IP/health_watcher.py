@@ -179,6 +179,32 @@ class HealthWatcherManager:
             # Path not relative to project root
             return str(path.parent) + "/"
 
+    async def _on_file_change(self, path: Path) -> None:
+        """
+        Handle file change event with debouncing.
+
+        Adds the changed file to pending queue and schedules
+        a debounced health check.
+
+        Args:
+            path: Path to the changed file
+        """
+        suffix = path.suffix.lower()
+        if suffix not in {".py", ".ts", ".tsx", ".js", ".jsx"}:
+            return
+
+        fiefdom = self._map_to_fiefdom(path)
+
+        self._pending[fiefdom].add(str(path))
+
+        if self._debounce_task is not None:
+            try:
+                self._debounce_task.cancel()
+            except Exception:
+                pass
+
+        self._debounce_task = asyncio.create_task(self._debounced_check())
+
     async def _debounced_check(self) -> None:
         """
         Execute batched health checks after debounce period.
