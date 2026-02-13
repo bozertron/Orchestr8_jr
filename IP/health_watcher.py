@@ -4,8 +4,9 @@ Bridges file system events to HealthChecker for Code City visualization.
 """
 
 import threading
+from collections import defaultdict
 from pathlib import Path
-from typing import Callable, Dict, Any, Optional
+from typing import Callable, Dict, Any, Optional, List
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileModifiedEvent
 
@@ -102,3 +103,51 @@ class HealthWatcher:
             self._observer.stop()
             self._observer.join()
             self._observer = None
+
+
+# =============================================================================
+# HealthWatcherManager - Marimo FileWatcherManager Integration
+# =============================================================================
+
+
+class HealthWatcherManager:
+    """
+    File watcher using Marimo's FileWatcherManager for health checking.
+
+    Integrates with Marimo's reactive state for real-time Code City updates.
+    Debounces file changes to prevent CPU spikes during bulk modifications.
+
+    Data flow: File Change → Debounce → HealthChecker → state_managers → Code City
+    """
+
+    DEBOUNCE_MS = 300  # 300ms debounce per CONTEXT.md
+
+    def __init__(
+        self,
+        project_root: Path,
+        state_managers: Dict[str, Any],
+        watch_paths: List[str] = None,
+    ):
+        """
+        Initialize HealthWatcherManager.
+
+        Args:
+            project_root: Path to project root directory
+            state_managers: Dict with "health" state getter/setter
+            watch_paths: List of paths to watch (default: ["IP/"])
+        """
+        self.project_root = Path(project_root)
+        self._state_managers = state_managers
+        self._watch_paths = watch_paths or ["IP/"]
+
+        # Pending file changes grouped by fiefdom
+        self._pending: Dict[str, set] = defaultdict(set)
+
+        # Debounce task reference
+        self._debounce_task = None
+
+        # Health checker instance
+        self._health_checker = HealthChecker(str(self.project_root))
+
+        # File watcher manager (Marimo)
+        self._file_watcher = None
