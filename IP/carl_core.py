@@ -31,18 +31,38 @@ class CarlContextualizer:
     Executes unified-context-system.ts via npx tsx and parses results.
     """
 
-    def __init__(self, root_path: str, timeout: int = DEFAULT_TIMEOUT):
+    def __init__(
+        self,
+        root_path: str,
+        timeout: int = DEFAULT_TIMEOUT,
+        state_managers: Optional[Dict] = None,
+    ):
         """
         Initialize Carl Contextualizer.
 
         Args:
             root_path: Project root directory
             timeout: Subprocess timeout in seconds (default: 30)
+            state_managers: Optional state managers dict for integration
         """
         self.root = Path(root_path)
         self.timeout = timeout
         self.ts_tool = self.root / TS_TOOL_PATH
         self.context_file = self.root / CONTEXT_OUTPUT_PATH
+        self.state_managers = state_managers or {}
+
+        # Initialize signal sources for context aggregation
+        self.health_checker = HealthChecker(str(self.root))
+        self.connection_verifier = ConnectionVerifier(str(self.root))
+        self.combat_tracker = CombatTracker(str(self.root))
+        self.ticket_manager = TicketManager(str(self.root))
+
+        # Louis initialization (may fail gracefully if not configured)
+        try:
+            louis_config = LouisConfig(str(self.root))
+            self.louis_warden = LouisWarden(louis_config)
+        except Exception:
+            self.louis_warden = None
 
     def run_deep_scan(self) -> Dict[str, Any]:
         """
