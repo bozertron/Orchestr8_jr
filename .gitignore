@@ -86,3 +86,7 @@ effects/
 # Task files
 # tasks.json
 # tasks/ 
+
+# Intentional nested repositories (keep local, do not stage in superproject)
+.taskmaster/tools/claude-mem/
+Barradeau/CodeCity/particles.js/
