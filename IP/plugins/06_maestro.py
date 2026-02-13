@@ -910,6 +910,61 @@ def render(STATE_MANAGERS: dict) -> Any:
         set_show_summon(not get_show_summon())
         log_action("Summon toggled")
 
+    def trigger_carl_search(query: str) -> None:
+        """
+        Trigger Carl context search with query filter.
+        Non-blocking - Carl collects, he doesn't block.
+        """
+        if not query or len(query) < 2:
+            set_summon_results([])
+            return
+
+        set_summon_loading(True)
+        log_action(f"Summon search: {query}")
+
+        try:
+            context = carl.gather_context("IP")
+
+            results = []
+            context_dict = {
+                "fiefdom": context.fiefdom,
+                "health": {
+                    "status": context.health.get("status", "working"),
+                    "errors": context.health.get("errors", []),
+                    "warnings": context.health.get("warnings", []),
+                },
+                "connections": context.connections,
+                "combat": context.combat,
+                "tickets": context.tickets,
+                "locks": context.locks,
+            }
+
+            query_lower = query.lower()
+
+            if query_lower in context.fiefdom.lower():
+                results.append(context_dict)
+
+            for err in context.health.get("errors", []):
+                if query_lower in err.get("message", "").lower():
+                    results.append(context_dict)
+                    break
+
+            for ticket in context.tickets:
+                if query_lower in ticket.lower():
+                    results.append(context_dict)
+                    break
+
+            if not results and len(query) >= 3:
+                results.append(context_dict)
+
+            set_summon_results(results)
+
+        except Exception as e:
+            log_action(f"Summon search error: {e}")
+            set_summon_results([])
+        finally:
+            set_summon_loading(False)
+
     # ========================================================================
     # UI BUILDERS
     # ========================================================================
