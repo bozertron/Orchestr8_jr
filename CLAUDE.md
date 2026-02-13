@@ -108,6 +108,17 @@ marimo edit orchestr8.py
   - Fix: reuse `VirtualFileStorageManager().storage` in both context initializers and only create storage when absent:
     - `marimo/marimo/_runtime/context/kernel_context.py`
     - `marimo/marimo/_runtime/context/script_context.py`
+- Single-canonical marimo install + mode-order hardening (2026-02-13):
+  - Local install source is intentionally singular:
+    - `~/.local/lib/python3.14/site-packages/marimo.pth -> /home/bozertron/Orchestr8_jr/marimo/`
+    - `python -c "import marimo; print(marimo.__file__)"` resolves to repo vendored marimo.
+  - Any duplicate local install artifacts must be removed before debugging runtime behavior.
+  - Runtime-order correction:
+    - `marimo/marimo/_runtime/app/kernel_runner.py` now inherits `mode=ctx.session_mode` for embedded app contexts.
+    - This prevents forcing `SessionMode.EDIT` inside a `RUN` parent context, which can create storage backend mismatch behavior and noisy virtual file warnings.
+  - Operational rule:
+    - Use exactly one startup path at a time (`scripts/run_orchestr8_single.sh` preferred).
+    - Do not run edit/run instances in parallel for the same notebook during diagnostics.
 
 ### Diagnostic Checklist (Repeatable)
 
