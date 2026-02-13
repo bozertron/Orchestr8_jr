@@ -1,6 +1,6 @@
 """
 03_gatekeeper Plugin - Louis File Protection UI
-Orchestr8 v3.0 - The Fortress Factory
+Orchestr8 v3.0
 
 Provides a UI interface for Louis file protection system using
 LouisWarden and LouisConfig from louis_core.py.

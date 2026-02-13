@@ -1,0 +1,17 @@
+{
+  "source": "one integration at a time/frontend/tools/registry/01_scaffold.json",
+  "total_lines": 10,
+  "sha256": "a7188aa152bccd02f06baee474285f19536684274ca828ba6c8c54007dddcdf7",
+  "chunk_count": 1,
+  "observation_ids": [
+    628
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

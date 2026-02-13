@@ -1,0 +1,19 @@
+{
+  "source": "one integration at a time/star-vector/starvector/serve/vllm_api_gradio/model_worker.py",
+  "total_lines": 301,
+  "sha256": "97616b9f31e35b3fc0ef95b86c80b98b04d099292f39387206dfcbc0e2589984",
+  "chunk_count": 3,
+  "observation_ids": [
+    975,
+    976,
+    977
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

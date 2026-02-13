@@ -1,0 +1,38 @@
+{
+  "source": ".planning/codebase/prompts/TERMINAL-5-PLUGINS.md",
+  "total_lines": 31,
+  "sha256": "5399e2d8f020a96d7b44c623c6a703fa370b6e832bf8be7bbc486dc0f9578b0d",
+  "chunk_count": 1,
+  "observation_ids": [
+    1025
+  ],
+  "risks": [
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 1,
+      "text": "# Terminal 5: All Plugins (except 06_maestro)"
+    },
+    {
+      "line": 12,
+      "text": "7. `IP/plugins/05_universal_bridge.py` (506 lines) — tool registry"
+    },
+    {
+      "line": 17,
+      "text": "12. `IP/plugins/05_cli_bridge.py.deprecated` — note but don't analyze deeply"
+    },
+    {
+      "line": 22,
+      "text": "2. What does render(STATE_MANAGERS) produce?"
+    },
+    {
+      "line": 26,
+      "text": "6. Does it read from orchestr8_settings.toml?"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

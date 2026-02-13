@@ -32,6 +32,7 @@
 ### Edit/Refactor Models
 
 No default - load all supported options:
+
 - OpenAI
 - Anthropic
 - Open Router
@@ -43,12 +44,14 @@ No default - load all supported options:
 ### Autocomplete
 
 Local model via:
+
 - Ollama
 - vLLM (if supported)
 
 ### Embeddings
 
 Local models, two focused purposes:
+
 1. **Embeddings** - Vector similarity search
 2. **Document work/creation** - RAG, summarization
 
@@ -85,6 +88,7 @@ Single user = simplicity over security theater.
 ### Tier 1: Core Providers (Pre-configured)
 
 From user's explicit list:
+
 - **OpenAI** - GPT-4, GPT-4o, etc.
 - **Anthropic** - Claude models
 - **Open Router** - Model aggregator
@@ -96,6 +100,7 @@ From user's explicit list:
 ### Tier 2: Extended Providers
 
 Standard industry providers:
+
 - **Google** - Gemini models
 - **Mistral** - European alternative
 - **Cerebras** - Fast inference
@@ -106,6 +111,7 @@ Standard industry providers:
 ### Tier 3: Reference Implementation
 
 Look at provider lists from:
+
 - **Kilocode** - IDE extension provider patterns
 - **Cline** - Agent-style provider patterns
 - **stereOS** - Potential UI concept boost (not Python)
@@ -115,6 +121,7 @@ Look at provider lists from:
 > "Let's front-load the effort and just make a nice UI for it all."
 
 Settings panel should present:
+
 1. Provider selector
 2. API key input per provider
 3. Model selector per provider
@@ -174,6 +181,7 @@ Settings panel should present:
 **CRITICAL:** LLMs must NOT self-engage Agent mode.
 
 If an LLM engages Agent mode without human activation:
+
 1. Louis' lock-farm trips
 2. LLM output is blocked
 3. LLM must explain why they ignored the rules
@@ -185,6 +193,7 @@ If an LLM engages Agent mode without human activation:
 > "Only the very explicit file that is on your ticket. No 'looking around in an area you have no idea about, and just starting to pound on code'"
 
 This prevents the common failure mode where LLMs:
+
 - Wander into unfamiliar code areas
 - Make assumptions about architecture
 - "Fix" things that aren't broken
@@ -205,6 +214,7 @@ No artificial limits on context or output.
 The standing orders document that ALL LLM Generals must follow.
 
 **Contents:**
+
 - EPO rules (no mocks, no stubs, read-before-edit)
 - Naming conventions (maestro = lowercase)
 - Agent mode tier system
@@ -217,6 +227,7 @@ The standing orders document that ALL LLM Generals must follow.
 Mission-specific context for current work.
 
 **Auto-generated from:**
+
 - Current ticket/task details
 - Related file context
 - Recent CAMPAIGN_LOG entries
@@ -227,6 +238,7 @@ Mission-specific context for current work.
 Historical knowledge and lessons learned.
 
 **Accumulates:**
+
 - Successful solutions
 - Failed approaches (don't repeat)
 - Architecture decisions and rationale
@@ -237,6 +249,7 @@ Historical knowledge and lessons learned.
 **Core Principle:** All available data, auto-populated.
 
 **Auto-population triggers:**
+
 - Warnings during execution
 - Errors during execution
 - Test failures
@@ -247,6 +260,7 @@ Historical knowledge and lessons learned.
 > "ALL the data we can acquire on that explicit circuit in every way should be available to the engineers."
 
 Data to include:
+
 - Error message(s)
 - Stack trace
 - Related file paths

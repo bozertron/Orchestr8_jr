@@ -1,0 +1,123 @@
+{
+  "source": "one integration at a time/docs/MAESTROVIEW_MARIMO_CONTEXTUALIZATION.md",
+  "total_lines": 571,
+  "sha256": "b8247eb66a36a9eb774bd6389882db87b2a45ed0e05db1107b3ea0fcd845b874",
+  "chunk_count": 5,
+  "observation_ids": [
+    456,
+    457,
+    458,
+    459,
+    460
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 28,
+      "text": "│ [stereOS] ←──────────────────────→ [Collabor8] [JFDI] [Gener8] │"
+    },
+    {
+      "line": 47,
+      "text": "│ │   Center: [maestro]                                         ││"
+    },
+    {
+      "line": 60,
+      "text": "| Tasks Panel | slides-right | 45 | `JFDI` button |"
+    },
+    {
+      "line": 96,
+      "text": "**Marimo Translation (orchestr8_maestro.py):**"
+    },
+    {
+      "line": 98,
+      "text": "def render(STATE_MANAGERS):"
+    },
+    {
+      "line": 107,
+      "text": "# Selection states (from global STATE_MANAGERS)"
+    },
+    {
+      "line": 108,
+      "text": "get_selected, set_selected = STATE_MANAGERS[\"selected\"]"
+    },
+    {
+      "line": 123,
+      "text": "| `useProvider('maestro')` | LLM interface | `llm_bridge.py` module |"
+    },
+    {
+      "line": 137,
+      "text": "| `DomainAgentBar` | components/DomainAgentBar.vue | `06_collabor8.py` (NEW) |"
+    },
+    {
+      "line": 180,
+      "text": "# Center - maestro"
+    },
+    {
+      "line": 182,
+      "text": "label=\"maestro\","
+    },
+    {
+      "line": 227,
+      "text": "def toggle_collabor8():"
+    },
+    {
+      "line": 239,
+      "text": "if ((e.metaKey || e.ctrlKey) && e.key === 't') toggleJFDI()"
+    },
+    {
+      "line": 342,
+      "text": ".maestro-btn {"
+    },
+    {
+      "line": 354,
+      "text": ".maestro-btn:hover {"
+    },
+    {
+      "line": 368,
+      "text": "- [ ] Create `06_maestro.py` plugin with void layout"
+    },
+    {
+      "line": 371,
+      "text": "- [ ] Integrate with existing STATE_MANAGERS"
+    },
+    {
+      "line": 374,
+      "text": "- [ ] Implement `07_collabor8.py` (Agent Bar)"
+    },
+    {
+      "line": 379,
+      "text": "- [ ] Create `llm_bridge.py` for LLM calls"
+    },
+    {
+      "line": 412,
+      "text": "├── 05_universal_bridge.py  # Tool Registry (EXISTS)"
+    },
+    {
+      "line": 413,
+      "text": "├── 06_maestro.py           # NEW: The Void (Central Command)"
+    },
+    {
+      "line": 414,
+      "text": "├── 07_collabor8.py         # NEW: Agent Management"
+    },
+    {
+      "line": 427,
+      "text": "06_maestro Plugin - The Void"
+    },
+    {
+      "line": 455,
+      "text": "def render(STATE_MANAGERS):"
+    },
+    {
+      "line": 460,
+      "text": "get_root, set_root = STATE_MANAGERS[\"root\"]"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

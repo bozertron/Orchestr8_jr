@@ -1,0 +1,115 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/DAC-O_rust_migration.md",
+  "total_lines": 161,
+  "sha256": "2910e729a59d1916bddf848f5432ffa55d7cd94b8544f1c800f8688643659651",
+  "chunk_count": 2,
+  "observation_ids": [
+    730,
+    731
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 3,
+      "text": "This document tracks the progress and plan for migrating Rust code from the DAC-O project into the orchestr8 project's Tauri backend (`src-tauri`)."
+    },
+    {
+      "line": 8,
+      "text": "* The monolithic `orchestr8/src-tauri/src/main.rs` file was refactored into a modular structure."
+    },
+    {
+      "line": 15,
+      "text": "* `llm_chat_commands.rs`: (Renamed from `chat_commands.rs`) Holds existing orchestr8 commands for LLM interaction (`send_message`, `fetch_history`, etc.)."
+    },
+    {
+      "line": 25,
+      "text": "* All structs from the DAC-O `src/models/` directory (`chat.rs`, `config.rs`, `daco.rs`, `user.rs`) were migrated into `orchestr8/src-tauri/src/models.rs`."
+    },
+    {
+      "line": 26,
+      "text": "* `sqlx`-specific attributes (`FromRow`, `#[sqlx(...)]`) were removed as orchestr8 uses `rusqlite`."
+    },
+    {
+      "line": 30,
+      "text": "* Commands related to signaling (`signal_join`, `signal_leave`, `signal_send`, `signal_get_clients`) from `DAC-O/src/commands/chat_commands.rs` were moved into a new file: `orchestr8/src-tauri/src/commands/signal_chat_commands.rs`."
+    },
+    {
+      "line": 31,
+      "text": "* Placeholders and TODO comments were added for dependencies on DAC-O state (`AppState`, `signaling_clients`) and types (`ClientInfo`, `ClientSignal`) that still need migration/definition within orchestr8."
+    },
+    {
+      "line": 36,
+      "text": "* Used PowerShell to copy the remaining DAC-O Rust modules/files into the `orchestr8/src-tauri/src` structure:"
+    },
+    {
+      "line": 37,
+      "text": "* `C:\\DAC-O\\src-tauri\\src\\commands\\db_commands.rs` -> `c:\\orchestr8\\src-tauri\\src\\commands\\db_commands.rs`"
+    },
+    {
+      "line": 38,
+      "text": "* `C:\\DAC-O\\src-tauri\\src\\webrtc\\` -> `c:\\orchestr8\\src-tauri\\src\\webrtc\\` (recursive)"
+    },
+    {
+      "line": 39,
+      "text": "* `C:\\DAC-O\\src-tauri\\src\\ws\\` -> `c:\\orchestr8\\src-tauri\\src\\ws\\` (recursive)"
+    },
+    {
+      "line": 40,
+      "text": "* `C:\\DAC-O\\src-tauri\\src\\scaffold\\` -> `c:\\orchestr8\\src-tauri\\src\\scaffold\\` (recursive)"
+    },
+    {
+      "line": 45,
+      "text": "The following modules and files have been copied from DAC-O into the `orchestr8` project structure. They require refactoring for Tauri v2.5 compliance, integration with orchestr8's state/error handling, and eventual activation in `main.rs`."
+    },
+    {
+      "line": 62,
+      "text": "* **Action:** No direct code migration needed. Focus on ensuring `orchestr8/src-tauri/src/database/schema.rs` supports tables needed by `db_commands.rs` and migrated models."
+    },
+    {
+      "line": 71,
+      "text": "* **Status:** Copied to `orchestr8/src-tauri/src/webrtc/`. **Structurally Refactored (Phase 5). Core Logic Deferred.**"
+    },
+    {
+      "line": 76,
+      "text": "* **Status:** Copied to `orchestr8/src-tauri/src/ws/`. **Reviewed & Deemed Unnecessary (Phase 5).**"
+    },
+    {
+      "line": 81,
+      "text": "* **Status:** Copied to `orchestr8/src-tauri/src/scaffold/`. **Refactoring Deferred (Phase 5 Decision).**"
+    },
+    {
+      "line": 86,
+      "text": "* **Action:** As modules (`db_commands`, `signal_chat_commands`, `webrtc`, `ws`) are refactored, identify needed error variants and merge them into `orchestr8/src-tauri/src/error.rs`. Update refactored code to use `CommandError`."
+    },
+    {
+      "line": 99,
+      "text": "## Refactoring Checklist & Key Learnings (Tauri v2.5 / orchestr8)"
+    },
+    {
+      "line": 101,
+      "text": "This checklist synthesizes key patterns and learnings specific to refactoring DAC-O code for Tauri v2.5 within the **orchestr8** project structure. Refer to this during subsequent module migrations (`signal_chat_commands.rs`, `webrtc/`, etc.) to streamline the process and avoid repeated errors."
+    },
+    {
+      "line": 104,
+      "text": "***Type:** All commands requiring shared state must use `state: State<'_, AppState>`. (`AppState` is defined in `src-tauri/src/state.rs`)."
+    },
+    {
+      "line": 108,
+      "text": "***DB Connection (`Option<Connection>`):** The `db_conn` field is `Mutex<Option<Connection>>`. After acquiring the lock (`let conn_guard = ...`), you **must** handle the `Option`: `let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;`"
+    },
+    {
+      "line": 109,
+      "text": "*   **Initialization:** New state fields must be initialized in `main.rs` within the `.setup()` closure when creating `AppState`. Remember necessary imports (`HashMap`, `Arc`, `Uuid`, model types) in `main.rs`."
+    },
+    {
+      "line": 112,
+      "text": "***Return Type:** All Tauri commands **must** return `CommandResult<T>` (defined in `error.rs` as `Result<T, CommandError>`)."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

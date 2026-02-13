@@ -1,0 +1,23 @@
+{
+  "source": "one integration at a time/888/actu8/tests/test_adapter.py",
+  "total_lines": 224,
+  "sha256": "907419703e5b5112e06698c90414a0d52a9adb888c8f84fbdf4b3fc34c86b95c",
+  "chunk_count": 2,
+  "observation_ids": [
+    185,
+    186
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 180,
+      "text": "# Test saving without file path (should fail)"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -29,6 +29,7 @@
 ## 1. EXECUTIVE SUMMARY
 
 ### What We're Building
+
 A "Code City" visualization that displays a codebase as an abstract cityscape. Files become buildings, directories become neighborhoods, and code health is shown through color:
 
 - **Gold (#D4AF37)**: Working code - all imports resolve, no errors
@@ -36,13 +37,16 @@ A "Code City" visualization that displays a codebase as an abstract cityscape. F
 - **Purple (#9D4EDD)**: Combat - LLM "General" is actively debugging
 
 ### Why Woven Maps
+
 Nicolas Barradeau's "Woven Maps" algorithm creates beautiful abstract cityscapes using Delaunay triangulation. It's:
+
 - **Lightweight**: Canvas 2D, no WebGL required
 - **Fast**: Can render 1000+ points at 60fps
 - **Beautiful**: Creates organic, architectural forms
 - **Perfect for Marimo**: Works in iframe or direct HTML injection
 
 ### The Immediate Goal
+
 Implement Woven Maps in `IP/plugins/06_maestro.py` (The Void plugin) so that when the user opens Orchestr8, they see their codebase as a living, breathing city.
 
 ---
@@ -50,9 +54,11 @@ Implement Woven Maps in `IP/plugins/06_maestro.py` (The Void plugin) so that whe
 ## 2. PROJECT CONTEXT
 
 ### What is Orchestr8?
+
 Orchestr8 is a developer tool that enables a human "Emperor" to coordinate multiple Claude Code instances ("Generals") across a complex codebase. It is NOT part of stereOS - it's the tool used to BUILD stereOS.
 
 ### The Application Stack
+
 ```
 ┌─────────────────────────────────────────┐
 │           Marimo Runtime                │  ← Reactive Python notebook
@@ -81,7 +87,9 @@ Orchestr8 is a developer tool that enables a human "Emperor" to coordinate multi
 ```
 
 ### Plugin Protocol
+
 Every plugin MUST have:
+
 ```python
 PLUGIN_NAME = "Display Name"  # Shown in tab
 PLUGIN_ORDER = 6              # Lower = appears first
@@ -94,7 +102,9 @@ def render(STATE_MANAGERS: dict) -> Any:
 ```
 
 ### Current State of 06_maestro.py
+
 The plugin currently has:
+
 - ✅ Correct color constants (including PURPLE_COMBAT)
 - ✅ Control surface with buttons
 - ✅ Chat-style void (messages emerge)
@@ -107,6 +117,7 @@ The plugin currently has:
 ## 3. THE VISION
 
 ### UI Layout
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │ TOP ROW (z-index: 50)                                           │
@@ -136,7 +147,9 @@ The plugin currently has:
 ```
 
 ### The "Errors Float Up Like Pollution" Concept
+
 When a file has errors:
+
 1. The building glows blue
 2. Small particles rise from it like smoke/pollution
 3. The particle count = error count
@@ -144,7 +157,9 @@ When a file has errors:
 5. A panel drops showing error details + "House a Digital Native?" provider selection
 
 ### The "Camera Sucks Into Neighborhood" Concept
+
 When user clicks a blue (broken) building:
+
 1. The camera smoothly animates toward that area
 2. The scale increases (zoom in)
 3. A synchronized panel drops from top
@@ -155,13 +170,16 @@ When user clicks a blue (broken) building:
 ## 4. TECHNICAL ARCHITECTURE
 
 ### Rendering Approach
+
 We use **Canvas 2D in an iframe** for several reasons:
+
 1. **Isolation**: JavaScript runs in iframe sandbox
 2. **Performance**: No conflict with Marimo's reactivity
 3. **Flexibility**: Full Canvas API available
 4. **Compatibility**: Works in all browsers
 
 ### Data Flow
+
 ```
 ┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
 │  Codebase Scan  │────▶│  Build Graph     │────▶│  Woven Maps     │
@@ -174,6 +192,7 @@ We use **Canvas 2D in an iframe** for several reasons:
 ```
 
 ### Communication Pattern
+
 ```python
 # Python side: Build data and inject into iframe
 graph_data = {
@@ -199,13 +218,15 @@ mo.Html(f'<iframe srcdoc="{html.escape(iframe_html)}" ...></iframe>')
 ## 5. WOVEN MAPS ALGORITHM (COMPLETE)
 
 ### Original Source
+
 - **Author**: Nicolas Barradeau
-- **Blog Post**: https://barradeau.com/blog/?p=1001
-- **Live Demo**: https://www.barradeau.com/2017/wovenmaps/index.html
+- **Blog Post**: <https://barradeau.com/blog/?p=1001>
+- **Live Demo**: <https://www.barradeau.com/2017/wovenmaps/index.html>
 
 ### Algorithm Steps
 
 #### Step 1: Collect Points
+
 ```javascript
 // Each file becomes a point
 // Position based on directory structure
@@ -219,6 +240,7 @@ const points = files.map(file => ({
 ```
 
 #### Step 2: Delaunay Triangulation
+
 ```javascript
 // Use d3-delaunay or delaunator library
 import { Delaunay } from 'd3-delaunay';
@@ -228,6 +250,7 @@ const triangles = delaunay.triangles;  // Flat array of point indices
 ```
 
 #### Step 3: Compute Edge Lengths
+
 ```javascript
 function distance(p0, p1) {
     const dx = p1.x - p0.x;
@@ -250,6 +273,7 @@ for (let i = 0; i < triangles.length; i += 3) {
 ```
 
 #### Step 4: Draw Gradient Layers (The Magic)
+
 ```javascript
 function render(ctx, edges, config) {
     const { width, height, maxHeight, colors } = config;
@@ -286,6 +310,7 @@ function renderEdges(ctx, edges, minLength) {
 ```
 
 #### Step 5: Wireframe Overlays
+
 ```javascript
 function renderWireframes(ctx, edges, config) {
     const { maxHeight, wireCount } = config;
@@ -302,6 +327,7 @@ function renderWireframes(ctx, edges, config) {
 ```
 
 #### Step 6: Color Overlay (Status Colors)
+
 ```javascript
 function applyStatusColors(ctx, points, config) {
     const { colors } = config;
@@ -331,6 +357,7 @@ function applyStatusColors(ctx, points, config) {
 ```
 
 #### Step 7: Error Particles (Pollution)
+
 ```javascript
 class ErrorParticle {
     constructor(x, y, color) {
@@ -390,6 +417,7 @@ function updateParticles(ctx) {
 ```
 
 ### Complete Woven Maps Render Function
+
 ```javascript
 function renderWovenCity(ctx, data, config) {
     const { nodes, edges } = data;
@@ -513,6 +541,7 @@ function renderWovenCity(ctx, data, config) {
 ## 6. MARIMO INTEGRATION
 
 ### Iframe Approach
+
 ```python
 import marimo as mo
 import json
@@ -562,6 +591,7 @@ def create_woven_map_iframe(graph_data: dict, width: int = 800, height: int = 60
 ```
 
 ### Building Graph Data from Codebase
+
 ```python
 import os
 import re
@@ -692,6 +722,7 @@ def build_graph_data(root: str, width: int = 800, height: int = 600) -> dict:
 ## 7. COMPLETE IMPLEMENTATION CODE
 
 ### Full Iframe HTML Template
+
 ```python
 WOVEN_MAPS_TEMPLATE = '''
 <!DOCTYPE html>
@@ -1019,6 +1050,7 @@ WOVEN_MAPS_TEMPLATE = '''
 ```
 
 ### Integration Function for 06_maestro.py
+
 ```python
 def create_code_city(STATE_MANAGERS: dict, width: int = 800, height: int = 600) -> Any:
     """Create the Woven Maps Code City visualization."""
@@ -1069,6 +1101,7 @@ def create_code_city(STATE_MANAGERS: dict, width: int = 800, height: int = 600) 
 ## 8. DATA STRUCTURES
 
 ### CodeNode
+
 ```python
 @dataclass
 class CodeNode:
@@ -1081,6 +1114,7 @@ class CodeNode:
 ```
 
 ### Graph Data (JSON)
+
 ```json
 {
     "nodes": [
@@ -1113,6 +1147,7 @@ class CodeNode:
 ```
 
 ### Edge (JavaScript)
+
 ```javascript
 {
     length: 45.2,       // Euclidean distance
@@ -1126,6 +1161,7 @@ class CodeNode:
 ## 9. COLOR SYSTEM
 
 ### Exact Hex Values (NO EXCEPTIONS)
+
 | Name | Hex | RGB | Usage |
 |------|-----|-----|-------|
 | `--gold-metallic` | `#D4AF37` | rgb(212, 175, 55) | Working code, UI highlights |
@@ -1137,6 +1173,7 @@ class CodeNode:
 | `--gold-saffron` | `#F4C430` | rgb(244, 196, 48) | Bright highlights |
 
 ### Three-State System
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                     CODE STATUS                             │
@@ -1163,6 +1200,7 @@ class CodeNode:
 ## 10. ANIMATION SPECIFICATIONS
 
 ### Emergence Animation (CSS)
+
 ```css
 @keyframes emerge-void {
     from {
@@ -1183,6 +1221,7 @@ class CodeNode:
 ```
 
 ### Particle Animation (JavaScript)
+
 ```javascript
 // Particles rise and fade
 class Particle {
@@ -1197,6 +1236,7 @@ class Particle {
 ```
 
 ### Camera Zoom (Future - Three.js)
+
 ```javascript
 // Smooth camera animation to target
 function zoomToNode(node, camera, controls) {
@@ -1224,6 +1264,7 @@ function zoomToNode(node, camera, controls) {
 ## 11. TESTING PROCEDURES
 
 ### Unit Test: Graph Data Generation
+
 ```python
 def test_build_graph_data():
     """Test that graph data is correctly generated."""
@@ -1256,6 +1297,7 @@ print("✓ Graph data generation test passed")
 ```
 
 ### Integration Test: Iframe Renders
+
 ```python
 def test_iframe_renders():
     """Test that iframe HTML is valid."""
@@ -1283,6 +1325,7 @@ test_iframe_renders()
 ```
 
 ### Visual Test: Run in Marimo
+
 ```bash
 # Start Marimo in edit mode
 cd /home/user/Orchestr8_jr
@@ -1306,12 +1349,14 @@ marimo edit IP/orchestr8_app.py
 When ready to upgrade from Canvas 2D to Three.js WebGL:
 
 ### Step 1: Add Three.js to iframe
+
 ```html
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
 ```
 
 ### Step 2: Replace Canvas with Three.js Scene
+
 ```javascript
 // Scene setup
 const scene = new THREE.Scene();
@@ -1329,6 +1374,7 @@ controls.enableDamping = true;
 ```
 
 ### Step 3: Convert Nodes to 3D Buildings
+
 ```javascript
 function createBuilding(node) {
     const height = Math.max(5, node.loc / 10);
@@ -1348,11 +1394,14 @@ function createBuilding(node) {
 ```
 
 ### Step 4: Add Low-Poly Assets
+
 Download from:
-- Kenney: https://kenney.nl/assets/city-kit-commercial
-- Quaternius: https://quaternius.com/packs/ultimatetexturedbuildings.html
+
+- Kenney: <https://kenney.nl/assets/city-kit-commercial>
+- Quaternius: <https://quaternius.com/packs/ultimatetexturedbuildings.html>
 
 Load with GLTFLoader:
+
 ```javascript
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
@@ -1365,6 +1414,7 @@ loader.load('assets/building_small.glb', (gltf) => {
 ```
 
 ### Step 5: VS Code Fork (Ultimate Goal)
+
 See `Big Pickle/CLAUDE_EXECUTION_PROMPT.md` for full VS Code fork instructions.
 
 ---
@@ -1372,34 +1422,43 @@ See `Big Pickle/CLAUDE_EXECUTION_PROMPT.md` for full VS Code fork instructions.
 ## 13. TROUBLESHOOTING GUIDE
 
 ### Issue: Canvas is blank
+
 **Cause:** Graph data not injected correctly
 **Fix:** Check that `__GRAPH_DATA__` is replaced with valid JSON
+
 ```python
 # Debug: Print graph data
 print(json.dumps(graph_data, indent=2))
 ```
 
 ### Issue: Delaunay fails with "fewer than 3 points"
+
 **Cause:** Not enough files scanned
 **Fix:** Ensure root directory has code files, check extension filter
+
 ```python
 code_extensions = {'.py', '.js', '.ts', '.tsx', '.jsx', '.java', '.go', '.rs'}
 ```
 
 ### Issue: Particles not appearing
+
 **Cause:** No broken files detected
 **Fix:** Add a file with `TODO` or `FIXME` to test
 
 ### Issue: iframe security error
+
 **Cause:** Cross-origin restriction
 **Fix:** Use `srcdoc` attribute instead of `src`
+
 ```python
 mo.Html(f'<iframe srcdoc="{escaped_html}" ...>')
 ```
 
 ### Issue: Colors look wrong
+
 **Cause:** Hex values not exact
 **Fix:** Use EXACT values:
+
 - Gold: `#D4AF37` (NOT `#d4af37` or `gold`)
 - Blue: `#1fbdea` (NOT `#1FBDEA` or `cyan`)
 - Purple: `#9D4EDD` (NOT `purple`)
@@ -1409,6 +1468,7 @@ mo.Html(f'<iframe srcdoc="{escaped_html}" ...>')
 ## 14. FILE LOCATIONS REFERENCE
 
 ### Key Files
+
 | File | Purpose |
 |------|---------|
 | `IP/orchestr8_app.py` | Main Marimo application |
@@ -1420,6 +1480,7 @@ mo.Html(f'<iframe srcdoc="{escaped_html}" ...>')
 | `style/MAESTROVIEW_REFERENCE.md` | Authoritative style guide |
 
 ### Directory Structure
+
 ```
 Orchestr8_jr/
 ├── IP/
@@ -1452,12 +1513,14 @@ Orchestr8_jr/
 ## EXECUTION CHECKLIST
 
 ### Pre-Implementation
+
 - [ ] Read this entire document
 - [ ] Verify file locations exist
 - [ ] Check Marimo is installed (`pip install marimo`)
 - [ ] Understand the STATE_MANAGERS pattern
 
 ### Implementation Steps
+
 - [ ] Read current `06_maestro.py`
 - [ ] Add `build_graph_data()` function
 - [ ] Add `scan_codebase()` function
@@ -1468,6 +1531,7 @@ Orchestr8_jr/
 - [ ] Test with `marimo edit IP/orchestr8_app.py`
 
 ### Verification
+
 - [ ] Canvas renders cityscape
 - [ ] Gold/Blue/Purple colors correct
 - [ ] Particles rise from broken nodes
@@ -1475,6 +1539,7 @@ Orchestr8_jr/
 - [ ] Click logs node info
 
 ### Commit
+
 - [ ] All tests pass
 - [ ] `git add IP/plugins/06_maestro.py`
 - [ ] Commit with descriptive message
@@ -1492,6 +1557,7 @@ This document is designed to be **completely self-contained**. Any Claude instan
 4. Without any prior conversation history
 
 **Key principles:**
+
 - NO BREATHING ANIMATIONS (things EMERGE, not breathe)
 - Colors are EXACT (no approximations)
 - The Void is THE central metaphor
@@ -1499,6 +1565,7 @@ This document is designed to be **completely self-contained**. Any Claude instan
 - The Emperor must see everything
 
 **When in doubt:**
+
 - Check `style/MAESTROVIEW_REFERENCE.md` for styling
 - Check `Big Pickle/CLAUDE_EXECUTION_PROMPT.md` for broader vision
 - Check `Big Pickle/EMERGENCE_ANIMATION_CATALOG.md` for animation options

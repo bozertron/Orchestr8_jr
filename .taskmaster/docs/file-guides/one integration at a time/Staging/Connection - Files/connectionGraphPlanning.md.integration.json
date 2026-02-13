@@ -1,0 +1,64 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/connectionGraphPlanning.md",
+  "total_lines": 1625,
+  "sha256": "825665e59d28f5e18ac50c5d9c6bfa1edd1b048b472d818c82ceb880ada1eaa7",
+  "chunk_count": 14,
+  "observation_ids": [
+    705,
+    706,
+    707,
+    708,
+    709,
+    710,
+    711,
+    712,
+    713,
+    714,
+    715,
+    716,
+    717,
+    718
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions.",
+    "Behavioral sequencing risk: mode transitions need explicit state machine handling."
+  ],
+  "anchors": [
+    {
+      "line": 256,
+      "text": "zoom?: number;"
+    },
+    {
+      "line": 416,
+      "text": "zoom: number;"
+    },
+    {
+      "line": 552,
+      "text": "3. Directionality constraints"
+    },
+    {
+      "line": 578,
+      "text": "2. Betweenness centrality (bridge nodes)"
+    },
+    {
+      "line": 769,
+      "text": "1. Mouse wheel for zoom"
+    },
+    {
+      "line": 771,
+      "text": "3. Double-click to zoom to node"
+    },
+    {
+      "line": 1209,
+      "text": "3. Support zoom and pan navigation"
+    },
+    {
+      "line": 1361,
+      "text": "2. Use constraint-based layouts for specific patterns"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "source": "one integration at a time/FileExplorer/FileExistsPlugin.js",
+  "total_lines": 61,
+  "sha256": "3f412a7109bf078e4154436e6b53b418508e9382635ee11149244aa81aafd287",
+  "chunk_count": 1,
+  "observation_ids": [
+    488
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

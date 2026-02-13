@@ -1,8 +1,10 @@
-/* orchestr8.css - MaestroView.vue Alignment */
+/* orchestr8.css - Consolidated CSS with CSS Variables */
+/* Previously split between this file and 06_maestro.py ORCHESTR8_CSS f-string */
+/* Now unified: CSS variables replace Python f-string constants */
 
-/* Load fonts */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
-
+/* =========================================================
+   CSS VARIABLES - Orchestr8 Color System
+   ========================================================= */
 :root {
     /* Primary Colors - EXACT from MaestroView.vue */
     --gold-metallic: #D4AF37;
@@ -35,19 +37,266 @@
     --marimo-monospace-font: var(--font-mono);
 }
 
-/* Global body styling */
+/* Force marimo light-theme tokens onto the Void palette. */
+:root,
+.light,
+.light-theme,
+body.light,
+body.light-theme {
+    --background: var(--bg-primary) !important;
+    --foreground: var(--text-primary) !important;
+    --card: var(--bg-elevated) !important;
+    --popover: var(--bg-elevated) !important;
+    --muted: var(--bg-elevated) !important;
+    --muted-foreground: var(--text-secondary) !important;
+}
+
+/* =========================================================
+   EMERGENCE ANIMATIONS - Things EMERGE, they don't breathe
+   ========================================================= */
+
+@keyframes emergence {
+    0% {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes emergence-fade {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes emergence-scale {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* =========================================================
+   GLOBAL BODY & MARIMO OVERRIDES
+   ========================================================= */
+
 body {
     background-color: var(--bg-primary) !important;
     color: var(--text-primary) !important;
     font-family: var(--font-ui) !important;
 }
 
-/* Remove any white backgrounds */
+/* Remove marimo white backgrounds on current DOM structure */
+#root,
+#App,
+#App.bg-background,
+#App .bg-background,
 .marimo-app, 
 .marimo-notebook,
 [data-marimo-container] {
     background-color: var(--bg-primary) !important;
 }
+
+/* Keep marimo portal from blocking app interactions when empty. */
+#portal {
+    pointer-events: none !important;
+}
+
+#portal > * {
+    pointer-events: auto !important;
+}
+
+/* =========================================================
+   ORCHESTR8 COMPONENT STYLES
+   ========================================================= */
+
+/* Apply emergence to key elements with staggered delays */
+.orchestr8-container {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    animation: emergence-fade 0.3s ease-out forwards;
+}
+
+.orchestr8-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(31, 189, 234, 0.2);
+    animation: emergence 0.4s ease-out 0.1s both;
+}
+
+.orchestr8-brand {
+    font-family: monospace;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+}
+
+.orchestr8-prefix {
+    color: var(--blue-dominant);
+}
+
+.orchestr8-suffix {
+    color: var(--gold-metallic);
+}
+
+.void-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    min-height: 300px;
+    animation: emergence-scale 0.5s ease-out 0.2s both;
+}
+
+.emerged-message {
+    padding: 16px 20px;
+    background: rgba(18, 18, 20, 0.9);
+    border: 1px solid rgba(184, 134, 11, 0.3);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    max-width: 700px;
+    width: 100%;
+    animation: emergence 0.4s ease-out both;
+}
+
+.emerged-message:nth-child(1) { animation-delay: 0.1s; }
+.emerged-message:nth-child(2) { animation-delay: 0.2s; }
+.emerged-message:nth-child(3) { animation-delay: 0.3s; }
+
+.emerged-message .content {
+    color: #e8e8e8;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.emerged-message .meta {
+    text-align: right;
+    margin-top: 8px;
+    font-family: monospace;
+    font-size: 10px;
+    color: var(--gold-dark);
+}
+
+.optimistic-message {
+    border-color: rgba(31, 189, 234, 0.45);
+    background: rgba(10, 10, 11, 0.92);
+}
+
+.orchestr8-state-indicator {
+    color: var(--gold-metallic);
+    font-family: monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.control-surface {
+    border-top: 1px solid rgba(31, 189, 234, 0.2);
+    padding: 12px 0;
+    animation: emergence 0.4s ease-out 0.3s both;
+}
+
+/* =========================================================
+   BUTTON STYLES
+   ========================================================= */
+
+.orchestr8-btn {
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid rgba(31, 189, 234, 0.3);
+    border-radius: 4px;
+    color: var(--blue-dominant);
+    font-family: monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 150ms ease-out;
+}
+
+.orchestr8-btn:hover {
+    color: var(--gold-metallic);
+    border-color: var(--gold-metallic);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.orchestr8-btn.active {
+    color: var(--gold-metallic);
+    border-color: var(--gold-metallic);
+}
+
+.orchestr8-center-btn {
+    padding: 10px 32px;
+    background: none;
+    border: 1px solid rgba(184, 134, 11, 0.3);
+    border-radius: 4px;
+    color: var(--gold-dark);
+    font-family: monospace;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+}
+
+.orchestr8-center-btn:hover {
+    color: var(--gold-saffron);
+    border-color: rgba(244, 196, 48, 0.4);
+    background: rgba(184, 134, 11, 0.1);
+}
+
+/* Button emergence with subtle scale */
+.orchestr8-btn, .orchestr8-center-btn {
+    animation: emergence 0.3s ease-out both;
+}
+
+/* =========================================================
+   PANEL STYLES
+   ========================================================= */
+
+.panel-overlay {
+    background: rgba(18, 18, 20, 0.95);
+    border: 1px solid rgba(31, 189, 234, 0.3);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    animation: emergence-scale 0.35s ease-out both;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(31, 189, 234, 0.2);
+}
+
+.panel-title {
+    color: var(--gold-metallic);
+    font-family: monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+}
+
+.void-placeholder {
+    color: rgba(255, 255, 255, 0.3);
+    font-style: italic;
+    text-align: center;
+    animation: emergence-fade 0.8s ease-out 0.4s both;
+}
+
+/* =========================================================
+   MARIMO COMPONENT OVERRIDES
+   ========================================================= */
 
 /* Primary buttons - Gold */
 button, 
@@ -133,7 +382,10 @@ pre, code,
     z-index: 1000 !important;
 }
 
-/* Status indicators */
+/* =========================================================
+   STATUS INDICATORS
+   ========================================================= */
+
 .status-working {
     color: var(--status-working) !important;
     border-color: var(--status-working) !important;
@@ -173,7 +425,10 @@ pre, code,
     border-radius: 2px !important;
 }
 
-/* Mermaid diagram container */
+/* =========================================================
+   MERMAID DIAGRAM STYLES
+   ========================================================= */
+
 .mermaid, 
 [data-marimo-element="mermaid"] {
     background-color: var(--bg-primary) !important;

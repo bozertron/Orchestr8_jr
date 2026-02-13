@@ -1,0 +1,61 @@
+{
+  "source": "IP/connection_verifier.py",
+  "total_lines": 1302,
+  "sha256": "99166891fd16adca86d47c7f93bfe9b21c45b837952db31ea3d8ab64d6c95ec7",
+  "role": "Import resolution + patchbay validator/apply engine",
+  "risks": [
+    "Single-file coupling across resolver, graph, dry-run, and apply logic",
+    "Regex-based line rewrites can fail if import syntax diverges",
+    "Auto-rollback semantics depend on post-write import verification fidelity"
+  ],
+  "anchors": [
+    {
+      "line": 172,
+      "text": "PatchbayDryRunResult payload contract"
+    },
+    {
+      "line": 969,
+      "text": "dry_run_patchbay_rewire()"
+    },
+    {
+      "line": 978,
+      "text": "_rewrite_python_import_line()"
+    },
+    {
+      "line": 996,
+      "text": "_rewrite_js_import_line()"
+    },
+    {
+      "line": 1151,
+      "text": "apply_patchbay_rewire() guarded write path"
+    },
+    {
+      "line": 1185,
+      "text": "apply result checks"
+    },
+    {
+      "line": 1295,
+      "text": "auto-rollback guard"
+    }
+  ],
+  "integration_gaps": [
+    {
+      "gap": "Multi-line/multi-import rewrite support",
+      "status": "pending"
+    },
+    {
+      "gap": "Border-contract enforcement in apply path",
+      "status": "pending"
+    }
+  ],
+  "resolved_gaps": [
+    {
+      "gap": "Non-destructive patchbay validation",
+      "status": "complete"
+    },
+    {
+      "gap": "Guarded apply path with rollback",
+      "status": "complete"
+    }
+  ]
+}

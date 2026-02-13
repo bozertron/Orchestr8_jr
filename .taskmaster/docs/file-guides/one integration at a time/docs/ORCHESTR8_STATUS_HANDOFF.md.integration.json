@@ -1,0 +1,98 @@
+{
+  "source": "one integration at a time/docs/ORCHESTR8_STATUS_HANDOFF.md",
+  "total_lines": 350,
+  "sha256": "08bfb5686a844f0653e12d451a3399bc1f8d69d5bd9f9790c68fb17033fc8433",
+  "chunk_count": 3,
+  "observation_ids": [
+    468,
+    469,
+    470
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 22,
+      "text": "### 1.1 The Marimo Application (`IP/orchestr8_app.py`)"
+    },
+    {
+      "line": 27,
+      "text": "STATE_MANAGERS = {"
+    },
+    {
+      "line": 34,
+      "text": "# Plugins render via: module.render(STATE_MANAGERS)"
+    },
+    {
+      "line": 52,
+      "text": "| `05_universal_bridge.py` | Registry-based tool execution | Working |"
+    },
+    {
+      "line": 53,
+      "text": "| `06_maestro.py` | **NEW** - The Void command center | Skeleton |"
+    },
+    {
+      "line": 95,
+      "text": "│ TOP ROW - [stereOS] ──────────── [Collabor8][JFDI][Gener8]     │"
+    },
+    {
+      "line": 111,
+      "text": "│ │ [Apps][Matrix][Files] ═[maestro]═ [Search][Terminal][Send]  ││"
+    },
+    {
+      "line": 124,
+      "text": "- `#D4AF37` - Gold metallic (UI highlight)"
+    },
+    {
+      "line": 125,
+      "text": "- `#B8860B` - Gold dark (Maestro default)"
+    },
+    {
+      "line": 184,
+      "text": "From `Agent Deployment Strategy/orchestr8 Agents.md`:"
+    },
+    {
+      "line": 211,
+      "text": "| JFDI panel (right-slides-in) | Task queue + wave progress |"
+    },
+    {
+      "line": 245,
+      "text": "│ [Files][Matrix][Graph] ═[maestro]═ [Search][Deploy][Send]      │"
+    },
+    {
+      "line": 291,
+      "text": "2. **The Connection Graph in The Void - should it be:**"
+    },
+    {
+      "line": 304,
+      "text": "- How granular should status updates be?"
+    },
+    {
+      "line": 315,
+      "text": "For full context, the other Claude instance should read:"
+    },
+    {
+      "line": 323,
+      "text": "- `/home/user/Orchestr8_jr/Agent Deployment Strategy/orchestr8 Agents.md` - Full hierarchy"
+    },
+    {
+      "line": 332,
+      "text": "- `/home/user/Orchestr8_jr/IP/orchestr8_app.py` - Main app"
+    },
+    {
+      "line": 333,
+      "text": "- `/home/user/Orchestr8_jr/IP/plugins/06_maestro.py` - The Void plugin"
+    },
+    {
+      "line": 345,
+      "text": "**The ask:** Feedback on whether this vision aligns with the practical constraints of Claude Code instances and Marimo's capabilities."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

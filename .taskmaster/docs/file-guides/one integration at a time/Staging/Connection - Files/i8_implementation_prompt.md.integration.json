@@ -1,0 +1,95 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/i8_implementation_prompt.md",
+  "total_lines": 208,
+  "sha256": "065a029c71ef2eaaffa5f46cac25cbace5da4209b9740e4aaeb96a4dccae561e",
+  "chunk_count": 2,
+  "observation_ids": [
+    759,
+    760
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 5,
+      "text": "This document provides detailed instructions for implementing the first phase of the Integr8 feature extraction framework as outlined in `i8.md`. This implementation will focus on the database schema extensions, which form the foundation for storing and managing Integr8 engineers and their tasks."
+    },
+    {
+      "line": 11,
+      "text": "1. Access to the orchestr8 codebase at `C:/orchestr8`"
+    },
+    {
+      "line": 13,
+      "text": "3. Understood the database schema and vector operations in the existing codebase"
+    },
+    {
+      "line": 18,
+      "text": "- `C:/orchestr8/src/views/ConnectionVerifier.vue`"
+    },
+    {
+      "line": 19,
+      "text": "- `C:/orchestr8/src/views/ConnectionGraphView.vue`"
+    },
+    {
+      "line": 22,
+      "text": "- `C:/orchestr8/src-tauri/src/database/schema.rs` - For adding the new database tables"
+    },
+    {
+      "line": 23,
+      "text": "- `C:/orchestr8/src-tauri/src/commands/mod.rs` - For registering the new commands"
+    },
+    {
+      "line": 24,
+      "text": "- `C:/orchestr8/src-tauri/src/main.rs` - For including the new commands in the application"
+    },
+    {
+      "line": 27,
+      "text": "- `C:/orchestr8/PRD Generator Outputs/Compiled/integr8handler.ts` - Core handler that needs to be integrated"
+    },
+    {
+      "line": 33,
+      "text": "1. **Open the schema file**:"
+    },
+    {
+      "line": 35,
+      "text": "C:/orchestr8/src-tauri/src/database/schema.rs"
+    },
+    {
+      "line": 38,
+      "text": "2. **Add the new Integr8 database tables at the end of the schema initialization function**:"
+    },
+    {
+      "line": 40,
+      "text": "Look for the `initialize_schema` function and add the new table creation SQL statements after the existing tables."
+    },
+    {
+      "line": 95,
+      "text": "C:/orchestr8/src-tauri/src/commands/integr8_commands.rs"
+    },
+    {
+      "line": 109,
+      "text": "C:/orchestr8/src-tauri/src/commands/mod.rs"
+    },
+    {
+      "line": 140,
+      "text": "C:/orchestr8/src-tauri/src/main.rs"
+    },
+    {
+      "line": 159,
+      "text": "After implementing the database schema and commands, follow these steps to test:"
+    },
+    {
+      "line": 166,
+      "text": "2. **Verify the database schema**:"
+    },
+    {
+      "line": 172,
+      "text": "C:/Users/[Username]/AppData/Roaming/orchestr8/orchestr8.db"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

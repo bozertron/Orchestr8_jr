@@ -2,55 +2,43 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-30)
+See: .planning/PROJECT.md (updated 2026-02-12)
 
-**Core value:** Code City visualization must render with accurate health status colors
+**Core value:** Code City visualization as accurate, interactive spatial representation — human and AI co-inhabiting the same space
 
-**Current focus:** Phase 2: Navigation
+**Current focus:** v2.0 Vision Audit + Full Wiring
 
 ## Current Position
 
-Phase: 2 of 5 (Navigation)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-01-30 — Phase 1 complete, verified
+Phase: Phase 2 (Navigation Wiring) — next to plan
+Plan: —
+Status: Roadmap complete, ready for `/gsd:plan-phase 2`
+Last activity: 2026-02-12 — Requirements + Roadmap defined
 
-Progress: [██░░░░░░░░] 20%
+Progress: [█░░░░░░░░░] 11% (1/9 phases complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
+- Total plans completed: 1 (from v1.0)
 - Average duration: 2m 2s
-- Total execution time: 0.03 hours
-
-**By Phase:**
-
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 01-branding | 1 | 2m 2s | 2m 2s |
-
-**Recent Trend:**
-- Last 5 plans: 01-01 (2m 2s)
-- Trend: Just started
-
-*Updated after each plan completion*
 
 ## Accumulated Context
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
-
-- **BRAND-01**: Use 'orchestr8' as primary brand identity (established consistent product naming across UI and documentation)
-- Phase 1: Top row buttons standardized to [orchestr8] [collabor8] [JFDI] [gener8] per UI spec
-- Phase 2: JFDI wires to existing TicketPanel component (not new panel)
-- Phase 2: gener8 button opens Settings panel per user decision
+- **v1.0**: Brand replaced stereOS → orchestr8 (Phase 1 complete)
+- **v2.0**: Settlement System (30 agents) installed to ~/.claude/
+- **v2.0**: Vision captured in CLAUDE.md and SOT.md
+- **v2.0**: Founder terminology (not Emperor) in Settlement context
+- **v2.0**: 52 requirements across 9 phases defined
+- **v2.0**: Marimo audit (Phase 5) before vision audit (Phase 6-7) — catch API issues early
+- **v2.0**: Briefing + Combat merged into single phase (both small scope)
 
 ### Pending Todos
 
-None yet.
+- Plan and execute Phase 2 (Navigation Wiring)
+- Complete remaining 8 phases through Phase 9
 
 ### Blockers/Concerns
 
@@ -58,6 +46,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-30 (Phase 1 execution)
-Stopped at: Phase 1 complete, ready for Phase 2 planning
+Last session: 2026-02-12 (v2.0 requirements + roadmap)
+Stopped at: Ready for `/gsd:plan-phase 2`
 Resume file: None

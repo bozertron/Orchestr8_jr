@@ -1,0 +1,127 @@
+{
+  "source": ".planning/phases/CONTEXT.md",
+  "total_lines": 391,
+  "sha256": "0fe920306b2434b8ca5552830778a827b362b941cd4d665bdea2279e2c8bf1ea",
+  "chunk_count": 5,
+  "observation_ids": [
+    53,
+    54,
+    55,
+    56,
+    57
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "JS/Python bridge risk: event transport and payload validation can silently fail.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce.",
+    "Behavioral sequencing risk: mode transitions need explicit state machine handling."
+  ],
+  "anchors": [
+    {
+      "line": 4,
+      "text": "## Status: AUTHORITATIVE"
+    },
+    {
+      "line": 12,
+      "text": "| **LOCKED** | Non-negotiable. Do exactly this. Violating these is a critical error. |"
+    },
+    {
+      "line": 22,
+      "text": "1. **Wire HealthChecker to Code City** — Real-time health visualization is foundational"
+    },
+    {
+      "line": 35,
+      "text": "### LOCKED Decisions"
+    },
+    {
+      "line": 50,
+      "text": "- **NO:** Breathing animations (FORBIDDEN — things EMERGE, not breathe)"
+    },
+    {
+      "line": 55,
+      "text": "- File names must be clearly labeled on panels"
+    },
+    {
+      "line": 71,
+      "text": "### LOCKED Decisions"
+    },
+    {
+      "line": 74,
+      "text": "- **VS CODE INTEGRATION:** postMessage bridge to Marimo iframe"
+    },
+    {
+      "line": 75,
+      "text": "- **HEALTH VISUALIZATION FLOW:** Building TEAL → Room with error GLOWS → Click to enter Sitting Room"
+    },
+    {
+      "line": 76,
+      "text": "- **DATA FLOW:** `File Change → HealthWatcher → HealthChecker → STATE_MANAGERS → Code City`"
+    },
+    {
+      "line": 100,
+      "text": "### LOCKED Decisions"
+    },
+    {
+      "line": 102,
+      "text": "- **LOCATION:** `.orchestr8/campaigns/`"
+    },
+    {
+      "line": 124,
+      "text": "### LOCKED Decisions"
+    },
+    {
+      "line": 126,
+      "text": "- **SIGNAL SOURCES:** HealthChecker, ConnectionVerifier, CombatTracker, TicketManager, LouisWarden"
+    },
+    {
+      "line": 132,
+      "text": "### Carl's Output Structure (LOCKED)"
+    },
+    {
+      "line": 166,
+      "text": "### LOCKED Decisions"
+    },
+    {
+      "line": 192,
+      "text": "### LOCKED Decisions"
+    },
+    {
+      "line": 205,
+      "text": "- **Gold dark:** `#B8860B` (borders, strokes)"
+    },
+    {
+      "line": 206,
+      "text": "- **Gold saffron:** `#F4C430` (highlights)"
+    },
+    {
+      "line": 223,
+      "text": "### LOCKED Decisions"
+    },
+    {
+      "line": 227,
+      "text": "- **SITTING ROOM COLLABORATION:** When a room (function) has an issue, click to enter the Sitting Room — particles morph into a presentation area where human and LLM collaborate on fixes."
+    },
+    {
+      "line": 236,
+      "text": "- Motion should feel like emergence, not animation"
+    },
+    {
+      "line": 253,
+      "text": "### LOCKED Decisions"
+    },
+    {
+      "line": 254,
+      "text": "- **INTEGRATION METHOD:** postMessage bridge to Marimo iframe"
+    },
+    {
+      "line": 255,
+      "text": "- **DATA FLOW:** `VS Code Extension → File Watcher → Telemetry Aggregator → postMessage → Marimo iframe`"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/key_lines_with_files.tsv"
+  }
+}

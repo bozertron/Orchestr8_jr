@@ -1,6 +1,6 @@
 """
 05_universal_bridge Plugin - Dynamic Registry-Based Tool Bridge
-Orchestr8 v3.0 - The Fortress Factory
+Orchestr8 v3.0
 
 Universal Bridge dynamically scans the registry directory for tool manifests
 and generates interactive UI components for each discovered tool.

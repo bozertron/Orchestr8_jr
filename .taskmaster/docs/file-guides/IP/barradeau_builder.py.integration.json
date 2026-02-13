@@ -1,0 +1,33 @@
+{
+  "source": "IP/barradeau_builder.py",
+  "total_lines": 440,
+  "sha256": "pending",
+  "role": "Barradeau Building Generator — Particle-based 3D building generation using Delaunay triangulation",
+  "risks": [
+    "Delaunay triangulation is complex — Bowyer-Watson algorithm must be exact",
+    "Color alignment: MUST use 0xD4AF37 (canonical gold), NOT 0xC9A962 from reference",
+    "NO breathing animations — buildings EMERGE only (constraint from CONTEXT.md)"
+  ],
+  "anchors": [
+    {"line": 20, "text": "CONFIG = {...} — All scaling constants"},
+    {"line": 29, "text": "COLOR_WORKING: 0xD4AF37 — Canonical gold (NOT reference 0xC9A962)"},
+    {"line": 83, "text": "@dataclass BuildingData — Output for JS consumption"},
+    {"line": 109, "text": "class Delaunay — Bowyer-Watson triangulation"},
+    {"line": 186, "text": "class BarradeauBuilding — Main generator"},
+    {"line": 227, "text": "_calculate_dimensions() — LOCKED formulas"},
+    {"line": 299, "text": "Edge length filtering — Barradeau ethereal fade"}
+  ],
+  "integration_gaps": [],
+  "resolved_gaps": [
+    {
+      "gap": "Delaunay triangulation for building footprints",
+      "resolved_in": "WO-BARRADEAU-001",
+      "details": "Ported Bowyer-Watson algorithm from void-phase0-buildings.html lines 727-803"
+    },
+    {
+      "gap": "BarradeauBuilding class with particle generation",
+      "resolved_in": "WO-BARRADEAU-001",
+      "details": "Full class with footprint generation, extrusion, and particle placement"
+    }
+  ]
+}

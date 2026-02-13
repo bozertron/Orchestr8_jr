@@ -1,0 +1,43 @@
+{
+  "source": "one integration at a time/from-contextualize-branch/docs/code_city_feedback.md",
+  "total_lines": 161,
+  "sha256": "446a313a67d367930fd9ca8de9df5cbb292ef324e94f7f073190aa866d6fd3bc",
+  "chunk_count": 2,
+  "observation_ids": [
+    494,
+    495
+  ],
+  "risks": [
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 31,
+      "text": "Archive/app_orchestr8.py"
+    },
+    {
+      "line": 44,
+      "text": "| File Path | `Archive/app_orchestr8.py` |"
+    },
+    {
+      "line": 79,
+      "text": "**Recommended Fix**: The detection should use regex to match comment-style TODOs:"
+    },
+    {
+      "line": 105,
+      "text": "| Purple sphere | Currently selected file |"
+    },
+    {
+      "line": 126,
+      "text": "1. The selected file `Archive/app_orchestr8.py` is marked as `BROKEN` - **BUT this is an ARCHIVED file** (the active version is `orchestr8_standalone.py`)"
+    },
+    {
+      "line": 147,
+      "text": "Archive/app_orchestr8.py"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

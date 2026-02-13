@@ -1,0 +1,120 @@
+{
+  "source": ".planning/codebase/ARCHITECTURE.md",
+  "total_lines": 180,
+  "sha256": "8e4a03176217c20812f7c0c4d0b038e9cc73392f0ad7a4b5272ebd15ebbe48f4",
+  "chunk_count": 2,
+  "observation_ids": [
+    1007,
+    1008
+  ],
+  "risks": [
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 14,
+      "text": "- Three-state color system (Gold=working, Blue=broken, Purple=combat) for visual status"
+    },
+    {
+      "line": 22,
+      "text": "- Depends on: Marimo, STATE_MANAGERS, service layer modules"
+    },
+    {
+      "line": 23,
+      "text": "- Used by: orchestr8.py main app"
+    },
+    {
+      "line": 34,
+      "text": "- Location: `orchestr8.py` (Cell 2: state_management function)"
+    },
+    {
+      "line": 35,
+      "text": "- Contains: STATE_MANAGERS dict with getter/setter tuples for \"root\", \"files\", \"selected\", \"logs\""
+    },
+    {
+      "line": 37,
+      "text": "- Used by: All plugins via STATE_MANAGERS injection"
+    },
+    {
+      "line": 41,
+      "text": "- Location: `orchestr8.py` (main entry point)"
+    },
+    {
+      "line": 50,
+      "text": "1. `orchestr8.py` loads via `marimo run orchestr8.py`"
+    },
+    {
+      "line": 52,
+      "text": "3. Cell 2 initializes STATE_MANAGERS with four reactive state tuples"
+    },
+    {
+      "line": 56,
+      "text": "- Validates render(STATE_MANAGERS) function exists"
+    },
+    {
+      "line": 58,
+      "text": "5. Cell 4 renders plugins by calling module.render(STATE_MANAGERS) for each"
+    },
+    {
+      "line": 65,
+      "text": "1. Plugin receives STATE_MANAGERS dict"
+    },
+    {
+      "line": 66,
+      "text": "2. Plugin extracts relevant state getters: `get_root, set_root = STATE_MANAGERS[\"root\"]`"
+    },
+    {
+      "line": 70,
+      "text": "6. STATE_MANAGERS changes trigger reactive re-renders in dependent cells"
+    },
+    {
+      "line": 77,
+      "text": "4. Status codes (working=Gold, broken=Blue, combat=Purple) assigned to CodeNode objects"
+    },
+    {
+      "line": 78,
+      "text": "5. Visualization rendered in maestro plugin with colors reflecting status"
+    },
+    {
+      "line": 83,
+      "text": "STATE_MANAGERS = {"
+    },
+    {
+      "line": 95,
+      "text": "- Examples: `IP/plugins/00_welcome.py`, `IP/plugins/06_maestro.py`, `IP/plugins/02_explorer.py`"
+    },
+    {
+      "line": 96,
+      "text": "- Pattern: Each plugin exports PLUGIN_NAME (str), PLUGIN_ORDER (int), render(STATE_MANAGERS) function. Render returns Marimo UI element (mo.md, mo.Html, etc.)"
+    },
+    {
+      "line": 100,
+      "text": "- Examples: STATE_MANAGERS[\"root\"], STATE_MANAGERS[\"logs\"]"
+    },
+    {
+      "line": 109,
+      "text": "- Purpose: Reusable UI components for maestro plugin"
+    },
+    {
+      "line": 115,
+      "text": "- Examples: `LouisWarden` (file protection), `HealthChecker` (code analysis), `CombatTracker` (LLM deployments), `TicketManager` (issue tracking)"
+    },
+    {
+      "line": 116,
+      "text": "- Pattern: Class per domain, stateless where possible, file-based persistence (.orchestr8/, .louis-control/ directories)"
+    },
+    {
+      "line": 120,
+      "text": "**orchestr8.py:**"
+    },
+    {
+      "line": 121,
+      "text": "- Location: `/home/bozertron/Orchestr8_jr/orchestr8.py`"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

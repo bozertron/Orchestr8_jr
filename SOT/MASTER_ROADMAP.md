@@ -1,4 +1,5 @@
 # Orchestr8 Master Roadmap
+
 ## Complete Sprint Plan
 
 **Created:** 2026-01-30
@@ -42,12 +43,15 @@
 ---
 
 # MILESTONE 1: Core Wiring
+
 ## Phases 1-5 (In GSD)
 
 ### Phase 1: Branding ✅ COMPLETE
-**Goal**: Replace all "stereOS" references with "orchestr8"
+
+**Goal**: Replace all legacy brand references with "orchestr8"
 
 **Completed:**
+
 - Brand text in 06_maestro.py
 - CSS class prefixes
 - Comments and docstrings
@@ -56,15 +60,18 @@
 ---
 
 ### Phase 2: Navigation
+
 **Goal**: Top row buttons work correctly
 
 **Tasks:**
+
 1. `orchestr8` button → Returns to home state
 2. `collabor8` button → Opens agent dropdown (slides LEFT)
 3. `JFDI` button → Opens TicketPanel (slides RIGHT)
 4. `gener8` button → Opens settings panel
 
 **Success Criteria:**
+
 - All four buttons functional
 - Correct slide directions
 - Active states visible
@@ -74,14 +81,17 @@
 ---
 
 ### Phase 3: Health Integration
+
 **Goal**: HealthChecker influences Code City colors
 
 **Tasks:**
+
 1. Instantiate HealthChecker in 06_maestro.py
 2. Pass health results to WovenMaps
 3. Buildings show Gold/Blue/Purple based on health
 
 **Success Criteria:**
+
 - `health = HealthChecker(project_root)` exists
 - Health data flows to Code City
 - Color changes visible on file state change
@@ -91,14 +101,17 @@
 ---
 
 ### Phase 4: Briefing Data
+
 **Goal**: Campaign log parsing for briefing display
 
 **Tasks:**
+
 1. Parse existing campaign logs from `.orchestr8/campaigns/`
 2. Display mission history in briefing panel
 3. Link briefings to ticket IDs
 
 **Success Criteria:**
+
 - Historical missions visible
 - Briefing panel populated with real data
 - No placeholder text
@@ -108,14 +121,17 @@
 ---
 
 ### Phase 5: Combat Cleanup
+
 **Goal**: Auto-cleanup of completed combat entries
 
 **Tasks:**
+
 1. Detect when General completes mission
 2. Remove from active combat list
 3. Archive to campaign log
 
 **Success Criteria:**
+
 - Completed missions auto-archive
 - Combat tracker only shows active deployments
 - No manual cleanup required
@@ -125,6 +141,7 @@
 ---
 
 # MILESTONE 2: Full Integration
+
 ## Phases 6-10
 
 ### GSD Handoff Prompt
@@ -154,6 +171,7 @@ Read these before planning:
 ---
 
 ### Phase 6: State Synchronization
+
 **Goal**: Unified mission flow linking Tickets, Combat, and Briefings
 
 **Problem**: Currently three separate systems track the same mission. Creating a ticket doesn't link to combat deployment or campaign logging.
@@ -167,6 +185,7 @@ class MissionManager:
 ```
 
 **Success Criteria:**
+
 - [ ] Deploying a General creates linked ticket + briefing + combat entry
 - [ ] Completing mission updates all three systems atomically
 - [ ] Campaign log shows mission history with ticket references
@@ -176,6 +195,7 @@ class MissionManager:
 ---
 
 ### Phase 7: Panel Completion
+
 **Goal**: Replace remaining placeholder panels with real functionality
 
 **Problem**: Collabor8 and Summon panels show "coming soon" text instead of actual features.
@@ -193,6 +213,7 @@ class MissionManager:
    - Show search results with file links
 
 **Success Criteria:**
+
 - [ ] Collabor8 panel shows real agent list (not placeholder)
 - [ ] Summon panel performs actual search via Carl
 - [ ] No "coming soon" text remains in any panel
@@ -202,16 +223,19 @@ class MissionManager:
 ---
 
 ### Phase 8: Carl Integration
+
 **Goal**: CarlContextualizer actively influences application state
 
 **Problem**: Carl exists but only dumps JSON. It doesn't influence what the UI shows or what context gets passed to Generals.
 
 **Tasks:**
+
 1. Wire Carl to Summon/Search functionality
 2. Use Carl for context gathering in briefing generation
 3. Carl provides file relationships for Code City edges
 
 **Success Criteria:**
+
 - [ ] Search uses Carl's `gather_context()` method
 - [ ] Briefings include Carl's context analysis
 - [ ] Code City edges reflect actual import relationships from Carl
@@ -221,9 +245,11 @@ class MissionManager:
 ---
 
 ### Phase 9: Plugin Hardening
+
 **Goal**: Fix fragile plugin behaviors
 
 **Problems** (from 14 Wiring Problems):
+
 - #3: Generator phase locking not persisted across sessions
 - #6: Gatekeeper can't remove folders, no auto-refresh
 - #7: Connie assumes pandas exists (crashes without it)
@@ -239,6 +265,7 @@ class MissionManager:
 | Director | `08_director.py` | Use Marimo polling or file-based signaling |
 
 **Success Criteria:**
+
 - [ ] Generator remembers phase after page refresh
 - [ ] Gatekeeper can remove watched folders
 - [ ] Connie works without pandas (degraded mode)
@@ -249,9 +276,11 @@ class MissionManager:
 ---
 
 ### Phase 10: Platform & Configuration
+
 **Goal**: Make platform-specific behaviors configurable
 
 **Problems:**
+
 - Hardcoded `gnome-terminal` (has fallbacks, but not configurable)
 - Hardcoded `npm run typecheck` (works for TS, but not all projects)
 - Alias resolution assumes `@/` → `src/`
@@ -259,6 +288,7 @@ class MissionManager:
 **Tasks:**
 
 Add to `orchestr8_settings.toml`:
+
 ```toml
 [platform]
 terminal = "auto"  # or "gnome-terminal", "xterm", etc.
@@ -271,11 +301,13 @@ alias_mappings = { "@" = "src" }
 ```
 
 **Implementation:**
+
 1. Update `IP/terminal_spawner.py` to read from settings
 2. Update `IP/health_checker.py` to read from settings
 3. Update `IP/connection_verifier.py` for configurable aliases
 
 **Success Criteria:**
+
 - [ ] Terminal preference configurable in settings
 - [ ] Health check command configurable per-project
 - [ ] Path aliases configurable for non-standard projects
@@ -296,6 +328,7 @@ alias_mappings = { "@" = "src" }
 ```
 
 Execute:
+
 ```bash
 /gsd:plan-phase 6
 /gsd:execute-phase 6
@@ -324,6 +357,7 @@ Execute:
 ---
 
 # MILESTONE 3: Code City 3D
+
 ## Phases 11-15 (Barradeau Integration)
 
 ### GSD Handoff Prompt
@@ -347,11 +381,13 @@ Read these before planning:
 ---
 
 ### Phase 11: Building Generator
+
 **Goal**: Extract and integrate BarradeauBuilding class
 
 **Source:** `one integration at a time/Barradeau/void-phase0-buildings.html`
 
 **Building Size Formula:**
+
 ```javascript
 footprint_radius = 2 + (file_lines * 0.008)
 building_height = 3 + (export_count * 0.8)
@@ -361,12 +397,14 @@ taper = 0.015
 ```
 
 **Tasks:**
+
 1. Extract `BarradeauBuilding` class to `IP/woven_maps_3d.js`
 2. Extract `Delaunay` triangulation logic
 3. Create Python → JSON → Three.js data pipeline
 4. Integrate with existing `woven_maps.py` code metrics
 
 **Success Criteria:**
+
 - [ ] Buildings render with correct footprint/height from code metrics
 - [ ] Particle density matches layer_count setting
 - [ ] Multiple buildings can coexist in scene
@@ -376,11 +414,13 @@ taper = 0.015
 ---
 
 ### Phase 12: Edge Filter Shader
+
 **Goal**: Implement Barradeau edge filter for particle visibility
 
 **Source:** `one integration at a time/Barradeau/zsphere.html`
 
 **Core Shader:**
+
 ```glsl
 // Vertex Shader
 attribute vec3 neighbor;
@@ -394,11 +434,13 @@ void main() {
 ```
 
 **Tasks:**
+
 1. Create `IP/shaders/barradeau.vert` and `barradeau.frag`
 2. Add `densit8` slider to control panel (threshold 0.5-3.0)
 3. Wire slider to `uThreshold` uniform
 
 **Success Criteria:**
+
 - [ ] Edge filter shader compiles and runs
 - [ ] Density slider adjusts particle visibility in real-time
 - [ ] Lower threshold = more detail, higher = sparse structure
@@ -408,9 +450,11 @@ void main() {
 ---
 
 ### Phase 13: Three-Color Health System
+
 **Goal**: Buildings change color based on health state
 
 **Color System:**
+
 | State | Color | Hex | Trigger |
 |-------|-------|-----|---------|
 | Working | Gold | #D4AF37 | Tests pass |
@@ -418,11 +462,13 @@ void main() {
 | Combat | Purple | #9D4EDD | Active LLM deployment |
 
 **Tasks:**
+
 1. Wire HealthChecker results to building colors
 2. Implement color transition animation (not instant swap)
 3. Add color state buttons to control panel (filter by state)
 
 **Success Criteria:**
+
 - [ ] Buildings reflect actual health state
 - [ ] Color transitions smoothly (0.5s)
 - [ ] Gold/Teal/Purple filter buttons work
@@ -432,9 +478,11 @@ void main() {
 ---
 
 ### Phase 14: Dive-to-Building Interaction
+
 **Goal**: Click building → camera dives to it → shows details
 
 **Existing Pattern** (woven_maps.py:1891-1912):
+
 ```javascript
 canvas.addEventListener('click', (e) => {
     type: 'WOVEN_MAPS_NODE_CLICK',
@@ -443,6 +491,7 @@ canvas.addEventListener('click', (e) => {
 ```
 
 **Enhancement:**
+
 ```javascript
 function diveToBuilding(building) {
     const targetPosition = building.position.clone();
@@ -462,12 +511,14 @@ function diveToBuilding(building) {
 ```
 
 **Tasks:**
+
 1. Add raycasting for 3D building selection
 2. Implement smooth camera dive animation
 3. Show building details panel on selection
 4. Add `focus8` button to dive to selected building
 
 **Success Criteria:**
+
 - [ ] Click on building highlights it
 - [ ] Camera smoothly dives to building
 - [ ] Building details (file path, lines, exports, health) visible
@@ -478,20 +529,24 @@ function diveToBuilding(building) {
 ---
 
 ### Phase 15: Real-Time Socket.io Integration
+
 **Goal**: Carl health changes broadcast to Code City in real-time
 
 **Architecture:**
+
 ```
 Carl Health Monitor → Socket.io Broadcast → Code City Color Update
 ```
 
 **Tasks:**
+
 1. Add Socket.io server to orchestr8.py
 2. Carl emits health change events
 3. Code City listens and updates building colors
 4. No page refresh required
 
 **Success Criteria:**
+
 - [ ] Health change in file → building color updates within 2s
 - [ ] No manual refresh needed
 - [ ] Multiple browser tabs stay in sync
@@ -501,9 +556,11 @@ Carl Health Monitor → Socket.io Broadcast → Code City Color Update
 ---
 
 ### Phase 15b: Control Panel Completion
+
 **Goal**: All new buttons functional in bottom 5th
 
 **New Buttons:**
+
 | Button | Label | Action |
 |--------|-------|--------|
 | Density | `densit8` | Slider: Barradeau threshold |
@@ -514,6 +571,7 @@ Carl Health Monitor → Socket.io Broadcast → Code City Color Update
 | Layer | `layer8` | Cycle layer visibility |
 
 **Layout:**
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │ [Gold] [Teal] [Purple]  │  [1][2][3][4]  │  [🔊]  │  [densit8] │
@@ -523,6 +581,7 @@ Carl Health Monitor → Socket.io Broadcast → Code City Color Update
 ```
 
 **Success Criteria:**
+
 - [ ] All buttons render correctly
 - [ ] Each button performs its action
 - [ ] Keyboard shortcuts for frequent actions
@@ -561,11 +620,13 @@ Carl Health Monitor → Socket.io Broadcast → Code City Color Update
 ---
 
 # MILESTONE 4: Later Roadmap
+
 ## Phases 16+ (Post-MVP)
 
 These items are documented for future planning but not prioritized:
 
 ### Phase 16: Audio Reactivity
+
 **Goal**: LLM conversations drive particle animation
 
 ```javascript
@@ -579,6 +640,7 @@ compute.simMaterial.uniforms.uAudioTreble.value = uTreble;
 ---
 
 ### Phase 17: Canvas Fallback
+
 **Goal**: 2D canvas version for compatibility
 
 - Zero-dependency mode (no Three.js)
@@ -588,6 +650,7 @@ compute.simMaterial.uniforms.uAudioTreble.value = uTreble;
 ---
 
 ### Phase 18: GPGPU Particle Scale
+
 **Goal**: 1M+ particle support
 
 - GPU compute shaders for particle physics

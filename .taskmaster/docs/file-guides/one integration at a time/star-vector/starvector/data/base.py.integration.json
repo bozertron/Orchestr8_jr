@@ -1,0 +1,22 @@
+{
+  "source": "one integration at a time/star-vector/starvector/data/base.py",
+  "total_lines": 71,
+  "sha256": "7b9e081c96531290f9f3592925a052d858cf7780c92f10c93bf577dfca089d92",
+  "chunk_count": 1,
+  "observation_ids": [
+    886
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 71,
+      "text": "raise NotImplementedError(\"This method should be implemented by subclasses\")"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

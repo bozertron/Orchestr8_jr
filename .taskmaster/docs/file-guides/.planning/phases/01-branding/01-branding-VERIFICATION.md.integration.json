@@ -1,0 +1,120 @@
+{
+  "source": ".planning/phases/01-branding/01-branding-VERIFICATION.md",
+  "total_lines": 139,
+  "sha256": "d3f6d054910918392464a628c08155a3344d70c7ba24713883f1d7fa2fc7b751",
+  "chunk_count": 2,
+  "observation_ids": [
+    1043,
+    1044
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 5,
+      "text": "score: 3/3 must-haves verified"
+    },
+    {
+      "line": 10,
+      "text": "**Phase Goal:** Application consistently displays \"orchestr8\" branding across all visible text, CSS classes, and documentation"
+    },
+    {
+      "line": 22,
+      "text": "| 1 | User sees 'orchestr8' in top row brand display (not 'stereOS') | ✓ VERIFIED | `06_maestro.py:873-875` - HTML displays `orchestr8-brand` with split `orchestr` + `8` |"
+    },
+    {
+      "line": 23,
+      "text": "| 2 | Browser DevTools shows CSS classes prefixed with '.orchestr8-*' (not '.stereos-*') | ✓ VERIFIED | `06_maestro.py:189-201` - CSS defines `.orchestr8-brand`, `.orchestr8-prefix`, `.orchestr8-suffix` |"
+    },
+    {
+      "line": 24,
+      "text": "| 3 | Developer reading docstrings sees 'orchestr8' references (not 'stereOS') | ✓ VERIFIED | `06_maestro.py:7`, `woven_maps.py:110`, `woven_maps_nb.py:118` - All reference \"orchestr8\" |"
+    },
+    {
+      "line": 32,
+      "text": "| `IP/plugins/06_maestro.py` | Brand display and CSS classes | ✓ VERIFIED | 1297 lines, contains `orchestr8-brand` in HTML (873-875) and CSS (189-201), NO_STUBS, exports render() |"
+    },
+    {
+      "line": 33,
+      "text": "| `IP/woven_maps.py` | Code City visualization | ✓ VERIFIED | 1981 lines, contains \"orchestr8\" in ColorScheme docstring (110), NO_STUBS, exports classes |"
+    },
+    {
+      "line": 34,
+      "text": "| `IP/woven_maps_nb.py` | Code City notebook | ✓ VERIFIED | 1996 lines, contains \"orchestr8\" in ColorScheme docstring (118), NO_STUBS, exports Marimo cells |"
+    },
+    {
+      "line": 38,
+      "text": "**IP/plugins/06_maestro.py:**"
+    },
+    {
+      "line": 46,
+      "text": "- Level 3 (Wired): ✓ WIRED (imported and used by 06_maestro.py for Code City rendering)"
+    },
+    {
+      "line": 57,
+      "text": "| `IP/plugins/06_maestro.py` | Browser rendering | HTML template string | ✓ WIRED | CSS classes defined (189-201), injected via `css_injection` (1275), HTML brand uses classes (873-875) |"
+    },
+    {
+      "line": 63,
+      "text": ".orchestr8-brand {"
+    },
+    {
+      "line": 69,
+      "text": ".orchestr8-prefix {"
+    },
+    {
+      "line": 73,
+      "text": ".orchestr8-suffix {"
+    },
+    {
+      "line": 74,
+      "text": "color: #D4AF37;  # Gold"
+    },
+    {
+      "line": 78,
+      "text": "<div class=\"orchestr8-brand\">"
+    },
+    {
+      "line": 79,
+      "text": "<span class=\"orchestr8-prefix\">orchestr</span><span class=\"orchestr8-suffix\">8</span>"
+    },
+    {
+      "line": 83,
+      "text": "The CSS is injected via `mo.Html(MAESTRO_CSS)` and the brand HTML is rendered in the `top_row` component. The pattern `orchestr8-brand.*orchestr8-prefix` is present and correctly wired."
+    },
+    {
+      "line": 89,
+      "text": "| BRAND-01: Application displays \"orchestr8\" instead of \"stereOS\" in all visible text | ✓ SATISFIED | None - brand HTML verified in `06_maestro.py:873-875` |"
+    },
+    {
+      "line": 90,
+      "text": "| BRAND-02: CSS classes use `.orchestr8-*` prefix instead of `.stereos-*` | ✓ SATISFIED | None - CSS classes verified in `06_maestro.py:189-201` |"
+    },
+    {
+      "line": 91,
+      "text": "| BRAND-03: Docstrings reference \"orchestr8\" not \"stereOS\" | ✓ SATISFIED | None - docstrings verified in all three files |"
+    },
+    {
+      "line": 99,
+      "text": "| `IP/plugins/06_maestro.py` | 317, 927, 940, 957, 1145 | `placeholder` keyword | ℹ️ INFO | Legitimate use - CSS class names (`.void-placeholder`) and UI placeholder text, not stub code |"
+    },
+    {
+      "line": 106,
+      "text": "- `grep -in \"stereos\" IP/plugins/06_maestro.py` → 0 results"
+    },
+    {
+      "line": 112,
+      "text": "**ALL MUST-HAVES VERIFIED ✓**"
+    },
+    {
+      "line": 114,
+      "text": "Phase 1 goal is ACHIEVED. The application now consistently displays \"orchestr8\" branding across all visible text, CSS classes, and documentation."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

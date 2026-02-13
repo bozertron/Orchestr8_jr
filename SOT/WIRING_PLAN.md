@@ -1,271 +1,79 @@
 # Orchestr8 Wiring Plan
 
 **Created:** 2026-01-30
-**Status:** PENDING APPROVAL
+**Revised:** 2026-02-13
+**Authority Chain:** `.planning/phases/CONTEXT.md` > `.planning/VISION-ALIGNMENT.md`
+**Status:** MOSTLY COMPLETE
 
 ---
 
-## Executive Summary
+## Canon Lock Reference (2026-02-12)
 
-This document outlines the fixes needed to wire up the existing components in 06_maestro.py. The components EXIST - they just need to be connected properly.
-
----
-
-## Priority 0: Brand Replacement (APPROVED)
-
-Replace all "stereOS" references with "orchestr8" in the codebase.
-
-### Files to Update
-
-| File | Lines | Change |
-|------|-------|--------|
-| `IP/plugins/06_maestro.py` | 7, 873-876 | Brand text "stereOS" -> "orchestr8" |
-| `IP/plugins/06_maestro.py` | 189-200 | CSS classes `.stereos-*` -> `.orchestr8-*` |
-| `IP/plugins/06_maestro.py` | 5, 11, 31 | Docstring references |
-
-**Estimated effort:** 30 minutes
+- Top row: `[orchestr8] [collabor8] [JFDI]` — three buttons only
+- `gener8` EXCLUDED from active UI canon
+- Combat cleanup: MANUAL ONLY
+- Campaign log: JSON in `.orchestr8/campaigns/`
+- Mermaid: KEPT — Carl deploys to agent briefings
 
 ---
 
-## Priority 1: Top Row Button Fixes
+## Completed Work
 
-### Issue 1.1: JFDI Button Opens Wrong Panel
-**Current:** Opens placeholder "coming soon" panel (Lines 1059-1079)
-**Expected:** Opens the fully-built `TicketPanel` component
-
-**Fix:**
-```python
-# In build_panels(), replace JFDI placeholder with:
-if get_show_tasks():
-    # Use the actual TicketPanel, not placeholder
-    ticket_panel.set_visible(True)
-    return ticket_panel.render()
-```
-
-**Or simpler:** Wire `toggle_jfdi()` to `toggle_tickets()` since they're the same thing.
-
-### Issue 1.2: Gener8 Button Does Nothing
-**Current:** Only logs "Switch to Generator tab" (Line 893)
-**Expected:** Should open Settings (per user decision)
-
-**Fix:** Change to navigate to settings or open settings panel.
-
-### Issue 1.3: Waves Button (~~~) Should Be Removed
-**Current:** Line 1200-1202 shows `~~~` for settings
-**Expected:** Remove waves, use `gener8` in top row for settings
-
-**Estimated effort:** 1 hour
+| Priority | Task | Status |
+|----------|------|--------|
+| P0 | Brand replacement (orchestr8) | DONE |
+| P1.1 | JFDI → TicketPanel | DONE (handle_jfdi → toggle_tickets) |
+| P2.1 | HealthChecker wired | DONE (HealthWatcher + refresh_health + Code City merge) |
+| P5.1 | Collabor8 panel | DONE (5 agent groups, picker, deploy) |
+| P5.2 | Summon panel | DONE (Carl search + context JSON) |
+| P2.2 | Mermaid generator | INTENTIONAL — awaiting Carl briefing integration |
 
 ---
 
-## Priority 2: Health Checker Integration
+## Remaining Work
 
-### Issue 2.1: HealthChecker Never Instantiated
-**Current:** Imported but never used (Line 77)
-**Expected:** Run health checks and update node colors
+### 1. Campaign Log: JSON Implementation
 
-**Fix:**
-```python
-# In render(), add:
-health_checker = HealthChecker(project_root_path)
+**Canon says:** JSON files in `.orchestr8/campaigns/`
+**Current:** `load_campaign_log()` stub looks for markdown CAMPAIGN_LOG.md
 
-# Add periodic health check or on-demand:
-def refresh_health():
-    fiefdoms = get_registered_fiefdoms()  # From some state
-    for f in fiefdoms:
-        result = health_checker.check_fiefdom(f)
-        # Update fiefdom status in state
-```
+**Fix:** Rewrite `load_campaign_log()` to:
+- Read JSON files from `.orchestr8/campaigns/`
+- Return structured entries for agent historical context
+- Schema flexible per canon (exact structure agent-discretion)
 
-### Issue 2.2: Mermaid Generator Unused
-**Current:** Imported but Woven Maps replaced it entirely
-**Expected:** Either use it as fallback or remove import
+### 2. Mermaid → Carl Briefing Pipeline
 
-**Recommendation:** Keep as fallback for simpler visualization mode.
+**Canon says:** Carl deploys Mermaid diagrams to agents in briefing documents
+**Current:** Fiefdom, FiefdomStatus, generate_empire_mermaid imported but not wired
 
-**Estimated effort:** 2-3 hours
+**Fix:** Wire mermaid output into BriefingGenerator.generate():
+- Carl calls generate_empire_mermaid() for fiefdom structure
+- Include diagram in briefing markdown
+- Agents receive visual context alongside textual context
 
 ---
 
-## Priority 3: Briefing Generator Stub
+## Cancelled Items (Contradicted Canon)
 
-### Issue 3.1: `load_campaign_log()` Returns Empty
-**Location:** `IP/briefing_generator.py` Lines 18-21
-**Current:** Has `# ... parsing logic ...` comment, returns empty list
-**Expected:** Actually parse CAMPAIGN_LOG.md
-
-**Fix:** Implement the markdown parser:
-```python
-def load_campaign_log(self, fiefdom_path: str, limit: int = 5) -> List[Dict]:
-    log_path = self.project_root / fiefdom_path / "CAMPAIGN_LOG.md"
-    if not log_path.exists():
-        return []
-
-    content = log_path.read_text()
-    entries = []
-
-    # Parse ## [YYYY-MM-DD HH:MM] TICKET-XXX sections
-    import re
-    pattern = r'## \[(\d{4}-\d{2}-\d{2} \d{2}:\d{2})\] (TICKET-\d+)'
-    # ... actual parsing logic
-
-    return entries[-limit:]
-```
-
-**Estimated effort:** 1-2 hours
-
----
-
-## Priority 4: State Synchronization
-
-### Issue 4.1: Tickets/Combat/Briefings Not Linked
-**Current:** Three separate systems for the same mission
-**Expected:** Creating ticket should be linked to combat deployment
-
-**Fix:** Create a `MissionManager` that coordinates:
-```python
-class MissionManager:
-    def __init__(self, project_root):
-        self.ticket_manager = TicketManager(project_root)
-        self.combat_tracker = CombatTracker(project_root)
-        self.briefing_generator = BriefingGenerator(project_root)
-
-    def start_mission(self, fiefdom: str, ticket_id: str):
-        """Start mission: create briefing, mark combat, link ticket"""
-        pass
-
-    def complete_mission(self, fiefdom: str, success: bool):
-        """Complete: update ticket, clear combat, log to campaign"""
-        pass
-```
-
-**Estimated effort:** 3-4 hours
-
----
-
-## Priority 5: Panel Placeholder Replacement
-
-### Issue 5.1: Collabor8 Panel is Placeholder
-**Location:** Lines 1037-1057
-**Current:** Static "coming soon" HTML
-**Expected:** Actual agent management UI
-
-**Fix options:**
-1. Wire to existing agent definitions from `Agent Deployment Strategy/`
-2. Create simple agent picker dropdown
-3. Integrate with get-shit-done patterns
-
-### Issue 5.2: Summon Panel is Placeholder
-**Location:** Lines 1081-1095
-**Current:** Static HTML mentioning Carl
-**Expected:** Actual search with Carl integration
-
-**Fix:** Wire to `CarlContextualizer`:
-```python
-if get_show_summon():
-    from IP.carl_core import CarlContextualizer
-    carl = CarlContextualizer(project_root_path)
-    # Build search UI with carl.search() integration
-```
-
-**Estimated effort:** 4-6 hours total
-
----
-
-## Priority 6: Background Process Fixes
-
-### Issue 6.1: Director Monitor Thread Disconnect
-**Location:** `08_director.py` Lines 239-247
-**Current:** Background thread updates don't trigger UI refresh
-**Expected:** UI should react to background changes
-
-**Fix options:**
-1. Use polling with Marimo's reactive state
-2. Use file-based signaling (.orchestr8/state.json)
-3. Accept manual refresh requirement (MVP approach)
-
-### Issue 6.2: Combat State Cleanup
-**Location:** `IP/combat_tracker.py` Lines 60-75
-**Current:** `cleanup_stale_deployments()` must be called manually
-**Expected:** Auto-cleanup on app start
-
-**Fix:** Call cleanup in render() initialization:
-```python
-# In render(), add at start:
-combat_tracker.cleanup_stale_deployments()
-```
-
-**Estimated effort:** 1-2 hours
-
----
-
-## Priority 7: Platform Hardcoding
-
-### Issue 7.1: Hardcoded gnome-terminal
-**Location:** `IP/terminal_spawner.py` Line 73-87
-**Current:** Tries gnome-terminal first
-**Fix:** Already has fallback chain, just document
-
-### Issue 7.2: Hardcoded npm run typecheck
-**Location:** `IP/health_checker.py`, `IP/briefing_generator.py`
-**Current:** Assumes TypeScript project
-**Fix:** Already supports Python, just need proper detection
-
-**Estimated effort:** 30 minutes (documentation only)
-
----
-
-## Priority 8: Path Resolution
-
-### Issue 8.1: sys.path Manipulation
-**Location:** Multiple plugins
-**Current:** Using `sys.path.insert()` to resolve imports
-**Fix:** This is actually handled correctly now with project root detection
-
-### Issue 8.2: Alias Resolution (@/ mapping)
-**Location:** `IP/connection_verifier.py` Lines 356-359
-**Current:** Assumes @/ -> src/
-**Fix:** Make configurable via orchestr8_settings.toml
-
-**Estimated effort:** 1 hour
-
----
-
-## Implementation Order
-
-| Phase | Priority | Tasks | Effort |
-|-------|----------|-------|--------|
-| A | P0 | Brand replacement (stereOS -> orchestr8) | 30 min |
-| B | P1 | Top row button fixes | 1 hr |
-| C | P2 | HealthChecker instantiation | 2 hrs |
-| D | P3 | Briefing stub fix | 1-2 hrs |
-| E | P6 | Combat cleanup on init | 30 min |
-| F | P4 | State synchronization (if needed) | 3-4 hrs |
-| G | P5 | Panel replacement (optional) | 4-6 hrs |
-
-**MVP Total:** Phases A-E = ~5-6 hours
-**Full Implementation:** All phases = ~12-15 hours
+| Item | Why Cancelled |
+|------|---------------|
+| P1.2: Add gener8 button | Canon: excluded from active UI |
+| P1.3: Remove ~~~ waves button | Doesn't exist in current code |
+| P6.2: Auto combat cleanup | Canon: manual only, Founder decides |
+| P3: Parse CAMPAIGN_LOG.md | Canon: format is JSON, not markdown |
 
 ---
 
 ## Validation Checklist
 
-After wiring, verify:
-
-- [ ] Brand shows "orchestr8" not "stereOS"
-- [ ] CSS classes are `.orchestr8-*`
-- [ ] Top row: [orchestr8] [collabor8] [JFDI] [gener8]
-- [ ] JFDI button opens TicketPanel
-- [ ] gener8 button opens Settings
-- [ ] Code City renders with three colors
-- [ ] HealthChecker is instantiated
-- [ ] Combat state cleans up on start
-- [ ] Briefing generator loads campaign history
-
----
-
-## Dependencies
-
-- No external dependencies needed
-- All required components already exist
-- Just need wiring and minor fixes
+- [x] Brand shows "orchestr8"
+- [x] CSS classes are `.orchestr8-*`
+- [x] Top row: `[orchestr8] [collabor8] [JFDI]`
+- [x] JFDI button opens TicketPanel
+- [x] Code City renders with three colors
+- [x] HealthChecker is wired (via HealthWatcher)
+- [x] Collabor8 has real agent panel
+- [x] Summon has Carl search integration
+- [ ] Campaign log reads JSON from `.orchestr8/campaigns/`
+- [ ] Mermaid diagrams wired to Carl briefings

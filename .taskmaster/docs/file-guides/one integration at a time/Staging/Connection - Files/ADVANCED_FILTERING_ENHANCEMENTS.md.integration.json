@@ -1,0 +1,18 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/ADVANCED_FILTERING_ENHANCEMENTS.md",
+  "total_lines": 200,
+  "sha256": "24c25d6fa68ad35f32994b39b050ca958a3d56a83920570d8abd1a9e777412a6",
+  "chunk_count": 2,
+  "observation_ids": [
+    687,
+    688
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

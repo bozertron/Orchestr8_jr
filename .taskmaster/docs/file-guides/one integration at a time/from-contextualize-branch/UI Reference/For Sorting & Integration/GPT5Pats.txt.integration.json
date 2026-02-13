@@ -1,0 +1,43 @@
+{
+  "source": "one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/GPT5Pats.txt",
+  "total_lines": 127,
+  "sha256": "dbf18279a6f6530489e1b8559e1eec448ca2eabd7a5be9d32b96d69e26188859",
+  "chunk_count": 2,
+  "observation_ids": [
+    502,
+    503
+  ],
+  "risks": [
+    "JS/Python bridge risk: event transport and payload validation can silently fail."
+  ],
+  "anchors": [
+    {
+      "line": 65,
+      "text": "Your `Particle_Studio2.ts` + `Particle_Studio3.js` strongly suggests you’re heading toward a VS Code Webview setup (you already do `panel.webview.postMessage({ command: 'injectDNA' ... })`)."
+    },
+    {
+      "line": 78,
+      "text": "if (name === 'rig') viewportPanel?.webview.postMessage(msg);"
+    },
+    {
+      "line": 79,
+      "text": "else rigPanel?.webview.postMessage(msg);"
+    },
+    {
+      "line": 84,
+      "text": "viewportPanel = vscode.window.createWebviewPanel('maestroViewport', 'Maestro Viewport', vscode.ViewColumn.One, { enableScripts: true });"
+    },
+    {
+      "line": 85,
+      "text": "rigPanel = vscode.window.createWebviewPanel('maestroRig', 'Maestro Rig', vscode.ViewColumn.Two, { enableScripts: true });"
+    },
+    {
+      "line": 125,
+      "text": "If you want, I can also refactor this into **two HTML files** (viewport-only + rig-only) with the exact message contract between them — that tends to be the cleanest foundation for VS Code panel detachment."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

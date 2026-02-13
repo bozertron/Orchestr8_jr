@@ -1,0 +1,77 @@
+{
+  "source": ".planning/phases/WORKORDERS-SUMMON.json",
+  "total_lines": 147,
+  "sha256": "13e2c227efeb960497bcaa0fea2ad95f0d6542d92c9a8c2d7b451663633d8840",
+  "chunk_count": 2,
+  "observation_ids": [
+    1073,
+    1074
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 14,
+      "text": "\"title\": \"Add Summon state variables to 06_maestro.py\","
+    },
+    {
+      "line": 15,
+      "text": "\"file\": \"IP/plugins/06_maestro.py\","
+    },
+    {
+      "line": 30,
+      "text": "\"constraints\": [\"Must use mo.ui.text with on_change callback\", \"State must be reactive\"],"
+    },
+    {
+      "line": 36,
+      "text": "\"file\": \"IP/plugins/06_maestro.py\","
+    },
+    {
+      "line": 53,
+      "text": "\"constraints\": [\"Three-state colors only (gold #D4AF37, teal #1fbdea, purple #9D4EDD)\", \"NO breathing animations\"],"
+    },
+    {
+      "line": 59,
+      "text": "\"file\": \"IP/plugins/06_maestro.py\","
+    },
+    {
+      "line": 72,
+      "text": "\"Instantiate Carl with STATE_MANAGERS\","
+    },
+    {
+      "line": 77,
+      "text": "\"constraints\": [\"Carl does NOT block (async/cached)\", \"Minimum 2 characters before query\"],"
+    },
+    {
+      "line": 83,
+      "text": "\"file\": \"IP/plugins/06_maestro.py\","
+    },
+    {
+      "line": 99,
+      "text": "\"constraints\": [\"Use emergence animation (NOT breathing)\", \"Void background #0A0A0B\"],"
+    },
+    {
+      "line": 105,
+      "text": "\"file\": \"IP/plugins/06_maestro.py\","
+    },
+    {
+      "line": 115,
+      "text": "\"instantiation\": \"carl = Carl(STATE_MANAGERS)\","
+    },
+    {
+      "line": 119,
+      "text": "\"constraints\": [\"Non-blocking operation required\", \"Handle missing Carl gracefully\"],"
+    },
+    {
+      "line": 127,
+      "text": "\"description\": \"IP/carl_core.py must exist with gather_context() method\","
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

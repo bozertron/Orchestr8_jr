@@ -1,7 +1,7 @@
 # Marimo API Reference & Compatibility Fixes
 
 **Created:** 2026-01-30
-**Source:** marimo source code at `/home/user/marimo-reference/` (cloned from https://github.com/marimo-team/marimo.git)
+**Source:** marimo source code at `/home/user/marimo-reference/` (cloned from <https://github.com/marimo-team/marimo.git>)
 **Target Version:** marimo 0.19.6
 
 ---
@@ -161,11 +161,13 @@ mo.accordion(
 ### 2026-01-30: Initial Compatibility Audit
 
 **Environment:**
+
 - marimo 0.19.6
 - Python 3.14.2
 - Orchestr8 application
 
 **Test Results:**
+
 - Application launches but 6 of 9 plugins fail to render
 - Root cause: Plugins use deprecated/non-existent marimo API patterns
 
@@ -187,21 +189,25 @@ mo.accordion(
 ## Part 5: Fix Implementation Record
 
 ### Fix 1: 01_generator.py
+
 - **Line 61:** `mo.ui.progress(value=current_phase/7, show_value=True)`
 - **Action:** Replaced with HTML progress element: `mo.Html(f'<progress value="{current_phase}" max="7"...')`
 - **Status:** COMPLETED
 
 ### Fix 2: 02_explorer.py
+
 - **Lines 261-262:** `mo.vstack([...], style={...})`
 - **Action:** Removed `style` param, used `widths=[2, 1]` on parent hstack for flex layout
 - **Status:** COMPLETED
 
 ### Fix 3: 05_universal_bridge.py
+
 - **Lines 475, 483:** `mo.ui.accordion(...)`
 - **Action:** Changed to `mo.accordion(...)` (correct namespace)
 - **Status:** COMPLETED
 
 ### Fix 4: 07_settings.py
+
 - **Lines 342, 589:** Tab buttons with `style` param
 - **Action:** Removed `style` param, added `[label]` prefix for active state indication
 - **Line 618:** Save button with `style` param
@@ -209,6 +215,7 @@ mo.accordion(
 - **Status:** COMPLETED
 
 ### Fix 5: 08_director.py
+
 - **Line 458:** `mo.ui.button(..., style={...})`
 - **Action:** Replaced with `kind="success"` for green button
 - **Import issue:** `director.adapter` import fails because 888 moved to staging

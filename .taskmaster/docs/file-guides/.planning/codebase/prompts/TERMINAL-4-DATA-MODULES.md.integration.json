@@ -1,0 +1,30 @@
+{
+  "source": ".planning/codebase/prompts/TERMINAL-4-DATA-MODULES.md",
+  "total_lines": 25,
+  "sha256": "d44d4f285c5a52fe8ac6658024c5952829aca5fd456da7cd0ce4a981d7c3e1cd",
+  "chunk_count": 1,
+  "observation_ids": [
+    1024
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 8,
+      "text": "3. `IP/ticket_manager.py` (260 lines) — JFDI ticket system"
+    },
+    {
+      "line": 16,
+      "text": "3. How it's consumed by 06_maestro.py"
+    },
+    {
+      "line": 22,
+      "text": "- `ticket_panel.py` — JFDI button in 06_maestro.py opens a PLACEHOLDER instead of using this. Why? How to fix?"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

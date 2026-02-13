@@ -1,0 +1,26 @@
+{
+  "source": "one integration at a time/star-vector/starvector/metrics/compute_dino_score.py",
+  "total_lines": 55,
+  "sha256": "47a7c27ba0b3dbdf085fbdef38a7da12a80c6f8f3838673b407a37d4ad8e1c25",
+  "chunk_count": 1,
+  "observation_ids": [
+    900
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 28,
+      "text": "raise ValueError(f\"model_size should be either 'small', 'base' or 'large', got {model_size}\")"
+    },
+    {
+      "line": 42,
+      "text": "raise ValueError(\"Input must be a file path, PIL Image, or tensor of features\")"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

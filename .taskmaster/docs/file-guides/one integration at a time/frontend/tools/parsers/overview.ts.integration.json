@@ -1,0 +1,31 @@
+{
+  "source": "one integration at a time/frontend/tools/parsers/overview.ts",
+  "total_lines": 234,
+  "sha256": "5eebb70c88b27828be38e51ee85c6d67097a6ac58a62bc1047501a925152ee82",
+  "chunk_count": 2,
+  "observation_ids": [
+    626,
+    627
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 61,
+      "text": "* Check if a path should be ignored based on patterns."
+    },
+    {
+      "line": 63,
+      "text": "function shouldIgnore(name: string): boolean {"
+    },
+    {
+      "line": 110,
+      "text": "if (shouldIgnore(item.name)) continue;"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

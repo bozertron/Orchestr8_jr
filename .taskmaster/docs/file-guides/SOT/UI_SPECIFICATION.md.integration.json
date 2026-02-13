@@ -1,0 +1,120 @@
+{
+  "source": "SOT/UI_SPECIFICATION.md",
+  "total_lines": 199,
+  "sha256": "befa442d67dda444069bb6146ce9c6654ab49fd683d53e0ceccba756ae2d9785",
+  "chunk_count": 3,
+  "observation_ids": [
+    82,
+    83,
+    84
+  ],
+  "risks": [
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 11,
+      "text": "- **Application Name:** orchestr8 (lowercase, ends with 8)"
+    },
+    {
+      "line": 12,
+      "text": "- **Naming Convention:** Words ending with 8 start lowercase (orchestr8, collabor8, gener8)"
+    },
+    {
+      "line": 23,
+      "text": "--gold-dark: #B8860B;        /* Gold accent/stroke */"
+    },
+    {
+      "line": 24,
+      "text": "--gold-saffron: #F4C430;     /* Gold highlight */"
+    },
+    {
+      "line": 41,
+      "text": "| Working | Gold | #D4AF37 | All imports resolve, typecheck passes |"
+    },
+    {
+      "line": 43,
+      "text": "| Combat | Purple | #9D4EDD | General currently deployed and active |"
+    },
+    {
+      "line": 52,
+      "text": "| [orchestr8] [collabor8] [JFDI] [gener8]              [Model Picker]     |"
+    },
+    {
+      "line": 60,
+      "text": "|  |                                  |  |   - Tickets (JFDI)         |   |"
+    },
+    {
+      "line": 61,
+      "text": "|  |     Gold = Working              |  |   - Calendar               |   |"
+    },
+    {
+      "line": 63,
+      "text": "|  |     Purple = Combat             |  |   - File Explorer          |   |"
+    },
+    {
+      "line": 72,
+      "text": "| | [Apps] [Matrix] [Calendar] [Comms] [Files] == [maestro] == [Search] | |"
+    },
+    {
+      "line": 84,
+      "text": "| 1 | `orchestr8` | Home - Reset to default state, always present |"
+    },
+    {
+      "line": 85,
+      "text": "| 2 | `collabor8` | Agents dropdown - Domain agent management |"
+    },
+    {
+      "line": 86,
+      "text": "| 3 | `JFDI` | \"Just Fucking Do It\" - Opens Ticket panel (slides RIGHT) |"
+    },
+    {
+      "line": 109,
+      "text": "| maestro | Global search (summon) |"
+    },
+    {
+      "line": 115,
+      "text": "| Search | Same as maestro - global search |"
+    },
+    {
+      "line": 132,
+      "text": "- Tickets (JFDI) - Full TicketPanel component"
+    },
+    {
+      "line": 170,
+      "text": "Use `.orchestr8-*` classes for branding. Legacy class names should not be used."
+    },
+    {
+      "line": 179,
+      "text": ".orchestr8-brand { }"
+    },
+    {
+      "line": 180,
+      "text": ".orchestr8-prefix { }"
+    },
+    {
+      "line": 181,
+      "text": ".orchestr8-suffix { }"
+    },
+    {
+      "line": 188,
+      "text": "The canonical CSS file is: `IP/styles/orchestr8.css`"
+    },
+    {
+      "line": 190,
+      "text": "This file defines all colors, typography, and component styles. Any new components should use these variables."
+    },
+    {
+      "line": 197,
+      "text": "- **Style Reference:** `IP/styles/orchestr8.css`"
+    },
+    {
+      "line": 198,
+      "text": "- **Implementation:** `IP/plugins/06_maestro.py`"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/key_lines_with_files.tsv"
+  }
+}

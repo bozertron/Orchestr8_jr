@@ -1,0 +1,121 @@
+{
+  "source": ".planning/codebase/CONCERNS.md",
+  "total_lines": 211,
+  "sha256": "77fd03d66869c13f56d1a7efda89480717d9227383d872fed2d32a3df7aa9c4b",
+  "chunk_count": 2,
+  "observation_ids": [
+    1009,
+    1010
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 14,
+      "text": "- Issue: Chat functionality in `IP/plugins/06_maestro.py` (lines 88-92) gracefully degrades if anthropic not installed, but core functionality depends on environment variable `ANTHROPIC_API_KEY` without validation"
+    },
+    {
+      "line": 15,
+      "text": "- Files: `IP/plugins/06_maestro.py` (handle_send function, lines 753-844)"
+    },
+    {
+      "line": 17,
+      "text": "- Fix approach: Add initialization-time validation of `ANTHROPIC_API_KEY` in `orchestr8.py` entry point; log clear warning if missing before any chat attempt"
+    },
+    {
+      "line": 20,
+      "text": "- Issue: `pyproject_orchestr8_settings.toml` contains many placeholder values like `[local_doc_model]`, `[path_to_image_model]`, `[neo4j_password]` that are never validated"
+    },
+    {
+      "line": 21,
+      "text": "- Files: `pyproject_orchestr8_settings.toml` (lines 47, 121, 130, 149, 162, 237, etc.)"
+    },
+    {
+      "line": 28,
+      "text": "- Symptoms: If `build_code_city()` throws exception in `06_maestro.py`, error appears inline in UI but doesn't prevent rest of interface from loading"
+    },
+    {
+      "line": 29,
+      "text": "- Files: `IP/plugins/06_maestro.py` (build_code_city function, lines 917-944)"
+    },
+    {
+      "line": 31,
+      "text": "- Workaround: Set project root to a valid directory; check `.orchestr8/` subdirectory isn't corrupted"
+    },
+    {
+      "line": 35,
+      "text": "- Files: `IP/plugins/06_maestro.py` (toggle_calendar, toggle_comms, toggle_file_explorer functions, lines 441-485)"
+    },
+    {
+      "line": 41,
+      "text": "- Files: `IP/terminal_spawner.py` (spawn function, lines 71-95), `IP/plugins/06_maestro.py` (handle_apps, handle_matrix, handle_files functions, lines 657-720)"
+    },
+    {
+      "line": 49,
+      "text": "- Files: `IP/plugins/06_maestro.py` (anthropic client initialization, lines 754-785)"
+    },
+    {
+      "line": 51,
+      "text": "- Recommendations: (1) Add rate limiting on API calls, (2) Never log full API responses, (3) Consider proxy pattern for API calls, (4) Document that this application should not be exposed to untrusted networks"
+    },
+    {
+      "line": 64,
+      "text": "- Files: `IP/plugins/06_maestro.py` (lines 659-720)"
+    },
+    {
+      "line": 74,
+      "text": "- Improvement path: (1) Add `.orchestr8/scan_cache.json` with timestamp, (2) Invalidate cache only on file modification, (3) Cache imports graph for faster connection verification"
+    },
+    {
+      "line": 83,
+      "text": "- Problem: Every state change in `06_maestro.py` triggers full re-render of panels that read that state"
+    },
+    {
+      "line": 84,
+      "text": "- Files: `IP/plugins/06_maestro.py` (state management pattern, lines 375-423)"
+    },
+    {
+      "line": 91,
+      "text": "- Files: `orchestr8.py` (plugin_loader function, lines 88-124)"
+    },
+    {
+      "line": 93,
+      "text": "- Safe modification: (1) Before changing plugin names/order, verify no other plugins import them, (2) Add plugin dependency declaration mechanism, (3) Test all plugins load by running `marimo run orchestr8.py`"
+    },
+    {
+      "line": 97,
+      "text": "- Files: `IP/plugins/06_maestro.py` (lines 403-407 create panel instances), `IP/plugins/components/ticket_panel.py`, `IP/plugins/components/calendar_panel.py`, etc."
+    },
+    {
+      "line": 100,
+      "text": "- Test coverage: No tests for panel visibility state machine; changes must be manually tested in UI"
+    },
+    {
+      "line": 103,
+      "text": "- Files: All plugins that use `STATE_MANAGERS` pattern"
+    },
+    {
+      "line": 104,
+      "text": "- Why fragile: Distributed state across many cells; no centralized state schema; easy to create stale state if cells don't properly depend on each other"
+    },
+    {
+      "line": 109,
+      "text": "- Files: `IP/woven_maps.py` (COLORS dict, lines 30-48), `IP/plugins/06_maestro.py` (constants lines 128-134, CSS lines 139-328)"
+    },
+    {
+      "line": 110,
+      "text": "- Why fragile: Color system is three-state (Gold/Blue/Purple) but exact hex values appear in multiple places; inconsistencies will appear visually"
+    },
+    {
+      "line": 111,
+      "text": "- Safe modification: (1) If you change one color constant, search all files for that hex value and update, (2) Verify the CSS in 06_maestro.py matches the Python constants, (3) Test visual rendering after any color change"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

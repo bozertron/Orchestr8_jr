@@ -1,0 +1,17 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/woven_map(1)/hammer.js",
+  "total_lines": 7,
+  "sha256": "12ca55d122f2c3a9c4e1fce21a37e7e74c58a9d07317228905ac68c92ce156ab",
+  "chunk_count": 1,
+  "observation_ids": [
+    819
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,6 +1,6 @@
 """
 00_welcome Plugin - Welcome Tab
-Orchestr8 v3.0 - The Fortress Factory
+Orchestr8 v3.0
 
 A simple welcome plugin that displays the getting started guide.
 This plugin demonstrates the plugin protocol.
@@ -33,7 +33,7 @@ def render(STATE_MANAGERS):
     welcome_md = mo.md("""
 ## Welcome to Orchestr8 v3.0
 
-**The Fortress Factory** - A modular, reactive Command Center for codebase orchestration.
+A modular, reactive orchestration dashboard for codebase management.
 
 ### Quick Start
 
@@ -55,15 +55,16 @@ def render(STATE_MANAGERS):
 ### Architecture
 
 ```
-IP/
-├── orchestr8_app.py    # Main Marimo app
-├── plugins/            # Dynamic plugin directory
-│   ├── 00_welcome.py   # This plugin
-│   ├── 01_generator.py # Generator wizard
-│   └── ...
-├── carl_core.py        # TypeScript bridge
-├── louis_core.py       # File protection
-└── connie.py           # DB conversion engine
+project_root/
+├── orchestr8.py        # Main Marimo app
+└── IP/
+    ├── plugins/            # Dynamic plugin directory
+    │   ├── 00_welcome.py   # This plugin
+    │   ├── 01_generator.py # Generator wizard
+    │   └── ...
+    ├── carl_core.py        # TypeScript bridge
+    ├── louis_core.py       # File protection
+    └── connie.py           # DB conversion engine
 ```
 
 ### STATE_MANAGERS

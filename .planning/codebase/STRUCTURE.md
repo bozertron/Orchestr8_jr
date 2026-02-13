@@ -124,7 +124,7 @@
 
 **Entry Points:**
 - `orchestr8.py`: Main application - `marimo run orchestr8.py` or `marimo edit orchestr8.py`
-- `IP/plugins/06_maestro.py`: Goal UI (stereOS layout with Void, Woven Maps visualization)
+- `IP/plugins/06_maestro.py`: Goal UI (orchestr8 layout with Void, Woven Maps visualization)
 
 **Configuration:**
 - `pyproject_orchestr8_settings.toml`: Models, agents, tools, UI settings

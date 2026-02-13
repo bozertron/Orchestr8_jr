@@ -1,0 +1,26 @@
+{
+  "source": "one integration at a time/Staging/migrationAssistantParser.md",
+  "total_lines": 102,
+  "sha256": "095cb632eb63cb61b876c53155773912412e368863c38d9394e645ebec1a7570",
+  "chunk_count": 1,
+  "observation_ids": [
+    832
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 10,
+      "text": "This plugin aims to bridge the gap between raw analysis data and actionable integration steps, significantly aiding developers (human or LLM) in the migration process."
+    },
+    {
+      "line": 17,
+      "text": "* `options`: An object containing the necessary data, likely passed from `integr8` or a dedicated command. This **must** include:"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

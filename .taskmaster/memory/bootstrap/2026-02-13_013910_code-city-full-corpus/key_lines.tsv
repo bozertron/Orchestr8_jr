@@ -1,0 +1,276 @@
+8:- Root health state in `orchestr8.py`
+9:- Node-click bridge into `handle_node_click()` in `IP/plugins/06_maestro.py`
+11:The result should be immediately task-generatable in Taskmaster and executable without recovering prior chat context.
+32:Adds `health` and `health_status` to `STATE_MANAGERS` in `orchestr8.py` and keeps plugin compatibility.
+36:Turns `WOVEN_MAPS_NODE_CLICK` browser events into reactive Python state updates and invokes `handle_node_click()`.
+48:Implementation must preserve:
+49:  - Top row `[orchestr8] [collabor8] [JFDI]`
+51:  - Emergence-only motion (no breathing/pulsing)
+52:  - Three-state color contract (`#D4AF37`, `#1fbdea`, `#9D4EDD`)
+62:3. Maestro receives event -> `handle_node_click()` executes
+74:- App scope remains `orchestr8` only
+88:- `orchestr8.py` currently defines `STATE_MANAGERS` with `root/files/selected/logs` only
+90:- `IP/woven_maps.py` posts `WOVEN_MAPS_NODE_CLICK` with node payload
+92:- `IP/plugins/06_maestro.py` defines `handle_node_click(node_data)`
+121:  - `zoom: float`
+150:1. Root health channels in `orchestr8.py`
+151:- Extend `STATE_MANAGERS` with:
+158:  - Existing plugins expecting previous keys must continue to render
+160:2. Node-click bridge into `handle_node_click()` in `IP/plugins/06_maestro.py`
+166:  - Invoke `handle_node_click(...)` on valid payload
+175:4. On success, call `handle_node_click(validated_payload_dict)`
+187:- `orchestr8.py`
+188:- `IP/plugins/06_maestro.py`
+209:1. Add `health` and `health_status` to `STATE_MANAGERS` in `orchestr8.py`
+213:1. `marimo run orchestr8.py` starts successfully
+215:3. `STATE_MANAGERS` exposes new keys everywhere
+221:3. Invoke `handle_node_click()` for valid events
+234:1. Top row remains `[orchestr8] [collabor8] [JFDI]`
+237:4. Three-state colors unchanged
+284:2. Sitting Room full implementation
+220:Gold (#D4AF37)   - Working code, completion state
+222:Purple (#9D4EDD) - Combat state (LLM deployed)
+235:- ✅ Teal → Gold transitions
+258:2. **Teal during scan, Gold on completion** - Phase-based color
+34:    O -->|Visualizes| M[📊 Mermaid Graph<br/>Gold=Working, Blue=Broken]
+69:| **Working** | Gold | `#D4AF37` | All imports resolve, typecheck passes, no blocking errors |
+86:--gold-dark: #B8860B;      /* Gold accent */
+119:    J --> K{Node now Gold?}
+135:# In 06_maestro.py - The Void plugin
+182:# In 06_maestro.py or dedicated plugin
+366:    Gold (#D4AF37) = Working
+413:    N4["maestro"]
+467:  - Gold/blue coloring
+473:  - Start with `src/llm/`, `src/modules/generator/`, `src/modules/maestro/`
+59:    * **Constraint:** The table must be selectable (`selection='single'`). When a row is clicked, update `selected_file`.
+75:    * **Rendering:** Create a helper `render_badge(status)` that returns HTML spans (Green/Orange/Purple) for the table view.
+89:    * **Marimo Integration:** The graph must return an HTML string (`net.generate_html()`) and be wrapped in `mo.Html()`.
+91:    * The graph must auto-update when `scan_button` is pressed.
+59:**CRITICAL: The Emperor MUST see the full subagent choreography. Hiding it doesn't work - this was tested and failed.**
+269:│  │  🟡 = Working (Gold)                      │  │  🟣 src/maestro       │ │
+271:│  │  🟣 = Combat (Purple)                     │  │     General: Active   │ │
+291:│ │ [Files] [Matrix] [Graph] ══════ [maestro] ══════ [Search] [Deploy] [⏎]  │ │
+308:| Tickets Panel | Click "Tickets" or JFDI | Slides from RIGHT | All pending tickets, searchable |
+375:| **Working** | Gold | `#D4AF37` | All imports resolve, typecheck passes, no blocking errors |
+377:| **Combat** | Purple | `#9D4EDD` | General currently deployed and active |
+394:### 4.3 Why Purple Matters
+402:**Purple = "Someone is in there fighting. Do not disturb."**
+409:    --gold-dark: #B8860B;      /* Gold accent/stroke */
+494:4. If BLOCKED: Report what's blocking, suggest escalation
+516:- **Status:** PENDING | IN_PROGRESS | BLOCKED | RESOLVED
+564:│ PENDING  │────►│ IN_PROGRESS │────►│ RESOLVED │     │ BLOCKED  │
+576:.orchestr8/
+631:│ (Purple node)                       │
+720:  - Exports to: `src/modules/maestro/`
+726:| `scaffold-cli.ts` | 🔒 LOCKED | Stable CLI interface |
+727:| `../llm/registry.ts` | 🔒 LOCKED | Core registry, don't touch |
+843:- `src/modules/maestro/` imports from generator - may need similar fix
+862:- Template paths must be relative to PROJECT ROOT, not fiefdom
+909:                    │      (.orchestr8/tickets/)              │
+964:        echo \"BLOCKED: \$file is locked\"
+975:# orchestr8_watcher.py
+1133:| Update `06_maestro.py` with Mermaid as primary | P0 | 2-3 hours | Claude |
+1220:├── orchestr8.py                      # Original Marimo app (reference)
+1223:│   ├── orchestr8_app.py             # Main Marimo application
+1235:│       ├── 06_maestro.py            # THE VOID (primary)
+1238:├── .orchestr8/                      # Runtime state
+1251:    ├── orchestr8 Agents.md
+1279:│   │   └── maestro/                 # FIEFDOM
+1306:    WORKING = "working"    # Gold - healthy
+1308:    COMBAT = "combat"      # Purple - general deployed
+1391:        self.state_file = self.project_root / ".orchestr8" / "state" / "fiefdom-status.json"
+1519:class HealthChecker:
+1721:                briefing += f"| `{lock['file']}` | 🔒 LOCKED | {lock['reason']} |\n"
+1862:**Status:** VICTORY | PARTIAL | BLOCKED
+5:**Status:** LOCKED — All decisions finalized
+11:This document captures the vision alignment session that established the foundational decisions for Orchestr8's development. These decisions are **LOCKED** and should not be changed without explicit Founder approval.
+20:│  orchestr8 (Marimo, Python)                                     │
+26:│  The orchestra practices on orchestr8 itself first.             │
+62:| **Sitting Room** | Particles morph into collaboration space for human+LLM discussion |
+71:- Breathing animations (FORBIDDEN — things EMERGE, not breathe)
+81:| **VS Code integration** | postMessage bridge to Marimo iframe |
+83:| **Health visualization** | Building TEAL → Room with error GLOWS → Click to enter Sitting Room |
+88:File Change → HealthWatcher → HealthChecker → STATE_MANAGERS → Code City
+110:| **Location** | `.orchestr8/campaigns/` |
+135:| **Signal sources** | HealthChecker, ConnectionVerifier, CombatTracker, TicketManager, LouisWarden |
+186:    /* Gold Variations */
+213:### 4. Sitting Room Collaboration
+215:When a room (function) has an issue, click to enter the Sitting Room — particles morph into a presentation area where human and LLM collaborate on fixes.
+225:The vscode-marimo extension provides telemetry via postMessage bridge:
+228:VS Code Extension → File Watcher → Telemetry Aggregator → postMessage → Marimo iframe
+248:    ├── 06_maestro.py      # Main UI (Summon panel needs Carl)
+260:2. Wire HealthChecker to Code City
+268:**Document Status:** LOCKED
+4:## Status: AUTHORITATIVE
+12:| **LOCKED** | Non-negotiable. Do exactly this. Violating these is a critical error. |
+22:1. **Wire HealthChecker to Code City** — Real-time health visualization is foundational
+35:### LOCKED Decisions
+50:- **NO:** Breathing animations (FORBIDDEN — things EMERGE, not breathe)
+55:- File names must be clearly labeled on panels
+71:### LOCKED Decisions
+74:- **VS CODE INTEGRATION:** postMessage bridge to Marimo iframe
+75:- **HEALTH VISUALIZATION FLOW:** Building TEAL → Room with error GLOWS → Click to enter Sitting Room
+76:- **DATA FLOW:** `File Change → HealthWatcher → HealthChecker → STATE_MANAGERS → Code City`
+100:### LOCKED Decisions
+102:- **LOCATION:** `.orchestr8/campaigns/`
+124:### LOCKED Decisions
+126:- **SIGNAL SOURCES:** HealthChecker, ConnectionVerifier, CombatTracker, TicketManager, LouisWarden
+132:### Carl's Output Structure (LOCKED)
+166:### LOCKED Decisions
+192:### LOCKED Decisions
+205:- **Gold dark:** `#B8860B` (borders, strokes)
+206:- **Gold saffron:** `#F4C430` (highlights)
+223:### LOCKED Decisions
+227:- **SITTING ROOM COLLABORATION:** When a room (function) has an issue, click to enter the Sitting Room — particles morph into a presentation area where human and LLM collaborate on fixes.
+236:- Motion should feel like emergence, not animation
+253:### LOCKED Decisions
+254:- **INTEGRATION METHOD:** postMessage bridge to Marimo iframe
+255:- **DATA FLOW:** `VS Code Extension → File Watcher → Telemetry Aggregator → postMessage → Marimo iframe`
+279:### LOCKED Decisions
+304:### LOCKED Decisions
+328:4. **Three-state color system** works consistently
+329:5. **Things emerge** — no breathing animations
+331:7. **Sitting Room** enables human+LLM collaboration on problematic code
+341:3. **Red for errors** — Teal indicates broken state
+379:    ├── 06_maestro.py      # Main UI (Summon panel needs Carl)
+384:.orchestr8/campaigns/      # Campaign log storage (to be created)
+389:**Document Status:** AUTHORITATIVE
+100:### Color Alignment (LOCKED)
+110:### Building Formula (LOCKED - already correct)
+227:### Emergence Pattern (LOCKED - no breathing)
+244:- [ ] Emergence animation (no breathing)
+27:            "Color MUST use 0xD4AF37 (canonical gold), NOT 0xC9A962"
+51:            "Background MUST be #0A0A0B (The Void)"
+79:            "Height formula is LOCKED: 3 + (exports × 0.8)",
+80:            "Footprint formula is LOCKED: 2 + (lines × 0.008)"
+133:            "Particles must COALESCE, not animate"
+177:            "NO sin/cos oscillation (no breathing)"
+389:            "NO breathing/pulsing (FORBIDDEN)",
+445:            "Emergence animation (no breathing)",
+22:| Canonical frame (`orchestr8/collabor8/JFDI`, no `gener8`) | behavior | `SOT/CODE_CITY_PLAN_LOCK.md:7`, `IP/plugins/06_maestro.py:1185` | Top-row labels, Void center, bottom control frame, no brand drift | UI regression check for top-row contract | partial |
+23:| Three-state color contract | behavior | `SOT/CODE_CITY_PLAN_LOCK.md:22`, `IP/woven_maps.py:116` | Gold/Teal/Purple + Void/Surface, no extra states | Shared enum/constants module consumed by all renderers/services | partial |
+31:| Tooltip + node click event contract | routine | `IP/woven_maps.py:2651`, `IP/woven_maps.py:2689`, `IP/plugins/06_maestro.py:1716` | Event schema (`path/status/errors/metrics`), routing to UI handlers | JS event arrives, but no Python bridge calling `handle_node_click()` | missing |
+35:| Sitting Room transition + return | feature | `SOT/CODE_CITY_PLAN_LOCK.md:61` | Entry trigger, morph animation, context handoff to collaboration surface | No Sitting Room runtime implementation | missing |
+36:| Health flow (`File Change -> HealthWatcher -> HealthChecker -> STATE -> Code City`) | routine | `IP/health_watcher.py:8`, `IP/plugins/06_maestro.py:1207`, `orchestr8.py:55`, `IP/woven_maps.py:527` | Global health state in app root, watcher lifecycle, merge function call in render pipeline | Root app state lacks `health` key; health merge function exists but not wired through `create_code_city()` | partial |
+45:| Broken-node deploy + ticket generation flow | routine | `IP/plugins/06_maestro.py:678`, `IP/plugins/06_maestro.py:709`, `SOT/todo.md:102` | Ticket payload schema from Carl/health + deploy action chain | Auto-ticket generation from node click not wired end-to-end | partial |
+54:- Transport: iframe `postMessage` payload + Marimo handler contract.
+57:- `mode` (`overview`, `dive`, `focus`, `room`, `sitting_room`), `position`, `target`, `zoom`, `return_stack`.
+58:- Includes warp-dive timing and easing parameters.
+80:2. Wire root state (`health`/`health_status`) in `orchestr8.py`.
+81:3. Wire node-click bridge (`postMessage` -> `handle_node_click` path).
+83:5. Add camera overview + warp dive + return stack.
+90:If a future run remembers only one file, it should remember this one: `SOT/CODE_CITY_LANDSCAPE.md`.
+132:    // Color (from orchestr8)
+133:    COLOR: 0xD4AF37              // Gold - healthy state
+175:            // Color by health state (orchestr8 colors)
+277:│ [Gold] [Teal] [Purple]  │  [1][2][3][4]  │  [🔊]  │  [densit8 ▽] │
+33:| Working | Gold | #D4AF37 | Healthy, passing tests |
+35:| Combat | Purple | #9D4EDD | Active LLM engagement |
+55:- Buildings change color in real-time (Gold → Blue → Gold)
+73:User clicks building → camera smoothly zooms to building → shows file details
+80:    type: 'WOVEN_MAPS_NODE_CLICK',
+113:    zoom: camera.zoom
+125:| Gold | `setFrameColor('gold')` | Filter to healthy files |
+126:| Teal | `setFrameColor('teal')` | Filter to broken files |
+127:| Purple | `setFrameColor('combat')` | Filter to combat files |
+148:│ [Gold] [Teal] [Purple]  │  [1][2][3][4]  │  [🔊]  │  [densit8] │
+11:- **Application Name:** orchestr8 (lowercase, ends with 8)
+12:- **Naming Convention:** Words ending with 8 start lowercase (orchestr8, collabor8, gener8)
+23:    --gold-dark: #B8860B;        /* Gold accent/stroke */
+24:    --gold-saffron: #F4C430;     /* Gold highlight */
+41:| Working | Gold | #D4AF37 | All imports resolve, typecheck passes |
+43:| Combat | Purple | #9D4EDD | General currently deployed and active |
+52:| [orchestr8] [collabor8] [JFDI] [gener8]              [Model Picker]     |
+60:|  |                                  |  |   - Tickets (JFDI)         |   |
+61:|  |     Gold = Working              |  |   - Calendar               |   |
+63:|  |     Purple = Combat             |  |   - File Explorer          |   |
+72:| | [Apps] [Matrix] [Calendar] [Comms] [Files] == [maestro] == [Search] | |
+84:| 1 | `orchestr8` | Home - Reset to default state, always present |
+85:| 2 | `collabor8` | Agents dropdown - Domain agent management |
+86:| 3 | `JFDI` | "Just Fucking Do It" - Opens Ticket panel (slides RIGHT) |
+109:| maestro | Global search (summon) |
+115:| Search | Same as maestro - global search |
+132:  - Tickets (JFDI) - Full TicketPanel component
+170:Use `.orchestr8-*` classes for branding. Legacy class names should not be used.
+179:.orchestr8-brand { }
+180:.orchestr8-prefix { }
+181:.orchestr8-suffix { }
+188:The canonical CSS file is: `IP/styles/orchestr8.css`
+190:This file defines all colors, typography, and component styles. Any new components should use these variables.
+197:- **Style Reference:** `IP/styles/orchestr8.css`
+198:- **Implementation:** `IP/plugins/06_maestro.py`
+10:This document outlines the fixes needed to wire up the existing components in 06_maestro.py. The components EXIST - they just need to be connected properly.
+16:Replace all legacy brand references with "orchestr8" in the codebase.
+22:| `IP/plugins/06_maestro.py` | 7, 873-876 | Brand text updated to "orchestr8" |
+23:| `IP/plugins/06_maestro.py` | 189-200 | CSS classes updated to `.orchestr8-*` |
+24:| `IP/plugins/06_maestro.py` | 5, 11, 31 | Docstring references |
+32:### Issue 1.1: JFDI Button Opens Wrong Panel
+40:# In build_panels(), replace JFDI placeholder with:
+67:### Issue 2.1: HealthChecker Never Instantiated
+76:health_checker = HealthChecker(project_root_path)
+133:**Expected:** Creating ticket should be linked to combat deployment
+196:**Expected:** UI should react to background changes
+201:2. Use file-based signaling (.orchestr8/state.json)
+207:**Current:** `cleanup_stale_deployments()` must be called manually
+251:**Fix:** Make configurable via orchestr8_settings.toml
+261:| A | P0 | Brand replacement (legacy -> orchestr8) | 30 min |
+263:| C | P2 | HealthChecker instantiation | 2 hrs |
+278:- [ ] Brand shows "orchestr8" with no legacy naming
+279:- [ ] CSS classes are `.orchestr8-*`
+280:- [ ] Top row: [orchestr8] [collabor8] [JFDI] [gener8]
+281:- [ ] JFDI button opens TicketPanel
+284:- [ ] HealthChecker is instantiated
+35:- **Gold (#D4AF37)**: Working code - all imports resolve, no errors
+37:- **Purple (#9D4EDD)**: Combat - LLM "General" is actively debugging
+50:Implement Woven Maps in `IP/plugins/06_maestro.py` (The Void plugin) so that when the user opens Orchestr8, they see their codebase as a living, breathing city.
+66:│         IP/orchestr8_app.py             │  ← Main application entry
+76:│  │ 06_maestro.py  ← THE VOID       │    │  ← THIS IS WHERE WE IMPLEMENT
+79:│         STATE_MANAGERS                  │  ← Reactive state injection
+91:Every plugin MUST have:
+97:def render(STATE_MANAGERS: dict) -> Any:
+99:    get_root, set_root = STATE_MANAGERS["root"]
+104:### Current State of 06_maestro.py
+124:│ [stereOS]              [Collabor8] [JFDI] [Summon]              │
+133:│    │    Gold buildings = working code                    │     │
+135:│    │    Purple buildings = combat (LLM active)           │     │
+138:│    │    Click blue spot → zoom to neighborhood           │     │
+145:│ [Apps][Matrix][Files]    (maestro)    [Search][Phreak>][Send]   │
+156:4. Clicking the building zooms camera into that "neighborhood"
+164:2. The scale increases (zoom in)
+506:        // Purple glow for combat
+1031:                window.parent.postMessage({
+1052:### Integration Function for 06_maestro.py
+1055:def create_code_city(STATE_MANAGERS: dict, width: int = 800, height: int = 600) -> Any:
+1061:    get_root, _ = STATE_MANAGERS["root"]
+1242:function zoomToNode(node, camera, controls) {
+1318:    assert '#D4AF37' in html  # Gold color
+1320:    assert '#9D4EDD' in html  # Purple color
+1332:marimo edit IP/orchestr8_app.py
+1338:# 2. Gold dots for working files
+1462:- Gold: `#D4AF37` (NOT `#d4af37` or `gold`)
+1464:- Purple: `#9D4EDD` (NOT `purple`)
+1474:| `IP/orchestr8_app.py` | Main Marimo application |
+1475:| `IP/plugins/06_maestro.py` | The Void plugin (implement here) |
+1487:│   ├── orchestr8_app.py          # Main app
+1495:│   │   └── 06_maestro.py         # ← IMPLEMENT HERE
+1520:- [ ] Understand the STATE_MANAGERS pattern
+1524:- [ ] Read current `06_maestro.py`
+1531:- [ ] Test with `marimo edit IP/orchestr8_app.py`
+1536:- [ ] Gold/Blue/Purple colors correct
+1544:- [ ] `git add IP/plugins/06_maestro.py`
+1552:This document is designed to be **completely self-contained**. Any Claude instance should be able to:
+1565:- The Emperor must see everything
+21:**This is the razor's edge:** The same visualization must be beautiful enough for humans to *want* to use it, while being data-dense enough for LLMs to extract actionable information.
+220:4. **Color edge** → Based on connection health (both endpoints must be gold for gold edge)
+238:- **Gold padlock icon** appears at EACH connection point on the panel
+250:| **Pan/zoom the void** | Navigate between fiefdoms |
+257:### 4.2 The Sitting Room
+294:| Implement three-color system | 🔄 In Progress | Gold/Purple/Blue only |
+328:| Color connections by health | ⬜ | Gold/Purple/Blue per connection |
+329:| Padlock indicator for locked files | ⬜ | Gold block icon |
+367:### Phase 4: The Sitting Room
+391:| Void navigation (pan/zoom) | ⬜ | Camera controls |
+405:| Reflect agent deployment visually | ⬜ | Purple = agent working |
+461:│   └── HealthChecker.ts         # Determine gold/purple/blue
+467:    └── ColorSystem.ts           # Three-state color management
+524:3. **Developer clicks into Sitting Room** → Understands exactly what they're editing and what it touches

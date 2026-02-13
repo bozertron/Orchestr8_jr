@@ -10,6 +10,9 @@ from typing import Any, Dict, List, Optional
 import threading
 import time
 import json
+import os
+import sys
+from pathlib import Path
 from datetime import datetime, timedelta
 
 PLUGIN_NAME = "Director"
@@ -193,33 +196,165 @@ DIRECTOR_CSS = """
 class DirectorIntegration:
     """Integration layer for Director agent in Orchestr8"""
 
-    def __init__(self):
+    @staticmethod
+    def _discover_888_paths(root_hint: Optional[str] = None) -> List[Path]:
+        """Discover candidate 888 roots that may host director sources."""
+        candidates: List[Path] = []
+
+        # Explicit override wins.
+        env_path = os.getenv("ORCHESTR8_888_PATH", "").strip()
+        if env_path:
+            candidates.append(Path(env_path))
+
+        plugin_file = Path(__file__).resolve()
+        repo_root = plugin_file.parents[2]  # .../Orchestr8_jr
+        cwd = Path.cwd()
+
+        candidates.extend(
+            [
+                repo_root / "888",
+                cwd / "888",
+                repo_root / "one integration at a time" / "888",
+                cwd / "one integration at a time" / "888",
+            ]
+        )
+
+        if root_hint:
+            root_path = Path(root_hint).resolve()
+            candidates.extend(
+                [
+                    root_path / "888",
+                    root_path.parent / "888",
+                    root_path.parent / "one integration at a time" / "888",
+                ]
+            )
+
+        deduped: List[Path] = []
+        seen: set[str] = set()
+        for path in candidates:
+            key = str(path)
+            if key not in seen:
+                deduped.append(path)
+                seen.add(key)
+        return deduped
+
+    @staticmethod
+    def _resolve_director_root(root_hint: Optional[str] = None) -> Optional[Path]:
+        """Return first 888 root containing director/adapter.py."""
+        for root in DirectorIntegration._discover_888_paths(root_hint):
+            adapter_py = root / "director" / "adapter.py"
+            if adapter_py.is_file():
+                return root
+        return None
+
+    def __init__(self, root_hint: Optional[str] = None):
         self.director_engine = None
+        self.director_adapter = None
+        self.import_error = None
+        self.director_root = None
         self.monitoring = False
         self.generals = {}
         self.last_check = None
         self.alerts = []
 
-        # Try to import Director
+        # Try to import Director from discovered 888 roots.
         try:
-            import sys
-            import os
+            director_root = self._resolve_director_root(root_hint)
+            if director_root is None:
+                searched = ", ".join(
+                    str(p) for p in self._discover_888_paths(root_hint)
+                )
+                raise ImportError(
+                    f"director.adapter source not found. searched: {searched}"
+                )
 
-            sys.path.insert(0, os.path.join(os.getcwd(), "888"))
-            from director.adapter import (
-                _get_engine,
-                get_active_generals,
-                detect_stuck_patterns,
+            self.director_root = str(director_root)
+            sys.path.insert(0, str(director_root))
+            import director.adapter as director_adapter
+
+            self.director_adapter = director_adapter
+            get_engine = getattr(director_adapter, "_get_engine", None)
+            self.director_engine = (
+                get_engine() if callable(get_engine) else director_adapter
             )
-            from director.ooda_engine import OODAEngine
 
-            self.director_engine = _get_engine()
-            self.get_generals = get_active_generals
-            self.detect_stuck = detect_stuck_patterns
+            # Backward compatibility:
+            # old API expected get_active_generals/detect_stuck_patterns.
+            # New adapter exposes health/analytics/context APIs.
+            get_generals = getattr(director_adapter, "get_active_generals", None)
+            detect_stuck = getattr(director_adapter, "detect_stuck_patterns", None)
+            self.get_generals = (
+                get_generals if callable(get_generals) else self._adapter_get_generals
+            )
+            self.detect_stuck = (
+                detect_stuck
+                if callable(detect_stuck)
+                else self._adapter_detect_stuck_patterns
+            )
 
         except ImportError as e:
-            print(f"Director import failed: {e}")
+            self.import_error = str(e)
             self.director_engine = None
+
+    def _adapter_get_generals(self) -> Dict[str, Dict[str, Any]]:
+        """Compatibility shim for newer director.adapter API."""
+        now = datetime.now().isoformat()
+        health: Dict[str, Any] = {}
+        analytics: Dict[str, Any] = {}
+
+        if self.director_adapter and hasattr(self.director_adapter, "health_check"):
+            try:
+                health = self.director_adapter.health_check() or {}
+            except Exception:
+                health = {}
+
+        if self.director_adapter and hasattr(self.director_adapter, "get_analytics"):
+            try:
+                analytics = self.director_adapter.get_analytics() or {}
+            except Exception:
+                analytics = {}
+
+        status = "working"
+        if health and not health.get("success", True):
+            status = "stuck"
+        elif health.get("status") == "unhealthy":
+            status = "stuck"
+
+        context_events = health.get("context_events_processed", 0)
+        productivity_score = (
+            analytics.get("analytics", {})
+            .get("productivity", {})
+            .get("current_score", 0.0)
+        )
+
+        return {
+            "director-core": {
+                "status": status,
+                "last_activity": now,
+                "stuck_count": 0,
+                "context_events_processed": context_events,
+                "productivity_score": productivity_score,
+            }
+        }
+
+    def _adapter_detect_stuck_patterns(
+        self, current_generals: Dict[str, Dict[str, Any]]
+    ) -> Dict[str, Dict[str, Any]]:
+        """Compatibility shim that derives stuck signals from health/analytics."""
+        stuck: Dict[str, Dict[str, Any]] = {}
+        core = current_generals.get("director-core", {})
+        suggestions: List[str] = []
+
+        if core.get("status") == "stuck":
+            suggestions.append("Run director.health_check and review adapter errors.")
+
+        productivity_score = core.get("productivity_score", 0.0)
+        if isinstance(productivity_score, (int, float)) and productivity_score < 0.25:
+            suggestions.append("Low productivity trend detected; suggest context reset.")
+
+        if suggestions:
+            stuck["director-core"] = {"suggestions": suggestions}
+        return stuck
 
     def start_monitoring(self):
         """Start background monitoring of generals"""
@@ -358,7 +493,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
     get_root, _ = STATE_MANAGERS["root"]
 
     # Initialize Director integration
-    director = DirectorIntegration()
+    director = DirectorIntegration(root_hint=get_root())
 
     # Local state
     get_monitoring, set_monitoring = mo.state(False)
@@ -442,6 +577,22 @@ def render(STATE_MANAGERS: Dict) -> Any:
 
     def render_content():
         """Render main content"""
+        if director.import_error:
+            return mo.vstack(
+                [
+                    mo.md("### Director Agent"),
+                    mo.md(
+                        "Director integration is unavailable in this environment."
+                    ),
+                    mo.md(
+                        f"`{director.import_error}`"
+                    ),
+                    mo.md(
+                        "Install/configure the `888/director` package to enable monitoring."
+                    ),
+                ]
+            )
+
         if not get_monitoring():
             return mo.vstack(
                 [

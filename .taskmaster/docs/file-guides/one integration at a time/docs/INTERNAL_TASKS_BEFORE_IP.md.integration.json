@@ -1,0 +1,61 @@
+{
+  "source": "one integration at a time/docs/INTERNAL_TASKS_BEFORE_IP.md",
+  "total_lines": 426,
+  "sha256": "a3e29114e89420f226886f010387058df8ec3e8da3ff7149601f5bb279211ec9",
+  "chunk_count": 4,
+  "observation_ids": [
+    443,
+    444,
+    445,
+    446
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [
+    {
+      "line": 56,
+      "text": "**Goal:** Create the `.orchestr8/` structure that everything else depends on"
+    },
+    {
+      "line": 60,
+      "text": "├── .orchestr8/tickets/"
+    },
+    {
+      "line": 61,
+      "text": "├── .orchestr8/tickets/archive/"
+    },
+    {
+      "line": 62,
+      "text": "├── .orchestr8/state/"
+    },
+    {
+      "line": 78,
+      "text": "├── Create IP/styles/orchestr8.css"
+    },
+    {
+      "line": 127,
+      "text": "└── Cache to .orchestr8/mermaid-cache.md"
+    },
+    {
+      "line": 142,
+      "text": "├── Add [🔄 REFRESH] button to maestro"
+    },
+    {
+      "line": 161,
+      "text": "├── [Files][Matrix][Graph]═══[maestro]═══[Search][Deploy][⏎]"
+    },
+    {
+      "line": 180,
+      "text": "├── Read .orchestr8/tickets/*.md"
+    },
+    {
+      "line": 412,
+      "text": "- [ ] `.orchestr8/` structure exists with sample data"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

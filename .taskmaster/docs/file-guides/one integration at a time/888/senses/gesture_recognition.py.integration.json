@@ -1,0 +1,19 @@
+{
+  "source": "one integration at a time/888/senses/gesture_recognition.py",
+  "total_lines": 322,
+  "sha256": "a8712b003fbabdee8e2bc176673093221cfe99e9a4ee83cb16c19f56713a78c0",
+  "chunk_count": 3,
+  "observation_ids": [
+    314,
+    315,
+    316
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

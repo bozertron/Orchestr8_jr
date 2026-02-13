@@ -1,0 +1,54 @@
+{
+  "started_at_utc": "2026-02-13T09:42:22Z",
+  "finished_at_utc": "2026-02-13T09:42:22Z",
+  "worker_url": "http://127.0.0.1:37777",
+  "project": "orchestr8-code-city-corpus",
+  "chunk_lines": 80,
+  "summary": {
+    "file_count": 2,
+    "total_lines": 80,
+    "total_chunks": 2,
+    "saved_chunks": 2,
+    "all_saved": true
+  },
+  "files": [
+    {
+      "source": ".taskmaster/docs/CODE_CITY_PATTERN_INDEX.md",
+      "total_lines": 40,
+      "sha256": "75c227d154193c1ce54d832be1a2703d82f0fdd3255263979df6e6c589c7ba22",
+      "chunk_size": 80,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/CODE_CITY_PATTERN_INDEX.md",
+          "start_line": 1,
+          "end_line": 40,
+          "observation_id": 116,
+          "title": "corpus::.taskmaster/docs/CODE_CITY_PATTERN_INDEX.md::L1-L40",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".taskmaster/docs/CODE_CITY_INTEGRATION_FINISHED_REPORT.md",
+      "total_lines": 40,
+      "sha256": "96f69fd44bc4511834de90ed6ce669ac6a1e91c4375806b88213e73b39d61e47",
+      "chunk_size": 80,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/CODE_CITY_INTEGRATION_FINISHED_REPORT.md",
+          "start_line": 1,
+          "end_line": 40,
+          "observation_id": 117,
+          "title": "corpus::.taskmaster/docs/CODE_CITY_INTEGRATION_FINISHED_REPORT.md::L1-L40",
+          "ok": true,
+          "error": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "source": "one integration at a time/star-vector/configs/accelerate/deepspeed-2-gpu.yaml",
+  "total_lines": 21,
+  "sha256": "d674bcfbc7746bf41130f3e588a8c3bf5e49775cb99ec449059d3815f19a5c51",
+  "chunk_count": 1,
+  "observation_ids": [
+    846
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

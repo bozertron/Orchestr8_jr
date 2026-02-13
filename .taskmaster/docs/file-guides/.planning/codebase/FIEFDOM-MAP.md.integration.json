@@ -1,0 +1,101 @@
+{
+  "source": ".planning/codebase/FIEFDOM-MAP.md",
+  "total_lines": 249,
+  "sha256": "2110a28bce4628c4268f16e69308ced4ee6432900533855641a57e2b227abeda",
+  "chunk_count": 3,
+  "observation_ids": [
+    1013,
+    1014,
+    1015
+  ],
+  "risks": [
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 34,
+      "text": "| health_checker.py | 4,156 | 6 | 22 | HealthChecker 3,068 | 5 | GOLD |"
+    },
+    {
+      "line": 69,
+      "text": "3. **health_checker.py** - imported but never instantiated in maestro.py (HLTH-01)"
+    },
+    {
+      "line": 76,
+      "text": "**Boundary Basis:** PLUGIN_PROTOCOL contract + UI tab pattern"
+    },
+    {
+      "line": 83,
+      "text": "| 06_maestro.py | 5,192 | 8 | 35 | render() 4,042 | 3 | TEAL |"
+    },
+    {
+      "line": 86,
+      "text": "| 05_universal_bridge.py | 2,028 | 5 | 10 | render() 1,153 | 3 | GOLD |"
+    },
+    {
+      "line": 106,
+      "text": "1. **06_maestro.py:77** - HealthChecker imported but NEVER instantiated"
+    },
+    {
+      "line": 107,
+      "text": "2. **06_maestro.py:1037-1057** - Collabor8 panel is PLACEHOLDER HTML"
+    },
+    {
+      "line": 108,
+      "text": "3. **06_maestro.py:1059-1079** - JFDI panel is PLACEHOLDER HTML (should use TicketPanel)"
+    },
+    {
+      "line": 109,
+      "text": "4. **06_maestro.py:1081-1095** - Summon panel is PLACEHOLDER HTML"
+    },
+    {
+      "line": 110,
+      "text": "5. **06_maestro.py:893** - Gener8 button only logs, doesn't open Settings"
+    },
+    {
+      "line": 111,
+      "text": "6. **06_maestro.py:907** - Home button says \"Home\" not \"orchestr8\""
+    },
+    {
+      "line": 112,
+      "text": "7. **06_maestro.py:900-903** - Extra Tickets button not in spec"
+    },
+    {
+      "line": 113,
+      "text": "8. **06_maestro.py:1199-1202** - ~~~ waves button exists but shouldn't"
+    },
+    {
+      "line": 143,
+      "text": "All 5 panel components are **FULLY WIRED** to 06_maestro.py:"
+    },
+    {
+      "line": 151,
+      "text": "## Fiefdom: Entry (orchestr8.py)"
+    },
+    {
+      "line": 153,
+      "text": "**Boundary:** orchestr8.py (single file)"
+    },
+    {
+      "line": 161,
+      "text": "| orchestr8.py | 2,000 | 4 | 8 | Plugin discovery, dynamic loading, main entry | GOLD |"
+    },
+    {
+      "line": 185,
+      "text": "| communic8 | Communication bridge | Ready |"
+    },
+    {
+      "line": 230,
+      "text": "- **Every health state** = Visible color (Gold=working, Teal=broken, Purple=combat)"
+    },
+    {
+      "line": 244,
+      "text": "| output_renderer.py | Plugins or Shared? | Plugins | Only used by universal_bridge |"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

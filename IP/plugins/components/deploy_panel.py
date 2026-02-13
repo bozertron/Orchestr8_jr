@@ -316,7 +316,7 @@ class DeployPanel:
         self._generals = self._load_generals()
 
     def _load_generals(self) -> List[Dict[str, Any]]:
-        """Load available generals from orchestr8_settings.toml."""
+        """Load available generals from pyproject_orchestr8_settings.toml."""
         generals = [
             {
                 "id": "claude-sonnet-4-20250514",
@@ -358,9 +358,9 @@ class DeployPanel:
         # Try to load from settings
         try:
             import toml
-            settings_file = self.project_root / "orchestr8_settings.toml"
+            settings_file = self.project_root / "pyproject_orchestr8_settings.toml"
             if not settings_file.exists():
-                settings_file = Path("orchestr8_settings.toml")
+                settings_file = Path("pyproject_orchestr8_settings.toml")
 
             if settings_file.exists():
                 settings = toml.load(settings_file)
@@ -501,7 +501,19 @@ class DeployPanel:
                     </div>
                     <button class="deploy-btn {'deploying' if self._is_deploying else ''}"
                             {'disabled' if self._is_deploying else ''}>
-                        {'DEPLOYING...' if self._is_deploying else 'DEPLOY'}
+                        {'DEPLOYING...' if self._is_deploying else 'DEPLOY AGENT'}
+                    </button>
+                </div>
+
+                <div style="padding: 12px 20px; border-top: 1px solid rgba(31, 189, 234, 0.1); display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="mode-btn" style="flex: 1;" onclick="alert('View File: {self._target_file}')">
+                        View File
+                    </button>
+                    <button class="mode-btn" style="flex: 1;" onclick="alert('Show Connections for: {self._target_file}')">
+                        Show Connections
+                    </button>
+                    <button class="mode-btn" onclick="window.location.reload()">
+                        Cancel
                     </button>
                 </div>
             </div>

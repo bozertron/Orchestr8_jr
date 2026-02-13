@@ -1,0 +1,123 @@
+{
+  "source": ".planning/phases/WORKORDERS-CARL.json",
+  "total_lines": 455,
+  "sha256": "6d6e585f87af2c75c82ca477cc3a8d342ee2a52a12cff1dd9b74e1ac2de85770",
+  "chunk_count": 4,
+  "observation_ids": [
+    1062,
+    1063,
+    1064,
+    1065
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 48,
+      "text": "\"constraints\": {"
+    },
+    {
+      "line": 54,
+      "text": "\"border_contracts\": ["
+    },
+    {
+      "line": 55,
+      "text": "\"FiefdomContext structure is LOCKED per CONTEXT.md - exact fields required\""
+    },
+    {
+      "line": 58,
+      "text": "\"Output format must match LOCKED structure: fiefdom, health, connections, combat, tickets, locks\""
+    },
+    {
+      "line": 109,
+      "text": "\"Import: HealthChecker from .health_checker\","
+    },
+    {
+      "line": 115,
+      "text": "\"code_block\": \"from .health_checker import HealthChecker\\nfrom .connection_verifier import ConnectionVerifier\\nfrom .combat_tracker import CombatTracker\\nfrom .ticket_manager import TicketManager\\nfrom .louis_core import LouisWarden, LouisConfig\""
+    },
+    {
+      "line": 117,
+      "text": "\"constraints\": {"
+    },
+    {
+      "line": 122,
+      "text": "\"border_contracts\": ["
+    },
+    {
+      "line": 126,
+      "text": "\"Signal sources: HealthChecker, ConnectionVerifier, CombatTracker, TicketManager, LouisWarden per CONTEXT.md\""
+    },
+    {
+      "line": 178,
+      "text": "\"Initialize self.health_checker = HealthChecker(str(self.root))\","
+    },
+    {
+      "line": 185,
+      "text": "\"code_block\": \"def __init__(self, root_path: str, timeout: int = DEFAULT_TIMEOUT, state_managers: Optional[Dict] = None):\\n    self.root = Path(root_path)\\n    self.timeout = timeout\\n    self.ts_tool = self.root / TS_TOOL_PATH\\n    self.context_file = self.root / CONTEXT_OUTPUT_PATH\\n    self.state_managers = state_managers or {}\\n    \\n    self.health_checker = HealthChecker(str(self.root))\\n    self.connection_verifier = ConnectionVerifier(str(self.root))\\n    self.combat_tracker = CombatTracker(str(self.root))\\n    self.ticket_manager = TicketManager(str(self.root))\\n    \\n    louis_config = LouisConfig(str(self.root))\\n    self.louis_warden = LouisWarden(louis_config)\""
+    },
+    {
+      "line": 187,
+      "text": "\"constraints\": {"
+    },
+    {
+      "line": 193,
+      "text": "\"border_contracts\": ["
+    },
+    {
+      "line": 198,
+      "text": "\"Carl does NOT block operations per CONTEXT.md constraints\""
+    },
+    {
+      "line": 208,
+      "text": "\"Signal sources accessible: `carl.health_checker` returns HealthChecker instance\""
+    },
+    {
+      "line": 259,
+      "text": "\"constraints\": {"
+    },
+    {
+      "line": 265,
+      "text": "\"border_contracts\": ["
+    },
+    {
+      "line": 266,
+      "text": "\"HealthChecker.check_fiefdom() returns HealthCheckResult at health_checker.py:426\","
+    },
+    {
+      "line": 273,
+      "text": "\"Output JSON structure is LOCKED per CONTEXT.md\","
+    },
+    {
+      "line": 275,
+      "text": "\"Louis remains unchanged per CONTEXT.md constraints\""
+    },
+    {
+      "line": 337,
+      "text": "\"constraints\": {"
+    },
+    {
+      "line": 342,
+      "text": "\"border_contracts\": ["
+    },
+    {
+      "line": 346,
+      "text": "\"JSON output must match LOCKED structure from CONTEXT.md\""
+    },
+    {
+      "line": 381,
+      "text": "\"building\": \"IP/plugins/06_maestro.py\","
+    },
+    {
+      "line": 397,
+      "text": "\"Import CarlContextualizer at top of 06_maestro.py\","
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

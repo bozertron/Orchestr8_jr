@@ -1,0 +1,30 @@
+{
+  "source": "one integration at a time/frontend/tools/scaffold-cli.ts",
+  "total_lines": 368,
+  "sha256": "a436bdcfc551a1ed6950703f966d1875c2b217482bf8b8a3b00e955418f90d45",
+  "chunk_count": 4,
+  "observation_ids": [
+    629,
+    630,
+    631,
+    632
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 68,
+      "text": "* Every parser plugin must implement this interface to be discoverable"
+    },
+    {
+      "line": 265,
+      "text": "throw new Error('Invalid plugin structure - must implement ScaffoldPlugin interface');"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

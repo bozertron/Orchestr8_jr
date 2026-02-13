@@ -1,0 +1,21 @@
+{
+  "source": "one integration at a time/frontend/tools/unified-context-system.ts",
+  "total_lines": 483,
+  "sha256": "15cd847f015800fe931b81a8c26cda0810377f7b4b4388fd70de7b7a45b411d6",
+  "chunk_count": 5,
+  "observation_ids": [
+    634,
+    635,
+    636,
+    637,
+    638
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

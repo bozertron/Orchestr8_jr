@@ -1,6 +1,6 @@
 """
 02_explorer Plugin - File Explorer with Carl Integration
-Orchestr8 v3.0 - The Fortress Factory
+Orchestr8 v3.0
 
 An interactive file explorer that displays project files in a table
 with deep scan capabilities using Carl core for context analysis.

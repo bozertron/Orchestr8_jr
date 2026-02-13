@@ -1,0 +1,60 @@
+{
+  "source": "one integration at a time/orchestr8_standalone.py",
+  "total_lines": 708,
+  "sha256": "13f7d98b0f98c5e3c2f58d55c996e294f949cb1a5db1b7be66705c9ed454730c",
+  "chunk_count": 6,
+  "observation_ids": [
+    665,
+    666,
+    667,
+    668,
+    669,
+    670
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 143,
+      "text": "files_df.at[index, \"status\"] = \"COMPLEX\"  # Purple - high complexity"
+    },
+    {
+      "line": 145,
+      "text": "files_df.at[index, \"status\"] = \"NORMAL\"  # Gold - working"
+    },
+    {
+      "line": 233,
+      "text": "\"NORMAL\": \"#D4AF37\",   # Gold - working (matches Woven Maps)"
+    },
+    {
+      "line": 235,
+      "text": "\"COMPLEX\": \"#a855f7\",  # Purple - high complexity"
+    },
+    {
+      "line": 236,
+      "text": "\"ERROR\": \"#1fbdea\",    # Teal/Blue - broken (matches Woven Maps)"
+    },
+    {
+      "line": 237,
+      "text": "\"COMBAT\": \"#9D4EDD\",   # Purple - LLM deployed (matches Woven Maps)"
+    },
+    {
+      "line": 513,
+      "text": "\"\"\"Load available models from orchestr8_settings.toml.\"\"\""
+    },
+    {
+      "line": 517,
+      "text": "settings_file = Path(\"orchestr8_settings.toml\")"
+    },
+    {
+      "line": 526,
+      "text": "# Fallback - user should configure in settings"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

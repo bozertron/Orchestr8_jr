@@ -7,9 +7,10 @@ A curated collection of techniques, libraries, and inspiration for the Code City
 ## Core Algorithm - Woven Maps
 
 **Author:** Nicolas Barradeau
-**Source:** https://barradeau.com/blog/?p=763
+**Source:** <https://barradeau.com/blog/?p=763>
 
 ### The Algorithm
+
 1. Collect points (files in codebase)
 2. Delaunay triangulation
 3. Compute edge lengths
@@ -18,6 +19,7 @@ A curated collection of techniques, libraries, and inspiration for the Code City
 6. Optional: color overlay, glow effects
 
 ### Key Code Pattern
+
 ```javascript
 function renderEdges(edges, min) {
     ctx.beginPath();
@@ -43,13 +45,15 @@ for (let i = 0; i < maxHeight; i++) {
 ## Particle Systems
 
 ### FBO Particles (GPU-Accelerated)
+
 **Author:** Nicolas Barradeau
-**Tutorial:** https://barradeau.com/blog/?p=621
-**Implementation:** https://github.com/marioecg/gpu-party
+**Tutorial:** <https://barradeau.com/blog/?p=621>
+**Implementation:** <https://github.com/marioecg/gpu-party>
 
 **Concept:** Store particle positions/velocities in GPU textures, compute physics via shaders.
 
 **Ping-Pong Pattern:**
+
 ```
 Frame 1: Read TextureA → Compute → Write TextureB
 Frame 2: Read TextureB → Compute → Write TextureA
@@ -58,17 +62,21 @@ Frame 2: Read TextureB → Compute → Write TextureA
 **Capacity:** 100,000+ particles (vs ~1,000 on CPU)
 
 ### Volume Distribution
-**Repo:** https://github.com/nicoptere/volume_distribution
+
+**Repo:** <https://github.com/nicoptere/volume_distribution>
 
 **Technique:** Scatter particles inside arbitrary 3D meshes using raycasting.
+
 - Shoot rays from inflated bounding box
 - Count intersections (odd = inside, even = outside)
 - Returns position/destination arrays for shader animation
 
 ### Curl Noise
+
 **Purpose:** Organic, swirling particle motion
 
 **Vertex Shader Pattern:**
+
 ```glsl
 vec3 target = position + curl(pos.x * freq, pos.y * freq, pos.z * freq) * amplitude;
 float d = length(newpos - target) / maxDistance;
@@ -80,8 +88,9 @@ newpos = mix(position, target, pow(d, 4.));  // Smooth ease-out
 ## Audio-Reactive Systems
 
 ### BPM Detection
-**Article:** https://jmperezperez.com/blog/bpm-detection-javascript/
-**Library:** https://github.com/chrisguttandin/web-audio-beat-detector
+
+**Article:** <https://jmperezperez.com/blog/bpm-detection-javascript/>
+**Library:** <https://github.com/chrisguttandin/web-audio-beat-detector>
 
 ```javascript
 import { guess } from 'web-audio-beat-detector';
@@ -91,6 +100,7 @@ setInterval(() => dispatchEvent({ type: 'beat' }), interval);
 ```
 
 ### Frequency Analysis
+
 ```javascript
 // Segment frequency spectrum into bands
 const lowFreqStart = Math.floor((10 * bufferLength) / sampleRate);
@@ -100,6 +110,7 @@ const lowAvg = normalizeValue(calculateAverage(frequencyArray, lowFreqStart, low
 ```
 
 ### Audio → Visual Mapping (Coala Pattern)
+
 ```javascript
 amplitude = 0.8 + mapLinear(frequencyData.high, 0, 0.6, -0.1, 0.2)
 offsetGain = frequencyData.mid * 0.6
@@ -111,16 +122,19 @@ time += clamp(mapLinear(frequencyData.low, 0.6, 1, 0.2, 0.5), 0.2, 0.5)
 ## Animation Libraries
 
 ### GSAP (GreenSock)
-**Repo:** https://github.com/greensock/GSAP
+
+**Repo:** <https://github.com/greensock/GSAP>
 **Purpose:** Industry-standard web animation library
 
 **Key Features:**
+
 - Timeline sequencing
 - Advanced easing functions
 - ScrollTrigger for scroll-based animations
 - MorphSVG for shape morphing
 
 **Pattern:**
+
 ```javascript
 gsap.to(element, {
     duration: 1,
@@ -135,9 +149,11 @@ gsap.to(element, {
 ## GPU Computing / Processing
 
 ### PixelFlow (Java/Processing)
-**Repo:** https://github.com/diwi/PixelFlow
+
+**Repo:** <https://github.com/diwi/PixelFlow>
 
 **Capabilities:**
+
 - Optical flow
 - Fluid simulation
 - Soft-body dynamics
@@ -147,8 +163,9 @@ gsap.to(element, {
 **Relevance:** Reference for GPU-accelerated visual effects patterns.
 
 ### JRubyArt
-**Repo:** https://github.com/ruby-processing/JRubyArt
-**Examples:** https://github.com/ruby-processing/JRubyArt-examples
+
+**Repo:** <https://github.com/ruby-processing/JRubyArt>
+**Examples:** <https://github.com/ruby-processing/JRubyArt-examples>
 
 **Purpose:** Creative coding in Ruby (Processing port)
 
@@ -157,9 +174,11 @@ gsap.to(element, {
 ## Geographic / Tile-Based
 
 ### Cartography
-**Repo:** https://github.com/nicoptere/cartography
+
+**Repo:** <https://github.com/nicoptere/cartography>
 
 **Capabilities:**
+
 - XYZ tileset rendering in Three.js
 - Elevation mapping
 - Geographic data visualization
@@ -185,6 +204,7 @@ enum Phase {
 ```
 
 **Wave Field Interference:**
+
 ```javascript
 const d1 = Math.sqrt((x - sourceLeftX) ** 2 + y ** 2);
 const d2 = Math.sqrt((x - sourceRightX) ** 2 + y ** 2);
@@ -209,6 +229,7 @@ Surface (#121214) - Elevated elements
 ## Implementation Tiers
 
 ### Tier 1: Canvas 2D (Current)
+
 - ✅ Woven Maps algorithm
 - ✅ Emergence animations
 - ✅ Teal → Gold transitions
@@ -216,12 +237,14 @@ Surface (#121214) - Elevated elements
 - ✅ Wave field distortion
 
 ### Tier 2: Three.js + GSAP (Near-term)
+
 - WebGL rendering
 - True 3D camera
 - GSAP timeline animations
 - Proper curl noise in shaders
 
 ### Tier 3: FBO + Audio (Ambitious)
+
 - GPU particle physics
 - 100k+ particles
 - Audio-reactive via web-audio-beat-detector

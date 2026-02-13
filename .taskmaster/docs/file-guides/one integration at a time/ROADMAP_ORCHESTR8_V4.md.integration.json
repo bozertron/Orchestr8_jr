@@ -1,0 +1,144 @@
+{
+  "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+  "total_lines": 1921,
+  "sha256": "67a666e50a1726fe39deafa23f1139a41d5802cc8291d22cc6feeb36b6d85428",
+  "chunk_count": 25,
+  "observation_ids": [
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 59,
+      "text": "**CRITICAL: The Emperor MUST see the full subagent choreography. Hiding it doesn't work - this was tested and failed.**"
+    },
+    {
+      "line": 269,
+      "text": "│  │  🟡 = Working (Gold)                      │  │  🟣 src/maestro       │ │"
+    },
+    {
+      "line": 271,
+      "text": "│  │  🟣 = Combat (Purple)                     │  │     General: Active   │ │"
+    },
+    {
+      "line": 291,
+      "text": "│ │ [Files] [Matrix] [Graph] ══════ [maestro] ══════ [Search] [Deploy] [⏎]  │ │"
+    },
+    {
+      "line": 308,
+      "text": "| Tickets Panel | Click \"Tickets\" or JFDI | Slides from RIGHT | All pending tickets, searchable |"
+    },
+    {
+      "line": 375,
+      "text": "| **Working** | Gold | `#D4AF37` | All imports resolve, typecheck passes, no blocking errors |"
+    },
+    {
+      "line": 377,
+      "text": "| **Combat** | Purple | `#9D4EDD` | General currently deployed and active |"
+    },
+    {
+      "line": 394,
+      "text": "### 4.3 Why Purple Matters"
+    },
+    {
+      "line": 402,
+      "text": "**Purple = \"Someone is in there fighting. Do not disturb.\"**"
+    },
+    {
+      "line": 409,
+      "text": "--gold-dark: #B8860B;      /* Gold accent/stroke */"
+    },
+    {
+      "line": 494,
+      "text": "4. If BLOCKED: Report what's blocking, suggest escalation"
+    },
+    {
+      "line": 516,
+      "text": "- **Status:** PENDING | IN_PROGRESS | BLOCKED | RESOLVED"
+    },
+    {
+      "line": 564,
+      "text": "│ PENDING  │────►│ IN_PROGRESS │────►│ RESOLVED │     │ BLOCKED  │"
+    },
+    {
+      "line": 576,
+      "text": ".orchestr8/"
+    },
+    {
+      "line": 631,
+      "text": "│ (Purple node)                       │"
+    },
+    {
+      "line": 720,
+      "text": "- Exports to: `src/modules/maestro/`"
+    },
+    {
+      "line": 726,
+      "text": "| `scaffold-cli.ts` | 🔒 LOCKED | Stable CLI interface |"
+    },
+    {
+      "line": 727,
+      "text": "| `../llm/registry.ts` | 🔒 LOCKED | Core registry, don't touch |"
+    },
+    {
+      "line": 843,
+      "text": "- `src/modules/maestro/` imports from generator - may need similar fix"
+    },
+    {
+      "line": 862,
+      "text": "- Template paths must be relative to PROJECT ROOT, not fiefdom"
+    },
+    {
+      "line": 909,
+      "text": "│      (.orchestr8/tickets/)              │"
+    },
+    {
+      "line": 964,
+      "text": "echo \\\"BLOCKED: \\$file is locked\\\""
+    },
+    {
+      "line": 975,
+      "text": "# orchestr8_watcher.py"
+    },
+    {
+      "line": 1133,
+      "text": "| Update `06_maestro.py` with Mermaid as primary | P0 | 2-3 hours | Claude |"
+    },
+    {
+      "line": 1220,
+      "text": "├── orchestr8.py                      # Original Marimo app (reference)"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/key_lines_with_files.tsv"
+  }
+}

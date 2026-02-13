@@ -1,16 +1,10 @@
-"""Orchestr8 v3.0 - The Fortress Factory
+"""Orchestr8 v3.0
 
-A reactive Marimo notebook for codebase orchestration with dynamic plugin loading.
-This is the main application entry point using the IP Protocol directory structure.
+Canonical entrypoint for Orchestr8, rendering IP/plugins/06_maestro.py directly.
 
 Usage:
-    marimo run IP/orchestr8_app.py
-    marimo edit IP/orchestr8_app.py
-
-Requirements:
-    - Python 3.12+
-    - marimo >= 0.19.1
-    - pandas
+    marimo run orchestr8.py
+    marimo edit orchestr8.py
 """
 
 import marimo
@@ -24,212 +18,116 @@ app = marimo.App(width="full")
 # ============================================================================
 @app.cell
 def imports():
-    """Core imports for Orchestr8 v3.0"""
+    """Core imports for direct Maestro loading."""
     import marimo as mo
     import os
     import sys
-    import importlib.util
     from pathlib import Path
-    import json
-    return Path, importlib, json, mo, os, sys
+
+    # Force Uvicorn off legacy websockets protocol to avoid Python 3.14
+    # close-race crashes (AttributeError: transfer_data_task) in this stack.
+    try:
+        import uvicorn
+
+        original_config_init = uvicorn.Config.__init__
+
+        def orchestr8_uvicorn_config_init(self, *args, **kwargs):
+            kwargs.setdefault("ws", "websockets-sansio")
+            return original_config_init(self, *args, **kwargs)
+
+        if uvicorn.Config.__init__.__name__ != "orchestr8_uvicorn_config_init":
+            uvicorn.Config.__init__ = orchestr8_uvicorn_config_init
+    except Exception:
+        pass
+
+    # Add IP to path for local imports used by plugin internals.
+    _ip_root = Path(os.getcwd()) / "IP"
+    if str(_ip_root) not in sys.path:
+        sys.path.insert(0, str(_ip_root))
+
+    return Path, mo, os
 
 
 # ============================================================================
-# Cell 2: State Management - The Backbone
+# Cell 2: State Management
 # ============================================================================
 @app.cell
 def state_management(mo, os):
-    """Global state using Marimo's reactive state hooks.
-    
-    STATE_MANAGERS Pattern:
-        Each state is a tuple of (getter, setter) functions.
-        Plugins receive STATE_MANAGERS dict and can read/write state reactively.
-    """
-    # Core state definitions
-    get_root, set_root = mo.state(os.getcwd())
+    """Initialize STATE_MANAGERS expected by 06_maestro.py."""
+    _ip_root = os.path.join(os.getcwd(), "IP")
+    default_root = _ip_root if os.path.isdir(_ip_root) else os.getcwd()
+
+    get_root, set_root = mo.state(default_root)
     get_files, set_files = mo.state(None)
     get_selected, set_selected = mo.state(None)
     get_logs, set_logs = mo.state([])
-    
-    # Bundle state for plugin injection
+    get_health, set_health = mo.state({})
+    get_health_status, set_health_status = mo.state("idle")
+
     STATE_MANAGERS = {
         "root": (get_root, set_root),
         "files": (get_files, set_files),
         "selected": (get_selected, set_selected),
-        "logs": (get_logs, set_logs)
+        "logs": (get_logs, set_logs),
+        "health": (get_health, set_health),
+        "health_status": (get_health_status, set_health_status),
     }
-    
-    return (
-        STATE_MANAGERS,
-        get_files,
-        get_logs,
-        get_root,
-        get_selected,
-        set_files,
-        set_logs,
-        set_root,
-        set_selected,
-    )
+
+    return (STATE_MANAGERS,)
 
 
 # ============================================================================
-# Cell 3: Dynamic Plugin Loader
+# Cell 3: Direct Maestro Render
 # ============================================================================
 @app.cell
-def plugin_loader(Path, importlib, os):
-    """Dynamic plugin discovery and loading.
-    
-    Scans IP/plugins/*.py for valid plugins.
-    Valid plugins must have:
-        - PLUGIN_NAME: str (display name)
-        - PLUGIN_ORDER: int (tab order, lower = first)
-        - render(STATE_MANAGERS): function returning mo.Html or mo.md
-    """
-    def load_plugins():
-        # Get the IP/plugins directory (file now lives in root)
-        base_dir = Path(__file__).parent if "__file__" in dir() else Path.cwd()
-        plugin_dir = base_dir / "IP" / "plugins"
-        plugins = []
-        
-        if not plugin_dir.exists():
-            os.makedirs(plugin_dir, exist_ok=True)
-            return []
-        
-        # Scan for .py files, sorted by name (prefix ordering)
-        for file in sorted(plugin_dir.glob("*.py")):
-            if file.name.startswith("__"):
-                continue
-            
-            try:
-                # Dynamic import using importlib
-                spec = importlib.util.spec_from_file_location(file.stem, file)
-                if spec and spec.loader:
-                    module = importlib.util.module_from_spec(spec)
-                    spec.loader.exec_module(module)
-                    
-                    # Validate plugin protocol
-                    if hasattr(module, "render"):
-                        name = getattr(module, "PLUGIN_NAME", file.stem)
-                        order = getattr(module, "PLUGIN_ORDER", 999)
-                        plugins.append({
-                            "name": name,
-                            "module": module,
-                            "order": order,
-                            "file": file.name
-                        })
-            except Exception as e:
-                print(f"[Plugin Loader] Failed to load {file.name}: {e}")
-        
-        # Sort by PLUGIN_ORDER
-        return sorted(plugins, key=lambda x: x["order"])
-    
-    return (load_plugins,)
+def load_maestro_direct(STATE_MANAGERS, Path, mo):
+    """Load and render 06_maestro.py directly (no plugin wrapper)."""
+    import importlib.util
 
+    plugin_file = Path(__file__).parent / "IP" / "plugins" / "06_maestro.py"
 
-# ============================================================================
-# Cell 4: Plugin Rendering
-# ============================================================================
-@app.cell
-def plugin_renderer(STATE_MANAGERS, load_plugins, mo):
-    """Load plugins and build tabs content dictionary."""
-    # Load all discovered plugins
-    plugins = load_plugins()
-    
-    # Build tabs content from plugins
-    tabs_content = {}
-    plugin_errors = []
-    
-    for p in plugins:
-        try:
-            # Render plugin, injecting STATE_MANAGERS
-            rendered = p["module"].render(STATE_MANAGERS)
-            tabs_content[p["name"]] = rendered
-        except Exception as e:
-            plugin_errors.append(f"Error rendering {p['name']}: {e}")
-    
-    # Report any plugin errors
-    if plugin_errors:
-        for err in plugin_errors:
-            print(f"[Plugin Error] {err}")
-    
-    return plugins, plugin_errors, tabs_content
+    try:
+        spec = importlib.util.spec_from_file_location("maestro_direct", plugin_file)
+        if spec is None or spec.loader is None:
+            raise RuntimeError(f"Unable to load module spec for {plugin_file}")
 
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        result = module.render(STATE_MANAGERS)
 
-# ============================================================================
-# Cell 5: System Logs Tab
-# ============================================================================
-@app.cell
-def logs_tab(get_logs, mo):
-    """System logs display - always available."""
-    def render_logs():
-        logs = get_logs()
-        if not logs:
-            return mo.md("*No logs yet. Actions will be recorded here.*")
-        return mo.md("\n".join([f"- {log}" for log in logs]))
-    
-    logs_content = render_logs()
-    return (logs_content,)
+    except Exception as e:
+        import traceback
 
+        error_detail = traceback.format_exc()
+        result = mo.md(
+            f"""
+## Error Loading Maestro
 
-# ============================================================================
-# Cell 6: Main UI Layout
-# ============================================================================
-@app.cell
-def main_layout(mo, get_root, set_root, tabs_content, logs_content, plugins):
-    """Main application layout with header, controls, and tabs."""
-    # Header
-    header = mo.md("# Orchestr8 v3.0: The Fortress Factory")
-    
-    # Project root input
-    root_input = mo.ui.text(
-        value=get_root(),
-        label="Project Root",
-        on_change=set_root,
-        full_width=True
-    )
-    
-    # Plugin status
-    plugin_count = len(plugins)
-    status_badge = mo.md(f"**Plugins Loaded:** {plugin_count}")
-    
-    # Build final tabs (plugins + system logs)
-    final_tabs = {**tabs_content, "System Logs": logs_content}
-    
-    # Show empty state if no plugins
-    if not tabs_content:
-        final_tabs["Getting Started"] = mo.md("""
-## No Plugins Found
+**File:** `{plugin_file}`
 
-Create plugins in `IP/plugins/` directory. Each plugin needs:
+**Error:** `{e}`
 
-```python
-PLUGIN_NAME = "My Plugin"
-PLUGIN_ORDER = 1  # Lower = appears first
+<details>
+<summary>Full Traceback</summary>
 
-def render(STATE_MANAGERS):
-    import marimo as mo
-    get_root, set_root = STATE_MANAGERS["root"]
-    return mo.md(f"Current root: {get_root()}")
 ```
-        """)
-    
-    # Main layout
-    layout = mo.vstack([
-        header,
-        mo.hstack([root_input, status_badge], justify="space-between", align="center"),
-        mo.ui.tabs(final_tabs)
-    ])
-    
-    return (layout,)
+{error_detail}
+```
+
+</details>
+            """
+        )
+
+    return (result,)
 
 
 # ============================================================================
-# Cell 7: App Entry Point
+# Cell 4: App Entry Point
 # ============================================================================
 @app.cell
-def display(layout):
-    """Display the main layout."""
-    return layout
+def display(result):
+    result
+    return
 
 
 # ============================================================================

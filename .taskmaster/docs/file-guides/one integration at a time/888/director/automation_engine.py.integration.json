@@ -1,0 +1,38 @@
+{
+  "source": "one integration at a time/888/director/automation_engine.py",
+  "total_lines": 511,
+  "sha256": "647133eaf91ee611f0f01bb1e8af55537afba390de9e93f7dceee4b1f0860c55",
+  "chunk_count": 5,
+  "observation_ids": [
+    216,
+    217,
+    218,
+    219,
+    220
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [
+    {
+      "line": 111,
+      "text": "# Check if rule should be triggered"
+    },
+    {
+      "line": 112,
+      "text": "should_trigger, trigger_confidence = self._evaluate_trigger(rule.trigger, context, patterns, insights)"
+    },
+    {
+      "line": 114,
+      "text": "if should_trigger and trigger_confidence >= self.thresholds['min_trigger_confidence']:"
+    },
+    {
+      "line": 252,
+      "text": "\"\"\"Evaluate if a trigger should fire based on current context.\"\"\""
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "source": "one integration at a time/IP--888/panel_foundation/panel_registry.py",
+  "total_lines": 329,
+  "sha256": "ff99c3dfa60a40bc324e07e20dc41d6ccfda03103c397fa09d555d247805c299",
+  "chunk_count": 3,
+  "observation_ids": [
+    654,
+    655,
+    656
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

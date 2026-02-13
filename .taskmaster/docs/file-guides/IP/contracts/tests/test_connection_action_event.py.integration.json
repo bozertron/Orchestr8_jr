@@ -1,0 +1,34 @@
+{
+  "source": "IP/contracts/tests/test_connection_action_event.py",
+  "total_lines": 103,
+  "sha256": "434f9a069f01880528193ec0db85c848cc8bf699600b0849d5c5291248495230",
+  "role": "Connection action schema tests",
+  "risks": [
+    "Action or role parsing regressions can break bridge safety"
+  ],
+  "anchors": [
+    {
+      "line": 12,
+      "text": "Full payload validation"
+    },
+    {
+      "line": 42,
+      "text": "apply action + actor role normalization"
+    },
+    {
+      "line": 56,
+      "text": "Missing action error"
+    },
+    {
+      "line": 64,
+      "text": "Invalid action error"
+    }
+  ],
+  "integration_gaps": [],
+  "resolved_gaps": [
+    {
+      "gap": "Actor role schema coverage",
+      "status": "complete"
+    }
+  ]
+}

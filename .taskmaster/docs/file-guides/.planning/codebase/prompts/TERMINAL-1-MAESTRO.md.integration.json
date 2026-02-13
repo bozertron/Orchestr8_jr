@@ -1,0 +1,34 @@
+{
+  "source": ".planning/codebase/prompts/TERMINAL-1-MAESTRO.md",
+  "total_lines": 28,
+  "sha256": "bfa1b62479a5bd2f5ffae46340a535586ed42ef1100b2380129f69f8ac7abd69",
+  "chunk_count": 1,
+  "observation_ids": [
+    1021
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 1,
+      "text": "# Terminal 1: 06_maestro.py Deep Analysis"
+    },
+    {
+      "line": 7,
+      "text": "**File:** `IP/plugins/06_maestro.py` (1297 lines)"
+    },
+    {
+      "line": 13,
+      "text": "1. **Map every button** — what label, what handler, what it actually does vs what the UI spec says it should do"
+    },
+    {
+      "line": 14,
+      "text": "2. **Map every panel** — Collabor8, JFDI, Summon, Tickets, Calendar, Comms, FileExplorer, Deploy. For each: is it a real component or placeholder HTML?"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

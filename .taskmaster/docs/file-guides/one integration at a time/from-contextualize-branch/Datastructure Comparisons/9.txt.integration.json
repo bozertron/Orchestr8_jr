@@ -1,0 +1,54 @@
+{
+  "source": "one integration at a time/from-contextualize-branch/Datastructure Comparisons/9.txt",
+  "total_lines": 64,
+  "sha256": "c61e1d522a07efca3387f8adba976f45fb2307ea69881195358151be981d49a3",
+  "chunk_count": 1,
+  "observation_ids": [
+    492
+  ],
+  "risks": [
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 3,
+      "text": "You haven’t just changed a few lines of code; you’ve completely swapped the architectural paradigm. If the previous file (`orchestr8_standalone.py`) was a **Swiss Army Knife**, this new file (`Orchestr8 v3.0`) is a **tool belt**. It doesn't actually *do* anything on its own—it just holds the tools that do the work."
+    },
+    {
+      "line": 9,
+      "text": "**The Old Way (`orchestr8_standalone.py`):**"
+    },
+    {
+      "line": 30,
+      "text": "You have invented a **Protocol**. You bundle everything into a context object called `STATE_MANAGERS`."
+    },
+    {
+      "line": 33,
+      "text": "STATE_MANAGERS = {"
+    },
+    {
+      "line": 39,
+      "text": "rendered = p[\"module\"].render(STATE_MANAGERS)"
+    },
+    {
+      "line": 47,
+      "text": "In `orchestr8_standalone.py`, the logic for scanning files and building DataFrames was **right there** in the `scanner_function`."
+    },
+    {
+      "line": 51,
+      "text": "If you run this file right now, you will see a beautiful, empty application. It assumes that you have taken the logic from the old file (Scanner, Verifier, Emperor) and successfully refactored them into separate files inside `IP/plugins/` that adhere to the new `render(STATE_MANAGERS)` protocol."
+    },
+    {
+      "line": 55,
+      "text": "| Feature | `orchestr8_standalone.py` | `Orchestr8 v3.0` |"
+    },
+    {
+      "line": 59,
+      "text": "| **State** | Passed as individual args. | Passed as a `STATE_MANAGERS` dict. |"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

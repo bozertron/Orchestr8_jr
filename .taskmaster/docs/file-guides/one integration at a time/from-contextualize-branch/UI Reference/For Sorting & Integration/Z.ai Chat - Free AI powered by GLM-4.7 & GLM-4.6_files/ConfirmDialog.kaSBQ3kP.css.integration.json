@@ -1,0 +1,17 @@
+{
+  "source": "one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/ConfirmDialog.kaSBQ3kP.css",
+  "total_lines": 1,
+  "sha256": "c8c0830f863f46f2612a13e2f781a3c121f68f407b00863bbec543e79006ff3e",
+  "chunk_count": 1,
+  "observation_ids": [
+    579
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

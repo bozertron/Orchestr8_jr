@@ -1,0 +1,124 @@
+{
+  "source": ".planning/phases/ARCHITECTURE-health.md",
+  "total_lines": 492,
+  "sha256": "73d8fc302a08fce7068af513fa648e3b3681a961d420f3ea15ad85732ae6a78e",
+  "chunk_count": 5,
+  "observation_ids": [
+    1057,
+    1058,
+    1059,
+    1060,
+    1061
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 13,
+      "text": "| HealthChecker | `IP/health_checker.py` | 602 | COMPLETE | Multi-language (TS, mypy, ruff, py_compile) |"
+    },
+    {
+      "line": 15,
+      "text": "| State Manager | `orchestr8.py` | 240 | PARTIAL | Missing health state |"
+    },
+    {
+      "line": 16,
+      "text": "| Maestro Plugin | `IP/plugins/06_maestro.py` | 1298 | PARTIAL | Uses Code City, no health wiring |"
+    },
+    {
+      "line": 22,
+      "text": "| No health state in STATE_MANAGERS | Code City can't react to health changes | HIGH |"
+    },
+    {
+      "line": 23,
+      "text": "| No file watcher integration | Manual refresh only, violates LOCKED spec | HIGH |"
+    },
+    {
+      "line": 24,
+      "text": "| HealthChecker not wired to Code City | Status from simple analysis, not real checking | HIGH |"
+    },
+    {
+      "line": 32,
+      "text": "└── HealthChecker EXISTS but NOT CONNECTED"
+    },
+    {
+      "line": 35,
+      "text": "### LOCKED Data Flow (REQUIRED)"
+    },
+    {
+      "line": 38,
+      "text": "File Change → HealthWatcher → HealthChecker → STATE_MANAGERS → Code City"
+    },
+    {
+      "line": 47,
+      "text": "| Preserve | HealthChecker is complete, no changes needed to core logic | YES |"
+    },
+    {
+      "line": 49,
+      "text": "| Restructure | STATE_MANAGERS extension is additive, not destructive | YES |"
+    },
+    {
+      "line": 54,
+      "text": "1. **HealthChecker is production-ready** — Multi-language, optimized batch checking, proper error parsing"
+    },
+    {
+      "line": 56,
+      "text": "3. **STATE_MANAGERS is extensible** — Add `health` key without breaking existing plugins"
+    },
+    {
+      "line": 57,
+      "text": "4. **New component required** — FileWatcher/HealthWatcher bridge doesn't exist anywhere"
+    },
+    {
+      "line": 64,
+      "text": "**Target:** `orchestr8.py`"
+    },
+    {
+      "line": 69,
+      "text": "# ADD to existing STATE_MANAGERS"
+    },
+    {
+      "line": 73,
+      "text": "STATE_MANAGERS = {"
+    },
+    {
+      "line": 90,
+      "text": "**Dependency:** Wave 1 (needs STATE_MANAGERS)"
+    },
+    {
+      "line": 92,
+      "text": "#### Room: HealthWatcher Class"
+    },
+    {
+      "line": 94,
+      "text": "class HealthWatcher:"
+    },
+    {
+      "line": 101,
+      "text": "self.checker = HealthChecker(str(project_root))"
+    },
+    {
+      "line": 121,
+      "text": "def create_health_watcher_cell(mo, STATE_MANAGERS):"
+    },
+    {
+      "line": 123,
+      "text": "get_root, set_root = STATE_MANAGERS[\"root\"]"
+    },
+    {
+      "line": 126,
+      "text": "watcher = HealthWatcher(get_root(), {"
+    },
+    {
+      "line": 127,
+      "text": "\"health\": STATE_MANAGERS[\"health\"][1],"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

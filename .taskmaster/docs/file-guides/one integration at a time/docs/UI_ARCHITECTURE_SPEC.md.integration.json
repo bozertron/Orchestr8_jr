@@ -1,0 +1,112 @@
+{
+  "source": "one integration at a time/docs/UI_ARCHITECTURE_SPEC.md",
+  "total_lines": 557,
+  "sha256": "4aef4fe396b897f6e338cdbd14fe0b36f0a77079b20d3e2d7981baf01479b148",
+  "chunk_count": 5,
+  "observation_ids": [
+    474,
+    475,
+    476,
+    477,
+    478
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce.",
+    "Behavioral sequencing risk: mode transitions need explicit state machine handling."
+  ],
+  "anchors": [
+    {
+      "line": 5,
+      "text": "**Reference:** maestroview.vue (canonical source)"
+    },
+    {
+      "line": 16,
+      "text": "5. [Layer 3: Right Slider (JFDI Tickets)](#layer-3-right-slider-jfdi-tickets)"
+    },
+    {
+      "line": 38,
+      "text": "│         Gold = Working    Blue = Broken                   │ I │"
+    },
+    {
+      "line": 39,
+      "text": "│                Purple = Combat                            │ C │"
+    },
+    {
+      "line": 48,
+      "text": "maestro"
+    },
+    {
+      "line": 55,
+      "text": "3. **Bottom Panel** - maestro + programmable button grid"
+    },
+    {
+      "line": 56,
+      "text": "4. **Right Slider** - JFDI button → Tickets"
+    },
+    {
+      "line": 99,
+      "text": "| **Working** | Gold (#D4AF37) | Healthy code | Hover for details |"
+    },
+    {
+      "line": 100,
+      "text": "| **Broken** | Blue (#1fbdea) | Errors present | Click to zoom in |"
+    },
+    {
+      "line": 101,
+      "text": "| **Combat** | Purple (#9D4EDD) | Active debugging | Shows activity |"
+    },
+    {
+      "line": 133,
+      "text": "- **Animation:** Synchronized with zoom - panel drops as you travel"
+    },
+    {
+      "line": 212,
+      "text": "Left Grid                 maestro                    Right Grid"
+    },
+    {
+      "line": 215,
+      "text": "### maestro (Center)"
+    },
+    {
+      "line": 222,
+      "text": "| **OBSERVE** | Dark Gold (#B8960C) | Planning mode, @ mentions only |"
+    },
+    {
+      "line": 223,
+      "text": "| **ON** | Bright Gold (#D4AF37) | Tier 2 access (full agency) |"
+    },
+    {
+      "line": 230,
+      "text": "- Can @ maestro (or any LLM) for explicit questions"
+    },
+    {
+      "line": 270,
+      "text": "## 5. Layer 3: Right Slider (JFDI Tickets)"
+    },
+    {
+      "line": 274,
+      "text": "- **Activated by:** JFDI button (top bar, Button 2?)"
+    },
+    {
+      "line": 281,
+      "text": "│  JFDI TICKETS        │"
+    },
+    {
+      "line": 450,
+      "text": "From maestroview.vue:"
+    },
+    {
+      "line": 527,
+      "text": "- [ ] Bottom panel with maestro + button grid"
+    },
+    {
+      "line": 540,
+      "text": "- [ ] Vector embedding pipeline"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

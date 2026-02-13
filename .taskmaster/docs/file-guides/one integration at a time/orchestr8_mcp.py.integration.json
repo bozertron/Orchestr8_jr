@@ -1,0 +1,30 @@
+{
+  "source": "one integration at a time/orchestr8_mcp.py",
+  "total_lines": 489,
+  "sha256": "f7d84d0d61949f46b8957ef1c188895aa6dd7ecc3a9b5a795e656397acb1a838",
+  "chunk_count": 5,
+  "observation_ids": [
+    660,
+    661,
+    662,
+    663,
+    664
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [
+    {
+      "line": 14,
+      "text": "python orchestr8_mcp.py"
+    },
+    {
+      "line": 17,
+      "text": "uvx fastmcp run orchestr8_mcp.py"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

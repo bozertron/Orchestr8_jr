@@ -1,0 +1,22 @@
+{
+  "source": "one integration at a time/888/senses/adaptive_gesture.py",
+  "total_lines": 684,
+  "sha256": "b62012d5df2acad1a83ba24bbc0ea05c46a1d1e3955eef91f7a466232d05b915",
+  "chunk_count": 6,
+  "observation_ids": [
+    292,
+    293,
+    294,
+    295,
+    296,
+    297
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

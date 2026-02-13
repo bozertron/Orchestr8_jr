@@ -1,0 +1,1157 @@
+{
+  "started_at_utc": "2026-02-13T09:39:12Z",
+  "finished_at_utc": "2026-02-13T09:39:24Z",
+  "worker_url": "http://127.0.0.1:37777",
+  "project": "orchestr8-code-city-corpus",
+  "chunk_lines": 80,
+  "summary": {
+    "file_count": 16,
+    "total_lines": 8143,
+    "total_chunks": 109,
+    "saved_chunks": 109,
+    "all_saved": true
+  },
+  "files": [
+    {
+      "source": ".taskmaster/docs/code_city_landscape_blind_integration_prd.txt",
+      "total_lines": 287,
+      "sha256": "9e26f334452e024b06de4eccd36027987d865aaf0c2acc3e814624e51f0efb03",
+      "chunk_size": 80,
+      "chunk_count": 4,
+      "saved_count": 4,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/code_city_landscape_blind_integration_prd.txt",
+          "start_line": 1,
+          "end_line": 80,
+          "observation_id": 7,
+          "title": "corpus::.taskmaster/docs/code_city_landscape_blind_integration_prd.txt::L1-L80",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".taskmaster/docs/code_city_landscape_blind_integration_prd.txt",
+          "start_line": 81,
+          "end_line": 160,
+          "observation_id": 8,
+          "title": "corpus::.taskmaster/docs/code_city_landscape_blind_integration_prd.txt::L81-L160",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".taskmaster/docs/code_city_landscape_blind_integration_prd.txt",
+          "start_line": 161,
+          "end_line": 240,
+          "observation_id": 9,
+          "title": "corpus::.taskmaster/docs/code_city_landscape_blind_integration_prd.txt::L161-L240",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".taskmaster/docs/code_city_landscape_blind_integration_prd.txt",
+          "start_line": 241,
+          "end_line": 287,
+          "observation_id": 10,
+          "title": "corpus::.taskmaster/docs/code_city_landscape_blind_integration_prd.txt::L241-L287",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": "one integration at a time/Big Pickle/REFERENCES.md",
+      "total_lines": 266,
+      "sha256": "aa7cae9ee9dd4fb6f64c652d07453817c200b5a860abf428914cfb7914949740",
+      "chunk_size": 80,
+      "chunk_count": 4,
+      "saved_count": 4,
+      "chunks": [
+        {
+          "source": "one integration at a time/Big Pickle/REFERENCES.md",
+          "start_line": 1,
+          "end_line": 80,
+          "observation_id": 11,
+          "title": "corpus::one integration at a time/Big Pickle/REFERENCES.md::L1-L80",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/Big Pickle/REFERENCES.md",
+          "start_line": 81,
+          "end_line": 160,
+          "observation_id": 12,
+          "title": "corpus::one integration at a time/Big Pickle/REFERENCES.md::L81-L160",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/Big Pickle/REFERENCES.md",
+          "start_line": 161,
+          "end_line": 240,
+          "observation_id": 13,
+          "title": "corpus::one integration at a time/Big Pickle/REFERENCES.md::L161-L240",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/Big Pickle/REFERENCES.md",
+          "start_line": 241,
+          "end_line": 266,
+          "observation_id": 14,
+          "title": "corpus::one integration at a time/Big Pickle/REFERENCES.md::L241-L266",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": "one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md",
+      "total_lines": 530,
+      "sha256": "0073e720a91325b9f22324070e3ea7506e8b13ebb5e3ada208491c3fd5d867d8",
+      "chunk_size": 80,
+      "chunk_count": 7,
+      "saved_count": 7,
+      "chunks": [
+        {
+          "source": "one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md",
+          "start_line": 1,
+          "end_line": 80,
+          "observation_id": 15,
+          "title": "corpus::one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md::L1-L80",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md",
+          "start_line": 81,
+          "end_line": 160,
+          "observation_id": 16,
+          "title": "corpus::one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md::L81-L160",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md",
+          "start_line": 161,
+          "end_line": 240,
+          "observation_id": 17,
+          "title": "corpus::one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md::L161-L240",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md",
+          "start_line": 241,
+          "end_line": 320,
+          "observation_id": 18,
+          "title": "corpus::one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md::L241-L320",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md",
+          "start_line": 321,
+          "end_line": 400,
+          "observation_id": 19,
+          "title": "corpus::one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md::L321-L400",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md",
+          "start_line": 401,
+          "end_line": 480,
+          "observation_id": 20,
+          "title": "corpus::one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md::L401-L480",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md",
+          "start_line": 481,
+          "end_line": 530,
+          "observation_id": 21,
+          "title": "corpus::one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md::L481-L530",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": "one integration at a time/PRD1.md",
+      "total_lines": 150,
+      "sha256": "c428ac94aa3558157d593ddf3e4d085cc70f1f1b42c393bf6e19a7df1770f696",
+      "chunk_size": 80,
+      "chunk_count": 2,
+      "saved_count": 2,
+      "chunks": [
+        {
+          "source": "one integration at a time/PRD1.md",
+          "start_line": 1,
+          "end_line": 80,
+          "observation_id": 22,
+          "title": "corpus::one integration at a time/PRD1.md::L1-L80",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/PRD1.md",
+          "start_line": 81,
+          "end_line": 150,
+          "observation_id": 23,
+          "title": "corpus::one integration at a time/PRD1.md::L81-L150",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+      "total_lines": 1921,
+      "sha256": "67a666e50a1726fe39deafa23f1139a41d5802cc8291d22cc6feeb36b6d85428",
+      "chunk_size": 80,
+      "chunk_count": 25,
+      "saved_count": 25,
+      "chunks": [
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 1,
+          "end_line": 80,
+          "observation_id": 24,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L1-L80",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 81,
+          "end_line": 160,
+          "observation_id": 25,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L81-L160",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 161,
+          "end_line": 240,
+          "observation_id": 26,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L161-L240",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 241,
+          "end_line": 320,
+          "observation_id": 27,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L241-L320",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 321,
+          "end_line": 400,
+          "observation_id": 28,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L321-L400",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 401,
+          "end_line": 480,
+          "observation_id": 29,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L401-L480",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 481,
+          "end_line": 560,
+          "observation_id": 30,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L481-L560",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 561,
+          "end_line": 640,
+          "observation_id": 31,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L561-L640",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 641,
+          "end_line": 720,
+          "observation_id": 32,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L641-L720",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 721,
+          "end_line": 800,
+          "observation_id": 33,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L721-L800",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 801,
+          "end_line": 880,
+          "observation_id": 34,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L801-L880",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 881,
+          "end_line": 960,
+          "observation_id": 35,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L881-L960",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 961,
+          "end_line": 1040,
+          "observation_id": 36,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L961-L1040",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 1041,
+          "end_line": 1120,
+          "observation_id": 37,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L1041-L1120",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 1121,
+          "end_line": 1200,
+          "observation_id": 38,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L1121-L1200",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 1201,
+          "end_line": 1280,
+          "observation_id": 39,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L1201-L1280",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 1281,
+          "end_line": 1360,
+          "observation_id": 40,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L1281-L1360",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 1361,
+          "end_line": 1440,
+          "observation_id": 41,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L1361-L1440",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 1441,
+          "end_line": 1520,
+          "observation_id": 42,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L1441-L1520",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 1521,
+          "end_line": 1600,
+          "observation_id": 43,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L1521-L1600",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 1601,
+          "end_line": 1680,
+          "observation_id": 44,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L1601-L1680",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 1681,
+          "end_line": 1760,
+          "observation_id": 45,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L1681-L1760",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 1761,
+          "end_line": 1840,
+          "observation_id": 46,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L1761-L1840",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 1841,
+          "end_line": 1920,
+          "observation_id": 47,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L1841-L1920",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/ROADMAP_ORCHESTR8_V4.md",
+          "start_line": 1921,
+          "end_line": 1921,
+          "observation_id": 48,
+          "title": "corpus::one integration at a time/ROADMAP_ORCHESTR8_V4.md::L1921-L1921",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".planning/VISION-ALIGNMENT.md",
+      "total_lines": 270,
+      "sha256": "c469aebdc271f8c900cb00048c0c462830bfb2e8a2f9b4bce460d3216003ed32",
+      "chunk_size": 80,
+      "chunk_count": 4,
+      "saved_count": 4,
+      "chunks": [
+        {
+          "source": ".planning/VISION-ALIGNMENT.md",
+          "start_line": 1,
+          "end_line": 80,
+          "observation_id": 49,
+          "title": "corpus::.planning/VISION-ALIGNMENT.md::L1-L80",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".planning/VISION-ALIGNMENT.md",
+          "start_line": 81,
+          "end_line": 160,
+          "observation_id": 50,
+          "title": "corpus::.planning/VISION-ALIGNMENT.md::L81-L160",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".planning/VISION-ALIGNMENT.md",
+          "start_line": 161,
+          "end_line": 240,
+          "observation_id": 51,
+          "title": "corpus::.planning/VISION-ALIGNMENT.md::L161-L240",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".planning/VISION-ALIGNMENT.md",
+          "start_line": 241,
+          "end_line": 270,
+          "observation_id": 52,
+          "title": "corpus::.planning/VISION-ALIGNMENT.md::L241-L270",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".planning/phases/CONTEXT.md",
+      "total_lines": 391,
+      "sha256": "0fe920306b2434b8ca5552830778a827b362b941cd4d665bdea2279e2c8bf1ea",
+      "chunk_size": 80,
+      "chunk_count": 5,
+      "saved_count": 5,
+      "chunks": [
+        {
+          "source": ".planning/phases/CONTEXT.md",
+          "start_line": 1,
+          "end_line": 80,
+          "observation_id": 53,
+          "title": "corpus::.planning/phases/CONTEXT.md::L1-L80",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".planning/phases/CONTEXT.md",
+          "start_line": 81,
+          "end_line": 160,
+          "observation_id": 54,
+          "title": "corpus::.planning/phases/CONTEXT.md::L81-L160",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".planning/phases/CONTEXT.md",
+          "start_line": 161,
+          "end_line": 240,
+          "observation_id": 55,
+          "title": "corpus::.planning/phases/CONTEXT.md::L161-L240",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".planning/phases/CONTEXT.md",
+          "start_line": 241,
+          "end_line": 320,
+          "observation_id": 56,
+          "title": "corpus::.planning/phases/CONTEXT.md::L241-L320",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".planning/phases/CONTEXT.md",
+          "start_line": 321,
+          "end_line": 391,
+          "observation_id": 57,
+          "title": "corpus::.planning/phases/CONTEXT.md::L321-L391",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".planning/phases/ARCHITECT-BARRADEAU.md",
+      "total_lines": 252,
+      "sha256": "9c696f8d84bbd89ef648fdfb3c028d82409fe1d1a617bf506edce5dc774d86b2",
+      "chunk_size": 80,
+      "chunk_count": 4,
+      "saved_count": 4,
+      "chunks": [
+        {
+          "source": ".planning/phases/ARCHITECT-BARRADEAU.md",
+          "start_line": 1,
+          "end_line": 80,
+          "observation_id": 58,
+          "title": "corpus::.planning/phases/ARCHITECT-BARRADEAU.md::L1-L80",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".planning/phases/ARCHITECT-BARRADEAU.md",
+          "start_line": 81,
+          "end_line": 160,
+          "observation_id": 59,
+          "title": "corpus::.planning/phases/ARCHITECT-BARRADEAU.md::L81-L160",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".planning/phases/ARCHITECT-BARRADEAU.md",
+          "start_line": 161,
+          "end_line": 240,
+          "observation_id": 60,
+          "title": "corpus::.planning/phases/ARCHITECT-BARRADEAU.md::L161-L240",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".planning/phases/ARCHITECT-BARRADEAU.md",
+          "start_line": 241,
+          "end_line": 252,
+          "observation_id": 61,
+          "title": "corpus::.planning/phases/ARCHITECT-BARRADEAU.md::L241-L252",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".planning/phases/WORKORDERS-BARRADEAU.json",
+      "total_lines": 476,
+      "sha256": "bc8a417da2d1f71d2897407a22e8b23dac3b0ae8cd6338246b25257078c95d87",
+      "chunk_size": 80,
+      "chunk_count": 6,
+      "saved_count": 6,
+      "chunks": [
+        {
+          "source": ".planning/phases/WORKORDERS-BARRADEAU.json",
+          "start_line": 1,
+          "end_line": 80,
+          "observation_id": 62,
+          "title": "corpus::.planning/phases/WORKORDERS-BARRADEAU.json::L1-L80",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".planning/phases/WORKORDERS-BARRADEAU.json",
+          "start_line": 81,
+          "end_line": 160,
+          "observation_id": 63,
+          "title": "corpus::.planning/phases/WORKORDERS-BARRADEAU.json::L81-L160",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".planning/phases/WORKORDERS-BARRADEAU.json",
+          "start_line": 161,
+          "end_line": 240,
+          "observation_id": 64,
+          "title": "corpus::.planning/phases/WORKORDERS-BARRADEAU.json::L161-L240",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".planning/phases/WORKORDERS-BARRADEAU.json",
+          "start_line": 241,
+          "end_line": 320,
+          "observation_id": 65,
+          "title": "corpus::.planning/phases/WORKORDERS-BARRADEAU.json::L241-L320",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".planning/phases/WORKORDERS-BARRADEAU.json",
+          "start_line": 321,
+          "end_line": 400,
+          "observation_id": 66,
+          "title": "corpus::.planning/phases/WORKORDERS-BARRADEAU.json::L321-L400",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": ".planning/phases/WORKORDERS-BARRADEAU.json",
+          "start_line": 401,
+          "end_line": 476,
+          "observation_id": 67,
+          "title": "corpus::.planning/phases/WORKORDERS-BARRADEAU.json::L401-L476",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": "SOT/CODE_CITY_LANDSCAPE.md",
+      "total_lines": 90,
+      "sha256": "0833f76a8dd526bd4fed39ed56e83339e028f9b6e5a228c6cdcc65d1c09de666",
+      "chunk_size": 80,
+      "chunk_count": 2,
+      "saved_count": 2,
+      "chunks": [
+        {
+          "source": "SOT/CODE_CITY_LANDSCAPE.md",
+          "start_line": 1,
+          "end_line": 80,
+          "observation_id": 68,
+          "title": "corpus::SOT/CODE_CITY_LANDSCAPE.md::L1-L80",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "SOT/CODE_CITY_LANDSCAPE.md",
+          "start_line": 81,
+          "end_line": 90,
+          "observation_id": 69,
+          "title": "corpus::SOT/CODE_CITY_LANDSCAPE.md::L81-L90",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": "SOT/07-07-WOVEN-SYNTHESIS.md",
+      "total_lines": 609,
+      "sha256": "7ba6cc7d5450ae9d637b1e4a453f73adb9573c54e4f2c319a00d9d086bc436fe",
+      "chunk_size": 80,
+      "chunk_count": 8,
+      "saved_count": 8,
+      "chunks": [
+        {
+          "source": "SOT/07-07-WOVEN-SYNTHESIS.md",
+          "start_line": 1,
+          "end_line": 80,
+          "observation_id": 70,
+          "title": "corpus::SOT/07-07-WOVEN-SYNTHESIS.md::L1-L80",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "SOT/07-07-WOVEN-SYNTHESIS.md",
+          "start_line": 81,
+          "end_line": 160,
+          "observation_id": 71,
+          "title": "corpus::SOT/07-07-WOVEN-SYNTHESIS.md::L81-L160",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "SOT/07-07-WOVEN-SYNTHESIS.md",
+          "start_line": 161,
+          "end_line": 240,
+          "observation_id": 72,
+          "title": "corpus::SOT/07-07-WOVEN-SYNTHESIS.md::L161-L240",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "SOT/07-07-WOVEN-SYNTHESIS.md",
+          "start_line": 241,
+          "end_line": 320,
+          "observation_id": 73,
+          "title": "corpus::SOT/07-07-WOVEN-SYNTHESIS.md::L241-L320",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "SOT/07-07-WOVEN-SYNTHESIS.md",
+          "start_line": 321,
+          "end_line": 400,
+          "observation_id": 74,
+          "title": "corpus::SOT/07-07-WOVEN-SYNTHESIS.md::L321-L400",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "SOT/07-07-WOVEN-SYNTHESIS.md",
+          "start_line": 401,
+          "end_line": 480,
+          "observation_id": 75,
+          "title": "corpus::SOT/07-07-WOVEN-SYNTHESIS.md::L401-L480",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "SOT/07-07-WOVEN-SYNTHESIS.md",
+          "start_line": 481,
+          "end_line": 560,
+          "observation_id": 76,
+          "title": "corpus::SOT/07-07-WOVEN-SYNTHESIS.md::L481-L560",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "SOT/07-07-WOVEN-SYNTHESIS.md",
+          "start_line": 561,
+          "end_line": 609,
+          "observation_id": 77,
+          "title": "corpus::SOT/07-07-WOVEN-SYNTHESIS.md::L561-L609",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": "SOT/BARRADEAU_INTEGRATION.md",
+      "total_lines": 287,
+      "sha256": "460b9b4963c11202a530682f156497c68ea7c8ebc208a82179fcaded465d040e",
+      "chunk_size": 80,
+      "chunk_count": 4,
+      "saved_count": 4,
+      "chunks": [
+        {
+          "source": "SOT/BARRADEAU_INTEGRATION.md",
+          "start_line": 1,
+          "end_line": 80,
+          "observation_id": 78,
+          "title": "corpus::SOT/BARRADEAU_INTEGRATION.md::L1-L80",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "SOT/BARRADEAU_INTEGRATION.md",
+          "start_line": 81,
+          "end_line": 160,
+          "observation_id": 79,
+          "title": "corpus::SOT/BARRADEAU_INTEGRATION.md::L81-L160",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "SOT/BARRADEAU_INTEGRATION.md",
+          "start_line": 161,
+          "end_line": 240,
+          "observation_id": 80,
+          "title": "corpus::SOT/BARRADEAU_INTEGRATION.md::L161-L240",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "SOT/BARRADEAU_INTEGRATION.md",
+          "start_line": 241,
+          "end_line": 287,
+          "observation_id": 81,
+          "title": "corpus::SOT/BARRADEAU_INTEGRATION.md::L241-L287",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": "SOT/UI_SPECIFICATION.md",
+      "total_lines": 199,
+      "sha256": "befa442d67dda444069bb6146ce9c6654ab49fd683d53e0ceccba756ae2d9785",
+      "chunk_size": 80,
+      "chunk_count": 3,
+      "saved_count": 3,
+      "chunks": [
+        {
+          "source": "SOT/UI_SPECIFICATION.md",
+          "start_line": 1,
+          "end_line": 80,
+          "observation_id": 82,
+          "title": "corpus::SOT/UI_SPECIFICATION.md::L1-L80",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "SOT/UI_SPECIFICATION.md",
+          "start_line": 81,
+          "end_line": 160,
+          "observation_id": 83,
+          "title": "corpus::SOT/UI_SPECIFICATION.md::L81-L160",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "SOT/UI_SPECIFICATION.md",
+          "start_line": 161,
+          "end_line": 199,
+          "observation_id": 84,
+          "title": "corpus::SOT/UI_SPECIFICATION.md::L161-L199",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": "SOT/WIRING_PLAN.md",
+      "total_lines": 294,
+      "sha256": "8334c0cc0c45bfda2c3428cabd6b3fcdd34825ccab8a41d8660402b2d0b85638",
+      "chunk_size": 80,
+      "chunk_count": 4,
+      "saved_count": 4,
+      "chunks": [
+        {
+          "source": "SOT/WIRING_PLAN.md",
+          "start_line": 1,
+          "end_line": 80,
+          "observation_id": 85,
+          "title": "corpus::SOT/WIRING_PLAN.md::L1-L80",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "SOT/WIRING_PLAN.md",
+          "start_line": 81,
+          "end_line": 160,
+          "observation_id": 86,
+          "title": "corpus::SOT/WIRING_PLAN.md::L81-L160",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "SOT/WIRING_PLAN.md",
+          "start_line": 161,
+          "end_line": 240,
+          "observation_id": 87,
+          "title": "corpus::SOT/WIRING_PLAN.md::L161-L240",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "SOT/WIRING_PLAN.md",
+          "start_line": 241,
+          "end_line": 294,
+          "observation_id": 88,
+          "title": "corpus::SOT/WIRING_PLAN.md::L241-L294",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+      "total_lines": 1578,
+      "sha256": "46746eb718588fb9e8eac0e392d749240755fa55130c5643a7dd8b392fbee519",
+      "chunk_size": 80,
+      "chunk_count": 20,
+      "saved_count": 20,
+      "chunks": [
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 1,
+          "end_line": 80,
+          "observation_id": 89,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L1-L80",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 81,
+          "end_line": 160,
+          "observation_id": 90,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L81-L160",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 161,
+          "end_line": 240,
+          "observation_id": 91,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L161-L240",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 241,
+          "end_line": 320,
+          "observation_id": 92,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L241-L320",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 321,
+          "end_line": 400,
+          "observation_id": 93,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L321-L400",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 401,
+          "end_line": 480,
+          "observation_id": 94,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L401-L480",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 481,
+          "end_line": 560,
+          "observation_id": 95,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L481-L560",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 561,
+          "end_line": 640,
+          "observation_id": 96,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L561-L640",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 641,
+          "end_line": 720,
+          "observation_id": 97,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L641-L720",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 721,
+          "end_line": 800,
+          "observation_id": 98,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L721-L800",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 801,
+          "end_line": 880,
+          "observation_id": 99,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L801-L880",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 881,
+          "end_line": 960,
+          "observation_id": 100,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L881-L960",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 961,
+          "end_line": 1040,
+          "observation_id": 101,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L961-L1040",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 1041,
+          "end_line": 1120,
+          "observation_id": 102,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L1041-L1120",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 1121,
+          "end_line": 1200,
+          "observation_id": 103,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L1121-L1200",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 1201,
+          "end_line": 1280,
+          "observation_id": 104,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L1201-L1280",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 1281,
+          "end_line": 1360,
+          "observation_id": 105,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L1281-L1360",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 1361,
+          "end_line": 1440,
+          "observation_id": 106,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L1361-L1440",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 1441,
+          "end_line": 1520,
+          "observation_id": 107,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L1441-L1520",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md",
+          "start_line": 1521,
+          "end_line": 1578,
+          "observation_id": 108,
+          "title": "corpus::one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md::L1521-L1578",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": "one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md",
+      "total_lines": 543,
+      "sha256": "2bcc56adb92fc00029266a97769922040cadff55d4501742ee8d5aa184462f62",
+      "chunk_size": 80,
+      "chunk_count": 7,
+      "saved_count": 7,
+      "chunks": [
+        {
+          "source": "one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md",
+          "start_line": 1,
+          "end_line": 80,
+          "observation_id": 109,
+          "title": "corpus::one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md::L1-L80",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md",
+          "start_line": 81,
+          "end_line": 160,
+          "observation_id": 110,
+          "title": "corpus::one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md::L81-L160",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md",
+          "start_line": 161,
+          "end_line": 240,
+          "observation_id": 111,
+          "title": "corpus::one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md::L161-L240",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md",
+          "start_line": 241,
+          "end_line": 320,
+          "observation_id": 112,
+          "title": "corpus::one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md::L241-L320",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md",
+          "start_line": 321,
+          "end_line": 400,
+          "observation_id": 113,
+          "title": "corpus::one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md::L321-L400",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md",
+          "start_line": 401,
+          "end_line": 480,
+          "observation_id": 114,
+          "title": "corpus::one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md::L401-L480",
+          "ok": true,
+          "error": null
+        },
+        {
+          "source": "one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md",
+          "start_line": 481,
+          "end_line": 543,
+          "observation_id": 115,
+          "title": "corpus::one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md::L481-L543",
+          "ok": true,
+          "error": null
+        }
+      ]
+    }
+  ]
+}

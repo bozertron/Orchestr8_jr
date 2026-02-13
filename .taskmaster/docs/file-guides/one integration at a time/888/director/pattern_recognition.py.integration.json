@@ -1,0 +1,21 @@
+{
+  "source": "one integration at a time/888/director/pattern_recognition.py",
+  "total_lines": 580,
+  "sha256": "5b52b3f66c885847e976c14af605f50cfba350d4269a113be2485b20186028bd",
+  "chunk_count": 5,
+  "observation_ids": [
+    227,
+    228,
+    229,
+    230,
+    231
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

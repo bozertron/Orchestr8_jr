@@ -1,0 +1,43 @@
+{
+  "source": ".planning/codebase/SURVEY-IP-CORE.json",
+  "total_lines": 207,
+  "sha256": "b31e7771e4004a6523bdb4f93787f1d8b28e04b4e873b0e0d9e71dfcf37bd45a",
+  "chunk_count": 2,
+  "observation_ids": [
+    1032,
+    1033
+  ],
+  "risks": [
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 46,
+      "text": "\"purpose\": \"TypeScript context bridge for unified project analysis\","
+    },
+    {
+      "line": 115,
+      "text": "\"critical_finding\": \"HealthChecker is imported in 06_maestro.py (line 77) but NEVER instantiated - requirement HLTH-01 not met\","
+    },
+    {
+      "line": 117,
+      "text": "\"exports\": [\"CheckerType\", \"ParsedError\", \"HealthCheckResult\", \"HealthChecker\"],"
+    },
+    {
+      "line": 176,
+      "text": "\"critical_finding\": \"Does not currently accept health data from HealthChecker - requirement HLTH-02 not met\","
+    },
+    {
+      "line": 195,
+      "text": "{\"file\": \"IP/health_checker.py\", \"line\": 1, \"issue\": \"HealthChecker imported but never instantiated in 06_maestro.py\", \"requirement\": \"HLTH-01\", \"impact\": \"Health checking disabled\"},"
+    },
+    {
+      "line": 196,
+      "text": "{\"file\": \"IP/woven_maps.py\", \"line\": 1, \"issue\": \"Does not accept health data from HealthChecker\", \"requirement\": \"HLTH-02\", \"impact\": \"Code City colors don't reflect file health\"}"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

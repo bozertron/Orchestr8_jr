@@ -1,0 +1,28 @@
+{
+  "source": "IP/contracts/code_city_node_event.py",
+  "total_lines": 61,
+  "sha256": "6b3e83fb7b126d9783802333c1f96747bea5e6b842727725cf25195afdf9a912",
+  "role": "Node Click Event Schema — Typed bridge between JS Code City events and Python handlers",
+  "risks": [
+    "JS payload uses camelCase (nodeType) but Python convention is snake_case",
+    "Required vs optional fields must be validated before use",
+    "Malformed payloads from iframe must be handled gracefully"
+  ],
+  "anchors": [
+    {"line": 4, "text": "CodeCityStatus = Literal['working', 'broken', 'combat'] — Status type"},
+    {"line": 7, "text": "@dataclass class CodeCityNodeEvent — Event dataclass"},
+    {"line": 9, "text": "Required fields: path, status, loc"},
+    {"line": 12, "text": "Optional fields with defaults: errors, nodeType, centrality, etc."},
+    {"line": 19, "text": "def to_dict(self) — Serialization via asdict()"},
+    {"line": 23, "text": "def validate_code_city_node_event(payload) — Validation function"},
+    {"line": 49, "text": "EXAMPLE_NODE_EVENT — Test fixture"}
+  ],
+  "integration_gaps": [],
+  "resolved_gaps": [
+    {
+      "gap": "Schema matches JS postMessage payload",
+      "resolved_in": "Blind Integration PRD task 2",
+      "details": "CodeCityNodeEvent dataclass with camelCase field names matches woven_maps.js payload"
+    }
+  ]
+}

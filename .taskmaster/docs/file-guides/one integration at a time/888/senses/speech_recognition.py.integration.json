@@ -1,0 +1,19 @@
+{
+  "source": "one integration at a time/888/senses/speech_recognition.py",
+  "total_lines": 317,
+  "sha256": "03a4b7ae1eab601dc365755030c28631ef6843d8392d3a683b55d79f7dc924e3",
+  "chunk_count": 3,
+  "observation_ids": [
+    333,
+    334,
+    335
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

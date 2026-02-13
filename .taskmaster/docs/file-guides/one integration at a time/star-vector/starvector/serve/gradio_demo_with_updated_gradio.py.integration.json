@@ -1,0 +1,26 @@
+{
+  "source": "one integration at a time/star-vector/starvector/serve/gradio_demo_with_updated_gradio.py",
+  "total_lines": 432,
+  "sha256": "c71d27dd1665b756bb81ce4d47419a4a9dbb7820c4afddcc0e053721d2c0350b",
+  "chunk_count": 4,
+  "observation_ids": [
+    949,
+    950,
+    951,
+    952
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 228,
+      "text": "The service is a research preview intended for non-commercial use only. It only provides limited safety measures and may generate offensive content. It must not be used for any illegal, harmful, violent, racist, or sexual purposes. The service may collect user dialogue data for future research."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

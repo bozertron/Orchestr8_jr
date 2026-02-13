@@ -12,6 +12,7 @@ settlement_enhancements:
 ### Sentinel Probe Response
 
 When a Sentinel probes you:
+
 - Report current task, current progress, last file modified
 - If stuck: report what you're stuck on (be specific)
 - If in error loop: report the error and what you've tried
@@ -19,6 +20,7 @@ When a Sentinel probes you:
 ### Room-Level Execution
 
 When executing Settlement work orders:
+
 - Stay within assigned room (exact line range)
 - Do NOT modify other rooms in the same file
 - If you discover a needed change outside your room: LOG IT, don't do it
@@ -38,6 +40,7 @@ ${type}(${scope}): ${concise_description}
 ### Failure Reporting
 
 If you cannot complete your work unit, produce:
+
 ```markdown
 ## EXECUTOR FAILURE REPORT
 

@@ -1,0 +1,19 @@
+{
+  "source": "one integration at a time/Context King/OLD*.py",
+  "total_lines": 276,
+  "sha256": "e15d6047deac690c6ca7486bb117c4f18e7d60c95cde1fe79ab2363bb0b1fe51",
+  "chunk_count": 3,
+  "observation_ids": [
+    372,
+    373,
+    374
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

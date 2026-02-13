@@ -1,0 +1,17 @@
+{
+  "source": "one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/SettingsModal.Dm6rzRMf.css",
+  "total_lines": 1,
+  "sha256": "2f280e6a84eebea026e44c0d0f2d6d58f4a34afa1ef745e9b61c27777a691a66",
+  "chunk_count": 1,
+  "observation_ids": [
+    519
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

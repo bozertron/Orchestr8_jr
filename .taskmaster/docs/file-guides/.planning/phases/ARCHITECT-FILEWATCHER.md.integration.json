@@ -1,0 +1,119 @@
+{
+  "source": ".planning/phases/ARCHITECT-FILEWATCHER.md",
+  "total_lines": 206,
+  "sha256": "f4994c026bb9cfcb94ddef0cbf09e19cf2ed28029cdae3230bfa3a14d32acfd9",
+  "chunk_count": 2,
+  "observation_ids": [
+    1051,
+    1052
+  ],
+  "risks": [
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 21,
+      "text": "- `HealthChecker.check_fiefdom(path)` → `HealthCheckResult` (READY)"
+    },
+    {
+      "line": 22,
+      "text": "- `HealthChecker.check_all_fiefdoms(paths)` → `Dict[str, HealthCheckResult]` (READY)"
+    },
+    {
+      "line": 26,
+      "text": "- **NO bridge** between Marimo's FileWatcherManager and Orchestr8's HealthChecker"
+    },
+    {
+      "line": 27,
+      "text": "- **NO integration** with STATE_MANAGERS reactive system"
+    },
+    {
+      "line": 36,
+      "text": "3. Calls `HealthChecker.check_fiefdom()` on change"
+    },
+    {
+      "line": 37,
+      "text": "4. Updates `STATE_MANAGERS[\"health\"]` reactively"
+    },
+    {
+      "line": 43,
+      "text": "### Primary Location: `orchestr8.py` (entry point)"
+    },
+    {
+      "line": 46,
+      "text": "# orchestr8.py - at module level with other state setup"
+    },
+    {
+      "line": 47,
+      "text": "from IP.health_watcher import HealthWatcherManager"
+    },
+    {
+      "line": 49,
+      "text": "# After STATE_MANAGERS initialization"
+    },
+    {
+      "line": 50,
+      "text": "HEALTH_WATCHER = HealthWatcherManager("
+    },
+    {
+      "line": 52,
+      "text": "state_managers=STATE_MANAGERS,"
+    },
+    {
+      "line": 57,
+      "text": "### Alternative: Lazy init in `06_maestro.py` plugin"
+    },
+    {
+      "line": 61,
+      "text": "**Recommendation:** Primary location (orchestr8.py) for immediate real-time behavior."
+    },
+    {
+      "line": 71,
+      "text": "│  HealthWatcherManager           │"
+    },
+    {
+      "line": 76,
+      "text": "│ 3. Call HealthChecker           │"
+    },
+    {
+      "line": 80,
+      "text": "│  HealthChecker                  │"
+    },
+    {
+      "line": 88,
+      "text": "│  STATE_MANAGERS[\"health\"]       │"
+    },
+    {
+      "line": 114,
+      "text": "class HealthWatcherManager:"
+    },
+    {
+      "line": 120,
+      "text": "self._health_checker = HealthChecker(project_root)"
+    },
+    {
+      "line": 144,
+      "text": "# e.g., \"IP/plugins/06_maestro.py\" → \"IP/\""
+    },
+    {
+      "line": 161,
+      "text": "| `orchestr8.py` integration | ~100 | 1.0 (simple init) | 1 |"
+    },
+    {
+      "line": 162,
+      "text": "| STATE_MANAGERS wiring | ~200 | 1.0 | 1 |"
+    },
+    {
+      "line": 178,
+      "text": "# Verify in orchestr8"
+    },
+    {
+      "line": 188,
+      "text": "| `IP/health_watcher.py` | CREATE | HealthWatcherManager class |"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

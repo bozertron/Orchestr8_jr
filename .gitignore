@@ -48,6 +48,10 @@ wheels/
 .installed.cfg
 *.egg
 
+# Stale/old versions archived in "one integration at a time"
+# These are reference copies - do not commit changes
+one\ integration\ at\ a\ time/orchestr8_standalone.py
+
 # Virtual environments
 venv/
 ENV/
@@ -56,6 +60,9 @@ env/
 
 # Marimo
 .marimo/
+# Temporary debug quarantine for local marimo frontend artifacts
+marimo/marimo/_static/
+marimo/marimo/_static/index.html
 
 # TypeScript build
 frontend/tools/dist/
@@ -72,3 +79,14 @@ __marimo__/
 
 # Reference repositories (cloned for study, not part of this repo)
 gsd-reference/
+
+# Local quarantine/archive for heavy visual experiments and non-source artifacts
+effects/
+
+# Task files
+# tasks.json
+# tasks/ 
+
+# Intentional nested repositories (keep local, do not stage in superproject)
+.taskmaster/tools/claude-mem/
+Barradeau/CodeCity/particles.js/

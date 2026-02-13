@@ -10,7 +10,7 @@
 
 - **Application Name:** orchestr8 (lowercase, ends with 8)
 - **Naming Convention:** Words ending with 8 start lowercase (orchestr8, collabor8, gener8)
-- **Legacy Reference:** MaestroView.vue from stereOS is a UI REFERENCE only
+- **Legacy Reference:** `one integration at a time/UI Reference/MaestroView.vue` is a UI REFERENCE only
 
 ---
 
@@ -93,6 +93,7 @@
 ## V. Control Surface Buttons
 
 ### Left Group
+
 | Button | Function |
 |--------|----------|
 | Apps | Opens Linux app store (gnome-software) |
@@ -102,11 +103,13 @@
 | Files | Toggles inline File Explorer panel |
 
 ### Center
+
 | Button | Function |
 |--------|----------|
 | maestro | Global search (summon) |
 
 ### Right Group
+
 | Button | Function |
 |--------|----------|
 | Search | Same as maestro - global search |
@@ -121,6 +124,7 @@
 ## VI. Panel Behavior
 
 ### Slide-Out Panels (from RIGHT)
+
 - **Mutually exclusive:** Only one can be open at a time
 - **Trigger:** Button click
 - **Animation:** Slide from right edge
@@ -131,10 +135,12 @@
   - File Explorer - FileExplorerPanel component
 
 ### Modal Overlays (center)
+
 - **Deploy Panel** - "House a Digital Native?" - triggered by clicking broken node
 - **Summon Panel** - Global search overlay
 
 ### Top Panels (from TOP)
+
 - **Collabor8** - Agent management dropdown
 - Reserved for future use
 
@@ -145,11 +151,13 @@
 > "UI elements do not 'load'; they EMERGE when summoned."
 
 ### Animation Types
+
 - `emergence` - Translate up + fade in (0.4s)
 - `emergence-fade` - Fade in only (0.3s)
 - `emergence-scale` - Scale up + fade in (0.5s)
 
 ### Rules
+
 - NO breathing animations
 - Messages EMERGE from the void
 - Input bar NEVER moves (anchored to bottom)
@@ -159,13 +167,13 @@
 
 ## VIII. CSS Class Naming
 
-Update from `.stereos-*` to `.orchestr8-*`:
+Use `.orchestr8-*` classes for branding. Legacy class names should not be used.
 
 ```css
-/* OLD */
-.stereos-brand { }
-.stereos-prefix { }
-.stereos-suffix { }
+/* LEGACY (DO NOT USE) */
+.legacy-brand { }
+.legacy-prefix { }
+.legacy-suffix { }
 
 /* NEW */
 .orchestr8-brand { }

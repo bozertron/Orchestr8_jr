@@ -1,0 +1,61 @@
+{
+  "source": ".planning/phases/ARCHITECT-CARL.md",
+  "total_lines": 257,
+  "sha256": "af1eeba971059b06d9c005905646b1d159459b3af836e574e89682334bc7e074",
+  "chunk_count": 3,
+  "observation_ids": [
+    1048,
+    1049,
+    1050
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 10,
+      "text": "- **Purpose:** TypeScript bridge via subprocess to `unified-context-system.ts`"
+    },
+    {
+      "line": 19,
+      "text": "| HealthChecker | `health_checker.py:66` | `check_fiefdom(path)` | `HealthCheckResult` |"
+    },
+    {
+      "line": 34,
+      "text": "- Returns FiefdomContext JSON matching LOCKED structure"
+    },
+    {
+      "line": 63,
+      "text": "from .health_checker import HealthChecker"
+    },
+    {
+      "line": 80,
+      "text": "self.health_checker = HealthChecker(root_path)"
+    },
+    {
+      "line": 158,
+      "text": "**File:** `IP/plugins/06_maestro.py` (Summon panel)"
+    },
+    {
+      "line": 168,
+      "text": "### HealthChecker → Carl"
+    },
+    {
+      "line": 239,
+      "text": "| HealthChecker timeout | Already has timeout handling in source |"
+    },
+    {
+      "line": 248,
+      "text": "- [ ] Output matches LOCKED JSON structure from CONTEXT.md"
+    },
+    {
+      "line": 251,
+      "text": "- [ ] Louis remains unchanged (constraint satisfied)"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,207 @@
+{
+  "survey_metadata": {
+    "timestamp": "2026-02-12T00:00:00Z",
+    "surveyor": "Settlement Surveyor (Tier 1)",
+    "project": "Orchestr8 v2.0 Vision Audit",
+    "survey_scope": "IP/ core modules (15 files)",
+    "total_files": 15,
+    "total_lines": 6827,
+    "total_rooms": 127
+  },
+  "files": {
+    "IP/__init__.py": {
+      "path": "IP/__init__.py",
+      "total_lines": 30,
+      "total_tokens": 182,
+      "status": "FULLY_IMPLEMENTED",
+      "purpose": "Package initialization and structure verification",
+      "imports": {"external": ["pathlib.Path"], "internal": []},
+      "exports": ["__version__", "__package_name__", "CORE_MODULES", "verify_structure"],
+      "rooms": [{"name": "verify_structure", "type": "function", "line_start": 19, "line_end": 29, "signature": "() -> dict", "docstring": "Verify IP Protocol directory structure integrity.", "status": "FULLY_IMPLEMENTED", "tokens": 98}],
+      "code_city": {"footprint": "small", "height": 1, "health": "GOLD"}
+    },
+    "IP/briefing_generator.py": {
+      "path": "IP/briefing_generator.py",
+      "total_lines": 181,
+      "total_tokens": 1247,
+      "status": "PARTIAL",
+      "purpose": "Generate mission briefings for fiefdom deployments",
+      "critical_finding": "load_campaign_log() is STUB - returns empty list with placeholder comment",
+      "imports": {"external": ["datetime", "pathlib.Path", "typing", "json"], "internal": []},
+      "exports": ["BriefingGenerator"],
+      "rooms": [
+        {"name": "BriefingGenerator.__init__", "type": "method", "line_start": 9, "line_end": 10, "signature": "(self, project_root: str)", "status": "FULLY_IMPLEMENTED", "tokens": 45},
+        {"name": "BriefingGenerator.load_campaign_log", "type": "method", "line_start": 12, "line_end": 21, "signature": "(self, fiefdom_path: str, limit: int = 5) -> List[Dict]", "status": "STUB", "note": "Parsing logic marked as ... (incomplete)", "tokens": 108},
+        {"name": "BriefingGenerator.get_locks_for_fiefdom", "type": "method", "line_start": 23, "line_end": 43, "signature": "(self, fiefdom_path: str) -> List[Dict]", "status": "FULLY_IMPLEMENTED", "tokens": 156},
+        {"name": "BriefingGenerator.generate", "type": "method", "line_start": 45, "line_end": 173, "signature": "(self, fiefdom_path: str, ticket_id: str, ticket_status: str, mission: str, errors: List[str], warnings: List[str], notes: List[Dict], context: Optional[Dict] = None) -> str", "status": "FULLY_IMPLEMENTED", "tokens": 658},
+        {"name": "BriefingGenerator.write_briefing", "type": "method", "line_start": 175, "line_end": 180, "signature": "(self, fiefdom_path: str, **kwargs) -> Path", "status": "FULLY_IMPLEMENTED", "tokens": 89}
+      ],
+      "code_city": {"footprint": "medium", "height": 3, "health": "TEAL"}
+    },
+    "IP/carl_core.py": {
+      "path": "IP/carl_core.py",
+      "total_lines": 99,
+      "total_tokens": 687,
+      "status": "FULLY_IMPLEMENTED",
+      "purpose": "TypeScript context bridge for unified project analysis",
+      "imports": {"external": ["subprocess", "json", "os", "pathlib.Path", "typing"], "internal": []},
+      "exports": ["CarlContextualizer"],
+      "rooms": [
+        {"name": "CarlContextualizer.__init__", "type": "method", "line_start": 27, "line_end": 38, "signature": "(self, root_path: str, timeout: int = DEFAULT_TIMEOUT)", "status": "FULLY_IMPLEMENTED", "tokens": 84},
+        {"name": "CarlContextualizer.run_deep_scan", "type": "method", "line_start": 40, "line_end": 91, "signature": "(self) -> Dict[str, Any]", "status": "FULLY_IMPLEMENTED", "tokens": 387},
+        {"name": "CarlContextualizer.get_file_context", "type": "method", "line_start": 93, "line_end": 98, "signature": "(self, rel_path: str) -> str", "status": "FULLY_IMPLEMENTED", "tokens": 85}
+      ],
+      "code_city": {"footprint": "small", "height": 2, "health": "GOLD"}
+    },
+    "IP/combat_tracker.py": {
+      "path": "IP/combat_tracker.py",
+      "total_lines": 115,
+      "total_tokens": 782,
+      "status": "FULLY_IMPLEMENTED",
+      "purpose": "Track active LLM General deployments and COMBAT status",
+      "critical_finding": "cleanup_stale_deployments() exists but NOT called at app startup (requirement CMBT-01)",
+      "imports": {"external": ["json", "datetime", "pathlib.Path", "typing"], "internal": []},
+      "exports": ["CombatTracker"],
+      "rooms": [
+        {"name": "CombatTracker.__init__", "type": "method", "line_start": 11, "line_end": 14, "signature": "(self, project_root: str)", "status": "FULLY_IMPLEMENTED", "tokens": 57},
+        {"name": "CombatTracker._load_state", "type": "method", "line_start": 16, "line_end": 21, "signature": "(self) -> dict", "status": "FULLY_IMPLEMENTED", "tokens": 56},
+        {"name": "CombatTracker._save_state", "type": "method", "line_start": 23, "line_end": 26, "signature": "(self, state: dict) -> None", "status": "FULLY_IMPLEMENTED", "tokens": 38},
+        {"name": "CombatTracker.deploy", "type": "method", "line_start": 28, "line_end": 36, "signature": "(self, file_path: str, terminal_id: str, model: str = 'unknown') -> None", "status": "FULLY_IMPLEMENTED", "tokens": 67},
+        {"name": "CombatTracker.withdraw", "type": "method", "line_start": 38, "line_end": 43, "signature": "(self, file_path: str) -> None", "status": "FULLY_IMPLEMENTED", "tokens": 45},
+        {"name": "CombatTracker.is_in_combat", "type": "method", "line_start": 45, "line_end": 48, "signature": "(self, file_path: str) -> bool", "status": "FULLY_IMPLEMENTED", "tokens": 35},
+        {"name": "CombatTracker.get_active_deployments", "type": "method", "line_start": 50, "line_end": 53, "signature": "(self) -> Dict[str, dict]", "status": "FULLY_IMPLEMENTED", "tokens": 32},
+        {"name": "CombatTracker.get_combat_files", "type": "method", "line_start": 55, "line_end": 58, "signature": "(self) -> List[str]", "status": "FULLY_IMPLEMENTED", "tokens": 32},
+        {"name": "CombatTracker.cleanup_stale_deployments", "type": "method", "line_start": 60, "line_end": 75, "signature": "(self, max_age_hours: int = 24) -> None", "status": "FULLY_IMPLEMENTED", "note": "IMPLEMENTED BUT NOT CALLED AT STARTUP", "tokens": 105},
+        {"name": "CombatTracker.get_deployment_info", "type": "method", "line_start": 77, "line_end": 80, "signature": "(self, file_path: str) -> Optional[dict]", "status": "FULLY_IMPLEMENTED", "tokens": 32}
+      ],
+      "code_city": {"footprint": "medium", "height": 2, "health": "TEAL"}
+    },
+    "IP/connection_verifier.py": {
+      "path": "IP/connection_verifier.py",
+      "total_lines": 903,
+      "total_tokens": 6234,
+      "status": "FULLY_IMPLEMENTED",
+      "purpose": "Validates import resolution and builds connection graph for Code City",
+      "imports": {"external": ["os", "re", "pathlib.Path", "dataclasses", "typing", "enum"], "internal": []},
+      "exports": ["ImportType", "IssueSeverity", "NodeType", "ImportResult", "FileConnectionResult", "ConnectionMetrics", "GraphNode", "GraphEdge", "ConnectionVerifier", "ConnectionGraph", "detect_node_type", "build_connection_graph", "verify_all_connections"],
+      "code_city": {"footprint": "large", "height": 4, "health": "GOLD"}
+    },
+    "IP/connie.py": {
+      "path": "IP/connie.py",
+      "total_lines": 387,
+      "total_tokens": 2684,
+      "status": "FULLY_IMPLEMENTED",
+      "purpose": "Headless SQLite database conversion engine",
+      "imports": {"external": ["sqlite3", "json", "csv", "pathlib.Path", "datetime", "typing", "pandas"], "internal": []},
+      "exports": ["ConversionEngine", "quick_export"],
+      "code_city": {"footprint": "large", "height": 3, "health": "GOLD"}
+    },
+    "IP/connie_gui.py": {
+      "path": "IP/connie_gui.py",
+      "total_lines": 603,
+      "total_tokens": 4127,
+      "status": "FULLY_IMPLEMENTED",
+      "purpose": "PyQt6 GUI for database conversion tool",
+      "imports": {"external": ["sys", "os", "sqlite3", "json", "csv", "pathlib.Path", "datetime", "typing", "PyQt6.QtWidgets", "PyQt6.QtCore", "PyQt6.QtGui"], "internal": []},
+      "exports": ["ConversionEngine", "ConversionThread", "ConnieTheConverter", "main"],
+      "code_city": {"footprint": "large", "height": 4, "health": "GOLD"}
+    },
+    "IP/health_checker.py": {
+      "path": "IP/health_checker.py",
+      "total_lines": 602,
+      "total_tokens": 4156,
+      "status": "FULLY_IMPLEMENTED",
+      "purpose": "Multi-language health checking (TypeScript, Python)",
+      "critical_finding": "HealthChecker is imported in 06_maestro.py (line 77) but NEVER instantiated - requirement HLTH-01 not met",
+      "imports": {"external": ["subprocess", "shutil", "re", "sys", "datetime", "pathlib.Path", "typing", "dataclasses", "enum"], "internal": []},
+      "exports": ["CheckerType", "ParsedError", "HealthCheckResult", "HealthChecker"],
+      "code_city": {"footprint": "large", "height": 4, "health": "GOLD"}
+    },
+    "IP/louis_core.py": {
+      "path": "IP/louis_core.py",
+      "total_lines": 131,
+      "total_tokens": 892,
+      "status": "FULLY_IMPLEMENTED",
+      "purpose": "File locking and protection system for critical fiefdoms",
+      "imports": {"external": ["os", "stat", "json", "pathlib.Path", "datetime", "typing"], "internal": []},
+      "exports": ["LouisConfig", "LouisWarden"],
+      "code_city": {"footprint": "small", "height": 2, "health": "GOLD"}
+    },
+    "IP/mermaid_generator.py": {
+      "path": "IP/mermaid_generator.py",
+      "total_lines": 82,
+      "total_tokens": 567,
+      "status": "FULLY_IMPLEMENTED",
+      "purpose": "Generate Mermaid diagrams with Orchestr8 color scheme",
+      "imports": {"external": ["pathlib.Path", "typing", "dataclasses", "enum"], "internal": []},
+      "exports": ["FiefdomStatus", "Fiefdom", "COLORS", "generate_empire_mermaid", "render_in_marimo"],
+      "code_city": {"footprint": "small", "height": 1, "health": "GOLD"}
+    },
+    "IP/mermaid_theme.py": {
+      "path": "IP/mermaid_theme.py",
+      "total_lines": 141,
+      "total_tokens": 987,
+      "status": "FULLY_IMPLEMENTED",
+      "purpose": "Mermaid diagram theming with color-coded status",
+      "imports": {"external": [], "internal": []},
+      "exports": ["MERMAID_CLASSDEFS", "generate_status_graph", "generate_file_dependency_graph", "generate_system_architecture", "generate_workflow_steps"],
+      "code_city": {"footprint": "small", "height": 1, "health": "GOLD"}
+    },
+    "IP/terminal_spawner.py": {
+      "path": "IP/terminal_spawner.py",
+      "total_lines": 122,
+      "total_tokens": 834,
+      "status": "FULLY_IMPLEMENTED",
+      "purpose": "Spawn terminals for fiefdom deployment",
+      "imports": {"external": ["platform", "subprocess", "json", "datetime", "pathlib.Path", "typing"], "internal": []},
+      "exports": ["TerminalSpawner"],
+      "code_city": {"footprint": "small", "height": 2, "health": "GOLD"}
+    },
+    "IP/ticket_manager.py": {
+      "path": "IP/ticket_manager.py",
+      "total_lines": 261,
+      "total_tokens": 1806,
+      "status": "FULLY_IMPLEMENTED",
+      "purpose": "Manage issue tickets for fiefdom work",
+      "imports": {"external": ["datetime", "pathlib.Path", "typing", "dataclasses", "json", "uuid", "shutil"], "internal": []},
+      "exports": ["Ticket", "TicketManager"],
+      "code_city": {"footprint": "medium", "height": 3, "health": "GOLD"}
+    },
+    "IP/woven_maps.py": {
+      "path": "IP/woven_maps.py",
+      "total_lines": 1982,
+      "total_tokens": 13678,
+      "status": "FULLY_IMPLEMENTED",
+      "purpose": "Code City visualization engine with emergence animation",
+      "critical_finding": "Does not currently accept health data from HealthChecker - requirement HLTH-02 not met",
+      "imports": {"external": ["json", "html", "math", "os", "re", "dataclasses", "pathlib.Path", "typing"], "internal": []},
+      "exports": ["COLORS", "JS_COLORS", "CodeNode", "EdgeData", "ColorScheme", "GraphConfig", "GraphData", "SKIP_DIRS", "CODE_EXTENSIONS", "scan_codebase", "analyze_file", "calculate_layout", "WovenMapsCity", "generate_html"],
+      "code_city": {"footprint": "large", "height": 5, "health": "GOLD"}
+    },
+    "IP/woven_maps_nb.py": {
+      "path": "IP/woven_maps_nb.py",
+      "total_lines": 718,
+      "total_tokens": 4956,
+      "status": "FULLY_IMPLEMENTED",
+      "purpose": "Jupyter notebook version of Code City visualization",
+      "imports": {"external": ["json", "html", "IPython.display", "pathlib.Path", "typing"], "internal": []},
+      "exports": ["COLORS", "JS_COLORS", "CodeNode", "EdgeData", "GraphConfig", "GraphData", "SKIP_DIRS", "CODE_EXTENSIONS", "scan_codebase", "analyze_file", "calculate_layout", "WovenMapsNotebook", "generate_notebook_html"],
+      "code_city": {"footprint": "medium", "height": 3, "health": "GOLD"}
+    }
+  },
+  "critical_issues": [
+    {"file": "IP/briefing_generator.py", "line": 12, "issue": "load_campaign_log() is STUB", "requirement": "BREF-01", "impact": "Campaign history not displayed"},
+    {"file": "IP/combat_tracker.py", "line": 60, "issue": "cleanup_stale_deployments() not called at startup", "requirement": "CMBT-01", "impact": "Stale deployments accumulate"},
+    {"file": "IP/health_checker.py", "line": 1, "issue": "HealthChecker imported but never instantiated in 06_maestro.py", "requirement": "HLTH-01", "impact": "Health checking disabled"},
+    {"file": "IP/woven_maps.py", "line": 1, "issue": "Does not accept health data from HealthChecker", "requirement": "HLTH-02", "impact": "Code City colors don't reflect file health"}
+  ],
+  "summary": {
+    "total_files": 15,
+    "fully_implemented": 14,
+    "partial": 1,
+    "stub": 0,
+    "dead": 0,
+    "total_tokens": 47000,
+    "avg_complexity": 5.8
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "source": "IP/contracts/settlement_survey.py",
+  "total_lines": 93,
+  "sha256": "f52283dbe0954bf433ee90b431e4b716295ba5081af95467cd78d0ec31dfe574",
+  "role": "Settlement System Survey Schema — Fiefdom data, boundary contracts, and wiring state",
+  "risks": [
+    "Nested dataclasses require careful parsing from JSON/dict",
+    "WiringStatus enum must match status_merge_policy statuses",
+    "Fiefdom coupling values must be 0-1 floats"
+  ],
+  "anchors": [
+    {"line": 4, "text": "class WiringStatus(Enum) — WORKING/BROKEN/COMBAT enum"},
+    {"line": 9, "text": "@dataclass class FiefdomData — Fiefdom metadata"},
+    {"line": 17, "text": "@dataclass class BoundaryContract — Inter-fiefdom contract"},
+    {"line": 25, "text": "@dataclass class WiringConnection — Import/export wiring"},
+    {"line": 32, "text": "@dataclass class SettlementSurvey — Top-level survey"},
+    {"line": 39, "text": "def parse_settlement_survey(data) — Parser with validation"}
+  ],
+  "integration_gaps": [],
+  "resolved_gaps": [
+    {
+      "gap": "Settlement survey schema for Code City enrichment",
+      "resolved_in": "Blind Integration PRD task 4",
+      "details": "Nested dataclasses for FiefdomData, BoundaryContract, WiringConnection, SettlementSurvey"
+    }
+  ]
+}

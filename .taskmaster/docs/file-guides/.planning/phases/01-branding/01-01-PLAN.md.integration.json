@@ -1,0 +1,119 @@
+{
+  "source": ".planning/phases/01-branding/01-01-PLAN.md",
+  "total_lines": 186,
+  "sha256": "e44176f23e4f8224462e465f2a02f7cb689af25bc39eaca56c461c7b748a4bf8",
+  "chunk_count": 2,
+  "observation_ids": [
+    1040,
+    1041
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 8,
+      "text": "- IP/plugins/06_maestro.py"
+    },
+    {
+      "line": 13,
+      "text": "must_haves:"
+    },
+    {
+      "line": 15,
+      "text": "- \"User sees 'orchestr8' in top row brand display (not 'stereOS')\""
+    },
+    {
+      "line": 16,
+      "text": "- \"Browser DevTools shows CSS classes prefixed with '.orchestr8-*' (not '.stereos-*')\""
+    },
+    {
+      "line": 17,
+      "text": "- \"Developer reading docstrings sees 'orchestr8' references (not 'stereOS')\""
+    },
+    {
+      "line": 19,
+      "text": "- path: \"IP/plugins/06_maestro.py\""
+    },
+    {
+      "line": 21,
+      "text": "contains: \"orchestr8-brand\""
+    },
+    {
+      "line": 24,
+      "text": "contains: \"orchestr8\""
+    },
+    {
+      "line": 27,
+      "text": "contains: \"orchestr8\""
+    },
+    {
+      "line": 29,
+      "text": "- from: \"IP/plugins/06_maestro.py\""
+    },
+    {
+      "line": 32,
+      "text": "pattern: \"orchestr8-brand.*orchestr8-prefix\""
+    },
+    {
+      "line": 36,
+      "text": "Replace all \"stereOS\" branding references with \"orchestr8\" across the active codebase."
+    },
+    {
+      "line": 38,
+      "text": "Purpose: Establish consistent \"orchestr8\" branding throughout the application so users see the correct product name in the UI and developers see consistent naming in documentation."
+    },
+    {
+      "line": 40,
+      "text": "Output: All visible text, CSS classes, and docstrings will reference \"orchestr8\" instead of \"stereOS\"."
+    },
+    {
+      "line": 55,
+      "text": "- IP/plugins/06_maestro.py (primary - brand text, CSS classes, docstrings)"
+    },
+    {
+      "line": 63,
+      "text": "<name>Task 1: Replace brand text and CSS classes in 06_maestro.py</name>"
+    },
+    {
+      "line": 64,
+      "text": "<files>IP/plugins/06_maestro.py</files>"
+    },
+    {
+      "line": 66,
+      "text": "Replace the following in IP/plugins/06_maestro.py:"
+    },
+    {
+      "line": 69,
+      "text": "- Change `<div class=\"stereos-brand\">` to `<div class=\"orchestr8-brand\">`"
+    },
+    {
+      "line": 70,
+      "text": "- Change `<span class=\"stereos-prefix\">stere</span><span class=\"stereos-suffix\">OS</span>` to `<span class=\"orchestr8-prefix\">orchestr</span><span class=\"orchestr8-suffix\">8</span>`"
+    },
+    {
+      "line": 73,
+      "text": "- Change `.stereos-brand` to `.orchestr8-brand`"
+    },
+    {
+      "line": 74,
+      "text": "- Change `.stereos-prefix` to `.orchestr8-prefix`"
+    },
+    {
+      "line": 75,
+      "text": "- Change `.stereos-suffix` to `.orchestr8-suffix`"
+    },
+    {
+      "line": 79,
+      "text": "- Line 7: Change \"(stereOS | Collabor8 | JFDI | Gener8)\" to \"(orchestr8 | Collabor8 | JFDI | Gener8)\""
+    },
+    {
+      "line": 85,
+      "text": "Run: `grep -n \"stereos\" IP/plugins/06_maestro.py` - should return no results"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

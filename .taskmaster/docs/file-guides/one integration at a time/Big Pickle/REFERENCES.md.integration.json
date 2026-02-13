@@ -1,0 +1,37 @@
+{
+  "source": "one integration at a time/Big Pickle/REFERENCES.md",
+  "total_lines": 266,
+  "sha256": "aa7cae9ee9dd4fb6f64c652d07453817c200b5a860abf428914cfb7914949740",
+  "chunk_count": 4,
+  "observation_ids": [
+    11,
+    12,
+    13,
+    14
+  ],
+  "risks": [
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 220,
+      "text": "Gold (#D4AF37)   - Working code, completion state"
+    },
+    {
+      "line": 222,
+      "text": "Purple (#9D4EDD) - Combat state (LLM deployed)"
+    },
+    {
+      "line": 235,
+      "text": "- ✅ Teal → Gold transitions"
+    },
+    {
+      "line": 258,
+      "text": "2. **Teal during scan, Gold on completion** - Phase-based color"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/key_lines_with_files.tsv"
+  }
+}

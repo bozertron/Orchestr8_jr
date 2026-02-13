@@ -1,0 +1,17 @@
+{
+  "source": "one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/2 COMPUTE PASS Update.txt",
+  "total_lines": 15,
+  "sha256": "1e059cc061c0e407270e4986854d1e28c612bdd649c36ef742c628e58a6591f2",
+  "chunk_count": 1,
+  "observation_ids": [
+    497
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

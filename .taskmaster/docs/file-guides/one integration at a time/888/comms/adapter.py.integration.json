@@ -1,0 +1,21 @@
+{
+  "source": "one integration at a time/888/comms/adapter.py",
+  "total_lines": 563,
+  "sha256": "7a082d57b29c8d6f68c0b3f5e5c58274b7156ee5fc623ff11c3923a0a1f8355e",
+  "chunk_count": 5,
+  "observation_ids": [
+    193,
+    194,
+    195,
+    196,
+    197
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

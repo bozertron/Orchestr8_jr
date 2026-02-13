@@ -1,0 +1,22 @@
+{
+  "source": "one integration at a time/888/professor/adapter.py",
+  "total_lines": 657,
+  "sha256": "8ebbb77144c308dc2154e12e4cc44d82a668444f813daa937fad792d29701bc2",
+  "chunk_count": 6,
+  "observation_ids": [
+    278,
+    279,
+    280,
+    281,
+    282,
+    283
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

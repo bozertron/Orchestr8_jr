@@ -1,0 +1,22 @@
+{
+  "source": "one integration at a time/Staging/Plug_In_Convention.txt",
+  "total_lines": 112,
+  "sha256": "2cb9e2c16ee943a35cc53838e10386261e9f3f1bb28644f1a2e3e5a4d5a29f1a",
+  "chunk_count": 1,
+  "observation_ids": [
+    837
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 18,
+      "text": "commandType: string; // The unique identifier (e.g., 'overview', 'stores'). MUST match file name convention if possible."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

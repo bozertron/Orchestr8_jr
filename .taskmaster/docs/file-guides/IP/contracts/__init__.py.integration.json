@@ -1,0 +1,39 @@
+{
+  "source": "IP/contracts/__init__.py",
+  "total_lines": 56,
+  "sha256": "b4f335422db517f892feed174246e0032a37e0e9292322185e03cfd4a8762b51",
+  "role": "Contract export hub",
+  "risks": [
+    "Missing export in __all__ causes silent downstream import failures",
+    "Import/export mismatch creates drift between runtime and test expectations"
+  ],
+  "anchors": [
+    {
+      "line": 16,
+      "text": "Node event exports"
+    },
+    {
+      "line": 24,
+      "text": "Building panel exports"
+    },
+    {
+      "line": 30,
+      "text": "Connection action exports"
+    },
+    {
+      "line": 52,
+      "text": "ConnectionActionEvent in __all__"
+    },
+    {
+      "line": 54,
+      "text": "validate_connection_action_event in __all__"
+    }
+  ],
+  "integration_gaps": [],
+  "resolved_gaps": [
+    {
+      "gap": "Connection action contract discoverable from top-level package",
+      "status": "complete"
+    }
+  ]
+}

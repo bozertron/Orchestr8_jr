@@ -1,0 +1,24 @@
+{
+  "source": "one integration at a time/star-vector/starvector/model/models/starvector_base.py",
+  "total_lines": 339,
+  "sha256": "7a4973a29134e76b97fedc0ad01389d94f8ca4576eb1ba1ad16cdabfc6057a2e",
+  "chunk_count": 3,
+  "observation_ids": [
+    936,
+    937,
+    938
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [
+    {
+      "line": 69,
+      "text": "\"\"\"Determine if image encoder should be used based on task\"\"\""
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

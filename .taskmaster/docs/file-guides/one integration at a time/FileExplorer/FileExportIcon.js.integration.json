@@ -1,0 +1,17 @@
+{
+  "source": "one integration at a time/FileExplorer/FileExportIcon.js",
+  "total_lines": 7,
+  "sha256": "c955bf838cbcd8c2d508939b49ea75ee53691cd7e0bfbdba05cf63831db507ab",
+  "chunk_count": 1,
+  "observation_ids": [
+    489
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "source": "one integration at a time/docs/LLM_INFLUENCE_REFERENCE.md",
+  "total_lines": 482,
+  "sha256": "aaab6807e7d98366e828429837747038dc1ee3fe98a2e78314115f52a76af92e",
+  "chunk_count": 5,
+  "observation_ids": [
+    451,
+    452,
+    453,
+    454,
+    455
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 76,
+      "text": "base_url = \"http://127.0.0.1:11434/v1\"  # MUST include /v1"
+    },
+    {
+      "line": 122,
+      "text": "1. All code must be complete and runnable"
+    },
+    {
+      "line": 155,
+      "text": "- 00_welcome.py through 06_maestro.py"
+    },
+    {
+      "line": 163,
+      "text": "- All plugins must apply MaestroView color variables"
+    },
+    {
+      "line": 212,
+      "text": "- Gold accents for interactive elements"
+    },
+    {
+      "line": 214,
+      "text": "- Purple for active/combat states"
+    },
+    {
+      "line": 227,
+      "text": "When you type `@df` in a prompt, Marimo injects the actual value/schema of that variable:"
+    },
+    {
+      "line": 304,
+      "text": "- status must be one of: 'working', 'broken', 'combat'"
+    },
+    {
+      "line": 349,
+      "text": "│   │   └── orchestr8.css     # CSS variables AI should reference"
+    },
+    {
+      "line": 351,
+      "text": "│   │   └── orchestr8.md      # Prompt templates (Layer 3)"
+    },
+    {
+      "line": 392,
+      "text": "- Gold/Working: All imports resolve, typecheck passes"
+    },
+    {
+      "line": 394,
+      "text": "- Purple/Combat: General currently deployed and active"
+    },
+    {
+      "line": 441,
+      "text": "- **Q:** How verbose should global rules be? Token cost vs. consistency trade-off."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

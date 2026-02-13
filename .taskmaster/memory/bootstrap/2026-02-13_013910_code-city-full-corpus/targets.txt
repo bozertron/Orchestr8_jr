@@ -1,0 +1,16 @@
+.taskmaster/docs/code_city_landscape_blind_integration_prd.txt
+one integration at a time/Big Pickle/REFERENCES.md
+one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md
+one integration at a time/PRD1.md
+one integration at a time/ROADMAP_ORCHESTR8_V4.md
+.planning/VISION-ALIGNMENT.md
+.planning/phases/CONTEXT.md
+.planning/phases/ARCHITECT-BARRADEAU.md
+.planning/phases/WORKORDERS-BARRADEAU.json
+SOT/CODE_CITY_LANDSCAPE.md
+SOT/07-07-WOVEN-SYNTHESIS.md
+SOT/BARRADEAU_INTEGRATION.md
+SOT/UI_SPECIFICATION.md
+SOT/WIRING_PLAN.md
+one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md
+one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md

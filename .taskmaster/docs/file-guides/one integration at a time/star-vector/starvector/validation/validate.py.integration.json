@@ -1,0 +1,17 @@
+{
+  "source": "one integration at a time/star-vector/starvector/validation/validate.py",
+  "total_lines": 56,
+  "sha256": "cf9596e0a0b510d5bf5c2ba37bd19b442c6f671525b860c627b0e4448e2b9c34",
+  "chunk_count": 1,
+  "observation_ids": [
+    1003
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

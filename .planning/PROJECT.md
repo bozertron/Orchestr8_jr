@@ -2,22 +2,24 @@
 
 ## What This Is
 
-Orchestr8 is a Marimo-based developer tool that enables a human operator ("The Emperor") to coordinate multiple Claude Code instances ("Generals") across a complex codebase. It provides a "God View" dashboard with Code City visualization, terminal spawning, ticket management, and a three-color health system (Gold/Blue/Purple).
+Orchestr8 is the initial settlement of ∅明nos — a Marimo-based spatial environment where human and machine intelligence collaborate through shared visual experience. It provides a Code City visualization (Woven Maps), multi-agent coordination via the Settlement System, and a stereOS interface that renders codebases as living cities. The Founder sees the whole system; agents work room by room.
 
 ## Core Value
 
-The Code City visualization must render with accurate health status colors, showing the Emperor which fiefdoms (directories) need attention and which Generals are deployed.
+The Code City visualization must render as an accurate, interactive spatial representation of the codebase — every file a building, every connection infrastructure, every health state visible — enabling human and AI to co-inhabit and co-evolve the same space.
 
-## Current Milestone: v1.0 Wiring Phase
+## Current Milestone: v2.0 Vision Audit + Full Wiring
 
-**Goal:** Connect existing built components to the UI — the components exist, they just need to be wired.
+**Goal:** Systematically audit every file, plugin, and feature against the ∅明nos vision; complete v1.0 wiring; connect Settlement System output to Code City.
 
 **Target features:**
-- Replace stereOS branding with orchestr8
-- Wire top row buttons correctly (JFDI→TicketPanel, gener8→Settings)
-- Instantiate HealthChecker for live status
-- Implement campaign log parsing
-- Auto-cleanup stale combat deployments
+- Complete v1.0 wiring (nav, health, briefing, combat)
+- Audit every IP module and plugin against the vision
+- Ensure every Marimo integration uses correct reactive methods
+- Connect Settlement System survey data to Code City rendering
+- Wire Collabor8 panel to settlement agent deployment status
+- Identify and remove dead code / stale references
+- Validate full pipeline: orchestr8.py → plugins → woven_maps → Code City
 
 ## Requirements
 
@@ -40,20 +42,24 @@ The Code City visualization must render with accurate health status colors, show
 
 <!-- Current scope. Building toward these. -->
 
-- [ ] Brand replacement (stereOS → orchestr8)
 - [ ] Top row buttons wired correctly
 - [ ] HealthChecker instantiated and updating node colors
 - [ ] Campaign log parsing implemented
 - [ ] Combat cleanup on initialization
+- [ ] Every IP module audited against vision
+- [ ] Every plugin audited against vision
+- [ ] Settlement System data → Code City integration
+- [ ] Marimo reactive methods verified correct
+- [ ] Collabor8 panel wired to settlement agent status
 
 ### Out of Scope
 
 <!-- Explicit boundaries. Includes reasoning to prevent re-adding. -->
 
-- State synchronization (Tickets/Combat/Briefings linked) — defer to v1.1, requires MissionManager design
-- Collabor8 agent panel replacement — defer to v1.1, needs agent deployment strategy
-- Summon/Carl search integration — defer to v1.1, low priority
-- Director background thread fixes — accept manual refresh for MVP
+- vscode-marimo plugin development — defer to v3.0, scaffold only exists
+- ∅明nos multi-tenant architecture — defer to v3.0+, requires stereOS completion
+- State synchronization (Tickets/Combat/Briefings linked) — defer to v2.1
+- Summon/Carl search integration — low priority, defer
 
 ## Context
 
@@ -71,6 +77,8 @@ The Code City visualization must render with accurate health status colors, show
 - `SOT/CURRENT_STATE.md` — Complete audit
 - `SOT/UI_SPECIFICATION.md` — Approved UI spec
 - `SOT/WIRING_PLAN.md` — Prioritized fix plan
+- `GSD + Custom Agents/SETTLEMENT_SYSTEM_PRESSURE_TEST.md` — Settlement architecture
+- `GSD + Custom Agents/The_Story_of_Mingos_A_Tale_of_Emergence.md` — Origin story and vision
 
 ## Constraints
 
@@ -90,4 +98,4 @@ The Code City visualization must render with accurate health status colors, show
 | Remove ~~~ waves button | Not part of spec | — Pending |
 
 ---
-*Last updated: 2026-01-30 after milestone initialization*
+*Last updated: 2026-02-12 after v2.0 milestone initialization*

@@ -1,7 +1,7 @@
 project_root/
+├── orchestr8.py            # (Host) The Main Marimo Application
 ├── IP/
 │   ├── __init__.py         # (Empty) Makes IP importable
-│   ├── orchestr8_app.py    # (Host) The Main Marimo Application
 │   ├── louis_core.py       # (Logic) The File Warden
 │   ├── carl_core.py        # (Logic) The Context Bridge
 │   ├── connie.py           # (Logic) The Database Converter

@@ -39,6 +39,7 @@ Transform the 2D canvas Code City visualization (`IP/woven_maps.py`) into a 3D B
 ### IP/woven_maps.py (2059 lines)
 
 **What's Working (Keep):**
+
 - Emergence animation with particle coalescence
 - Wave field for organic motion
 - Audio-reactive visualization (microphone)
@@ -49,6 +50,7 @@ Transform the 2D canvas Code City visualization (`IP/woven_maps.py`) into a 3D B
 - Cycle detection with red pulsing glow
 
 **What's Missing (Add):**
+
 - Three.js 3D rendering
 - Barradeau building structures
 - Shader-based edge filtering
@@ -196,6 +198,7 @@ class BarradeauBuilding {
 ### Edge Filter Shader (From reference patterns)
 
 **Vertex Shader:**
+
 ```glsl
 attribute vec3 neighbor;
 uniform float uThreshold;
@@ -211,6 +214,7 @@ void main() {
 ```
 
 **Fragment Shader:**
+
 ```glsl
 varying float vAlpha;
 
@@ -279,6 +283,7 @@ void main() {
 ### Integration Points
 
 Existing control panel in `IP/woven_maps.py` (lines 596-885):
+
 - Add new buttons after "Clear" button
 - Update JavaScript `updateMorph()` function for 3D values
 - Add new state variables: `activeDensit8`, `activeOrbit8`, etc.
@@ -311,6 +316,7 @@ function diveToBuilding(building) {
 ```
 
 **Raycasting for Selection:**
+
 ```javascript
 raycaster.setFromCamera(mouse, camera);
 const intersects = raycaster.intersectObjects(scene.children);
@@ -324,6 +330,7 @@ if (intersects.length > 0) {
 ### Town Square (Conceptual)
 
 High-centrality nodes cluster at center:
+
 ```javascript
 function calculateTownSquareLayout(nodes) {
     nodes.sort((a, b) => b.centrality - a.centrality);
@@ -345,6 +352,7 @@ function calculateTownSquareLayout(nodes) {
 ### Wire Grab (Conceptual)
 
 Drag broken edge → auto-fix import:
+
 ```javascript
 function setupWireGrab() {
     const brokenEdges = edges.filter(e => !e.resolved);
@@ -452,6 +460,7 @@ one integration at a time/Barradeau/  # REFERENCE ONLY
 **Goal:** Hybrid renderer with GPU detection
 
 **Tasks:**
+
 1. Create `IP/woven_maps_3d.js` module
 2. Set up Three.js scene, camera, renderer
 3. Implement GPU capability detection
@@ -460,6 +469,7 @@ one integration at a time/Barradeau/  # REFERENCE ONLY
 6. Migrate 2D edges to 3D lines
 
 **Deliverables:**
+
 - `IP/woven_maps_3d.js` (500+ lines)
 - Toggle between 2D/3D in control panel
 
@@ -468,6 +478,7 @@ one integration at a time/Barradeau/  # REFERENCE ONLY
 **Goal:** 3D building generation from file metrics
 
 **Tasks:**
+
 1. Extract `BarradeauBuilding` class from void-phase0
 2. Extract `Delaunay` triangulation
 3. Implement building size formula
@@ -476,6 +487,7 @@ one integration at a time/Barradeau/  # REFERENCE ONLY
 6. Add mesh generation
 
 **Deliverables:**
+
 - `IP/barradeau_building.js` (800+ lines)
 - Buildings render with correct size
 
@@ -484,6 +496,7 @@ one integration at a time/Barradeau/  # REFERENCE ONLY
 **Goal:** Edge filtering and new controls
 
 **Tasks:**
+
 1. Implement edge filter shader
 2. Add `densit8` slider
 3. Add `orbit8`, `focus8`, `pulse8`, `layer8` buttons
@@ -491,6 +504,7 @@ one integration at a time/Barradeau/  # REFERENCE ONLY
 5. Add bloom post-processing
 
 **Deliverables:**
+
 - `IP/shaders/` directory (3 files)
 - All control buttons functional
 
@@ -499,6 +513,7 @@ one integration at a time/Barradeau/  # REFERENCE ONLY
 **Goal:** Click interactions and Socket.io
 
 **Tasks:**
+
 1. Implement raycasting for selection
 2. Add dive-to-building animation
 3. Add building details panel
@@ -506,6 +521,7 @@ one integration at a time/Barradeau/  # REFERENCE ONLY
 5. Wire to Carl health monitoring
 
 **Deliverables:**
+
 - Click → dive interaction
 - Real-time color updates
 
@@ -526,6 +542,7 @@ one integration at a time/Barradeau/  # REFERENCE ONLY
 ## 12. SUCCESS CRITERIA
 
 ### Functional
+
 - [ ] 3D Code City renders with Barradeau aesthetic
 - [ ] Buildings scale correctly from file metrics (lines, exports)
 - [ ] Particle density follows Barradeau technique
@@ -534,6 +551,7 @@ one integration at a time/Barradeau/  # REFERENCE ONLY
 - [ ] Wire grab interaction fixes broken imports
 
 ### Technical
+
 - [ ] Three.js GPU mode with Canvas 2D fallback
 - [ ] Shader-based edge filtering (densit8 slider works)
 - [ ] Socket.io real-time updates (sub-2s latency)
@@ -541,6 +559,7 @@ one integration at a time/Barradeau/  # REFERENCE ONLY
 - [ ] All control panel buttons functional
 
 ### Performance
+
 - [ ] 60fps with <1000 buildings on GPU
 - [ ] Graceful degradation to Canvas 2D
 - [ ] Memory stable over time (no leaks)
@@ -550,30 +569,35 @@ one integration at a time/Barradeau/  # REFERENCE ONLY
 ## 13. INTEGRATION CHECKLIST
 
 ### Before Phase 1
+
 - [ ] Review `void-phase0-buildings.html` for BarradeauBuilding extraction
 - [ ] Review `barradeau-3d.html` for Three.js patterns
 - [ ] Verify Three.js r160 CDN availability
 - [ ] Set up test environment with GPU
 
 ### During Phase 1
+
 - [ ] Create `IP/woven_maps_3d.js` module structure
 - [ ] Implement GPU detection
 - [ ] Create Canvas 2D fallback
 - [ ] Test 2D/3D toggle
 
 ### During Phase 2
+
 - [ ] Extract BarradeauBuilding class
 - [ ] Extract Delaunay triangulation
 - [ ] Implement file parsing (lines, exports)
 - [ ] Test building generation with sample files
 
 ### During Phase 3
+
 - [ ] Implement shaders
 - [ ] Add control panel buttons
 - [ ] Test densit8 slider
 - [ ] Verify bloom post-processing
 
 ### During Phase 4
+
 - [ ] Implement raycasting
 - [ ] Add Socket.io client
 - [ ] Test real-time updates

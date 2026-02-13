@@ -1,0 +1,70 @@
+{
+  "source": "one integration at a time/docs/LLM_BEHAVIOR_SPEC.md",
+  "total_lines": 437,
+  "sha256": "416fa9e9caf1d96e6a8e64b01feec8dca671fde2d140fe2d68fc228fb24e0f4c",
+  "chunk_count": 4,
+  "observation_ids": [
+    447,
+    448,
+    449,
+    450
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 23,
+      "text": "### Primary Chat: maestro"
+    },
+    {
+      "line": 25,
+      "text": "**CRITICAL:** The primary chat LLM is ALWAYS named `maestro` (lowercase 'm')."
+    },
+    {
+      "line": 123,
+      "text": "Settings panel should present:"
+    },
+    {
+      "line": 169,
+      "text": "| **1** | Catastrophic Block | BLOCKED | Actions that could nuke codebase |"
+    },
+    {
+      "line": 181,
+      "text": "**CRITICAL:** LLMs must NOT self-engage Agent mode."
+    },
+    {
+      "line": 187,
+      "text": "3. LLM must explain why they ignored the rules"
+    },
+    {
+      "line": 214,
+      "text": "The standing orders document that ALL LLM Generals must follow."
+    },
+    {
+      "line": 219,
+      "text": "- Naming conventions (maestro = lowercase)"
+    },
+    {
+      "line": 260,
+      "text": "> \"ALL the data we can acquire on that explicit circuit in every way should be available to the engineers.\""
+    },
+    {
+      "line": 294,
+      "text": "2. NO stubs, EVER - must be life-or-death to justify"
+    },
+    {
+      "line": 300,
+      "text": "- Primary chat LLM is always \"maestro\" (lowercase 'm')"
+    },
+    {
+      "line": 314,
+      "text": "# Primary chat - maestro (your choice of model)"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

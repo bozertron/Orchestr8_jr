@@ -1,0 +1,60 @@
+{
+  "source": "one integration at a time/888/director/tests/test_ooda_engine.py",
+  "total_lines": 288,
+  "sha256": "a2d8233984797123e353a7346e2dadba93ed8d8bdf1bf191cde83351b49aa5d9",
+  "chunk_count": 3,
+  "observation_ids": [
+    241,
+    242,
+    243
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 34,
+      "text": "'app_context': 'orchestr8'"
+    },
+    {
+      "line": 54,
+      "text": "'from_zone': 'orchestr8',"
+    },
+    {
+      "line": 57,
+      "text": "'app_context': 'maestro'"
+    },
+    {
+      "line": 82,
+      "text": "\"\"\"Test the Decide phase when no suggestion should be made.\"\"\""
+    },
+    {
+      "line": 84,
+      "text": "# Set conditions where no suggestion should be made"
+    },
+    {
+      "line": 184,
+      "text": "context.tool_usage_patterns['orchestr8:chat'] = 3"
+    },
+    {
+      "line": 220,
+      "text": "'orchestr8:chat': 10,"
+    },
+    {
+      "line": 222,
+      "text": "'orchestr8:settings': 2"
+    },
+    {
+      "line": 231,
+      "text": "self.assertEqual(context.productivity_metrics['most_used_tool'], 'orchestr8:chat')"
+    },
+    {
+      "line": 260,
+      "text": "'app_context': 'orchestr8'"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

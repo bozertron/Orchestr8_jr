@@ -1,6 +1,7 @@
 # Settlement System Implementation Prompt
 
 ## For: Opus Instance
+
 ## Purpose: Generate all agent prompts and GSD modifications for the Settlement System
 
 ---
@@ -8,6 +9,7 @@
 ## CRITICAL CONTEXT
 
 You are implementing "The Settlement System" — an enhancement to the GSD (Get Shit Done) framework that adds:
+
 1. **Universal Scaling**: Every agent type scales with token count + complexity
 2. **Rolling Sentinels**: Always 3 agents on site per work unit
 3. **Code City Integration**: Visual representation of codebase as a city
@@ -84,6 +86,7 @@ THE VOID (entire codebase)
 ### Borders
 
 Between each fiefdom is a BORDER that:
+
 - Dictates where an agent's work starts and stops
 - Defines what should be coming IN (imports, types, data)
 - Defines what should be going OUT (exports, interfaces, events)
@@ -91,6 +94,7 @@ Between each fiefdom is a BORDER that:
 ### Border Agents
 
 Special agents whose ONLY job is understanding:
+
 - What structures/types should cross the border
 - What the contract is between fiefdoms
 - When something violates the border contract
@@ -126,11 +130,13 @@ Colors:
 ### Rooms (Logic Blocks)
 
 Each room is ONE logic block:
+
 - A function
 - A class
 - A significant code block
 
 Rooms can be:
+
 - Visually inspected in Code City
 - Fixed individually
 - Tested individually
@@ -234,46 +240,57 @@ INVARIANT: There are ALWAYS 3 agents on site for any active work unit
 ## THE 11 TIERS
 
 ### Tier 0: Coordination (Always Active)
+
 - Luminary, City Manager, District Planner, Git Commit Agent, Scaler, Civic Council
 - NOT scaled — fixed coordination layer
 
 ### Tier 1: Survey & Measurement
+
 - Surveyors, Complexity Analyzers, File Structure Mappers, Token Counters
 - SCALED per target
 
 ### Tier 2: Pattern Recognition
+
 - Pattern Identifiers, Import/Export Mappers, Filepath Analyzers, Function Catalogers
 - SCALED per target
 
 ### Tier 3: Cartography & Synthesis
+
 - Cartographers, District Boundary Definers, Token Budget Calculators, Deployment Planners, Integration Point Mappers
 - SCALED per aggregated input
 
 ### Tier 4: Research (GSD Enhanced)
+
 - gsd-project-researcher, gsd-phase-researcher, gsd-research-synthesizer, Integration Researcher
 - SCALED per fiefdom
 
 ### Tier 5: Vision Alignment (NEW)
+
 - Vision Walker (Opus) — walks Founder through each section for feedback
 - Before ANY planning begins
 
 ### Tier 6: Requirements & Roadmap (GSD Core)
+
 - gsd-roadmapper, Discussion Analyzer, Context Writer
 - SCALED per scope
 
 ### Tier 7: Planning (GSD Enhanced)
+
 - gsd-planner, gsd-plan-checker, Architect, Work Order Compiler
 - SCALED per phase scope
 
 ### Tier 8: Pre-Execution Synthesis (NEW)
+
 - Integration Synthesizers, Wiring Mappers, Instruction Writers, Atomic Task Generators
 - SCALED per plan complexity
 
 ### Tier 9: Execution (ALL AT END)
+
 - gsd-executor (Builder), Sentinels, Relief Deployers
 - SCALED per target + rolling deployment
 
 ### Tier 10: Validation (ALL AT END)
+
 - gsd-verifier, gsd-integration-checker, gsd-debugger, Failure Pattern Logger
 - SCALED per execution output
 - Uses OPUS for validation and cleanup
@@ -287,90 +304,112 @@ INVARIANT: There are ALWAYS 3 agents on site for any active work unit
 Create modifications to these existing files:
 
 #### 1. `gsd-codebase-mapper.md` — ENHANCE
+
 **Location:** `~/.claude/agents/gsd-codebase-mapper.md`
 **Modification:** Add fiefdom detection, border identification, token counting per file
 **New sections to add:**
+
 - Fiefdom boundary detection based on directory structure and coupling
 - Border contract inference (what types/data cross boundaries)
 - Token count per file output
 - Complexity score calculation
 
 #### 2. `gsd-project-researcher.md` — ENHANCE
+
 **Location:** `~/.claude/agents/gsd-project-researcher.md`
 **Modification:** Add fiefdom-aware research, integration point discovery
 **New sections to add:**
+
 - Research per fiefdom (not just global)
 - Integration point catalog per border
 - Dependency direction analysis
 
 #### 3. `gsd-research-synthesizer.md` — ENHANCE
+
 **Location:** `~/.claude/agents/gsd-research-synthesizer.md`
 **Modification:** Add fiefdom map generation, token budget recommendations
 **New sections to add:**
+
 - Fiefdom map output (visual representation)
 - Agent deployment recommendations per fiefdom
 - Border contract summary
 
 #### 4. `gsd-roadmapper.md` — ENHANCE
+
 **Location:** `~/.claude/agents/gsd-roadmapper.md`
 **Modification:** Add fiefdom-based phase organization
 **New sections to add:**
+
 - Organize phases by fiefdom
 - Include border work as explicit phases
 - Include agent count estimates per phase
 
 #### 5. `gsd-phase-researcher.md` — ENHANCE
+
 **Location:** `~/.claude/agents/gsd-phase-researcher.md`
 **Modification:** Add room-level analysis, wiring research
 **New sections to add:**
+
 - Room (logic block) identification
 - Wiring state per room (Gold/Teal/Purple)
 - Integration point status
 
 #### 6. `gsd-planner.md` — ENHANCE
+
 **Location:** `~/.claude/agents/gsd-planner.md`
 **Modification:** Add "Do X Here" instruction format, room-level task assignment
 **New sections to add:**
+
 - Task format: explicit filepath + line range + exact action
 - Room assignment (which logic block)
 - Agent count calculation per task
 
 #### 7. `gsd-plan-checker.md` — ENHANCE
+
 **Location:** `~/.claude/agents/gsd-plan-checker.md`
 **Modification:** Add scaling validation, border contract checking
 **New sections to add:**
+
 - Verify agent counts match token/complexity
 - Verify border contracts are maintained
 - Verify room assignments are valid
 
 #### 8. `gsd-executor.md` — ENHANCE
+
 **Location:** `~/.claude/agents/gsd-executor.md`
 **Modification:** Add rolling sentinel awareness, room-level execution
 **New sections to add:**
+
 - Sentinel probe response protocol
 - Room-level git commits
 - Failure reporting format for sentinel consumption
 
 #### 9. `gsd-verifier.md` — ENHANCE
+
 **Location:** `~/.claude/agents/gsd-verifier.md`
 **Modification:** Add border contract verification, wiring state update
 **New sections to add:**
+
 - Border contract validation
 - Wiring state update (Gold/Teal/Purple)
 - Room-level verification
 
 #### 10. `gsd-integration-checker.md` — ENHANCE
+
 **Location:** `~/.claude/agents/gsd-integration-checker.md`
 **Modification:** Add fiefdom border validation
 **New sections to add:**
+
 - Cross-fiefdom integration validation
 - Border contract compliance check
 - Wiring consistency check
 
 #### 11. `gsd-debugger.md` — ENHANCE
+
 **Location:** `~/.claude/agents/gsd-debugger.md`
 **Modification:** Add sentinel failure analysis, pattern logging
 **New sections to add:**
+
 - Sentinel failure context consumption
 - Root cause pattern identification
 - Future prevention recommendations
@@ -384,10 +423,12 @@ Create these new files in `~/.claude/agents/settlement/`:
 #### Tier 0: Coordination (6 agents)
 
 ##### 12. `settlement-luminary.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-luminary.md`
 **Model:** Opus
 **Purpose:** Holds vision, makes architectural decisions, protects own context window
 **Prompt must include:**
+
 - Role: Strategic coordinator, NOT executor
 - Responsibilities: Vision alignment, architectural decisions, escalation handling
 - Context protection: Delegate all heavy work to sub-agents
@@ -395,10 +436,12 @@ Create these new files in `~/.claude/agents/settlement/`:
 - Output format: Strategic decisions, delegation instructions
 
 ##### 13. `settlement-city-manager.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-city-manager.md`
 **Model:** Sonnet
 **Purpose:** Orchestrates all agent deployment across all tiers
 **Prompt must include:**
+
 - Role: Deployment orchestrator
 - Responsibilities: Apply scaling formula, spawn agents, track progress, handle failures
 - Input: Fiefdom maps, token budgets, deployment plans
@@ -406,20 +449,24 @@ Create these new files in `~/.claude/agents/settlement/`:
 - Integration: Calls Scaler for calculations, Relief Deployer for failures
 
 ##### 14. `settlement-district-planner.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-district-planner.md`
 **Model:** Sonnet
 **Purpose:** Manages resources per fiefdom
 **Prompt must include:**
+
 - Role: Fiefdom resource manager
 - Responsibilities: Allocate agents to fiefdom, track fiefdom progress, manage borders
 - Input: Fiefdom map, token budgets per fiefdom
 - Output: Fiefdom deployment plan, border agent assignments
 
 ##### 15. `settlement-git-commit-agent.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-git-commit-agent.md`
 **Model:** Sonnet
 **Purpose:** Handles atomic commits after EACH work unit
 **Prompt must include:**
+
 - Role: Git operations ONLY
 - Responsibilities: Stage files, write commit message, commit, verify
 - Trigger: After EVERY work unit completion (not batched)
@@ -427,10 +474,12 @@ Create these new files in `~/.claude/agents/settlement/`:
 - Verification: Confirm commit succeeded before reporting
 
 ##### 16. `settlement-scaler.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-scaler.md`
 **Model:** Sonnet
 **Purpose:** Applies Universal Scaling Formula to any target
 **Prompt must include:**
+
 - Role: Calculator
 - Input: file_tokens, complexity_score
 - Formula: (see Universal Scaling Formula above)
@@ -438,10 +487,12 @@ Create these new files in `~/.claude/agents/settlement/`:
 - Validation: Warn if agents > 100 for single target (sanity check)
 
 ##### 17. `settlement-civic-council.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-civic-council.md`
 **Model:** Opus
 **Purpose:** Human advocacy — reviews before ANY merge
 **Prompt must include:**
+
 - Role: Founder advocate
 - Responsibilities: Review all changes for user impact, veto harmful changes
 - Analysis framework:
@@ -457,14 +508,17 @@ Create these new files in `~/.claude/agents/settlement/`:
 #### Tier 1: Survey & Measurement (4 agents)
 
 ##### 18. `settlement-surveyor.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-surveyor.md`
 **Model:** 1M Sonnet
 **Purpose:** Measures token count per file/section
 **Prompt must include:**
+
 - Role: Measurer (read-only)
 - Input: File path or directory
 - Process: Read file, count tokens per section, identify room boundaries
 - Output format:
+
   ```json
   {
     "file": "path/to/file.ts",
@@ -475,13 +529,16 @@ Create these new files in `~/.claude/agents/settlement/`:
     ]
   }
   ```
+
 - Parallelization: HIGH (read-only, no collisions)
 
 ##### 19. `settlement-complexity-analyzer.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-complexity-analyzer.md`
 **Model:** Sonnet
 **Purpose:** Calculates complexity score (1-10)
 **Prompt must include:**
+
 - Role: Analyzer (read-only)
 - Complexity factors:
   - Nesting depth (max depth × 0.5)
@@ -491,20 +548,24 @@ Create these new files in `~/.claude/agents/settlement/`:
 - Output: complexity_score (1-10), breakdown of factors
 
 ##### 20. `settlement-file-structure-mapper.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-file-structure-mapper.md`
 **Model:** Sonnet
 **Purpose:** Maps internal file structure (rooms)
 **Prompt must include:**
+
 - Role: Structure mapper (read-only)
 - Identify: Functions, classes, significant blocks
 - Output: Room list with boundaries, relationships between rooms
 - Integration: Feeds into Code City building representation
 
 ##### 21. `settlement-token-counter.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-token-counter.md`
 **Model:** Sonnet
 **Purpose:** Precise token counting for budget allocation
 **Prompt must include:**
+
 - Role: Counter (read-only)
 - Method: Use tiktoken or equivalent for precise counts
 - Output: Exact token counts per room, per file, per fiefdom
@@ -515,38 +576,46 @@ Create these new files in `~/.claude/agents/settlement/`:
 #### Tier 2: Pattern Recognition (4 agents)
 
 ##### 22. `settlement-pattern-identifier.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-pattern-identifier.md`
 **Model:** Sonnet
 **Purpose:** Identifies code patterns, idioms, conventions
 **Prompt must include:**
+
 - Role: Pattern detector (read-only)
 - Detect: Design patterns, coding conventions, idioms, anti-patterns
 - Output: Pattern registry with locations, consistency assessment
 
 ##### 23. `settlement-import-export-mapper.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-import-export-mapper.md`
 **Model:** Sonnet
 **Purpose:** Maps all imports/exports per file
 **Prompt must include:**
+
 - Role: Dependency mapper (read-only)
 - Track: Every import statement, every export
 - Output: Import graph, export catalog, wiring data for Code City panel
 - Border detection: Flag cross-fiefdom imports
 
 ##### 24. `settlement-filepath-analyzer.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-filepath-analyzer.md`
 **Model:** Sonnet
 **Purpose:** Analyzes file paths, naming conventions, relationships
 **Prompt must include:**
+
 - Role: Path analyzer (read-only)
 - Detect: Naming conventions, directory patterns, fiefdom boundaries
 - Output: Fiefdom suggestions based on path structure
 
 ##### 25. `settlement-function-cataloger.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-function-cataloger.md`
 **Model:** Sonnet
 **Purpose:** Catalogs all functions/classes with signatures
 **Prompt must include:**
+
 - Role: Cataloger (read-only)
 - Catalog: Function name, parameters, return type, JSDoc/docstring
 - Output: Searchable function catalog, API surface per file
@@ -556,10 +625,12 @@ Create these new files in `~/.claude/agents/settlement/`:
 #### Tier 3: Cartography & Synthesis (6 agents including Border Agent)
 
 ##### 26. `settlement-cartographer.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-cartographer.md`
 **Model:** 1M Sonnet
 **Purpose:** Synthesizes surveys into fiefdom maps
 **Prompt must include:**
+
 - Role: Map maker
 - Input: All survey outputs from Tier 1-2
 - Process: Aggregate, identify clusters, draw boundaries
@@ -570,47 +641,57 @@ Create these new files in `~/.claude/agents/settlement/`:
   - Recommended agent counts
 
 ##### 27. `settlement-district-boundary-definer.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-district-boundary-definer.md`
 **Model:** Sonnet
 **Purpose:** Defines fiefdom boundaries based on coupling
 **Prompt must include:**
+
 - Role: Boundary analyst
 - Criteria: High internal coupling, low external coupling
 - Output: Boundary definitions, border crossing points
 
 ##### 28. `settlement-token-budget-calculator.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-token-budget-calculator.md`
 **Model:** Sonnet
 **Purpose:** Conservative budget allocation
 **Prompt must include:**
+
 - Role: Budget allocator
 - Principle: Cap raw info at 40% of context, leave 60% for reasoning
 - Output: Token budget per fiefdom, per phase, per agent
 
 ##### 29. `settlement-deployment-planner.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-deployment-planner.md`
 **Model:** Sonnet
 **Purpose:** Plans agent quantities per target
 **Prompt must include:**
+
 - Role: Deployment calculator
 - Input: Token counts, complexity scores
 - Apply: Universal Scaling Formula
 - Output: Agent deployment plan with exact counts per target
 
 ##### 30. `settlement-integration-point-mapper.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-integration-point-mapper.md`
 **Model:** Sonnet
 **Purpose:** Maps all integration points across fiefdoms
 **Prompt must include:**
+
 - Role: Integration mapper (read-only)
 - Identify: Every point where fiefdoms connect
 - Output: Integration point registry, border crossing catalog
 
 ##### 31. `settlement-border-agent.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-border-agent.md`
 **Model:** Sonnet
 **Purpose:** Understands what should cross fiefdom borders
 **Prompt must include:**
+
 - Role: Border guardian
 - Responsibilities:
   - Define what structures/types should cross each border
@@ -618,6 +699,7 @@ Create these new files in `~/.claude/agents/settlement/`:
   - Detect violations of border contracts
 - Input: Integration point map, import/export data
 - Output: Border contracts per fiefdom pair:
+
   ```json
   {
     "border": "Security ↔ P2P",
@@ -633,10 +715,12 @@ Create these new files in `~/.claude/agents/settlement/`:
 #### Tier 4: Research Enhancement (1 agent)
 
 ##### 32. `settlement-integration-researcher.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-integration-researcher.md`
 **Model:** Sonnet
 **Purpose:** Deep research on integration patterns
 **Prompt must include:**
+
 - Role: Integration specialist researcher
 - Focus: How fiefdoms currently integrate, how they should integrate
 - Output: Integration research document per border
@@ -646,10 +730,12 @@ Create these new files in `~/.claude/agents/settlement/`:
 #### Tier 5: Vision Alignment (1 agent)
 
 ##### 33. `settlement-vision-walker.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-vision-walker.md`
 **Model:** OPUS
 **Purpose:** Walks Founder through each section for detailed feedback
 **Prompt must include:**
+
 - Role: Vision alignment facilitator
 - Timing: BEFORE any planning begins
 - Process:
@@ -662,6 +748,7 @@ Create these new files in `~/.claude/agents/settlement/`:
 - Interaction style: Conversational, Socratic, patient
 - Output: Vision-aligned specification with Founder approval recorded
 - Example dialogue:
+
   ```
   "I'd like to walk you through the Security fiefdom.
 
@@ -690,20 +777,24 @@ Create these new files in `~/.claude/agents/settlement/`:
 #### Tier 6: Requirements & Roadmap (2 agents)
 
 ##### 34. `settlement-discussion-analyzer.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-discussion-analyzer.md`
 **Model:** Sonnet
 **Purpose:** Analyzes Founder feedback from Vision Walker
 **Prompt must include:**
+
 - Role: Feedback processor
 - Input: Vision Walker conversation transcript
 - Output: Structured decisions, constraints, preferences
 - Format: CONTEXT.md updates
 
 ##### 35. `settlement-context-writer.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-context-writer.md`
 **Model:** Sonnet
 **Purpose:** Writes CONTEXT.md per phase
 **Prompt must include:**
+
 - Role: Context documenter
 - Input: Discussion analysis, vision alignment output
 - Output: CONTEXT.md with:
@@ -716,10 +807,12 @@ Create these new files in `~/.claude/agents/settlement/`:
 #### Tier 7: Planning Enhancement (2 agents)
 
 ##### 36. `settlement-architect.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-architect.md`
 **Model:** 1M Sonnet
 **Purpose:** Designs approach from fiefdom maps
 **Prompt must include:**
+
 - Role: Technical architect
 - Input: Fiefdom maps, research, vision alignment
 - Output: Architectural decisions:
@@ -730,13 +823,16 @@ Create these new files in `~/.claude/agents/settlement/`:
 - Consideration: Token budgets, agent counts, dependencies
 
 ##### 37. `settlement-work-order-compiler.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-work-order-compiler.md`
 **Model:** 1M Sonnet
 **Purpose:** Compiles atomic work orders from plans
 **Prompt must include:**
+
 - Role: Work order generator
 - Input: Architectural decisions, plans
 - Output: Atomic work orders:
+
   ```json
   {
     "work_order_id": "WO-001",
@@ -752,6 +848,7 @@ Create these new files in `~/.claude/agents/settlement/`:
     "border_impact": "none"
   }
   ```
+
 - Principle: So precise that executor can "RIP through" knowing only "do X here"
 
 ---
@@ -759,10 +856,12 @@ Create these new files in `~/.claude/agents/settlement/`:
 #### Tier 8: Pre-Execution Synthesis (4 agents)
 
 ##### 38. `settlement-integration-synthesizer.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-integration-synthesizer.md`
 **Model:** 1M Sonnet
 **Purpose:** Creates integration instructions
 **Prompt must include:**
+
 - Role: Integration instruction writer
 - Input: Work orders, border contracts
 - Output: Integration instructions that respect borders:
@@ -771,10 +870,12 @@ Create these new files in `~/.claude/agents/settlement/`:
   - What contracts must be maintained
 
 ##### 39. `settlement-wiring-mapper.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-wiring-mapper.md`
 **Model:** Sonnet
 **Purpose:** Maps Code City wiring connections
 **Prompt must include:**
+
 - Role: Wiring specialist
 - Input: Import/export data, integration points
 - Output: Wiring data for Code City panel:
@@ -783,13 +884,16 @@ Create these new files in `~/.claude/agents/settlement/`:
   - Wiring health assessment
 
 ##### 40. `settlement-instruction-writer.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-instruction-writer.md`
 **Model:** Sonnet
 **Purpose:** Writes "Do X Here" execution packets
 **Prompt must include:**
+
 - Role: Instruction writer
 - Principle: ZERO AMBIGUITY
 - Output format:
+
   ```
   FILE: src/security/auth.ts
   ROOM: login() function
@@ -811,10 +915,12 @@ Create these new files in `~/.claude/agents/settlement/`:
   ```
 
 ##### 41. `settlement-atomic-task-generator.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-atomic-task-generator.md`
 **Model:** Sonnet
 **Purpose:** Generates unambiguous atomic tasks
 **Prompt must include:**
+
 - Role: Task atomizer
 - Principle: Each task completable in ONE agent session
 - Output: Task that includes:
@@ -829,10 +935,12 @@ Create these new files in `~/.claude/agents/settlement/`:
 #### Tier 9: Execution Support (2 agents)
 
 ##### 42. `settlement-sentinel.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-sentinel.md`
 **Model:** Sonnet
 **Purpose:** Watchdog — probes, investigates, fixes, escalates
 **Prompt must include:**
+
 - Role: Watchdog and recovery agent
 - Probe cycle: Every 30 seconds (or 15s offset for second sentinel)
 - On probe:
@@ -848,10 +956,12 @@ Create these new files in `~/.claude/agents/settlement/`:
 - Output: Failure report with root cause analysis, fix applied (if any)
 
 ##### 43. `settlement-relief-deployer.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-relief-deployer.md`
 **Model:** Sonnet
 **Purpose:** Deploys replacement agents to maintain 3 on site
 **Prompt must include:**
+
 - Role: Relief coordinator
 - Trigger: Agent success (moves to completion) or agent failure (needs replacement)
 - Action: Deploy new agent with:
@@ -865,10 +975,12 @@ Create these new files in `~/.claude/agents/settlement/`:
 #### Tier 10: Validation Enhancement (1 agent)
 
 ##### 44. `settlement-failure-pattern-logger.md` — CREATE
+
 **Location:** `~/.claude/agents/settlement/settlement-failure-pattern-logger.md`
 **Model:** Sonnet
 **Purpose:** Logs failure patterns for future prevention
 **Prompt must include:**
+
 - Role: Pattern archivist
 - Input: All sentinel failure reports
 - Process: Identify recurring patterns, categorize failures
@@ -886,26 +998,31 @@ Create these new files in `~/.claude/agents/settlement/`:
 Create these in `~/.claude/get-shit-done/workflows/settlement/`:
 
 ### 1. `survey-codebase.md`
+
 **Purpose:** Run Tier 1-3 (Survey → Pattern → Cartography)
 **Triggers:** Surveyors, Complexity Analyzers, Pattern Identifiers, Cartographers, Border Agents
 **Output:** Fiefdom map, token budgets, border contracts
 
 ### 2. `vision-alignment.md`
+
 **Purpose:** Run Tier 5 (Vision Walker with Founder)
 **Triggers:** Vision Walker (Opus)
 **Output:** Vision-aligned specifications
 
 ### 3. `deploy-scaled-agents.md`
+
 **Purpose:** Deploy agents using Universal Scaling Formula
 **Input:** Target, agent type
 **Process:** Calculate work units, deploy with rolling sentinels
 **Output:** Deployment log
 
 ### 4. `sentinel-protocol.md`
+
 **Purpose:** Define sentinel probe/investigate/fix cycle
 **Used by:** All execution phases
 
 ### 5. `border-validation.md`
+
 **Purpose:** Validate border contracts are maintained
 **Triggers:** Border Agents
 **Output:** Border compliance report
@@ -917,21 +1034,27 @@ Create these in `~/.claude/get-shit-done/workflows/settlement/`:
 Create these in `~/.claude/get-shit-done/templates/settlement/`:
 
 ### 1. `fiefdom-map.md`
+
 Template for fiefdom map output
 
 ### 2. `border-contract.md`
+
 Template for border contract definitions
 
 ### 3. `work-order.md`
+
 Template for atomic work orders
 
 ### 4. `building-panel.md`
+
 Template for Code City building panel data
 
 ### 5. `failure-pattern.md`
+
 Template for failure pattern documentation
 
 ### 6. `deployment-plan.md`
+
 Template for agent deployment plans
 
 ---
@@ -941,7 +1064,9 @@ Template for agent deployment plans
 You must create the following files:
 
 ### Modified GSD Agents (11 files)
+
 Modify existing files in `~/.claude/agents/`:
+
 - [ ] gsd-codebase-mapper.md (enhanced)
 - [ ] gsd-project-researcher.md (enhanced)
 - [ ] gsd-research-synthesizer.md (enhanced)
@@ -955,7 +1080,9 @@ Modify existing files in `~/.claude/agents/`:
 - [ ] gsd-debugger.md (enhanced)
 
 ### New Settlement Agents (33 files)
+
 Create new files in `~/.claude/agents/settlement/`:
+
 - [ ] settlement-luminary.md
 - [ ] settlement-city-manager.md
 - [ ] settlement-district-planner.md
@@ -991,7 +1118,9 @@ Create new files in `~/.claude/agents/settlement/`:
 - [ ] settlement-failure-pattern-logger.md
 
 ### New Workflows (5 files)
+
 Create in `~/.claude/get-shit-done/workflows/settlement/`:
+
 - [ ] survey-codebase.md
 - [ ] vision-alignment.md
 - [ ] deploy-scaled-agents.md
@@ -999,7 +1128,9 @@ Create in `~/.claude/get-shit-done/workflows/settlement/`:
 - [ ] border-validation.md
 
 ### New Templates (6 files)
+
 Create in `~/.claude/get-shit-done/templates/settlement/`:
+
 - [ ] fiefdom-map.md
 - [ ] border-contract.md
 - [ ] work-order.md

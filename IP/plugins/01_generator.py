@@ -1,6 +1,6 @@
 """
 01_generator Plugin - 7-Phase Project Wizard
-Orchestr8 v3.0 - The Fortress Factory
+Orchestr8 v3.0
 
 A comprehensive project generation wizard that guides users through
 7 phases to create a complete BUILD_SPEC.json for project scaffolding.
@@ -94,7 +94,6 @@ def render(STATE_MANAGERS):
                 options=["application", "library", "service", "cli", "plugin"],
                 value=spec["project_identity"]["type"],
                 label="Project Type",
-                disabled=is_locked,
                 on_change=lambda v: update_spec("project_identity", "type", v)
             )
             version_input = mo.ui.text(
@@ -139,7 +138,6 @@ def render(STATE_MANAGERS):
                 options=["monolithic", "modular", "microservices", "serverless", "plugin-based"],
                 value=spec["architecture"]["structure"],
                 label="Architecture Style",
-                disabled=is_locked,
                 on_change=lambda v: update_spec("architecture", "structure", v)
             )
             patterns_input = mo.ui.text(
@@ -224,7 +222,6 @@ def render(STATE_MANAGERS):
                 options=["development", "staging", "production"],
                 value=spec["configuration"]["environment"],
                 label="Default Environment",
-                disabled=is_locked,
                 on_change=lambda v: update_spec("configuration", "environment", v)
             )
             settings_input = mo.ui.text_area(

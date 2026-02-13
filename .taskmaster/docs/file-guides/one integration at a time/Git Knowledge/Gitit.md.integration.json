@@ -1,0 +1,69 @@
+{
+  "source": "one integration at a time/Git Knowledge/Gitit.md",
+  "total_lines": 800,
+  "sha256": "d9d2d7e03c6ac6f1bf13ee95250cca63c83e87f3cc279e48daaab67c26331aad",
+  "chunk_count": 7,
+  "observation_ids": [
+    639,
+    640,
+    641,
+    642,
+    643,
+    644,
+    645
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 31,
+      "text": "│   ├── orchestr8_app.py         # Main Marimo application"
+    },
+    {
+      "line": 32,
+      "text": "│   ├── carl_core.py             # TypeScript bridge"
+    },
+    {
+      "line": 41,
+      "text": "│       └── 05_cli_bridge.py"
+    },
+    {
+      "line": 60,
+      "text": "├── orchestr8.py                 # v1.0 MVP (preserved)"
+    },
+    {
+      "line": 138,
+      "text": "| `feat` | New feature | `feat(plugins): add CLI bridge plugin` |"
+    },
+    {
+      "line": 188,
+      "text": "BREAKING CHANGE: render() now requires STATE_MANAGERS parameter\""
+    },
+    {
+      "line": 668,
+      "text": "git commit -m \"feat(plugins): implement CLI bridge"
+    },
+    {
+      "line": 690,
+      "text": "marimo edit IP/orchestr8_app.py"
+    },
+    {
+      "line": 697,
+      "text": "git add IP/orchestr8_app.py"
+    },
+    {
+      "line": 737,
+      "text": "marimo edit IP/orchestr8_app.py"
+    },
+    {
+      "line": 740,
+      "text": "python -m py_compile IP/orchestr8_app.py"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

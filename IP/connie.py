@@ -1,6 +1,6 @@
 """
 Connie Headless - Database Conversion Engine
-Orchestr8 v3.0 - The Fortress Factory
+Orchestr8 v3.0
 
 A headless SQLite database conversion tool supporting multiple export formats.
 No GUI dependencies - designed for programmatic use.

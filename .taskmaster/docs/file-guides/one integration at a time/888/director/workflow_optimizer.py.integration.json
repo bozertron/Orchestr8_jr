@@ -1,0 +1,25 @@
+{
+  "source": "one integration at a time/888/director/workflow_optimizer.py",
+  "total_lines": 448,
+  "sha256": "3c98f339a3347031c4e51d940269e326b9ed8439d671078e83e920726c717f5b",
+  "chunk_count": 4,
+  "observation_ids": [
+    250,
+    251,
+    252,
+    253
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [
+    {
+      "line": 138,
+      "text": "if step.get('zone') == 'orchestr8':  # AI assistant - variable time"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}
