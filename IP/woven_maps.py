@@ -1939,6 +1939,24 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
                     ? `<div style="color: #888; font-size: 10px;">Centrality: ${(centrality * 100).toFixed(1)}%</div>`
                     : '';
 
+                // Health errors section
+                let healthErrorsHtml = '';
+                if (node.healthErrors && node.healthErrors.length > 0) {
+                    const displayErrors = node.healthErrors.slice(0, 5);
+                    let healthHtml = '<div class="health-errors">';
+                    displayErrors.forEach(e => {
+                        healthHtml += '<div class="health-error-item">';
+                        healthHtml += '<span class="health-error-loc">' + (e.file || node.path) + ':' + (e.line || 0) + '</span> ';
+                        healthHtml += (e.message || 'Unknown error');
+                        healthHtml += '</div>';
+                    });
+                    if (node.healthErrors.length > 5) {
+                        healthHtml += '<div class="health-error-item" style="color:#666">... and ' + (node.healthErrors.length - 5) + ' more</div>';
+                    }
+                    healthHtml += '</div>';
+                    healthErrorsHtml = healthHtml;
+                }
+
                 tooltip.innerHTML = `
                     <div class="path">${node.path}</div>
                     <div class="meta">
@@ -1950,6 +1968,7 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
                     ${centralityInfo}
                     ${cycleWarning}
                     ${errorsHtml}
+                    ${healthErrorsHtml}
                 `;
 
                 let tx = e.clientX + 15;
