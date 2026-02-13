@@ -151,3 +151,29 @@ class HealthWatcherManager:
 
         # File watcher manager (Marimo)
         self._file_watcher = None
+
+    def _map_to_fiefdom(self, path: Path) -> str:
+        """
+        Map a file path to its parent fiefdom identifier.
+
+        Args:
+            path: Path object for the changed file
+
+        Returns:
+            Fiefdom string (e.g., "IP/" or "vscode-marimo/")
+        """
+        try:
+            rel_path = path.relative_to(self.project_root)
+            parts = rel_path.parts
+
+            if parts and parts[0] == "IP":
+                return "IP/"
+
+            # Return parent directory as fiefdom
+            if len(parts) > 1:
+                return str(rel_path.parent) + "/"
+            return str(rel_path) + "/"
+
+        except ValueError:
+            # Path not relative to project root
+            return str(path.parent) + "/"
