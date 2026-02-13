@@ -28,13 +28,13 @@ from typing import List, Dict, Any, Optional
 # =============================================================================
 
 COLORS = {
-    "gold_metallic": "#D4AF37",   # Working code
-    "blue_dominant": "#1fbdea",   # Broken code / Teal during scan
-    "purple_combat": "#9D4EDD",   # Combat (LLM active)
-    "bg_primary": "#0A0A0B",      # The Void
-    "bg_elevated": "#121214",     # Elevated surfaces
-    "gold_dark": "#B8860B",       # Secondary gold
-    "gold_saffron": "#F4C430",    # Bright highlights
+    "gold_metallic": "#D4AF37",  # Working code
+    "blue_dominant": "#1fbdea",  # Broken code / Teal during scan
+    "purple_combat": "#9D4EDD",  # Combat (LLM active)
+    "bg_primary": "#0A0A0B",  # The Void
+    "bg_elevated": "#121214",  # Elevated surfaces
+    "gold_dark": "#B8860B",  # Secondary gold
+    "gold_saffron": "#F4C430",  # Bright highlights
 }
 
 JS_COLORS = {
@@ -51,22 +51,27 @@ JS_COLORS = {
 # DATA STRUCTURES
 # =============================================================================
 
+
 @dataclass
 class CodeNode:
     """Represents a file in the codebase."""
+
     path: str
-    status: str = "working"   # working | broken | combat
+    status: str = "working"  # working | broken | combat
     loc: int = 0
     errors: List[str] = field(default_factory=list)
+    health_errors: List[Any] = field(
+        default_factory=list
+    )  # Structured health check errors
     x: float = 0.0
     y: float = 0.0
     # Extended fields for ConnectionGraph integration
-    node_type: str = "file"   # file|component|store|entry|test|route|api|config|type
-    centrality: float = 0.0   # PageRank score (0-1) for sizing
-    in_cycle: bool = False    # Part of circular dependency
-    depth: int = 0            # Distance from entry points
-    incoming_count: int = 0   # Files that import this
-    outgoing_count: int = 0   # Files this imports
+    node_type: str = "file"  # file|component|store|entry|test|route|api|config|type
+    centrality: float = 0.0  # PageRank score (0-1) for sizing
+    in_cycle: bool = False  # Part of circular dependency
+    depth: int = 0  # Distance from entry points
+    incoming_count: int = 0  # Files that import this
+    outgoing_count: int = 0  # Files this imports
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -77,6 +82,7 @@ class CodeNode:
             "y": self.y,
             "loc": self.loc,
             "errors": self.errors,
+            "healthErrors": self.health_errors,
             "nodeType": self.node_type,
             "centrality": self.centrality,
             "inCycle": self.in_cycle,
@@ -89,11 +95,12 @@ class CodeNode:
 @dataclass
 class EdgeData:
     """Represents an import relationship between files."""
-    source: str              # Source file path (importer)
-    target: str              # Target file path (imported)
-    resolved: bool = True    # Whether the import resolves
+
+    source: str  # Source file path (importer)
+    target: str  # Target file path (imported)
+    resolved: bool = True  # Whether the import resolves
     bidirectional: bool = False  # Mutual imports
-    line_number: int = 0     # Source line of import
+    line_number: int = 0  # Source line of import
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -108,11 +115,12 @@ class EdgeData:
 @dataclass
 class ColorScheme:
     """Color configuration for Woven Maps - matches orchestr8 three-state system."""
-    working: str = "#D4AF37"    # Gold - all imports resolve
-    broken: str = "#1fbdea"     # Blue/Teal - has errors
-    combat: str = "#9D4EDD"     # Purple - LLM deployed
-    void: str = "#0A0A0B"       # Background
-    surface: str = "#121214"    # Elevated surfaces
+
+    working: str = "#D4AF37"  # Gold - all imports resolve
+    broken: str = "#1fbdea"  # Blue/Teal - has errors
+    combat: str = "#9D4EDD"  # Purple - LLM deployed
+    void: str = "#0A0A0B"  # Background
+    surface: str = "#121214"  # Elevated surfaces
 
     # Frame colors (teal during scan, gold when complete)
     frame_scanning: str = "#1fbdea"
@@ -133,10 +141,11 @@ class ColorScheme:
 @dataclass
 class GraphConfig:
     """Configuration for the visualization."""
+
     width: int = 800
     height: int = 600
-    max_height: int = 250       # Taller cityscape silhouette
-    wire_count: int = 15        # More wireframe layers for richness
+    max_height: int = 250  # Taller cityscape silhouette
+    wire_count: int = 15  # More wireframe layers for richness
     show_particles: bool = True
     show_tooltip: bool = True
     emergence_duration: float = 2.5  # Slightly longer for drama
@@ -158,6 +167,7 @@ class GraphConfig:
 @dataclass
 class GraphData:
     """Complete data structure for visualization."""
+
     nodes: List[CodeNode] = field(default_factory=list)
     edges: List[EdgeData] = field(default_factory=list)
     config: GraphConfig = field(default_factory=GraphConfig)
@@ -178,17 +188,53 @@ class GraphData:
 # =============================================================================
 
 SKIP_DIRS = {
-    'node_modules', '.git', '__pycache__', 'dist', 'build',
-    '.venv', 'venv', 'env', '.env', '.tox', '.pytest_cache',
-    '.mypy_cache', '.ruff_cache', 'coverage', '.coverage',
-    'htmlcov', '.idea', '.vscode', 'target', 'out', 'bin',
+    "node_modules",
+    ".git",
+    "__pycache__",
+    "dist",
+    "build",
+    ".venv",
+    "venv",
+    "env",
+    ".env",
+    ".tox",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    "coverage",
+    ".coverage",
+    "htmlcov",
+    ".idea",
+    ".vscode",
+    "target",
+    "out",
+    "bin",
 }
 
 CODE_EXTENSIONS = {
-    '.py', '.js', '.ts', '.tsx', '.jsx', '.mjs', '.cjs',
-    '.java', '.go', '.rs', '.cpp', '.c', '.h', '.hpp',
-    '.cs', '.rb', '.php', '.swift', '.kt', '.scala',
-    '.vue', '.svelte', '.astro',
+    ".py",
+    ".js",
+    ".ts",
+    ".tsx",
+    ".jsx",
+    ".mjs",
+    ".cjs",
+    ".java",
+    ".go",
+    ".rs",
+    ".cpp",
+    ".c",
+    ".h",
+    ".hpp",
+    ".cs",
+    ".rb",
+    ".php",
+    ".swift",
+    ".kt",
+    ".scala",
+    ".vue",
+    ".svelte",
+    ".astro",
 }
 
 
@@ -207,7 +253,7 @@ def scan_codebase(
         return nodes
 
     for dirpath, dirnames, filenames in os.walk(root_path):
-        dirnames[:] = [d for d in dirnames if d not in skip and not d.startswith('.')]
+        dirnames[:] = [d for d in dirnames if d not in skip and not d.startswith(".")]
 
         for filename in filenames:
             ext = Path(filename).suffix.lower()
@@ -221,12 +267,14 @@ def scan_codebase(
                 node = analyze_file(filepath, relpath)
                 nodes.append(node)
             except Exception as e:
-                nodes.append(CodeNode(
-                    path=relpath,
-                    status="broken",
-                    loc=0,
-                    errors=[f"Read error: {str(e)}"],
-                ))
+                nodes.append(
+                    CodeNode(
+                        path=relpath,
+                        status="broken",
+                        loc=0,
+                        errors=[f"Read error: {str(e)}"],
+                    )
+                )
 
     return nodes
 
@@ -234,16 +282,16 @@ def scan_codebase(
 def analyze_file(filepath: Path, relpath: str) -> CodeNode:
     """Analyze a single file for status and metrics."""
     try:
-        content = filepath.read_text(encoding='utf-8', errors='ignore')
+        content = filepath.read_text(encoding="utf-8", errors="ignore")
     except Exception as e:
         return CodeNode(path=relpath, status="broken", errors=[str(e)])
 
-    lines = content.split('\n')
+    lines = content.split("\n")
     loc = len(lines)
     errors = []
 
     # TODO/FIXME detection
-    todo_pattern = re.compile(r'\b(TODO|FIXME|XXX|HACK|BUG)\b', re.IGNORECASE)
+    todo_pattern = re.compile(r"\b(TODO|FIXME|XXX|HACK|BUG)\b", re.IGNORECASE)
     for i, line in enumerate(lines[:500], 1):
         if todo_pattern.search(line):
             match = todo_pattern.search(line)
@@ -254,11 +302,11 @@ def analyze_file(filepath: Path, relpath: str) -> CodeNode:
 
     # Debug statement detection
     debug_patterns = [
-        (r'console\.(log|debug|info)\s*\(', 'console.log'),
-        (r'print\s*\([^)]*debug', 'debug print'),
-        (r'debugger\s*;?', 'debugger statement'),
-        (r'pdb\.set_trace\(\)', 'pdb breakpoint'),
-        (r'breakpoint\(\)', 'breakpoint'),
+        (r"console\.(log|debug|info)\s*\(", "console.log"),
+        (r"print\s*\([^)]*debug", "debug print"),
+        (r"debugger\s*;?", "debugger statement"),
+        (r"pdb\.set_trace\(\)", "pdb breakpoint"),
+        (r"breakpoint\(\)", "breakpoint"),
     ]
 
     for pattern, name in debug_patterns:
@@ -282,8 +330,8 @@ def calculate_layout(
     dirs: Dict[str, List[CodeNode]] = {}
     for node in nodes:
         dir_path = str(Path(node.path).parent)
-        if dir_path == '.':
-            dir_path = 'root'
+        if dir_path == ".":
+            dir_path = "root"
         if dir_path not in dirs:
             dirs[dir_path] = []
         dirs[dir_path].append(node)
@@ -314,8 +362,8 @@ def calculate_layout(
                 angle = (j / file_count) * 2 * math.pi - math.pi / 2
                 size_factor = min(1.0, node.loc / 500)
                 radius = 20 + size_factor * (max_radius - 20)
-                jitter_x = (hash(node.path) % 21 - 10)
-                jitter_y = (hash(node.path + 'y') % 21 - 10)
+                jitter_x = hash(node.path) % 21 - 10
+                jitter_y = hash(node.path + "y") % 21 - 10
                 node.x = center_x + math.cos(angle) * radius + jitter_x
                 node.y = center_y + math.sin(angle) * radius + jitter_y
 
@@ -340,6 +388,7 @@ def build_graph_data(
     # Check combat status - files with active LLM deployments get purple
     try:
         from IP.combat_tracker import CombatTracker
+
         tracker = CombatTracker(root)
         combat_files = tracker.get_combat_files()
         for node in nodes:
@@ -420,6 +469,7 @@ def build_from_connection_graph(
     # Check combat status - files with active LLM deployments get purple
     try:
         from IP.combat_tracker import CombatTracker
+
         tracker = CombatTracker(project_root)
         combat_files = tracker.get_combat_files()
         for node in nodes:
@@ -433,13 +483,15 @@ def build_from_connection_graph(
     for edge_data in graph_dict["edges"]:
         # Only include edges where both source and target exist in our nodes
         if edge_data["source"] in node_lookup and edge_data["target"] in node_lookup:
-            edges.append(EdgeData(
-                source=edge_data["source"],
-                target=edge_data["target"],
-                resolved=edge_data.get("resolved", True),
-                bidirectional=edge_data.get("bidirectional", False),
-                line_number=edge_data.get("lineNumber", 0),
-            ))
+            edges.append(
+                EdgeData(
+                    source=edge_data["source"],
+                    target=edge_data["target"],
+                    resolved=edge_data.get("resolved", True),
+                    bidirectional=edge_data.get("bidirectional", False),
+                    line_number=edge_data.get("lineNumber", 0),
+                )
+            )
 
     config = GraphConfig(
         width=width,
@@ -455,7 +507,7 @@ def build_from_connection_graph(
 # ENHANCED IFRAME TEMPLATE - With Emergence Animations
 # =============================================================================
 
-WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
+WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -521,6 +573,9 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
         #tooltip .loc { color: #888; }
         #tooltip .errors { margin-top: 6px; padding-top: 6px; border-top: 1px solid #333; color: #1fbdea; font-size: 10px; line-height: 1.4; }
         #tooltip .error-item { margin: 2px 0; }
+        #tooltip .health-errors { margin-top: 8px; padding-top: 8px; border-top: 1px solid #1fbdea; }
+        #tooltip .health-error-item { color: #1fbdea; font-size: 10px; line-height: 1.4; margin: 2px 0; }
+        #tooltip .health-error-loc { color: #666; font-family: monospace; }
 
         /* Stats */
         #stats {
@@ -1916,12 +1971,13 @@ WOVEN_MAPS_TEMPLATE = '''<!DOCTYPE html>
         console.log('Woven Maps Enhanced initialized:', nodes.length, 'nodes');
     </script>
 </body>
-</html>'''
+</html>"""
 
 
 # =============================================================================
 # MARIMO INTEGRATION
 # =============================================================================
+
 
 def create_code_city(
     root: str,
@@ -1937,14 +1993,16 @@ def create_code_city(
         raise ImportError("marimo is required. Install with: pip install marimo")
 
     if not root or not os.path.isdir(root):
-        return mo.md(f"**Set a valid project root to visualize the codebase.**\n\nCurrent: `{root or 'None'}`")
+        return mo.md(
+            f"**Set a valid project root to visualize the codebase.**\n\nCurrent: `{root or 'None'}`"
+        )
 
     graph_data = build_graph_data(root, width, height, max_height, wire_count)
 
     if not graph_data.nodes:
         return mo.md(f"**No code files found in project.**\n\nScanned: `{root}`")
 
-    iframe_html = WOVEN_MAPS_TEMPLATE.replace('__GRAPH_DATA__', graph_data.to_json())
+    iframe_html = WOVEN_MAPS_TEMPLATE.replace("__GRAPH_DATA__", graph_data.to_json())
     escaped = html.escape(iframe_html)
 
     return mo.Html(f'''
@@ -1971,6 +2029,7 @@ def create_code_city(
 
 if __name__ == "__main__":
     import sys
+
     if len(sys.argv) < 2:
         print("Usage: python woven_maps.py <directory>")
         sys.exit(1)
