@@ -457,6 +457,11 @@ def render(STATE_MANAGERS: dict) -> Any:
         None
     )  # Stores recorded audio as bytes/numpy
 
+    # Local state - Summon panel search
+    get_summon_query, set_summon_query = mo.state("")
+    get_summon_results, set_summon_results = mo.state([])
+    get_summon_loading, set_summon_loading = mo.state(False)
+
     # ========================================================================
     # EVENT HANDLERS (Transliterated from MaestroView.vue)
     # ========================================================================
