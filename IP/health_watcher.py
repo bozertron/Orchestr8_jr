@@ -1,7 +1,14 @@
 """
 Health Watcher - Real-time file change detection with debouncing.
-Bridges file system events to HealthChecker for Code City visualization.
+
+Provides two implementations:
+- HealthWatcher: Simple watchdog-based watcher with callback
+- HealthWatcherManager: Marimo-integrated watcher with reactive state updates
+
+Data flow: File Change → Debounce → HealthChecker → State → Code City
 """
+
+__all__ = ["HealthWatcher", "HealthWatcherManager"]
 
 import asyncio
 import threading
