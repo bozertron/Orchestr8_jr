@@ -1,0 +1,455 @@
+{
+  "phase": "CARL-CONTEXT",
+  "generated": "2026-02-12",
+  "target": "IP/carl_core.py",
+  "summary": {
+    "waves": 6,
+    "total_work_orders": 6,
+    "total_agents": 18,
+    "description": "Implement gather_context() method for Carl context aggregator"
+  },
+  "wave_summary": [
+    {"wave": 1, "orders": ["WO-CARL-001"], "files": 1, "agents": 3},
+    {"wave": 2, "orders": ["WO-CARL-002"], "files": 1, "agents": 3},
+    {"wave": 3, "orders": ["WO-CARL-003"], "files": 1, "agents": 3},
+    {"wave": 4, "orders": ["WO-CARL-004"], "files": 1, "agents": 3},
+    {"wave": 5, "orders": ["WO-CARL-005"], "files": 1, "agents": 3},
+    {"wave": 6, "orders": ["WO-CARL-006"], "files": 2, "agents": 3}
+  ],
+  "work_orders": [
+    {
+      "work_order_id": "WO-CARL-001",
+      "phase": "CARL-CONTEXT",
+      "wave": 1,
+      "priority": 1,
+      "target": {
+        "fiefdom": "IP",
+        "building": "IP/carl_core.py",
+        "room": "FiefdomContext dataclass",
+        "line_range": "100+",
+        "tokens": 200,
+        "complexity": 2
+      },
+      "scaling": {
+        "complexity_multiplier": 1.20,
+        "effective_tokens": 240,
+        "work_units": 1,
+        "agents_required": 3,
+        "sentinel_pairs": 1
+      },
+      "action": {
+        "summary": "Add FiefdomContext dataclass for structured context output",
+        "steps": [
+          "Add import at top of file: `from dataclasses import dataclass, asdict`",
+          "After line 99 (end of file), append FiefdomContext dataclass with fields: fiefdom: str, health: Dict[str, Any], connections: Dict[str, Any], combat: Dict[str, Any], tickets: List[str], locks: List[Dict[str, str]]"
+        ],
+        "code_block": "@dataclass\nclass FiefdomContext:\n    fiefdom: str\n    health: Dict[str, Any]\n    connections: Dict[str, Any]\n    combat: Dict[str, Any]\n    tickets: List[str]\n    locks: List[Dict[str, str]]"
+      },
+      "constraints": {
+        "do_not_modify": [
+          "Do NOT modify existing CarlContextualizer class methods",
+          "Do NOT change existing imports",
+          "Do NOT add any methods to FiefdomContext (dataclass only)"
+        ],
+        "border_contracts": [
+          "FiefdomContext structure is LOCKED per CONTEXT.md - exact fields required"
+        ],
+        "locked_decisions": [
+          "Output format must match LOCKED structure: fiefdom, health, connections, combat, tickets, locks"
+        ],
+        "conventions": [
+          "Use @dataclass decorator pattern",
+          "Type hints required for all fields"
+        ]
+      },
+      "verification": {
+        "automated": [
+          "Python imports without error: `python -c 'from IP.carl_core import FiefdomContext'`",
+          "Dataclass is instantiable with required fields"
+        ],
+        "done_criteria": [
+          "FiefdomContext dataclass exists with all 6 required fields",
+          "File still passes existing functionality"
+        ]
+      },
+      "dependencies": {
+        "requires": [],
+        "blocks": ["WO-CARL-004"],
+        "parallel_safe_with": ["WO-CARL-002"]
+      },
+      "git_commit": {
+        "format": "[CARL] feat: add FiefdomContext dataclass",
+        "files_to_stage": ["IP/carl_core.py"]
+      }
+    },
+    {
+      "work_order_id": "WO-CARL-002",
+      "phase": "CARL-CONTEXT",
+      "wave": 2,
+      "priority": 2,
+      "target": {
+        "fiefdom": "IP",
+        "building": "IP/carl_core.py",
+        "room": "imports section",
+        "line_range": "1-13",
+        "tokens": 100,
+        "complexity": 1
+      },
+      "scaling": {
+        "complexity_multiplier": 1.10,
+        "effective_tokens": 110,
+        "work_units": 1,
+        "agents_required": 3,
+        "sentinel_pairs": 1
+      },
+      "action": {
+        "summary": "Add imports for signal source modules",
+        "steps": [
+          "After line 12 (after existing imports), add relative imports for signal sources",
+          "Import: HealthChecker from .health_checker",
+          "Import: ConnectionVerifier from .connection_verifier",
+          "Import: CombatTracker from .combat_tracker",
+          "Import: TicketManager from .ticket_manager",
+          "Import: LouisWarden, LouisConfig from .louis_core"
+        ],
+        "code_block": "from .health_checker import HealthChecker\nfrom .connection_verifier import ConnectionVerifier\nfrom .combat_tracker import CombatTracker\nfrom .ticket_manager import TicketManager\nfrom .louis_core import LouisWarden, LouisConfig"
+      },
+      "constraints": {
+        "do_not_modify": [
+          "Do NOT modify existing imports (subprocess, json, os, pathlib, typing)",
+          "Do NOT modify any class or method code"
+        ],
+        "border_contracts": [
+          "Signal sources are NOT modified - Carl imports them read-only"
+        ],
+        "locked_decisions": [
+          "Signal sources: HealthChecker, ConnectionVerifier, CombatTracker, TicketManager, LouisWarden per CONTEXT.md"
+        ],
+        "conventions": [
+          "Use relative imports for IP module siblings",
+          "Group new imports together after existing imports"
+        ]
+      },
+      "verification": {
+        "automated": [
+          "Python imports without circular import errors: `python -c 'from IP.carl_core import CarlContextualizer'`"
+        ],
+        "done_criteria": [
+          "All 5 signal source imports present",
+          "No import errors",
+          "Existing functionality unchanged"
+        ]
+      },
+      "dependencies": {
+        "requires": [],
+        "blocks": ["WO-CARL-003"],
+        "parallel_safe_with": ["WO-CARL-001"]
+      },
+      "git_commit": {
+        "format": "[CARL] feat: add signal source imports",
+        "files_to_stage": ["IP/carl_core.py"]
+      }
+    },
+    {
+      "work_order_id": "WO-CARL-003",
+      "phase": "CARL-CONTEXT",
+      "wave": 3,
+      "priority": 3,
+      "target": {
+        "fiefdom": "IP",
+        "building": "IP/carl_core.py",
+        "room": "CarlContextualizer.__init__()",
+        "line_range": "27-38",
+        "tokens": 400,
+        "complexity": 4
+      },
+      "scaling": {
+        "complexity_multiplier": 1.40,
+        "effective_tokens": 560,
+        "work_units": 1,
+        "agents_required": 3,
+        "sentinel_pairs": 1
+      },
+      "action": {
+        "summary": "Refactor __init__ to accept state_managers and initialize signal sources",
+        "steps": [
+          "Modify __init__ signature: add `state_managers: Optional[Dict] = None` parameter",
+          "Store self.state_managers = state_managers or {}",
+          "Initialize self.health_checker = HealthChecker(str(self.root))",
+          "Initialize self.connection_verifier = ConnectionVerifier(str(self.root))",
+          "Initialize self.combat_tracker = CombatTracker(str(self.root))",
+          "Initialize self.ticket_manager = TicketManager(str(self.root))",
+          "Initialize louis_config = LouisConfig(str(self.root))",
+          "Initialize self.louis_warden = LouisWarden(louis_config)"
+        ],
+        "code_block": "def __init__(self, root_path: str, timeout: int = DEFAULT_TIMEOUT, state_managers: Optional[Dict] = None):\n    self.root = Path(root_path)\n    self.timeout = timeout\n    self.ts_tool = self.root / TS_TOOL_PATH\n    self.context_file = self.root / CONTEXT_OUTPUT_PATH\n    self.state_managers = state_managers or {}\n    \n    self.health_checker = HealthChecker(str(self.root))\n    self.connection_verifier = ConnectionVerifier(str(self.root))\n    self.combat_tracker = CombatTracker(str(self.root))\n    self.ticket_manager = TicketManager(str(self.root))\n    \n    louis_config = LouisConfig(str(self.root))\n    self.louis_warden = LouisWarden(louis_config)"
+      },
+      "constraints": {
+        "do_not_modify": [
+          "Do NOT change existing parameters (root_path, timeout)",
+          "Do NOT remove existing instance variables (root, timeout, ts_tool, context_file)",
+          "Do NOT modify run_deep_scan() or get_file_context() methods"
+        ],
+        "border_contracts": [
+          "Signal sources are instantiated fresh per Carl instance",
+          "Louis config initialization may fail gracefully - wrap if needed"
+        ],
+        "locked_decisions": [
+          "Carl does NOT block operations per CONTEXT.md constraints"
+        ],
+        "conventions": [
+          "Keep backward compatibility - timeout parameter unchanged",
+          "Use str(self.root) for path conversion to signal sources"
+        ]
+      },
+      "verification": {
+        "automated": [
+          "CarlContextualizer instantiates: `CarlContextualizer('/path/to/project')`",
+          "Signal sources accessible: `carl.health_checker` returns HealthChecker instance"
+        ],
+        "done_criteria": [
+          "__init__ accepts optional state_managers parameter",
+          "All 5 signal sources initialized as instance variables",
+          "Existing methods (run_deep_scan, get_file_context) still work"
+        ]
+      },
+      "dependencies": {
+        "requires": ["WO-CARL-002"],
+        "blocks": ["WO-CARL-004"],
+        "parallel_safe_with": []
+      },
+      "git_commit": {
+        "format": "[CARL] feat: initialize signal sources in __init__",
+        "files_to_stage": ["IP/carl_core.py"]
+      }
+    },
+    {
+      "work_order_id": "WO-CARL-004",
+      "phase": "CARL-CONTEXT",
+      "wave": 4,
+      "priority": 4,
+      "target": {
+        "fiefdom": "IP",
+        "building": "IP/carl_core.py",
+        "room": "CarlContextualizer.gather_context()",
+        "line_range": "99+",
+        "tokens": 800,
+        "complexity": 6
+      },
+      "scaling": {
+        "complexity_multiplier": 1.60,
+        "effective_tokens": 1280,
+        "work_units": 1,
+        "agents_required": 3,
+        "sentinel_pairs": 1
+      },
+      "action": {
+        "summary": "Implement gather_context() method aggregating all signal sources",
+        "steps": [
+          "Add new method gather_context(self, fiefdom_path: str) -> FiefdomContext after get_file_context()",
+          "Call self.health_checker.check_fiefdom(fiefdom_path) and extract status, errors, warnings",
+          "Call self.connection_verifier.verify_file(fiefdom_path) and extract local_imports, broken_imports",
+          "Call self.combat_tracker.get_deployment_info(fiefdom_path) and extract active, model, terminal_id",
+          "Call self.ticket_manager.get_tickets_for_fiefdom(fiefdom_path) and filter non-archived tickets",
+          "Call self.louis_warden.get_protection_status() and filter paths matching fiefdom with locked=True",
+          "Return FiefdomContext with all aggregated data"
+        ],
+        "code_block": "def gather_context(self, fiefdom_path: str) -> FiefdomContext:\n    health_result = self.health_checker.check_fiefdom(fiefdom_path)\n    health = {\n        \"status\": health_result.status,\n        \"errors\": [{\"file\": e.file, \"line\": e.line, \"message\": e.message} for e in health_result.errors],\n        \"warnings\": [{\"file\": w.file, \"line\": w.line, \"message\": w.message} for w in health_result.warnings]\n    }\n    \n    conn_result = self.connection_verifier.verify_file(fiefdom_path)\n    connections = {\n        \"imports_from\": [imp.target_module for imp in conn_result.local_imports],\n        \"broken\": [{\"import\": imp.target_module, \"line\": imp.line_number} for imp in conn_result.broken_imports]\n    }\n    \n    deployment = self.combat_tracker.get_deployment_info(fiefdom_path)\n    combat = {\n        \"active\": deployment is not None,\n        \"model\": deployment.get(\"model\", \"\") if deployment else \"\",\n        \"terminal_id\": deployment.get(\"terminal_id\", \"\") if deployment else \"\"\n    }\n    \n    ticket_objs = self.ticket_manager.get_tickets_for_fiefdom(fiefdom_path)\n    tickets = [f\"{t.id}: {t.title}\" for t in ticket_objs if t.status != \"archived\"]\n    \n    protection = self.louis_warden.get_protection_status()\n    locks = []\n    for path, status in protection.items():\n        if fiefdom_path in path and status.get(\"locked\"):\n            locks.append({\"file\": path, \"reason\": \"Louis protection\"})\n    \n    return FiefdomContext(\n        fiefdom=fiefdom_path,\n        health=health,\n        connections=connections,\n        combat=combat,\n        tickets=tickets,\n        locks=locks\n    )"
+      },
+      "constraints": {
+        "do_not_modify": [
+          "Do NOT modify any signal source code",
+          "Do NOT add blocking operations (no subprocess calls in gather path)",
+          "Do NOT change FiefdomContext structure"
+        ],
+        "border_contracts": [
+          "HealthChecker.check_fiefdom() returns HealthCheckResult at health_checker.py:426",
+          "ConnectionVerifier.verify_file() returns FileConnectionResult at connection_verifier.py:422",
+          "CombatTracker.get_deployment_info() returns Optional[dict] at combat_tracker.py:77",
+          "TicketManager.get_tickets_for_fiefdom() returns List[Ticket] at ticket_manager.py:199",
+          "LouisWarden.get_protection_status() returns dict at louis_core.py:66"
+        ],
+        "locked_decisions": [
+          "Output JSON structure is LOCKED per CONTEXT.md",
+          "Carl does NOT block - all calls are non-blocking",
+          "Louis remains unchanged per CONTEXT.md constraints"
+        ],
+        "conventions": [
+          "Handle None returns gracefully (CombatTracker, Louis)",
+          "Filter archived tickets from output",
+          "Use dictionary comprehensions for clean data extraction"
+        ]
+      },
+      "verification": {
+        "automated": [
+          "Method exists and returns FiefdomContext: `carl.gather_context('IP/')`",
+          "No subprocess calls in gather_context code path",
+          "All signal source methods called correctly"
+        ],
+        "done_criteria": [
+          "gather_context() returns FiefdomContext with all 6 fields populated",
+          "health field contains status, errors, warnings",
+          "connections field contains imports_from, broken",
+          "combat field contains active, model, terminal_id",
+          "tickets field contains non-archived ticket strings",
+          "locks field contains locked files matching fiefdom"
+        ]
+      },
+      "dependencies": {
+        "requires": ["WO-CARL-001", "WO-CARL-003"],
+        "blocks": ["WO-CARL-005"],
+        "parallel_safe_with": []
+      },
+      "git_commit": {
+        "format": "[CARL] feat: implement gather_context() method",
+        "files_to_stage": ["IP/carl_core.py"]
+      }
+    },
+    {
+      "work_order_id": "WO-CARL-005",
+      "phase": "CARL-CONTEXT",
+      "wave": 5,
+      "priority": 5,
+      "target": {
+        "fiefdom": "IP",
+        "building": "IP/carl_core.py",
+        "room": "CarlContextualizer.gather_context_json()",
+        "line_range": "end of class",
+        "tokens": 150,
+        "complexity": 2
+      },
+      "scaling": {
+        "complexity_multiplier": 1.20,
+        "effective_tokens": 180,
+        "work_units": 1,
+        "agents_required": 3,
+        "sentinel_pairs": 1
+      },
+      "action": {
+        "summary": "Add gather_context_json() method for JSON string output",
+        "steps": [
+          "Add new method gather_context_json(self, fiefdom_path: str) -> str after gather_context()",
+          "Call self.gather_context(fiefdom_path) to get FiefdomContext",
+          "Use asdict() to convert to dict and json.dumps() with indent=2"
+        ],
+        "code_block": "def gather_context_json(self, fiefdom_path: str) -> str:\n    ctx = self.gather_context(fiefdom_path)\n    return json.dumps(asdict(ctx), indent=2)"
+      },
+      "constraints": {
+        "do_not_modify": [
+          "Do NOT modify gather_context() implementation",
+          "Do NOT change JSON output format (indent=2 required)"
+        ],
+        "border_contracts": [
+          "Output format consumed by Summon panel and agent briefings"
+        ],
+        "locked_decisions": [
+          "JSON output must match LOCKED structure from CONTEXT.md"
+        ],
+        "conventions": [
+          "Use asdict() from dataclasses module",
+          "Pretty-print with indent=2 for readability"
+        ]
+      },
+      "verification": {
+        "automated": [
+          "Method returns valid JSON string: `json.loads(carl.gather_context_json('IP/'))`",
+          "Output contains all 6 required keys"
+        ],
+        "done_criteria": [
+          "gather_context_json() returns valid JSON string",
+          "JSON is properly indented",
+          "All FiefdomContext fields present in output"
+        ]
+      },
+      "dependencies": {
+        "requires": ["WO-CARL-004"],
+        "blocks": ["WO-CARL-006"],
+        "parallel_safe_with": []
+      },
+      "git_commit": {
+        "format": "[CARL] feat: add gather_context_json() method",
+        "files_to_stage": ["IP/carl_core.py"]
+      }
+    },
+    {
+      "work_order_id": "WO-CARL-006",
+      "phase": "CARL-CONTEXT",
+      "wave": 6,
+      "priority": 6,
+      "target": {
+        "fiefdom": "IP/plugins",
+        "building": "IP/plugins/06_maestro.py",
+        "room": "Summon panel",
+        "line_range": "TBD - requires survey",
+        "tokens": 600,
+        "complexity": 5
+      },
+      "scaling": {
+        "complexity_multiplier": 1.50,
+        "effective_tokens": 900,
+        "work_units": 1,
+        "agents_required": 3,
+        "sentinel_pairs": 1
+      },
+      "action": {
+        "summary": "Integrate Carl context into Summon panel UI",
+        "steps": [
+          "Import CarlContextualizer at top of 06_maestro.py",
+          "Initialize CarlContextualizer with project root and state_managers",
+          "In Summon panel section, call carl.gather_context_json(selected_fiefdom)",
+          "Display JSON output in Summon panel context section"
+        ],
+        "code_block_placeholder": "Exact implementation depends on current 06_maestro.py structure - survey required for line ranges"
+      },
+      "constraints": {
+        "do_not_modify": [
+          "Do NOT break existing maestro.py functionality",
+          "Do NOT modify other panels (only Summon panel)"
+        ],
+        "border_contracts": [
+          "Summon panel is the UI entry point for Carl context display"
+        ],
+        "locked_decisions": [
+          "UI terminology uses 'Neighborhood' not 'Fiefdom' per CONTEXT.md"
+        ],
+        "conventions": [
+          "Use existing panel component patterns in 06_maestro.py",
+          "Display context in readable format"
+        ]
+      },
+      "verification": {
+        "automated": [
+          "06_maestro.py imports without error",
+          "marimo run orchestr8.py starts successfully"
+        ],
+        "done_criteria": [
+          "CarlContextualizer imported and initialized",
+          "Summon panel displays context for selected neighborhood",
+          "Context updates when different neighborhood selected"
+        ]
+      },
+      "dependencies": {
+        "requires": ["WO-CARL-005"],
+        "blocks": [],
+        "parallel_safe_with": []
+      },
+      "git_commit": {
+        "format": "[CARL] feat: integrate Carl context into Summon panel",
+        "files_to_stage": ["IP/plugins/06_maestro.py", "IP/carl_core.py"]
+      }
+    }
+  ],
+  "verification_checklist": [
+    "gather_context() returns FiefdomContext dataclass",
+    "Output matches LOCKED JSON structure from CONTEXT.md",
+    "No blocking subprocess calls in gather path",
+    "Signal sources not modified (read-only integration)",
+    "Louis remains unchanged (constraint satisfied)"
+  ],
+  "risk_mitigations": [
+    {"risk": "Louis config not initialized", "mitigation": "Fallback: skip locks if config missing"},
+    {"risk": "HealthChecker timeout", "mitigation": "Already has timeout handling in source"},
+    {"risk": "Circular import", "mitigation": "Use lazy imports if needed"},
+    {"risk": "State managers not passed", "mitigation": "Graceful degradation to fresh instances"}
+  ]
+}

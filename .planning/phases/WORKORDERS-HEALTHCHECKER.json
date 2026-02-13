@@ -1,0 +1,403 @@
+{
+  "work_order_set": "HEALTHCHECKER-INTEGRATION",
+  "generated": "2026-02-12",
+  "source_document": "ARCHITECT-HEALTHCHECKER.md",
+  "total_agents": 15,
+  "waves": [
+    {
+      "wave_number": 1,
+      "wave_name": "State Infrastructure",
+      "wave_description": "Add health state to STATE_MANAGERS in 06_maestro.py"
+    },
+    {
+      "wave_number": 2,
+      "wave_name": "HealthWatcher Module",
+      "wave_description": "Create new health_watcher.py with file watching and debouncing"
+    },
+    {
+      "wave_number": 3,
+      "wave_name": "woven_maps Integration",
+      "wave_description": "Bridge HealthChecker results to CodeNode status in woven_maps.py"
+    },
+    {
+      "wave_number": 4,
+      "wave_name": "Maestro Health Wiring",
+      "wave_description": "Wire HealthWatcher to reactive state in 06_maestro.py"
+    },
+    {
+      "wave_number": 5,
+      "wave_name": "Room-Level Error Display",
+      "wave_description": "Enhance tooltip in woven_maps.js to show specific errors"
+    }
+  ],
+  "work_orders": [
+    {
+      "work_order_id": "WO-HC-001",
+      "wave": 1,
+      "target": {
+        "file": "IP/plugins/06_maestro.py",
+        "room": "render() function - STATE MANAGEMENT section",
+        "line_range": "352-357"
+      },
+      "action": {
+        "summary": "Add health state getter/setter to STATE_MANAGERS",
+        "steps": [
+          "After line 356 (get_logs, set_logs = STATE_MANAGERS[\"logs\"]), add new health state pair",
+          "Use pattern: get_health, set_health = STATE_MANAGERS.get(\"health\", mo.state({}))",
+          "Import typing: add \"Dict\" to imports from typing at line 70",
+          "Health state type is Dict[str, Any] representing {file_path: HealthCheckResult}"
+        ]
+      },
+      "constraints": {
+        "do_not_modify": [
+          "Existing state pairs: root, selected, logs",
+          "STATE_MANAGERS dict structure passed from orchestr8.py"
+        ]
+      },
+      "verification": {
+        "done_criteria": [
+          "get_health and set_health are defined in render()",
+          "No syntax errors when running marimo edit orchestr8.py",
+          "Health state initializes as empty dict {}"
+        ]
+      },
+      "scaling": {
+        "agents_required": 3,
+        "tokens_estimated": 800,
+        "complexity_multiplier": 1.2
+      }
+    },
+    {
+      "work_order_id": "WO-HC-002",
+      "wave": 1,
+      "target": {
+        "file": "IP/plugins/06_maestro.py",
+        "room": "render() function - after state declarations",
+        "line_range": "399-407"
+      },
+      "action": {
+        "summary": "Create refresh_health() function to run HealthChecker on project root",
+        "steps": [
+          "After line 407 (deploy_panel = DeployPanel(...)), add refresh_health() function",
+          "Function signature: def refresh_health() -> None:",
+          "Inside: get HealthChecker instance, call check_fiefdom on get_root()",
+          "Store result in health state via set_health({\"root\": result})",
+          "Log action: log_action(f\"Health check complete: {result.status}\")"
+        ]
+      },
+      "constraints": {
+        "do_not_modify": [
+          "Existing service initializations (combat_tracker, briefing_generator, etc.)",
+          "HealthChecker core logic in IP/health_checker.py"
+        ]
+      },
+      "verification": {
+        "done_criteria": [
+          "refresh_health() function defined in render() scope",
+          "Function uses HealthChecker imported at line 77",
+          "Function updates health state via set_health()"
+        ]
+      },
+      "scaling": {
+        "agents_required": 3,
+        "tokens_estimated": 800,
+        "complexity_multiplier": 1.2
+      }
+    },
+    {
+      "work_order_id": "WO-HC-003",
+      "wave": 2,
+      "target": {
+        "file": "IP/health_watcher.py",
+        "room": "NEW FILE - Full module",
+        "line_range": "1-150"
+      },
+      "action": {
+        "summary": "Create HealthWatcher class with watchdog integration and 100ms debounce",
+        "steps": [
+          "Create new file IP/health_watcher.py",
+          "Imports: watchdog.observers.Observer, watchdog.events.FileSystemEventHandler, threading.Timer, Path",
+          "Import HealthChecker from IP.health_checker",
+          "Class HealthWatcher with __init__(self, project_root: str, callback: Callable)",
+          "Implement _on_file_change(self, event) with debounce: cancel existing timer, schedule new one for 100ms",
+          "Implement start_watching(self) -> None: create Observer, schedule for .py/.ts/.tsx files, start()",
+          "Implement stop_watching(self) -> None: observer.stop(), observer.join()",
+          "In _debounced_check(): call HealthChecker.check_fiefdom on changed file, invoke callback with result"
+        ]
+      },
+      "constraints": {
+        "do_not_modify": [
+          "IP/health_checker.py - use as-is, no modifications",
+          "Do not import marimo in this module (keep it Marimo-agnostic)"
+        ]
+      },
+      "verification": {
+        "done_criteria": [
+          "File IP/health_watcher.py exists and is importable",
+          "HealthWatcher class has start_watching() and stop_watching() methods",
+          "Debounce timer fires 100ms after last file change event",
+          "Callback receives Dict[str, HealthCheckResult] on file changes"
+        ]
+      },
+      "scaling": {
+        "agents_required": 3,
+        "tokens_estimated": 1500,
+        "complexity_multiplier": 1.5
+      }
+    },
+    {
+      "work_order_id": "WO-HC-004",
+      "wave": 3,
+      "target": {
+        "file": "IP/woven_maps.py",
+        "room": "CodeNode dataclass",
+        "line_range": "54-86"
+      },
+      "action": {
+        "summary": "Add health_errors field to CodeNode dataclass",
+        "steps": [
+          "At line 60 after 'errors: List[str] = field(default_factory=list)', add new field",
+          "Add: health_errors: List[Any] = field(default_factory=list)",
+          "Import HealthCheckResult type hint at top (optional, use Any to avoid circular import)",
+          "Update to_dict() method at line 71-86 to include health_errors in output dict",
+          "Add key 'healthErrors': self.health_errors to to_dict() return value"
+        ]
+      },
+      "constraints": {
+        "do_not_modify": [
+          "Existing CodeNode fields: path, status, loc, errors, x, y, node_type, etc.",
+          "Do not rename or remove existing fields"
+        ]
+      },
+      "verification": {
+        "done_criteria": [
+          "CodeNode has health_errors field defaulting to empty list",
+          "to_dict() includes healthErrors in output",
+          "Existing CodeNode usage still works (backward compatible)"
+        ]
+      },
+      "scaling": {
+        "agents_required": 3,
+        "tokens_estimated": 1200,
+        "complexity_multiplier": 1.3
+      }
+    },
+    {
+      "work_order_id": "WO-HC-005",
+      "wave": 3,
+      "target": {
+        "file": "IP/woven_maps.py",
+        "room": "After build_from_connection_graph function",
+        "line_range": "451-452"
+      },
+      "action": {
+        "summary": "Add build_from_health_results() function to merge HealthChecker output into nodes",
+        "steps": [
+          "After line 451 (end of build_from_connection_graph), add new function",
+          "Function signature: def build_from_health_results(nodes: List[CodeNode], health_results: Dict[str, Any]) -> List[CodeNode]:",
+          "Iterate nodes, for each node check if node.path exists in health_results",
+          "If found: get HealthCheckResult, if result.status == 'broken': set node.status = 'broken'",
+          "Also populate node.health_errors with result.errors list",
+          "Return modified nodes list",
+          "Add import: from typing import Dict, Any (if not already present)"
+        ]
+      },
+      "constraints": {
+        "do_not_modify": [
+          "Existing build_graph_data() function",
+          "Existing build_from_connection_graph() function",
+          "Do not change node status logic for combat (preserve CombatTracker integration)"
+        ]
+      },
+      "verification": {
+        "done_criteria": [
+          "build_from_health_results() function exists and is callable",
+          "Nodes with health_results errors get status='broken'",
+          "Node.health_errors is populated from HealthCheckResult.errors",
+          "Combat status (from CombatTracker) takes precedence over broken"
+        ]
+      },
+      "scaling": {
+        "agents_required": 3,
+        "tokens_estimated": 1200,
+        "complexity_multiplier": 1.3
+      }
+    },
+    {
+      "work_order_id": "WO-HC-006",
+      "wave": 4,
+      "target": {
+        "file": "IP/plugins/06_maestro.py",
+        "room": "render() function - service initialization section",
+        "line_range": "399-407"
+      },
+      "action": {
+        "summary": "Instantiate HealthWatcher and define on_health_change callback",
+        "steps": [
+          "Add import at line 77 area: from IP.health_watcher import HealthWatcher",
+          "After line 407 (deploy_panel init), add health_watcher initialization",
+          "Create callback: def on_health_change(results: dict) -> None: set_health(results)",
+          "Initialize: health_watcher = HealthWatcher(str(project_root_path), on_health_change)",
+          "Store watcher in local variable (Marimo handles lifecycle)"
+        ]
+      },
+      "constraints": {
+        "do_not_modify": [
+          "Existing service instances (combat_tracker, terminal_spawner, etc.)",
+          "Do not call start_watching() yet - that's WO-HC-007"
+        ]
+      },
+      "verification": {
+        "done_criteria": [
+          "HealthWatcher is imported and instantiated",
+          "on_health_change callback is defined and updates health state",
+          "No import errors when running marimo edit orchestr8.py"
+        ]
+      },
+      "scaling": {
+        "agents_required": 3,
+        "tokens_estimated": 1000,
+        "complexity_multiplier": 1.4
+      }
+    },
+    {
+      "work_order_id": "WO-HC-007",
+      "wave": 4,
+      "target": {
+        "file": "IP/plugins/06_maestro.py",
+        "room": "build_code_city() function",
+        "line_range": "917-944"
+      },
+      "action": {
+        "summary": "Wire health state to Code City visualization and start file watcher",
+        "steps": [
+          "At start of build_code_city() after line 922 (root = get_root()), add health_watcher.start_watching()",
+          "Add try/except around the watcher start to handle errors gracefully",
+          "After create_code_city() call at line 935, check if get_health() has data",
+          "If health data exists, pass to visualization (future: create_code_city parameter)",
+          "For now, log the health check status: log_action(f\"Health: {len(get_health())} results\")"
+        ]
+      },
+      "constraints": {
+        "do_not_modify": [
+          "create_code_city() function signature in woven_maps.py",
+          "Do not break existing Code City rendering"
+        ]
+      },
+      "verification": {
+        "done_criteria": [
+          "health_watcher.start_watching() is called when building Code City",
+          "Health state is logged or visible in UI",
+          "Code City still renders correctly"
+        ]
+      },
+      "scaling": {
+        "agents_required": 3,
+        "tokens_estimated": 1000,
+        "complexity_multiplier": 1.4
+      }
+    },
+    {
+      "work_order_id": "WO-HC-008",
+      "wave": 5,
+      "target": {
+        "file": "IP/woven_maps.py",
+        "room": "WOVEN_MAPS_TEMPLATE - tooltip section in CSS",
+        "line_range": "498-523"
+      },
+      "action": {
+        "summary": "Enhance tooltip CSS to display health errors with line numbers",
+        "steps": [
+          "In tooltip CSS section, add new class .health-errors after .error-item at line 523",
+          "Style: .health-errors { margin-top: 8px; padding-top: 8px; border-top: 1px solid #1fbdea; }",
+          "Add: .health-error-item { color: #1fbdea; font-size: 10px; line-height: 1.4; margin: 2px 0; }",
+          "Add: .health-error-loc { color: #666; font-family: monospace; }"
+        ]
+      },
+      "constraints": {
+        "do_not_modify": [
+          "Existing tooltip styles for .path, .meta, .status, .loc",
+          "Do not change tooltip positioning or base structure"
+        ]
+      },
+      "verification": {
+        "done_criteria": [
+          "New CSS classes exist in template",
+          "Styles are consistent with teal (#1fbdea) for broken state",
+          "No CSS syntax errors in generated HTML"
+        ]
+      },
+      "scaling": {
+        "agents_required": 3,
+        "tokens_estimated": 600,
+        "complexity_multiplier": 1.2
+      }
+    },
+    {
+      "work_order_id": "WO-HC-009",
+      "wave": 5,
+      "target": {
+        "file": "IP/woven_maps.py",
+        "room": "WOVEN_MAPS_TEMPLATE - tooltip rendering in JavaScript",
+        "line_range": "Search for 'tooltip.innerHTML' in template JS"
+      },
+      "action": {
+        "summary": "Update tooltip JS to display health_errors array with line:column format",
+        "steps": [
+          "Find the tooltip.innerHTML assignment in the JS template",
+          "After existing error display loop, add health errors section",
+          "Logic: if node.healthErrors && node.healthErrors.length > 0",
+          "Build HTML: '<div class=\"health-errors\">' + healthErrors.map(e => format error).join('') + '</div>'",
+          "Format each error: '<div class=\"health-error-item\"><span class=\"health-error-loc\">' + e.file + ':' + e.line + '</span> ' + e.message + '</div>'",
+          "Limit to first 5 health errors to prevent tooltip overflow"
+        ]
+      },
+      "constraints": {
+        "do_not_modify": [
+          "Existing tooltip logic for status, loc, errors fields",
+          "Do not change tooltip visibility/hiding logic"
+        ]
+      },
+      "verification": {
+        "done_criteria": [
+          "Tooltip shows health_errors when present on node",
+          "Each error shows file:line and message",
+          "Maximum 5 errors shown with '... and N more' if exceeded",
+          "Tooltips still work for nodes without health_errors"
+        ]
+      },
+      "scaling": {
+        "agents_required": 3,
+        "tokens_estimated": 600,
+        "complexity_multiplier": 1.2
+      }
+    }
+  ],
+  "dependency_graph": {
+    "WO-HC-001": [],
+    "WO-HC-002": ["WO-HC-001"],
+    "WO-HC-003": [],
+    "WO-HC-004": [],
+    "WO-HC-005": ["WO-HC-004"],
+    "WO-HC-006": ["WO-HC-001", "WO-HC-003"],
+    "WO-HC-007": ["WO-HC-002", "WO-HC-006"],
+    "WO-HC-008": [],
+    "WO-HC-009": ["WO-HC-004", "WO-HC-005", "WO-HC-008"]
+  },
+  "execution_order": [
+    ["WO-HC-001", "WO-HC-003", "WO-HC-004", "WO-HC-008"],
+    ["WO-HC-002", "WO-HC-005"],
+    ["WO-HC-006"],
+    ["WO-HC-007"],
+    ["WO-HC-009"]
+  ],
+  "notes": [
+    "Wave 1 and 2 can run in parallel (no dependencies between state setup and new module)",
+    "Wave 3 depends on Wave 1 CodeNode changes",
+    "Wave 4 depends on Waves 1-3 (needs state, watcher, and node integration)",
+    "Wave 5 depends on node changes from Wave 3",
+    "Each work order follows Sentinel Protocol: 1 primary + 2 sentinel agents",
+    "Total estimated LOC: ~900 new/modified",
+    "Do NOT modify IP/louis_core.py - LOCKED per CONTEXT.md"
+  ]
+}

@@ -1,0 +1,351 @@
+{
+  "campaign": "FILEWATCHER-BRIDGE",
+  "generated": "2026-02-12",
+  "status": "READY",
+  "tier": 8,
+  "agent_allocation": {
+    "total": 6,
+    "primary": 2,
+    "sentinel": 4
+  },
+  "work_orders": [
+    {
+      "id": "WO-001",
+      "title": "Create HealthWatcherManager class skeleton",
+      "file": "IP/health_watcher.py",
+      "action": "CREATE",
+      "priority": "HIGH",
+      "dependencies": [],
+      "tokens_estimate": 200,
+      "description": "Create the HealthWatcherManager class with constructor and type hints",
+      "acceptance_criteria": [
+        "File IP/health_watcher.py exists",
+        "Class HealthWatcherManager defined with __init__ signature",
+        "Type hints for project_root: Path, state_managers: dict, watch_paths: list[str]",
+        "Imports: asyncio, Path, defaultdict from collections"
+      ],
+      "implementation_notes": [
+        "DEBOUNCE_MS = 300 class constant",
+        "Store _pending as defaultdict(set)",
+        "Store _debounce_task as None",
+        "Initialize _health_checker from IP.health_checker.HealthChecker",
+        "Store reference to state_managers[\"health\"]"
+      ]
+    },
+    {
+      "id": "WO-002",
+      "title": "Implement _map_to_fiefdom method",
+      "file": "IP/health_watcher.py",
+      "action": "CREATE",
+      "priority": "HIGH",
+      "dependencies": ["WO-001"],
+      "tokens_estimate": 100,
+      "description": "Map file paths to parent fiefdom identifiers",
+      "acceptance_criteria": [
+        "Method _map_to_fiefdom(self, path: Path) -> str exists",
+        "Returns 'IP/' for paths starting with 'IP'",
+        "Returns '{parent}/' for other paths"
+      ],
+      "implementation_notes": [
+        "Check path.parts[0] for 'IP'",
+        "Return str(path.parent) + '/' as fallback"
+      ]
+    },
+    {
+      "id": "WO-003",
+      "title": "Implement _on_file_change async callback",
+      "file": "IP/health_watcher.py",
+      "action": "CREATE",
+      "priority": "HIGH",
+      "dependencies": ["WO-001", "WO-002"],
+      "tokens_estimate": 150,
+      "description": "Handle file change events with debouncing",
+      "acceptance_criteria": [
+        "Method async _on_file_change(self, path: Path) exists",
+        "Maps path to fiefdom using _map_to_fiefdom",
+        "Adds path to _pending[fiefdom]",
+        "Cancels existing _debounce_task if present",
+        "Creates new asyncio.create_task for _debounced_check"
+      ],
+      "implementation_notes": [
+        "Use self._pending[fiefdom].add(path)",
+        "Check if self._debounce_task is not None before cancel",
+        "Wrap in try/except for CancelledError"
+      ]
+    },
+    {
+      "id": "WO-004",
+      "title": "Implement _debounced_check async method",
+      "file": "IP/health_watcher.py",
+      "action": "CREATE",
+      "priority": "HIGH",
+      "dependencies": ["WO-003"],
+      "tokens_estimate": 200,
+      "description": "Execute batched health checks after debounce period",
+      "acceptance_criteria": [
+        "Method async _debounced_check(self) exists",
+        "Waits DEBOUNCE_MS / 1000 seconds",
+        "Iterates all pending fiefdoms",
+        "Calls _health_checker.check_fiefdom() for each",
+        "Updates state_managers[\"health\"] with results",
+        "Clears _pending after processing"
+      ],
+      "implementation_notes": [
+        "Use asyncio.sleep(self.DEBOUNCE_MS / 1000)",
+        "Handle CancelledError gracefully",
+        "Copy _pending keys to list before iteration (avoid mutation during iteration)",
+        "Call self._state.set(fiefdom, result.to_dict()) or similar"
+      ]
+    },
+    {
+      "id": "WO-005",
+      "title": "Implement start and stop lifecycle methods",
+      "file": "IP/health_watcher.py",
+      "action": "CREATE",
+      "priority": "HIGH",
+      "dependencies": ["WO-004"],
+      "tokens_estimate": 250,
+      "description": "Initialize Marimo FileWatcherManager integration and cleanup",
+      "acceptance_criteria": [
+        "Method start(self) exists",
+        "Method stop(self) exists",
+        "Imports FileWatcherManager from marimo._utils.file_watcher",
+        "Creates FileWatcherManager instance with _on_file_change callback",
+        "Registers watch_paths with file watcher",
+        "stop() cancels debounce task and stops FileWatcherManager"
+      ],
+      "implementation_notes": [
+        "FileWatcherManager from marimo._utils.file_watcher",
+        "Use add_callback(path, self._on_file_change) for each watch_path",
+        "In stop(): cancel _debounce_task if running",
+        "Call FileWatcherManager.stop_all()"
+      ]
+    },
+    {
+      "id": "WO-006",
+      "title": "Add module-level exports and __all__",
+      "file": "IP/health_watcher.py",
+      "action": "CREATE",
+      "priority": "MEDIUM",
+      "dependencies": ["WO-005"],
+      "tokens_estimate": 50,
+      "description": "Define public API exports",
+      "acceptance_criteria": [
+        "__all__ = [\"HealthWatcherManager\"] defined",
+        "Docstring at module level describing purpose"
+      ],
+      "implementation_notes": [
+        "Module docstring: Real-time file watcher bridge for health checking"
+      ]
+    },
+    {
+      "id": "WO-007",
+      "title": "Import HealthWatcherManager in orchestr8.py",
+      "file": "orchestr8.py",
+      "action": "MODIFY",
+      "priority": "HIGH",
+      "dependencies": ["WO-006"],
+      "tokens_estimate": 50,
+      "description": "Add import statement for HealthWatcherManager",
+      "acceptance_criteria": [
+        "Import statement exists: from IP.health_watcher import HealthWatcherManager",
+        "Import placed with other IP module imports"
+      ],
+      "implementation_notes": [
+        "Locate existing IP imports section",
+        "Add alphabetically or logically with other IP imports"
+      ]
+    },
+    {
+      "id": "WO-008",
+      "title": "Initialize HEALTH_WATCHER singleton in orchestr8.py",
+      "file": "orchestr8.py",
+      "action": "MODIFY",
+      "priority": "HIGH",
+      "dependencies": ["WO-007"],
+      "tokens_estimate": 100,
+      "description": "Create module-level HealthWatcherManager instance",
+      "acceptance_criteria": [
+        "HEALTH_WATCHER variable defined at module level",
+        "Initialized with PROJECT_ROOT, STATE_MANAGERS, watch_paths=[\"IP/\"]",
+        "Placed after STATE_MANAGERS initialization"
+      ],
+      "implementation_notes": [
+        "Format: HEALTH_WATCHER = HealthWatcherManager(project_root=PROJECT_ROOT, state_managers=STATE_MANAGERS, watch_paths=[\"IP/\"])",
+        "Verify PROJECT_ROOT is defined before this line"
+      ]
+    },
+    {
+      "id": "WO-009",
+      "title": "Start HEALTH_WATCHER in app lifecycle",
+      "file": "orchestr8.py",
+      "action": "MODIFY",
+      "priority": "HIGH",
+      "dependencies": ["WO-008"],
+      "tokens_estimate": 100,
+      "description": "Call start() method during app initialization",
+      "acceptance_criteria": [
+        "HEALTH_WATCHER.start() called during app init",
+        "If Marimo app lifecycle hook exists, use it",
+        "Otherwise, call at module level after instantiation"
+      ],
+      "implementation_notes": [
+        "Check for existing app lifecycle hooks in orchestr8.py",
+        "May need async context - investigate Marimo patterns",
+        "Consider: HEALTH_WATCHER.start() immediately after creation if sync"
+      ]
+    },
+    {
+      "id": "WO-010",
+      "title": "Add health state key to STATE_MANAGERS if missing",
+      "file": "orchestr8.py",
+      "action": "MODIFY",
+      "priority": "HIGH",
+      "dependencies": [],
+      "tokens_estimate": 50,
+      "description": "Ensure health state manager key exists",
+      "acceptance_criteria": [
+        "STATE_MANAGERS[\"health\"] exists",
+        "Initialized as empty dict or appropriate reactive type"
+      ],
+      "implementation_notes": [
+        "Check existing STATE_MANAGERS initialization",
+        "Add mo.state({}) if using Marimo reactive state",
+        "Key: \"health\""
+      ]
+    },
+    {
+      "id": "WO-011",
+      "title": "Subscribe 06_maestro.py to health state changes",
+      "file": "IP/plugins/06_maestro.py",
+      "action": "MODIFY",
+      "priority": "HIGH",
+      "dependencies": ["WO-010"],
+      "tokens_estimate": 150,
+      "description": "Wire Code City to health state for reactive updates",
+      "acceptance_criteria": [
+        "STATE_MANAGERS[\"health\"] accessed in render function",
+        "Health data passed to woven_maps visualization",
+        "Buildings update color based on health status"
+      ],
+      "implementation_notes": [
+        "Get health_state = STATE_MANAGERS[\"health\"]",
+        "Pass to woven_maps.generate_code_city() or equivalent",
+        "Map status to colors: working=#D4AF37, broken=#1fbdea"
+      ]
+    },
+    {
+      "id": "WO-012",
+      "title": "Verify watchdog dependency",
+      "file": "pyproject.toml or requirements.txt",
+      "action": "VERIFY",
+      "priority": "MEDIUM",
+      "dependencies": [],
+      "tokens_estimate": 25,
+      "description": "Ensure watchdog package is in dependencies",
+      "acceptance_criteria": [
+        "watchdog >= 3.0.0 in project dependencies",
+        "If missing, add to appropriate dependency file"
+      ],
+      "implementation_notes": [
+        "Check pyproject.toml first",
+        "Fallback to requirements.txt",
+        "Marimo includes watchdog but verify for orchestr8"
+      ]
+    },
+    {
+      "id": "WO-013",
+      "title": "Add error handling for missing watchdog",
+      "file": "IP/health_watcher.py",
+      "action": "MODIFY",
+      "priority": "MEDIUM",
+      "dependencies": ["WO-005"],
+      "tokens_estimate": 100,
+      "description": "Graceful fallback if watchdog unavailable",
+      "acceptance_criteria": [
+        "Try/except around FileWatcherManager import",
+        "Log warning if watchdog not available",
+        "FileWatcherManager will auto-fallback to PollingFileWatcher"
+      ],
+      "implementation_notes": [
+        "Marimo's FileWatcherManager handles fallback internally",
+        "Add logging import",
+        "Log at INFO level when using polling fallback"
+      ]
+    },
+    {
+      "id": "WO-014",
+      "title": "Integration test: file change triggers health check",
+      "file": "tests/test_health_watcher.py",
+      "action": "CREATE",
+      "priority": "MEDIUM",
+      "dependencies": ["WO-006"],
+      "tokens_estimate": 300,
+      "description": "Verify file change events trigger health checks",
+      "acceptance_criteria": [
+        "Test file exists at tests/test_health_watcher.py",
+        "Test: _map_to_fiefdom returns correct fiefdom",
+        "Test: _on_file_change adds to pending",
+        "Test: _debounced_check calls health checker after delay"
+      ],
+      "implementation_notes": [
+        "Use pytest-asyncio for async tests",
+        "Mock HealthChecker to verify calls",
+        "Use asyncio.sleep to test debounce timing"
+      ]
+    },
+    {
+      "id": "WO-015",
+      "title": "Document HealthWatcherManager usage",
+      "file": "IP/health_watcher.py",
+      "action": "MODIFY",
+      "priority": "LOW",
+      "dependencies": ["WO-006"],
+      "tokens_estimate": 100,
+      "description": "Add class and method docstrings",
+      "acceptance_criteria": [
+        "Class docstring explains purpose and usage",
+        "Method docstrings describe parameters and behavior",
+        "Example usage in class docstring"
+      ],
+      "implementation_notes": [
+        "Follow existing docstring style in IP/ modules",
+        "Include debounce behavior explanation"
+      ]
+    }
+  ],
+  "execution_order": [
+    ["WO-012", "WO-010"],
+    ["WO-001"],
+    ["WO-002"],
+    ["WO-003"],
+    ["WO-004"],
+    ["WO-005", "WO-013"],
+    ["WO-006", "WO-015"],
+    ["WO-007"],
+    ["WO-008"],
+    ["WO-009"],
+    ["WO-011"],
+    ["WO-014"]
+  ],
+  "risks": [
+    {
+      "risk": "High CPU during bulk changes",
+      "mitigation": "Debounce at 300ms + batch processing already specified"
+    },
+    {
+      "risk": "watchdog not installed",
+      "mitigation": "Marimo's FileWatcherManager auto-fallback to PollingFileWatcher"
+    },
+    {
+      "risk": "Large codebases slow checks",
+      "mitigation": "Only check changed fiefdom, not entire project"
+    }
+  ],
+  "locked_decisions": [
+    "DEBOUNCE_MS = 300 (from architect plan)",
+    "watch_paths = [\"IP/\"] (configurable)",
+    "Data flow: File Change → HealthWatcher → HealthChecker → STATE_MANAGERS → Code City",
+    "Colors: working=#D4AF37, broken=#1fbdea"
+  ]
+}
