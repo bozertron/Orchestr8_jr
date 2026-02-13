@@ -9,7 +9,8 @@ import subprocess
 import json
 import os
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
+from dataclasses import dataclass, asdict
 
 from .health_checker import HealthChecker
 from .connection_verifier import ConnectionVerifier
@@ -104,3 +105,18 @@ class CarlContextualizer:
                 f"<file path='{rel_path}'>\n{full.read_text(encoding='utf-8')}\n</file>"
             )
         return ""
+
+
+@dataclass
+class FiefdomContext:
+    """
+    Structured context output for fiefdoms.
+    Structure is LOCKED per CONTEXT.md - do not modify fields.
+    """
+
+    fiefdom: str
+    health: Dict[str, Any]
+    connections: Dict[str, Any]
+    combat: Dict[str, Any]
+    tickets: List[str]
+    locks: List[Dict[str, str]]
