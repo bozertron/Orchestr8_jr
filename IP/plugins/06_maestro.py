@@ -961,6 +961,12 @@ def render(STATE_MANAGERS: dict) -> Any:
         """
         root = get_root()
 
+        # Start health watcher on first Code City render
+        try:
+            health_watcher.start_watching()
+        except Exception as e:
+            log_action(f"Health watcher start error: {e}")
+
         if not root:
             return mo.Html("""
             <div class="void-center">
@@ -972,7 +978,12 @@ def render(STATE_MANAGERS: dict) -> Any:
 
         try:
             # Create the Code City visualization
-            return create_code_city(root, width=850, height=500)
+            result = create_code_city(root, width=850, height=500)
+            # Log health check status
+            health_data = get_health()
+            if health_data:
+                log_action(f"Health data: {len(health_data)} results")
+            return result
         except Exception as e:
             log_action(f"Code City error: {str(e)}")
             return mo.Html(f"""
