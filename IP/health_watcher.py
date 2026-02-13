@@ -15,8 +15,17 @@ import threading
 from collections import defaultdict
 from pathlib import Path
 from typing import Callable, Dict, Any, Optional, List
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler, FileModifiedEvent
+
+try:
+    from watchdog.observers import Observer
+    from watchdog.events import FileSystemEventHandler, FileModifiedEvent
+
+    HAS_WATCHDOG = True
+except ImportError:
+    Observer = None
+    FileSystemEventHandler = object
+    FileModifiedEvent = None
+    HAS_WATCHDOG = False
 
 from IP.health_checker import HealthChecker, HealthCheckResult
 
@@ -87,6 +96,10 @@ class HealthWatcher:
 
     def start_watching(self) -> None:
         """Start watching the project for file changes."""
+        if not HAS_WATCHDOG:
+            print("HealthWatcher: watchdog not installed, file watching disabled")
+            return
+
         if self._observer:
             return  # Already watching
 
@@ -263,3 +276,74 @@ class HealthWatcherManager:
             pass
         except Exception as e:
             print(f"HealthWatcherManager._debounced_check error: {e}")
+
+    def start(self) -> None:
+        """
+        Start watching files for changes.
+
+        Uses Marimo's FileWatcherManager for integration with
+        Marimo's reactive update system.
+        """
+        try:
+            from marimo._utils.file_watcher import FileWatcherManager
+
+            self._file_watcher = FileWatcherManager()
+
+            for watch_path in self._watch_paths:
+                full_path = self.project_root / watch_path
+                if full_path.exists():
+                    self._file_watcher.add_callback(
+                        full_path,
+                        lambda p: asyncio.create_task(self._on_file_change(p)),
+                    )
+
+        except ImportError:
+            print(
+                "HealthWatcherManager: Marimo FileWatcherManager not available, using polling"
+            )
+            self._start_polling_fallback()
+
+    def stop(self) -> None:
+        """Stop watching files and cleanup resources."""
+        if self._debounce_task is not None:
+            self._debounce_task.cancel()
+            self._debounce_task = None
+
+        if self._file_watcher is not None:
+            try:
+                self._file_watcher.stop_all()
+            except Exception:
+                pass
+            self._file_watcher = None
+
+    def _start_polling_fallback(self) -> None:
+        """
+        Fallback polling implementation when Marimo's FileWatcherManager
+        is not available.
+        """
+        if not HAS_WATCHDOG:
+            print(
+                "HealthWatcherManager: watchdog not installed, file watching disabled"
+            )
+            return
+
+        class Handler(FileSystemEventHandler):
+            def __init__(self, manager):
+                self.manager = manager
+
+            def on_modified(self, event):
+                if not event.is_directory:
+                    try:
+                        loop = asyncio.get_event_loop()
+                        loop.create_task(
+                            self.manager._on_file_change(Path(event.src_path))
+                        )
+                    except Exception:
+                        pass
+
+        self._observer = Observer()
+        for watch_path in self._watch_paths:
+            full_path = self.project_root / watch_path
+            if full_path.exists():
+                self._observer.schedule(Handler(self), str(full_path), recursive=True)
+        self._observer.start()
