@@ -1,0 +1,32 @@
+{
+  "source": "orchestr8.py",
+  "total_lines": 247,
+  "sha256": "2bc38945957fb57d0a3f7dac8521ca94986081c0e88ae36362160d901a5bdca6",
+  "role": "Entry point — Marimo app root, STATE_MANAGERS definition, dynamic plugin loader",
+  "risks": [
+    "Plugin loader executes entire module at import time — 06_maestro.py is 1883 lines",
+    "No error recovery: crashed plugin render() skips tab with no fallback UI"
+  ],
+  "anchors": [
+    {"line": 19, "text": "app = marimo.App(width='full')"},
+    {"line": 41, "text": "def state_management(mo, os) — state management cell"},
+    {"line": 49, "text": "get_root, set_root = mo.state(os.getcwd())"},
+    {"line": 53, "text": "get_health, set_health = mo.state({}) — health state"},
+    {"line": 54, "text": "get_health_status, set_health_status = mo.state('idle')"},
+    {"line": 57, "text": "STATE_MANAGERS = {root, files, selected, logs, health, health_status} — 6-key dict"},
+    {"line": 87, "text": "def load_plugins() — scans IP/plugins/*.py"},
+    {"line": 105, "text": "spec = importlib.util.spec_from_file_location(...)"},
+    {"line": 111, "text": "if hasattr(module, 'render'): — plugin protocol check"},
+    {"line": 133, "text": "def plugin_renderer() — renders plugins into tabs"},
+    {"line": 145, "text": "rendered = p['module'].render(STATE_MANAGERS) — state injection"},
+    {"line": 220, "text": "mo.ui.tabs(final_tabs) — final UI assembly"}
+  ],
+  "integration_gaps": [],
+  "resolved_gaps": [
+    {
+      "gap": "Health state keys added to STATE_MANAGERS",
+      "resolved_in": "Blind Integration PRD task 7 + Phase 3 health pipeline",
+      "details": "health and health_status keys now present with mo.state({}) and mo.state('idle') defaults"
+    }
+  ]
+}

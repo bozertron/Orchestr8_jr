@@ -1,0 +1,23 @@
+{
+  "source": "one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/a.html",
+  "total_lines": 200,
+  "sha256": "0f446e9da55d49b9432fc0097a606e5dd953193343fb99e82a5036e300245045",
+  "chunk_count": 2,
+  "observation_ids": [
+    509,
+    510
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 190,
+      "text": "\"Please check your address bar. It must start with <strong>file://</strong>\";"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

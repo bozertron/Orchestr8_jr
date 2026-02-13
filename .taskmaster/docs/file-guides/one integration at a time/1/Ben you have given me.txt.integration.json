@@ -1,0 +1,28 @@
+{
+  "source": "one integration at a time/1/Ben you have given me.txt",
+  "total_lines": 344,
+  "sha256": "9e19b6b9e19a5ff37ba34b7925e5c11a356d3ef9af1d6d9cc53946ebfc0b856e",
+  "chunk_count": 3,
+  "observation_ids": [
+    147,
+    148,
+    149
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [
+    {
+      "line": 22,
+      "text": "Save the code below as orchestr8.py."
+    },
+    {
+      "line": 31,
+      "text": "marimo edit orchestr8.py"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

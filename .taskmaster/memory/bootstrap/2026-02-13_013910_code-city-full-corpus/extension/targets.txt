@@ -1,0 +1,2 @@
+.taskmaster/docs/CODE_CITY_PATTERN_INDEX.md
+.taskmaster/docs/CODE_CITY_INTEGRATION_FINISHED_REPORT.md

@@ -1,0 +1,75 @@
+{
+  "source": "one integration at a time/docs/MCP_IDE_CONFIG.md",
+  "total_lines": 183,
+  "sha256": "f8f30a85c29f286370fc430b438838edfe396687b6e07cc379772cace50cc0c4",
+  "chunk_count": 2,
+  "observation_ids": [
+    466,
+    467
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 23,
+      "text": "python orchestr8_mcp.py"
+    },
+    {
+      "line": 27,
+      "text": "fastmcp dev orchestr8_mcp.py"
+    },
+    {
+      "line": 44,
+      "text": "\"orchestr8\": {"
+    },
+    {
+      "line": 46,
+      "text": "\"args\": [\"/home/bozertron/Orchestr8_jr/orchestr8_mcp.py\"],"
+    },
+    {
+      "line": 59,
+      "text": "\"orchestr8\": {"
+    },
+    {
+      "line": 61,
+      "text": "\"args\": [\"/home/bozertron/Orchestr8_jr/orchestr8_mcp.py\"]"
+    },
+    {
+      "line": 76,
+      "text": "\"orchestr8\": {"
+    },
+    {
+      "line": 78,
+      "text": "\"args\": [\"/home/bozertron/Orchestr8_jr/orchestr8_mcp.py\"]"
+    },
+    {
+      "line": 100,
+      "text": "- Name: `orchestr8`"
+    },
+    {
+      "line": 102,
+      "text": "- Arguments: `/home/bozertron/Orchestr8_jr/orchestr8_mcp.py`"
+    },
+    {
+      "line": 129,
+      "text": "Use get_file_info on /home/bozertron/Orchestr8_jr/orchestr8.py"
+    },
+    {
+      "line": 139,
+      "text": "python orchestr8_mcp.py --help"
+    },
+    {
+      "line": 161,
+      "text": "# In orchestr8_mcp.py, change the last lines:"
+    },
+    {
+      "line": 170,
+      "text": "\"orchestr8\": {"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

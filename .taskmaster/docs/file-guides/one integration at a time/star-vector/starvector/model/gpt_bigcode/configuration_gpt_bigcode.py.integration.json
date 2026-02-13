@@ -1,0 +1,23 @@
+{
+  "source": "one integration at a time/star-vector/starvector/model/gpt_bigcode/configuration_gpt_bigcode.py",
+  "total_lines": 143,
+  "sha256": "b06cc149599ba1ea7a7449c20ce59da549140b05d45ad591fd59148080eea31f",
+  "chunk_count": 2,
+  "observation_ids": [
+    915,
+    916
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 68,
+      "text": "Whether or not the model should return the last key/values attentions (not used by all models)."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

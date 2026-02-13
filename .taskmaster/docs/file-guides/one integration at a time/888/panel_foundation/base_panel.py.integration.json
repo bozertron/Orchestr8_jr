@@ -1,0 +1,26 @@
+{
+  "source": "one integration at a time/888/panel_foundation/base_panel.py",
+  "total_lines": 118,
+  "sha256": "99d45877e5fd0d9599f9e5bfa9c1f423e9190d494053bcb6772dec10192a6a61",
+  "chunk_count": 1,
+  "observation_ids": [
+    270
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 26,
+      "text": "This provides the common interface that all panels must implement,"
+    },
+    {
+      "line": 27,
+      "text": "ensuring consistency across orchestr8, integr8, communic8, actu8, cre8, innov8."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

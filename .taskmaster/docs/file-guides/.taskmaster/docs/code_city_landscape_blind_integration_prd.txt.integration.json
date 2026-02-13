@@ -1,0 +1,125 @@
+{
+  "source": ".taskmaster/docs/code_city_landscape_blind_integration_prd.txt",
+  "total_lines": 287,
+  "sha256": "9e26f334452e024b06de4eccd36027987d865aaf0c2acc3e814624e51f0efb03",
+  "chunk_count": 4,
+  "observation_ids": [
+    7,
+    8,
+    9,
+    10
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "JS/Python bridge risk: event transport and payload validation can silently fail.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce.",
+    "Behavioral sequencing risk: mode transitions need explicit state machine handling."
+  ],
+  "anchors": [
+    {
+      "line": 8,
+      "text": "- Root health state in `orchestr8.py`"
+    },
+    {
+      "line": 9,
+      "text": "- Node-click bridge into `handle_node_click()` in `IP/plugins/06_maestro.py`"
+    },
+    {
+      "line": 11,
+      "text": "The result should be immediately task-generatable in Taskmaster and executable without recovering prior chat context."
+    },
+    {
+      "line": 32,
+      "text": "Adds `health` and `health_status` to `STATE_MANAGERS` in `orchestr8.py` and keeps plugin compatibility."
+    },
+    {
+      "line": 36,
+      "text": "Turns `WOVEN_MAPS_NODE_CLICK` browser events into reactive Python state updates and invokes `handle_node_click()`."
+    },
+    {
+      "line": 48,
+      "text": "Implementation must preserve:"
+    },
+    {
+      "line": 49,
+      "text": "- Top row `[orchestr8] [collabor8] [JFDI]`"
+    },
+    {
+      "line": 51,
+      "text": "- Emergence-only motion (no breathing/pulsing)"
+    },
+    {
+      "line": 52,
+      "text": "- Three-state color contract (`#D4AF37`, `#1fbdea`, `#9D4EDD`)"
+    },
+    {
+      "line": 62,
+      "text": "3. Maestro receives event -> `handle_node_click()` executes"
+    },
+    {
+      "line": 74,
+      "text": "- App scope remains `orchestr8` only"
+    },
+    {
+      "line": 88,
+      "text": "- `orchestr8.py` currently defines `STATE_MANAGERS` with `root/files/selected/logs` only"
+    },
+    {
+      "line": 90,
+      "text": "- `IP/woven_maps.py` posts `WOVEN_MAPS_NODE_CLICK` with node payload"
+    },
+    {
+      "line": 92,
+      "text": "- `IP/plugins/06_maestro.py` defines `handle_node_click(node_data)`"
+    },
+    {
+      "line": 121,
+      "text": "- `zoom: float`"
+    },
+    {
+      "line": 150,
+      "text": "1. Root health channels in `orchestr8.py`"
+    },
+    {
+      "line": 151,
+      "text": "- Extend `STATE_MANAGERS` with:"
+    },
+    {
+      "line": 158,
+      "text": "- Existing plugins expecting previous keys must continue to render"
+    },
+    {
+      "line": 160,
+      "text": "2. Node-click bridge into `handle_node_click()` in `IP/plugins/06_maestro.py`"
+    },
+    {
+      "line": 166,
+      "text": "- Invoke `handle_node_click(...)` on valid payload"
+    },
+    {
+      "line": 175,
+      "text": "4. On success, call `handle_node_click(validated_payload_dict)`"
+    },
+    {
+      "line": 187,
+      "text": "- `orchestr8.py`"
+    },
+    {
+      "line": 188,
+      "text": "- `IP/plugins/06_maestro.py`"
+    },
+    {
+      "line": 209,
+      "text": "1. Add `health` and `health_status` to `STATE_MANAGERS` in `orchestr8.py`"
+    },
+    {
+      "line": 213,
+      "text": "1. `marimo run orchestr8.py` starts successfully"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/key_lines_with_files.tsv"
+  }
+}

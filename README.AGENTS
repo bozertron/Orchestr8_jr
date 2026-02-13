@@ -1,0 +1,338 @@
+# README.AGENTS — Persistent Memory & Sidecar Guide
+
+This document explains how AI agents in Orchestr8 use persistent memory and sidecar integration files.
+
+## 1. Memory Infrastructure
+
+### Components
+
+- **claude-mem worker**: `127.0.0.1:37777` (MCP backend)
+- **Shared Memory Gateway**: `127.0.0.1:37888` (Universal HTTP API)
+- **Backend store**: `~/.claude-mem` (shared across all agents)
+
+### Operations
+
+```bash
+# Start the memory stack
+bash .taskmaster/tools/memory-gateway/memory-stack.sh start
+
+# Check status
+bash .taskmaster/tools/memory-gateway/memory-stack.sh status
+
+# Stop the memory stack
+bash .taskmaster/tools/memory-gateway/memory-stack.sh stop
+```
+
+## 2. Memory Gateway API
+
+### Endpoints
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/v1/memory/brief` | GET/POST | Budget-capped shortlist + observation IDs |
+| `/v1/memory/graph` | GET/POST | Relationship graph (query/file/risk/anchor) |
+| `/v1/memory/search` | GET/POST | Search memory index |
+| `/v1/memory/timeline` | GET/POST | Timeline around anchor/query |
+| `/v1/memory/observations` | POST | Fetch full observation payloads |
+| `/v1/memory/save` | POST | Manual memory write |
+| `/v1/memory/health` | GET | Gateway + worker health check |
+| `/v1/memory/schema` | GET | Capability + endpoint schema |
+
+### Anti-15K Strategy
+
+Use **staged retrieval** to avoid context overload:
+
+1. **Brief** — Shortlist files + IDs under fixed budget
+2. **Graph** — Understand relationship neighborhoods
+3. **Observations** — Only fetch selected IDs
+
+### Example Queries
+
+```bash
+# Search memory
+curl -s "http://127.0.0.1:37888/v1/memory/search?query=code+city&limit=5"
+
+# Get brief with budget cap
+curl -s "http://127.0.0.1:37888/v1/memory/brief?q=code+city&budget=1600&file_limit=6"
+
+# Get relationship graph
+curl -s "http://127.0.0.1:37888/v1/memory/graph?q=node+click+bridge&file_limit=8&anchor_limit=3"
+
+# Save observation
+curl -s -X POST "http://127.0.0.1:37888/v1/memory/save" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Code City lock","text":"Three-state color system: Gold/Teal/Purple"}'
+
+# Fetch specific observations
+curl -s -X POST "http://127.0.0.1:37888/v1/memory/observations" \
+  -H "Content-Type: application/json" \
+  -d '{"ids":[1,2,3]}'
+```
+
+## 3. Sidecar File System
+
+### Location
+
+Sidecars live in `.taskmaster/docs/file-guides/`, mirroring the source tree structure:
+
+```
+.taskmaster/docs/file-guides/
+├── _SORT_BY_FILENAME.tsv           # Master index
+├── IP/
+│   ├── woven_maps.py.integration.md    # Markdown guide
+│   └── woven_maps.py.integration.json  # JSON metadata
+└── orchestr8.py.integration.md
+```
+
+### File Types
+
+For each source file, create **two** sidecar files:
+
+1. `{name}.integration.md` — Human-readable guide (anchors, risks, gaps)
+2. `{name}.integration.json` — Machine-readable metadata
+
+### CRITICAL RULE
+
+**When you modify a source file, UPDATE its sidecar files.**
+
+This ensures:
+- Line numbers stay accurate
+- Resolved gaps are tracked
+- New anchors are documented
+- SHA256 hash is updated
+
+## 4. Sidecar Format
+
+### Markdown Format (`.integration.md`)
+
+```markdown
+# {filename} Integration Guide
+
+- Source: `{path}/{filename}`
+- Total lines: `{line_count}`
+- SHA256: `{hash}`
+- Role: **{one-line purpose}**
+
+## Why This Is Painful
+
+[List integration challenges, constraints, architectural trade-offs]
+
+## Anchor Lines
+
+- `{path}:{line}` — {description}
+- `{path}:{line}` — {description}
+
+## Integration Use
+
+[How other modules interact with this file]
+
+## Resolved Gaps
+
+- [x] {gap_description}
+- [x] {gap_description}
+
+## Integration Gaps
+
+- [ ] {gap_description}
+```
+
+### JSON Format (`.integration.json`)
+
+```json
+{
+  "source": "IP/woven_maps.py",
+  "total_lines": 3451,
+  "sha256": "40e91786ca54617d8ab8f9fdae6ad1b636982aadaa82cbccbf77259410332171",
+  "role": "Code City visualization — Canvas2D + WebGPU dual backend",
+  "risks": [
+    "Monolith: one file owns scan/layout + template + interaction",
+    "Iframe sandbox constraints require bridge-safe communication"
+  ],
+  "anchors": [
+    {"line": 67, "text": "class CodeNode — canonical node model"},
+    {"line": 279, "text": "compute_building_geometry(lines, exports)"}
+  ],
+  "integration_gaps": [
+    {
+      "gap": "Patchbay rewiring interaction contract",
+      "status": "pending",
+      "notes": "No drag-to-rewire import rewrite flow yet."
+    }
+  ],
+  "resolved_gaps": [
+    {
+      "gap": "Building geometry formula lock",
+      "resolved_in": "Step 2A",
+      "details": "CodeNode now carries export_count/building_height/footprint"
+    }
+  ]
+}
+```
+
+## 5. Agent Workflow
+
+### Before Modifying Code
+
+1. Check if sidecar exists: `ls .taskmaster/docs/file-guides/{path}/{file}.integration.*`
+2. Read sidecar to understand:
+   - **Risks**: Known integration hazards
+   - **Anchors**: Critical line references (API boundaries, formulas, state)
+   - **Gaps**: Known missing functionality
+
+### After Modifying Code
+
+1. Update line numbers in `anchors` array
+2. Add new anchors for any new critical lines
+3. Mark resolved gaps as resolved
+4. Update `total_lines` and `sha256` hash
+5. Document what changed in markdown "Integration Use" section
+
+### For Research
+
+Use the **brief** endpoint for lightweight context:
+
+```bash
+curl -s "http://127.0.0.1:37888/v1/memory/brief?q=woven+maps+node+click&budget=2000"
+```
+
+### For Integration
+
+Use the **graph** endpoint to understand relationships:
+
+```bash
+curl -s "http://127.0.0.1:37888/v1/memory/graph?q=connection+panel&file_limit=5"
+```
+
+## 6. Claude Auto-Memory
+
+### Location
+
+`~/.claude/projects/{project-hash}/memory/MEMORY.md`
+
+### Purpose
+
+Auto-loaded into system prompt for ALL sessions in this project. Keep **under 200 lines**.
+
+### What to Save
+
+- Stable architecture patterns (not session-specific state)
+- Key file relationships and data flow
+- Critical decisions and their rationale
+- Known risks and constraints
+- Project-specific conventions
+
+### What NOT to Save
+
+- Temporary debugging notes
+- Session-specific task lists
+- Transient error messages
+- Work-in-progress implementation details
+
+## 7. Quick Reference
+
+### Start Memory Stack
+
+```bash
+bash .taskmaster/tools/memory-gateway/memory-stack.sh start
+```
+
+### Get File Hash
+
+```bash
+sha256sum IP/woven_maps.py | cut -d' ' -f1
+```
+
+### Count Lines
+
+```bash
+wc -l IP/woven_maps.py | awk '{print $1}'
+```
+
+### Query Memory Brief
+
+```bash
+curl -s "http://127.0.0.1:37888/v1/memory/brief?q=YOUR_QUERY&budget=2000&file_limit=8"
+```
+
+### Query Memory Graph
+
+```bash
+curl -s "http://127.0.0.1:37888/v1/memory/graph?q=YOUR_QUERY&file_limit=5&anchor_limit=3"
+```
+
+### Save Memory Observation
+
+```bash
+curl -s -X POST "http://127.0.0.1:37888/v1/memory/save" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"YOUR_TITLE","text":"YOUR_TEXT"}'
+```
+
+### Update Sidecar After Modification
+
+```bash
+# Get new line count and hash
+wc -l IP/your_file.py
+sha256sum IP/your_file.py
+
+# Edit the sidecar files
+vim .taskmaster/docs/file-guides/IP/your_file.py.integration.md
+vim .taskmaster/docs/file-guides/IP/your_file.py.integration.json
+```
+
+---
+
+## 8. CSS Architecture — Critical Synchronization Rule
+
+### The Dual-Source Problem
+
+Orchestr8 has **two CSS sources** that must stay synchronized:
+
+| Source | Location | Status | Purpose |
+|--------|----------|--------|---------|
+| **Static CSS File** | `IP/styles/orchestr8.css` | ❌ Orphaned (never loaded) | Contains `:root` variables, Marimo overrides |
+| **Dynamic CSS Injection** | `06_maestro.py:ORCHESTR8_CSS` | ✅ Active | Injected via `mo.Html()`, uses f-string colors |
+
+### CRITICAL: LLM Blindspot Warning
+
+**This has happened a dozen times:** Agents edit `orchestr8.css` thinking they're styling the app, but those styles are NEVER LOADED. The active CSS is the f-string in `06_maestro.py`.
+
+### How CSS Actually Loads in Marimo
+
+```python
+# Line ~2136 in 06_maestro.py — this is the ONLY CSS that loads
+css_injection = mo.Html(ORCHESTR8_CSS)  # Injected as <style> tag
+```
+
+**Marimo CSS Cascade Order:**
+1. `globals.css` — Radix UI + Tailwind base
+2. `App.css` — App shell
+3. `Cell.css` — Cell containers
+4. **Your `ORCHESTR8_CSS`** — Runtime injected
+5. Component-specific styles
+
+### When Modifying Styles
+
+**ALWAYS check both sources:**
+```bash
+# Check if you're editing the orphaned file
+grep -n "your-selector" IP/styles/orchestr8.css
+
+# Check the active injection
+grep -n "your-selector" IP/plugins/06_maestro.py
+```
+
+**To consolidate (RECOMMENDED):**
+1. Move styles from `ORCHESTR8_CSS` f-string into `orchestr8.css`
+2. Replace f-string colors (`{BLUE_DOMINANT}`) with CSS variables
+3. Load file dynamically:
+   ```python
+   css_content = Path("IP/styles/orchestr8.css").read_text()
+   css_injection = mo.Html(f"<style>{css_content}</style>")
+   ```
+
+### Specificity Protection
+
+The active `ORCHESTR8_CSS` has **zero `!important` declarations**, making it fragile against Marimo's React styles. The orphaned `orchestr8.css` has aggressive `!important` usage that would work if loaded.
+
+**Remember**: Sidecars are your integration contract. Keep them accurate, or downstream agents will break.

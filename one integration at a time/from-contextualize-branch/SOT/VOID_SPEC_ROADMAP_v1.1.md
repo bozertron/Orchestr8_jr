@@ -160,6 +160,7 @@ OUTPUT: Barradeau particle structure
 ```
 
 **Building Size Formula:**
+
 ```
 footprint_radius = BASE_SIZE + (file_lines / SCALE_FACTOR)
 building_height = MIN_HEIGHT + (export_count * HEIGHT_PER_EXPORT)
@@ -220,6 +221,7 @@ Edges are rendered dynamically based on actual relationships:
 5. **Render** → Barradeau-style particle thread along edge path
 
 **Edge Health Logic:**
+
 ```
 IF source.health == 'gold' AND target.health == 'gold':
     edge.health = 'gold'
@@ -281,6 +283,7 @@ No need to run diagnostics. Observation IS the diagnostic.
 ## V. Implementation Roadmap
 
 ### Phase 0: Foundation (CURRENT)
+
 **Goal:** Nail the Barradeau visual style for a single building from a single file
 
 | Task | Status | Notes |
@@ -304,7 +307,8 @@ OUTPUT: One Barradeau-style building where:
         - Woven particle aesthetic matches Barradeau reference images
 ```
 
-**Exit Criteria:** 
+**Exit Criteria:**
+
 1. Feed it a small file → small building
 2. Feed it a large file → large building  
 3. Visual quality matches Barradeau aesthetic (dense pixels, ethereal look)
@@ -313,6 +317,7 @@ OUTPUT: One Barradeau-style building where:
 ---
 
 ### Phase 1: The Panel
+
 **Goal:** Buildings show their connection interfaces
 
 | Task | Status | Notes |
@@ -328,6 +333,7 @@ OUTPUT: One Barradeau-style building where:
 ---
 
 ### Phase 2: The Fiefdom
+
 **Goal:** Multiple buildings in a district with edges
 
 | Task | Status | Notes |
@@ -343,6 +349,7 @@ OUTPUT: One Barradeau-style building where:
 ---
 
 ### Phase 3: The Rooms
+
 **Goal:** Building interiors accessible
 
 | Task | Status | Notes |
@@ -358,6 +365,7 @@ OUTPUT: One Barradeau-style building where:
 ---
 
 ### Phase 4: The Sitting Room
+
 **Goal:** Isolated editing workspace
 
 | Task | Status | Notes |
@@ -373,6 +381,7 @@ OUTPUT: One Barradeau-style building where:
 ---
 
 ### Phase 5: Multi-Fiefdom (The Void)
+
 **Goal:** Navigate entire codebase
 
 | Task | Status | Notes |
@@ -387,6 +396,7 @@ OUTPUT: One Barradeau-style building where:
 ---
 
 ### Phase 6: Orchestr8 Integration
+
 **Goal:** Connect to agent coordination system
 
 | Task | Status | Notes |
@@ -472,6 +482,7 @@ src/
 ### 7.1 The Town Square (node_modules, deps, config)
 
 Files that are NOT represented as buildings:
+
 - `node_modules/*`
 - Dependencies (package.json contents)
 - `.gitignore`
@@ -479,6 +490,7 @@ Files that are NOT represented as buildings:
 - Config files (tsconfig.json, vite.config.ts, etc.)
 
 These go to **THE TOWN SQUARE** (or "City Hall"):
+
 - A dedicated area in each fiefdom
 - Scrolling panel displaying these system files
 - If any of these throws an error → **force a build of that specific library**

@@ -1,0 +1,26 @@
+{
+  "source": "one integration at a time/star-vector/starvector/metrics/base_metric.py",
+  "total_lines": 51,
+  "sha256": "cd0239f617349c452b9bbae9e159d930309660cf062bba353ba967776d3b69aa",
+  "chunk_count": 1,
+  "observation_ids": [
+    898
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 45,
+      "text": "This method should be overridden by subclasses to provide the specific metric computation."
+    },
+    {
+      "line": 47,
+      "text": "raise NotImplementedError(\"The metric method must be implemented by subclasses.\")"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "source": "SOT/todo.md",
+  "total_lines": 188,
+  "sha256": "b9a70561529bc0287c20444fdc133925a7519a01acd88bf834b3aaec1284a3c3",
+  "role": "Code City/WebGPU active tracker",
+  "risks": [
+    "Checklist drift can desync implementation truth across agents"
+  ],
+  "anchors": [
+    {
+      "line": 140,
+      "text": "Patchbay role+history pass timestamp"
+    },
+    {
+      "line": 153,
+      "text": "Role-aware apply gate completion"
+    },
+    {
+      "line": 154,
+      "text": "Per-connection history completion"
+    }
+  ],
+  "integration_gaps": [
+    {
+      "gap": "Drag gesture and persistent history follow-ups",
+      "status": "pending"
+    }
+  ],
+  "resolved_gaps": [
+    {
+      "gap": "Role-aware patchbay apply gating",
+      "status": "complete"
+    },
+    {
+      "gap": "Connection action history panel",
+      "status": "complete"
+    }
+  ]
+}

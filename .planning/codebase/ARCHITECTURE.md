@@ -133,7 +133,7 @@ STATE_MANAGERS = {
 - Triggers: Loaded and rendered as a tab by orchestr8.py
 - Responsibilities:
   - Render the "Void" central interface (Woven Maps Code City visualization)
-  - Display top navigation (stereOS, Collabor8, JFDI, Gener8)
+  - Display top navigation (orchestr8, collabor8, JFDI, gener8)
   - Display bottom control surface (maestro input)
   - Integrate all panel components (ticket, calendar, comms, deploy, file_explorer)
   - Enforce three-state color system

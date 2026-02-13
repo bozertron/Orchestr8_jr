@@ -1,0 +1,17 @@
+{
+  "source": "one integration at a time/from-contextualize-branch/888/director/models.py",
+  "total_lines": 30,
+  "sha256": "cc38e85a1c2f9630e37b5fa3d18cc5d348d1d8b8c317ec9a98f00376eaa667e9",
+  "chunk_count": 1,
+  "observation_ids": [
+    491
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

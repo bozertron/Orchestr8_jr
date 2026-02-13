@@ -1,0 +1,119 @@
+{
+  "source": "one integration at a time/docs/MARIMO_STYLING_TASKS.md",
+  "total_lines": 539,
+  "sha256": "fdbb82b5b8ae9c1939563e4e3fb052b5733ded6689682ad7a3b8ae65a3b9a8e5",
+  "chunk_count": 5,
+  "observation_ids": [
+    461,
+    462,
+    463,
+    464,
+    465
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 3,
+      "text": "**Target:** Match MaestroView.vue aesthetic within Marimo constraints"
+    },
+    {
+      "line": 12,
+      "text": "**File:** `IP/styles/orchestr8.css`"
+    },
+    {
+      "line": 17,
+      "text": "/* orchestr8.css - MaestroView.vue Alignment */"
+    },
+    {
+      "line": 66,
+      "text": "custom_css = [\"IP/styles/orchestr8.css\"]"
+    },
+    {
+      "line": 91,
+      "text": "**File:** `IP/styles/orchestr8.css`"
+    },
+    {
+      "line": 114,
+      "text": "### Task 1.2: Style All Buttons - Gold Theme"
+    },
+    {
+      "line": 115,
+      "text": "**File:** `IP/styles/orchestr8.css`"
+    },
+    {
+      "line": 118,
+      "text": "/* Primary buttons - Gold */"
+    },
+    {
+      "line": 148,
+      "text": "**File:** `IP/styles/orchestr8.css`"
+    },
+    {
+      "line": 174,
+      "text": "**File:** `IP/styles/orchestr8.css`"
+    },
+    {
+      "line": 201,
+      "text": "**File:** `IP/styles/orchestr8.css`"
+    },
+    {
+      "line": 207,
+      "text": "[data-cell-name='maestro_header'] {"
+    },
+    {
+      "line": 244,
+      "text": "| 06_maestro.py | `maestro_header` | Top navigation |"
+    },
+    {
+      "line": 245,
+      "text": "| 06_maestro.py | `mermaid_graph` | Status visualization |"
+    },
+    {
+      "line": 246,
+      "text": "| 06_maestro.py | `fiefdom_list` | Fiefdom sidebar |"
+    },
+    {
+      "line": 247,
+      "text": "| 06_maestro.py | `command_input` | Bottom input bar |"
+    },
+    {
+      "line": 258,
+      "text": "**File:** `IP/styles/orchestr8.css`"
+    },
+    {
+      "line": 347,
+      "text": "### Task 5.1: Style 06_maestro.py (The Void)"
+    },
+    {
+      "line": 348,
+      "text": "**File:** `IP/plugins/06_maestro.py`"
+    },
+    {
+      "line": 399,
+      "text": "**File:** `IP/styles/orchestr8.css`"
+    },
+    {
+      "line": 413,
+      "text": "/* Note: Mermaid node colors should be set in the diagram definition, not CSS */"
+    },
+    {
+      "line": 486,
+      "text": "| Button hover | Gold fill | ☐ |"
+    },
+    {
+      "line": 488,
+      "text": "| Working badge | Gold | ☐ |"
+    },
+    {
+      "line": 490,
+      "text": "| Combat badge | Purple | ☐ |"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

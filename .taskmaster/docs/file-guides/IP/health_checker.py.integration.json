@@ -1,0 +1,33 @@
+{
+  "source": "IP/health_checker.py",
+  "total_lines": 623,
+  "sha256": "cae9cb01cb7858c8a0f43ce8e4fc44b13ab8c48cc3e5155826f5170874ed332a",
+  "role": "Health pipeline core — static analysis (TS/mypy/ruff/py_compile), produces HealthCheckResult",
+  "risks": [
+    "check_all_fiefdoms() optimized batch path exists but is never called"
+  ],
+  "anchors": [
+    {"line": 18, "text": "class CheckerType(Enum) — typescript, python_mypy, python_ruff, python_compile"},
+    {"line": 26, "text": "@dataclass class ParsedError — file, line, column, error_code, message, severity"},
+    {"line": 44, "text": "@dataclass class HealthCheckResult — status, errors, warnings, last_check"},
+    {"line": 64, "text": "def to_dict() — serialization for state storage and transport"},
+    {"line": 88, "text": "class HealthChecker — multi-language checker"},
+    {"line": 96, "text": "_detect_available_checkers() — probes npm, mypy, ruff"},
+    {"line": 448, "text": "def check_fiefdom(fiefdom_path) — unified check"},
+    {"line": 498, "text": "Python check priority: ruff > mypy > py_compile"},
+    {"line": 539, "text": "def check_all_fiefdoms() — batch check, not called"}
+  ],
+  "integration_gaps": [],
+  "resolved_gaps": [
+    {
+      "gap": "HealthCheckResult now merged into Code City nodes",
+      "resolved_in": "Phase 3 health pipeline",
+      "details": "build_code_city() passes get_health() to create_code_city(health_results=...) which calls build_from_health_results()"
+    },
+    {
+      "gap": "to_dict() added to HealthCheckResult",
+      "resolved_in": "Phase 3 health pipeline",
+      "details": "Returns status, errors, warnings, counts, last_check, checker_used as plain dict"
+    }
+  ]
+}

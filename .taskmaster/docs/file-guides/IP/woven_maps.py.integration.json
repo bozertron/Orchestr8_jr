@@ -1,0 +1,65 @@
+{
+  "source": "IP/woven_maps.py",
+  "total_lines": 4070,
+  "sha256": "0a9f75dd3a71291d4a74ac7c73a7edab11a4f0273432c8850d06088961475852",
+  "role": "Code City renderer + patchbay panel UI",
+  "risks": [
+    "Panel now combines diagnostics, actions, and history",
+    "UI/backend permission drift can confuse operators",
+    "Large embedded template increases coupling risk"
+  ],
+  "anchors": [
+    {
+      "line": 1274,
+      "text": "apply enable flag"
+    },
+    {
+      "line": 2362,
+      "text": "renderConnectionActionResult()"
+    },
+    {
+      "line": 2389,
+      "text": "renderConnectionActionHistory()"
+    },
+    {
+      "line": 2417,
+      "text": "getCurrentActorRole()"
+    },
+    {
+      "line": 2459,
+      "text": "apply button branch"
+    },
+    {
+      "line": 2499,
+      "text": "payload actorRole"
+    },
+    {
+      "line": 3818,
+      "text": "WOVEN_MAPS_CONNECTION_RESULT listener"
+    },
+    {
+      "line": 3832,
+      "text": "phase status update"
+    }
+  ],
+  "integration_gaps": [
+    {
+      "gap": "Drag-to-rewire gesture UX",
+      "status": "pending"
+    },
+    {
+      "gap": "Persistent history storage",
+      "status": "pending"
+    }
+  ],
+  "resolved_gaps": [
+    {
+      "gap": "Per-connection patchbay history in panel",
+      "status": "complete"
+    },
+    {
+      "gap": "Actor-role emission in connection actions",
+      "status": "complete"
+    }
+  ]
+}

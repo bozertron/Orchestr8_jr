@@ -1,0 +1,17 @@
+{
+  "source": ".planning/config.json",
+  "total_lines": 16,
+  "sha256": "55a49451f1df0b9a9b64d55b10fc550ee24c54a9493e5d3eaef5f5ade97b96fd",
+  "chunk_count": 1,
+  "observation_ids": [
+    1037
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

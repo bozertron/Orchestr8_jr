@@ -1,7 +1,7 @@
 """
 Output Renderer - Smart JSON/Text Rendering Utility
 
-Orchestr8 v3.0 - The Fortress Factory
+Orchestr8 v3.0
 
 Provides intelligent output rendering for CLI command results.
 Detects JSON content and renders appropriately:

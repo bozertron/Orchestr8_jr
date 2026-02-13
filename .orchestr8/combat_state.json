@@ -1,9 +1,3 @@
 {
-  "active_deployments": {
-    "IP/plugins/06_maestro.py": {
-      "deployed_at": "2026-01-26T13:38:47.872373",
-      "terminal_id": "term_abc123",
-      "model": "claude-3-sonnet"
-    }
-  }
+  "active_deployments": {}
 }

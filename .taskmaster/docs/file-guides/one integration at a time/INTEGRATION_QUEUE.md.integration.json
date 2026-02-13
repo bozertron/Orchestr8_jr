@@ -1,0 +1,46 @@
+{
+  "source": "one integration at a time/INTEGRATION_QUEUE.md",
+  "total_lines": 98,
+  "sha256": "267add2009f4f2ccd01581f33086c7cceb597dc0f822bf67833013f8ddd26f9e",
+  "chunk_count": 1,
+  "observation_ids": [
+    649
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 16,
+      "text": "║   Each integration must be pressure tested with Ben's feedback. ║"
+    },
+    {
+      "line": 39,
+      "text": "| 13 | `orchestr8-zed/` | Zed IDE extension | Rust | Pending |"
+    },
+    {
+      "line": 43,
+      "text": "| 17 | `orchestr8_mcp.py` | MCP server for IDE integration | ~490 | Pending |"
+    },
+    {
+      "line": 44,
+      "text": "| 18 | `orchestr8_standalone.py` | Legacy monolithic version (reference) | ~710 | Pending |"
+    },
+    {
+      "line": 45,
+      "text": "| 19 | `IP--orchestr8_app.py` | Redundant loader (merge or discard) | ~250 | Pending |"
+    },
+    {
+      "line": 75,
+      "text": "- `marimo run orchestr8.py` works"
+    },
+    {
+      "line": 76,
+      "text": "- `06_maestro.py` renders correctly"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

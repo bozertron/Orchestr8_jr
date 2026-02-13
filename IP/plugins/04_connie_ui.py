@@ -1,6 +1,6 @@
 """
 04_connie_ui Plugin - Database Conversion UI
-Orchestr8 v3.0 - The Fortress Factory
+Orchestr8 v3.0
 
 Provides a UI interface for Connie database conversion engine.
 Allows users to browse, preview, and export SQLite database tables

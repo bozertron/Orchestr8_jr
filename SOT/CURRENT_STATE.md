@@ -1,164 +1,116 @@
 # Orchestr8 Current State Audit
 
-**Audit Date:** 2026-01-30
-**Auditor:** Claude (Session review-sot-documents-Y89aP)
+**Audit Date:** 2026-02-13
+**Authority Chain:** `.planning/phases/CONTEXT.md` > `.planning/VISION-ALIGNMENT.md`
 
 ---
 
-## Executive Summary
+## Canon Lock (2026-02-12 22:51:55 PST)
 
-**Good news:** Almost everything described in the ROADMAP is ALREADY BUILT.
-**Bad news:** Much of it is NOT WIRED UP or uses placeholder UI.
-
-The gap is not implementation - it's integration.
-
----
-
-## I. What Exists (Implementation Status)
-
-### Core IP Modules
-
-| Module | Size | Purpose | Status |
-|--------|------|---------|--------|
-| `IP/woven_maps.py` | 78KB | Code City visualization | COMPLETE - Full canvas-based viz with three-color system |
-| `IP/connection_verifier.py` | 34KB | Import graph analysis | COMPLETE - Node types, cycles, centrality |
-| `IP/health_checker.py` | 22KB | Multi-language health checks | COMPLETE - TypeScript, Python support |
-| `IP/connie.py` | 13KB | Database converter | COMPLETE - SQLite to LLM-friendly formats |
-| `IP/ticket_manager.py` | 8KB | Ticket system | COMPLETE - Create, update, notes, archive |
-| `IP/briefing_generator.py` | 5KB | BRIEFING.md generation | PARTIAL - `load_campaign_log()` is a stub |
-| `IP/louis_core.py` | 5KB | File locking | COMPLETE - OS-level chmod locks |
-| `IP/mermaid_theme.py` | 5KB | Mermaid styling | COMPLETE - Three-color theming |
-| `IP/combat_tracker.py` | 4KB | Deployment tracking | COMPLETE - Purple state management |
-| `IP/terminal_spawner.py` | 4KB | Cross-platform terminal | COMPLETE - Linux/Mac/Windows |
-| `IP/carl_core.py` | 3KB | Context gatherer | EXISTS - needs integration |
-| `IP/mermaid_generator.py` | 2KB | Mermaid graph | COMPLETE - but superseded by woven_maps |
-
-### Plugin Components (Slide-out Panels)
-
-| Component | Purpose | Status |
-|-----------|---------|--------|
-| `ticket_panel.py` | JFDI ticket panel | COMPLETE - Full UI, wired to TicketManager |
-| `calendar_panel.py` | Calendar integration | COMPLETE - Basic implementation |
-| `comms_panel.py` | P2P communications | COMPLETE - Basic implementation |
-| `file_explorer_panel.py` | File browser | COMPLETE - Basic implementation |
-| `deploy_panel.py` | "House a Digital Native?" modal | COMPLETE - Full deploy UI |
-
-### Plugins
-
-| Plugin | Purpose | Status |
-|--------|---------|--------|
-| `00_welcome.py` | Welcome tab | WORKING |
-| `01_generator.py` | 7-Phase Wizard | FIXED (marimo API) |
-| `02_explorer.py` | File explorer | FIXED (marimo API) |
-| `03_gatekeeper.py` | Louis UI | WORKING |
-| `04_connie_ui.py` | Connie UI | WORKING |
-| `05_universal_bridge.py` | Tool registry | FIXED (marimo API) |
-| `06_maestro.py` | THE VOID | PARTIALLY WIRED |
-| `07_settings.py` | Settings | FIXED (marimo API) |
-| `08_director.py` | Director | FIXED (marimo API) |
+- [x] Top row canonical: `[orchestr8] [collabor8] [JFDI]`
+- [x] `gener8` is excluded from the active UI canon
+- [x] Combat cleanup is MANUAL ONLY (Founder decides)
+- [x] Campaign log format is JSON in `.orchestr8/campaigns/`
+- [x] Mermaid generator is KEPT — Carl deploys diagrams to agent briefings
+- [x] Color system: Gold (#D4AF37) / Teal (#1fbdea) / Purple (#9D4EDD)
+- [x] Building formulas: Height = `3 + (exports * 0.8)`, Footprint = `2 + (lines * 0.008)`
+- [x] No breathing/pulsing animations — emergence only
 
 ---
 
-## II. What's Wired in 06_maestro.py
+## What's Wired and Working in 06_maestro.py
 
-### Services Instantiated (Lines 400-407)
+### Services Instantiated
 
-```python
-combat_tracker = CombatTracker(project_root_path)      # USED
-briefing_generator = BriefingGenerator(project_root_path)  # USED (partially)
-terminal_spawner = TerminalSpawner(project_root_path)  # USED
-ticket_panel = TicketPanel(project_root_path)          # USED
-calendar_panel = CalendarPanel(project_root_path)      # USED
-comms_panel = CommsPanel(project_root_path)            # USED
-file_explorer_panel = FileExplorerPanel(project_root_path)  # USED
-deploy_panel = DeployPanel(project_root_path)          # USED
-```
+| Service | Status | Notes |
+|---------|--------|-------|
+| CombatTracker | WIRED | Tracks Purple state, deploy/withdraw |
+| BriefingGenerator | PARTIAL | generate() works, load_campaign_log() is STUB |
+| TerminalSpawner | WIRED | Spawns terminals via Phreak> |
+| TicketPanel | WIRED | JFDI button opens it |
+| CalendarPanel | WIRED | Right-slide, mutual exclusion |
+| CommsPanel | WIRED | Right-slide, mutual exclusion |
+| FileExplorerPanel | WIRED | Right-slide, mutual exclusion |
+| DeployPanel | WIRED | Modal overlay for broken nodes |
+| CarlContextualizer | WIRED | Summon search + node click context |
+| HealthWatcher | WIRED | File change detection → Code City |
+| HealthChecker | WIRED | Via HealthWatcher callback + refresh_health() |
 
-### Imports That Are NEVER Used
+### Top Row: `[orchestr8] [collabor8] [JFDI]`
 
-```python
-from IP.health_checker import HealthChecker           # IMPORTED, NEVER INSTANTIATED
-from IP.mermaid_generator import Fiefdom, FiefdomStatus, generate_empire_mermaid  # IMPORTED, NEVER USED
-```
+| Button | Handler | What It Does |
+|--------|---------|--------------|
+| orchestr8 | handle_home_click() | Resets all state to home view |
+| collabor8 | toggle_collabor8() | Opens agent deployment panel (5 groups, 19 agents) |
+| JFDI | handle_jfdi() | Opens TicketPanel (ticket-first workflow) |
 
-### What Works
+### Panels That Work
 
-- Code City visualization (`create_code_city()`) - Line 935
-- Chat with Claude API - Lines 753-843
-- Terminal spawning - Lines 586-621
-- Panel toggling (Calendar, Comms, File Explorer) - Lines 441-484
-- Deploy panel for broken nodes - Lines 486-564
-- Ticket panel (via separate "Tickets" button) - Line 1233
+| Panel | Trigger | Status |
+|-------|---------|--------|
+| Collabor8 (agents) | Top row button | WORKING — full agent group/picker/deploy UI |
+| Settings | Bottom control + internal | WORKING — model picker + parameter display |
+| Summon (search) | Search button | WORKING — Carl integration, context JSON display |
+| Tickets | JFDI button | WORKING — full ticket CRUD |
+| Calendar | Bottom left | WORKING — monthly grid, events |
+| Comms | Bottom left | WORKING — contacts, messages, network tabs |
+| Files | Bottom left | WORKING — breadcrumb nav, file listing |
+| Deploy | Code City node click | WORKING — broken node → deploy agent modal |
 
-### What DOESN'T Work
+### Code City (Woven Maps)
 
-| Issue | Location | Problem |
-|-------|----------|---------|
-| Brand says "stereOS" | Lines 873-876 | Should be "orchestr8" |
-| CSS uses `.stereos-*` classes | Lines 189-200 | Should be `.orchestr8-*` |
-| Gener8 button does nothing | Lines 891-894 | Only logs "Switch to Generator tab" |
-| JFDI opens placeholder | Lines 1059-1079 | Has "coming soon" text, ignores TicketPanel |
-| Collabor8 opens placeholder | Lines 1037-1057 | Has "coming soon" text, no agent wiring |
-| Summon opens placeholder | Lines 1081-1095 | Not wired to Carl/search |
-| Settings button is "~~~" | Lines 1200-1202 | Should be "gener8" and open settings |
-| HealthChecker never runs | Line 77 | Imported but never instantiated |
-| Mermaid generator unused | Line 75 | Code City replaced it entirely |
-
----
-
-## III. Roadmap vs Reality
-
-| Phase | Roadmap Says | Reality |
-|-------|--------------|---------|
-| Phase 1 | Build mermaid, health checker, spawner | ALL EXIST - but HealthChecker not wired |
-| Phase 2 | Create ticket system | COMPLETE - but JFDI button doesn't use it |
-| Phase 3 | BRIEFING.md, wisdom system | PARTIAL - `load_campaign_log()` is stub |
-| Phase 4 | Git hooks, Louis | Louis exists, hooks not implemented |
-| Phase 5 | PyVis interactive graph | SUPERSEDED by Woven Maps (78KB!) |
-| Phase 6 | Testing integration | NOT STARTED |
+- Renders with three-color system (Gold/Teal/Purple)
+- Health results merge into node status via status_merge_policy
+- Combat files turn Purple
+- Connection panel shows import edges with file names
+- Click events bridge JS→Python via hidden input elements
+- 71/71 contract tests passing
 
 ---
 
-## IV. The 14 Known Wiring Problems
+## Imports in 06_maestro.py
 
-From `one integration at a time/Big Pickle/wiring_problems.md`:
-
-1. **sys.path manipulation** - Brittle path resolution (04_connie_ui.py, 08_director.py)
-2. **CarlContextualizer hollow** - Only dumps JSON, doesn't influence state
-3. **Generator phase locking** - Not persisted across sessions
-4. **Maestro "coming soon" panels** - Placeholder UI (Collabor8, JFDI, Summon)
-5. **Dangling UI actions** - Buttons only log to console (Gener8, Apps, Matrix, Files)
-6. **Gatekeeper no rescan** - Can't remove folders, no auto-refresh
-7. **Connie fragile fallback** - Assumes pandas exists
-8. **Director async disconnect** - Background thread doesn't trigger UI refresh
-9. **Briefing campaign history stub** - Always returns empty list
-10. **Platform assumptions** - Hardcoded gnome-terminal, npm run typecheck
-11. **Unsynchronized mission state** - Tickets, Combat, Briefings not linked
-12. **Manual state cleanup** - Combat status persists on crash
-13. **Brittle alias resolution** - Assumes @/ maps to src/
-14. **Health check assumptions** - Assumes "typecheck" script exists
+| Import | Status | Purpose |
+|--------|--------|---------|
+| mermaid_generator (Fiefdom, FiefdomStatus, generate_empire_mermaid) | INTENTIONAL | Carl deploys mermaid diagrams to agent briefings |
+| HealthChecker | USED | Via HealthWatcher and refresh_health() |
+| All other imports | USED | Wired to services and panels |
 
 ---
 
-## V. Summary
+## Remaining Work
 
-### What Works Today
+### 1. Campaign Log (JSON, not markdown)
+- **Canon:** JSON files in `.orchestr8/campaigns/`
+- **Current:** `load_campaign_log()` stub looks for CAMPAIGN_LOG.md (WRONG format)
+- **Fix:** Rewrite to read JSON from `.orchestr8/campaigns/`
 
-- Code City renders (Woven Maps)
-- Chat with Claude works (if API key set)
-- Terminal spawning works
-- Ticket panel renders (via separate button)
-- Slide-out panels (Calendar, Comms, Files) render
+### 2. Mermaid → Carl Briefing Integration
+- **Canon:** Carl deploys Mermaid diagrams to agents in briefing documents
+- **Current:** Import exists, not yet wired to Carl's briefing pipeline
+- **Fix:** Wire generate_empire_mermaid() into BriefingGenerator.generate()
 
-### Critical Gaps
+### 3. SOT Document Accuracy
+- **Previous state:** SOT docs contained contradictions with canon lock
+- **Fixed:** 2026-02-13 — rewritten against authority chain
 
-1. Top row buttons don't match spec
-2. JFDI doesn't use TicketPanel
-3. HealthChecker never runs
-4. No automatic fiefdom health status
-5. Campaign log history is empty
-6. Brand still says "stereOS"
+---
 
-### Path Forward
+## Known Issues (From 14 Wiring Problems)
 
-See `SOT/WIRING_PLAN.md` for the comprehensive fix plan.
+| # | Problem | Status |
+|---|---------|--------|
+| 1 | sys.path manipulation | Handled — project root detection works |
+| 2 | CarlContextualizer hollow | RESOLVED — fully wired to Summon + node click |
+| 3 | Generator phase locking | Not persisted (low priority) |
+| 4 | Maestro "coming soon" panels | RESOLVED — all panels implemented |
+| 5 | Dangling UI actions | MOSTLY RESOLVED — Apps/Matrix/Files work |
+| 6 | Gatekeeper no rescan | Open (low priority) |
+| 7 | Connie fragile fallback | Open (low priority) |
+| 8 | Director async disconnect | Open (architecture limitation) |
+| 9 | Campaign history stub | OPEN — needs JSON rewrite per canon |
+| 10 | Platform assumptions | Handled — fallback chains exist |
+| 11 | Unsynchronized mission state | Open (future work) |
+| 12 | Manual state cleanup | BY DESIGN — canon says manual only |
+| 13 | Brittle alias resolution | Open (low priority) |
+| 14 | Health check assumptions | Handled — Python checkers available |

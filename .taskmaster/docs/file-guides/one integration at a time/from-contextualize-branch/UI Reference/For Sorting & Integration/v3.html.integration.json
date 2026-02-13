@@ -1,0 +1,38 @@
+{
+  "source": "one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/v3.html",
+  "total_lines": 426,
+  "sha256": "8963d13af6c233cef2a959edabd5717a252d83d116fb4345382f53dc6d016741",
+  "chunk_count": 4,
+  "observation_ids": [
+    560,
+    561,
+    562,
+    563
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 14,
+      "text": "3.  **OR**, paste it directly into the Z.ai chat window. (It should now work, though performance might be lower than a native file)."
+    },
+    {
+      "line": 120,
+      "text": "<button id=\"btn-fix-bug\">Restore (Gold)</button>"
+    },
+    {
+      "line": 190,
+      "text": "// STATE LOGIC (Gold vs Blue)"
+    },
+    {
+      "line": 202,
+      "text": "// Gold State"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

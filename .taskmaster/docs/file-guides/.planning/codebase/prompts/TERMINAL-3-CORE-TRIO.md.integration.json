@@ -1,0 +1,42 @@
+{
+  "source": ".planning/codebase/prompts/TERMINAL-3-CORE-TRIO.md",
+  "total_lines": 25,
+  "sha256": "255424f6fce6cc07cc1de81aa5189b844542cffb95cd6b737c885b36d1505595",
+  "chunk_count": 1,
+  "observation_ids": [
+    1023
+  ],
+  "risks": [
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 5,
+      "text": "These 3 modules feed data into Code City node colors. They're the data pipeline."
+    },
+    {
+      "line": 9,
+      "text": "2. `IP/health_checker.py` (601 lines) — determines node colors (Gold/Teal)"
+    },
+    {
+      "line": 10,
+      "text": "3. `IP/combat_tracker.py` (114 lines) — tracks LLM deployments (Purple)"
+    },
+    {
+      "line": 16,
+      "text": "3. Integration surface: How does 06_maestro.py or woven_maps.py consume this?"
+    },
+    {
+      "line": 21,
+      "text": "8. Config: Does it read from orchestr8_settings.toml?"
+    },
+    {
+      "line": 23,
+      "text": "**Critical question:** Health data is supposed to color Code City nodes. Trace the FULL pipeline: health_checker → ??? → woven_maps node colors. Where does it break?"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

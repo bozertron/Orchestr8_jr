@@ -1,0 +1,42 @@
+{
+  "source": "one integration at a time/Context King/Parallel Workstreams for.txt",
+  "total_lines": 77,
+  "sha256": "28292d4a9827833709e2c8a3b2fc077d542ec78ef667acfcc24464df258b1120",
+  "chunk_count": 1,
+  "observation_ids": [
+    375
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 6,
+      "text": "Current state: orchestr8.py:verify_connections() extracts imports via regex but doesn't verify they resolve."
+    },
+    {
+      "line": 15,
+      "text": "Files: orchestr8.py lines 104-144, potentially new IP/connection_verifier.py"
+    },
+    {
+      "line": 36,
+      "text": "Maybe a JSON file: .orchestr8/combat_state.json"
+    },
+    {
+      "line": 44,
+      "text": "orchestr8.py produces edges_df (actual import connections)"
+    },
+    {
+      "line": 53,
+      "text": "Files: IP/woven_maps.py (I'll leave hooks for you), orchestr8.py"
+    },
+    {
+      "line": 73,
+      "text": "I'll focus on: Integrating woven_maps.py into 06_maestro.py so The Void renders the Code City."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "source": "one integration at a time/docs/888_INTEGRATION_ROADMAP.md",
+  "total_lines": 505,
+  "sha256": "cf5be6d5ae3e702af9bfea12ed40fe7745d4abca7c51a4b4acce2ce4265f60b4",
+  "chunk_count": 5,
+  "observation_ids": [
+    402,
+    403,
+    404,
+    405,
+    406
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 56,
+      "text": "**Integration Point:** Runs continuously in background, reports to maestro"
+    },
+    {
+      "line": 67,
+      "text": "- Surfaces insights to Emperor and maestro"
+    },
+    {
+      "line": 126,
+      "text": "**Revised:** Assigned to maestro (intrusive stuff needs visibility)"
+    },
+    {
+      "line": 132,
+      "text": "- ALL senses data surfaces through maestro panel"
+    },
+    {
+      "line": 135,
+      "text": "**Why maestro?** Privacy - intrusive capabilities need clear visibility"
+    },
+    {
+      "line": 143,
+      "text": "**Integration Point:** maestro panel, clearly labeled \"SENSES ACTIVE\" indicator"
+    },
+    {
+      "line": 266,
+      "text": "**What it is:** Base architecture that ALL [name]8 tools must implement"
+    },
+    {
+      "line": 274,
+      "text": "**Why it matters:** Lets maestro talk to ALL tools consistently"
+    },
+    {
+      "line": 287,
+      "text": "# orchestr8_settings.toml"
+    },
+    {
+      "line": 313,
+      "text": "assigned_to = \"maestro\""
+    },
+    {
+      "line": 385,
+      "text": "**Action:** Create `orchestr8_settings.toml` with all tool/agent settings"
+    },
+    {
+      "line": 405,
+      "text": "- Connect to maestro for reporting"
+    },
+    {
+      "line": 434,
+      "text": "#### BP-888-008: senses → maestro Assignment"
+    },
+    {
+      "line": 437,
+      "text": "- Move senses controls to maestro panel"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

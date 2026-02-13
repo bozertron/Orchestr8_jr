@@ -63,6 +63,7 @@ This document captures the vision alignment session that established the foundat
 | **Terminology** | "Neighborhood" (not "Fiefdom") for UI/display |
 
 **REJECTED:**
+
 - Fiefdom = building (WRONG — neighborhood contains multiple buildings)
 - Pre-defined edges (WRONG — edges render from actual relationships)
 - Red for errors (WRONG — teal indicates broken state)
@@ -82,16 +83,19 @@ This document captures the vision alignment session that established the foundat
 | **Health visualization** | Building TEAL → Room with error GLOWS → Click to enter Sitting Room |
 
 **Data Flow:**
+
 ```
 File Change → HealthWatcher → HealthChecker → STATE_MANAGERS → Code City
 ```
 
 **Connection Panel Behavior:**
+
 - NOT each import/export has its own color (visual nightmare)
 - Connection panel shows file names clearly
 - Clicking a connection GLOWS that signal path everywhere it connects
 
 **Barradeau Reference Files:**
+
 - `one integration at a time/Barradeau/void-phase0-buildings.html` — PRIMARY
 - `one integration at a time/Barradeau/barradeau-3d.html` — SECONDARY
 - Align colors: `#C9A962` → `#D4AF37` (canonical gold)
@@ -134,6 +138,7 @@ File Change → HealthWatcher → HealthChecker → STATE_MANAGERS → Code City
 | **Priority** | HIGH — implement this round |
 
 **Carl's Output Structure:**
+
 ```json
 {
   "fiefdom": "IP/",
@@ -194,18 +199,23 @@ File Change → HealthWatcher → HealthChecker → STATE_MANAGERS → Code City
 ## Key Architecture Decisions
 
 ### 1. Relationship-Based Edges
+
 Edges are NOT pre-defined. They render from actual file relationships. If code changes, visualization reflects reality automatically.
 
 ### 2. Emergence, Not Animation
+
 UI elements do not "load" or "breathe" — they EMERGE when summoned. The only motion is emergence from the Void.
 
 ### 3. Patchbay Rewiring
+
 Humans can physically rewire files by dragging connections from one building to another. The system updates actual code imports.
 
 ### 4. Sitting Room Collaboration
+
 When a room (function) has an issue, click to enter the Sitting Room — particles morph into a presentation area where human and LLM collaborate on fixes.
 
 ### 5. Signal Path Visualization
+
 Clicking a connection highlights the ENTIRE signal path — all places that connection touches glow, making dependencies traceable at a glance.
 
 ---

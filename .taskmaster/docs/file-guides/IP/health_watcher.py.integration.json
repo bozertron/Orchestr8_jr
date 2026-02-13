@@ -1,0 +1,34 @@
+{
+  "source": "IP/health_watcher.py",
+  "total_lines": 349,
+  "sha256": "8278e3243a24f6636a6a8141c5b3d022e429f7ab2183836bdfa82f2cc3d0e0f4",
+  "role": "File change watchdog — debounced monitoring, triggers HealthChecker, bridges to state",
+  "risks": [
+    "Two implementations: HealthWatcher (watchdog, 100ms) active, HealthWatcherManager (Marimo, 300ms) available but unused"
+  ],
+  "anchors": [
+    {"line": 8, "text": "Data flow: File Change → Debounce → HealthChecker → State → Code City"},
+    {"line": 33, "text": "class HealthWatcher — watchdog-based, 100ms debounce (in use)"},
+    {"line": 40, "text": "DEBOUNCE_MS = 100"},
+    {"line": 76, "text": "def _debounced_check() — runs health check, invokes callback"},
+    {"line": 97, "text": "def start_watching() — starts Observer, recursive=True"},
+    {"line": 134, "text": "class HealthWatcherManager — Marimo-integrated, 300ms debounce (available)"},
+    {"line": 144, "text": "DEBOUNCE_MS = 300"},
+    {"line": 228, "text": "async def _debounced_check() — batched, writes to state_managers['health']"},
+    {"line": 267, "text": "if 'health' in self._state_managers: — health key now available"},
+    {"line": 288, "text": "from marimo._utils.file_watcher import FileWatcherManager"}
+  ],
+  "integration_gaps": [],
+  "resolved_gaps": [
+    {
+      "gap": "HealthWatcher callback now writes to shared state",
+      "resolved_in": "Phase 3 health pipeline",
+      "details": "on_health_change() in 06_maestro.py merges results into STATE_MANAGERS['health'] instead of consuming locally"
+    },
+    {
+      "gap": "STATE_MANAGERS health key available",
+      "resolved_in": "Blind Integration PRD task 7",
+      "details": "Both HealthWatcher and HealthWatcherManager paths can now access health state"
+    }
+  ]
+}

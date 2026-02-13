@@ -1,5 +1,5 @@
 # IP Plugins Package
-# Orchestr8 v3.0 - The Fortress Factory
+# Orchestr8 v3.0
 # Dynamic plugin loading directory
 #
 # Plugin Contract:

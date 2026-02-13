@@ -1,0 +1,122 @@
+{
+  "source": ".planning/phases/ARCHITECT-HEALTHCHECKER.md",
+  "total_lines": 223,
+  "sha256": "c99c2a3e783b74f8c8b5939b162d46cfd5db63170ef19aa3fcc22c2db3cfd8bb",
+  "chunk_count": 2,
+  "observation_ids": [
+    1053,
+    1054
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "JS/Python bridge risk: event transport and payload validation can silently fail.",
+    "Behavioral sequencing risk: mode transitions need explicit state machine handling."
+  ],
+  "anchors": [
+    {
+      "line": 16,
+      "text": "| State Management | MISSING | No STATE_MANAGERS connection |"
+    },
+    {
+      "line": 27,
+      "text": "| CodeNode.status | EXISTS | working/broken/combat - NOT populated from HealthChecker |"
+    },
+    {
+      "line": 31,
+      "text": "**Gap:** `analyze_file()` at L234-269 does lightweight scan, ignores HealthChecker."
+    },
+    {
+      "line": 33,
+      "text": "### 06_maestro.py (1298 lines)"
+    },
+    {
+      "line": 36,
+      "text": "| HealthChecker Import | EXISTS | L77 - imported but unused |"
+    },
+    {
+      "line": 37,
+      "text": "| STATE_MANAGERS | EXISTS | root, selected, logs - NO health state |"
+    },
+    {
+      "line": 39,
+      "text": "| Node Click Handler | EXISTS | `handle_node_click()` for deploy panel |"
+    },
+    {
+      "line": 41,
+      "text": "**Gap:** No health state in STATE_MANAGERS, no reactive health updates."
+    },
+    {
+      "line": 50,
+      "text": "- `06_maestro.py` UI structure - stable"
+    },
+    {
+      "line": 55,
+      "text": "| `woven_maps.py` | Add `build_from_health_results()` to merge HealthChecker output |"
+    },
+    {
+      "line": 57,
+      "text": "| `06_maestro.py` | Add `health` to STATE_MANAGERS |"
+    },
+    {
+      "line": 58,
+      "text": "| `06_maestro.py` | Wire HealthChecker in `build_code_city()` |"
+    },
+    {
+      "line": 70,
+      "text": "**Target:** `06_maestro.py`"
+    },
+    {
+      "line": 72,
+      "text": "1. Add `get_health, set_health` to STATE_MANAGERS"
+    },
+    {
+      "line": 78,
+      "text": "### Wave 2: HealthWatcher Module (New)"
+    },
+    {
+      "line": 81,
+      "text": "1. `HealthWatcher` class wrapping watchdog + HealthChecker"
+    },
+    {
+      "line": 93,
+      "text": "3. Update `scan_codebase()` to accept optional `HealthChecker` instance"
+    },
+    {
+      "line": 99,
+      "text": "**Target:** `IP/plugins/06_maestro.py`"
+    },
+    {
+      "line": 101,
+      "text": "1. Instantiate `HealthWatcher` in `render()`"
+    },
+    {
+      "line": 114,
+      "text": "3. Prepare for future \"Sitting Room\" click-to-enter feature"
+    },
+    {
+      "line": 128,
+      "text": "| `health_watcher.py` → `06_maestro.py` | OUT | Callback receives `Dict[str, HealthCheckResult]` |"
+    },
+    {
+      "line": 129,
+      "text": "| `06_maestro.py` → `STATE_MANAGERS` | OUT | New `health` key in state dict |"
+    },
+    {
+      "line": 130,
+      "text": "| `woven_maps.py` → `06_maestro.py` | IN | Accepts optional health results |"
+    },
+    {
+      "line": 133,
+      "text": "- `louis_core.py` - LOCKED per CONTEXT.md"
+    },
+    {
+      "line": 163,
+      "text": "HealthWatcher._on_file_change() [debounced 100ms]"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

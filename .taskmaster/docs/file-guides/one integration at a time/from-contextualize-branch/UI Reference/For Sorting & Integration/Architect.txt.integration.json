@@ -1,0 +1,23 @@
+{
+  "source": "one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Architect.txt",
+  "total_lines": 155,
+  "sha256": "e566fa78b5eb5def382de6e4edf7e311a9b96ffade0068fd787f3cf837da2624",
+  "chunk_count": 2,
+  "observation_ids": [
+    498,
+    499
+  ],
+  "risks": [
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 81,
+      "text": "// Colors: Let's make the bottom Teal (Files) and top Gold (Architecture)"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

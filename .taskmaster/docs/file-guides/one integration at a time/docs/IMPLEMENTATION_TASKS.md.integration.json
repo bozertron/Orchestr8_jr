@@ -1,0 +1,123 @@
+{
+  "source": "one integration at a time/docs/IMPLEMENTATION_TASKS.md",
+  "total_lines": 799,
+  "sha256": "c74009eeb72a983e2e6767bda2a6e2021d66863eea1ba97727009c6c4b778615",
+  "chunk_count": 7,
+  "observation_ids": [
+    436,
+    437,
+    438,
+    439,
+    440,
+    441,
+    442
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 38,
+      "text": "WORKING = \"working\"    # Gold - healthy"
+    },
+    {
+      "line": 40,
+      "text": "COMBAT = \"combat\"      # Purple - general deployed"
+    },
+    {
+      "line": 134,
+      "text": "self.state_file = self.project_root / \".orchestr8\" / \"state\" / \"fiefdom-status.json\""
+    },
+    {
+      "line": 273,
+      "text": "class HealthChecker:"
+    },
+    {
+      "line": 357,
+      "text": "python -c \"from IP.health_checker import HealthChecker, HealthCheckResult; print('OK')\""
+    },
+    {
+      "line": 482,
+      "text": "briefing += f\"| `{lock['file']}` | 🔒 LOCKED | {lock['reason']} |\\n\""
+    },
+    {
+      "line": 589,
+      "text": "print('❌ BLOCKED BY LOUIS:')"
+    },
+    {
+      "line": 634,
+      "text": "from health_checker import HealthChecker"
+    },
+    {
+      "line": 639,
+      "text": "config_path = Path('.orchestr8/state/fiefdom-status.json')"
+    },
+    {
+      "line": 647,
+      "text": "checker = HealthChecker('.')"
+    },
+    {
+      "line": 675,
+      "text": "### Task BP-007: Create .orchestr8 Directory Structure"
+    },
+    {
+      "line": 682,
+      "text": "mkdir -p .orchestr8/tickets/archive"
+    },
+    {
+      "line": 683,
+      "text": "mkdir -p .orchestr8/state"
+    },
+    {
+      "line": 686,
+      "text": "cat > .orchestr8/state/fiefdom-status.json << 'EOF'"
+    },
+    {
+      "line": 694,
+      "text": "# Create .gitignore for orchestr8"
+    },
+    {
+      "line": 695,
+      "text": "cat > .orchestr8/.gitignore << 'EOF'"
+    },
+    {
+      "line": 708,
+      "text": "touch .orchestr8/tickets/archive/.gitkeep"
+    },
+    {
+      "line": 715,
+      "text": "### Task BP-008: Update 06_maestro.py to Use New Modules"
+    },
+    {
+      "line": 717,
+      "text": "**File:** `IP/plugins/06_maestro.py`"
+    },
+    {
+      "line": 729,
+      "text": "# Add imports at top of 06_maestro.py"
+    },
+    {
+      "line": 732,
+      "text": "from IP.health_checker import HealthChecker"
+    },
+    {
+      "line": 737,
+      "text": "checker = HealthChecker(project_root)"
+    },
+    {
+      "line": 790,
+      "text": "| BP-007 | .orchestr8 directory | 15 min | 3 |"
+    },
+    {
+      "line": 791,
+      "text": "| BP-008 | 06_maestro.py integration | 2 hours | 4 |"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

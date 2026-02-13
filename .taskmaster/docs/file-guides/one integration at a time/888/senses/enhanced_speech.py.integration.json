@@ -1,0 +1,23 @@
+{
+  "source": "one integration at a time/888/senses/enhanced_speech.py",
+  "total_lines": 802,
+  "sha256": "ac7a79c54286c4c58a0bdd33d646eebf3b419f22686dc2d45de0c59599e4c3a9",
+  "chunk_count": 7,
+  "observation_ids": [
+    298,
+    299,
+    300,
+    301,
+    302,
+    303,
+    304
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

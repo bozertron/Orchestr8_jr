@@ -1,0 +1,121 @@
+{
+  "source": "one integration at a time/docs/ZED_INTEGRATION_PLAN.md",
+  "total_lines": 457,
+  "sha256": "9f2af1548356f0156065465fdac6b4e23904f006f502a6da2c3276ced5b982f9",
+  "chunk_count": 4,
+  "observation_ids": [
+    484,
+    485,
+    486,
+    487
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [
+    {
+      "line": 13,
+      "text": "2. maestro AI orchestration layer"
+    },
+    {
+      "line": 37,
+      "text": "│                    │  orchestr8_mcp.py │                        │"
+    },
+    {
+      "line": 57,
+      "text": "orchestr8-zed/"
+    },
+    {
+      "line": 64,
+      "text": "└── orchestr8_mcp.py     # Symlinked/bundled MCP server"
+    },
+    {
+      "line": 70,
+      "text": "id = \"orchestr8\""
+    },
+    {
+      "line": 73,
+      "text": "schema_version = 1"
+    },
+    {
+      "line": 76,
+      "text": "repository = \"https://github.com/bozertron/orchestr8-zed\""
+    },
+    {
+      "line": 79,
+      "text": "[context_servers.orchestr8]"
+    },
+    {
+      "line": 99,
+      "text": "name = \"orchestr8\""
+    },
+    {
+      "line": 154,
+      "text": "// Return path to orchestr8_mcp.py"
+    },
+    {
+      "line": 156,
+      "text": "Ok(\"/home/bozertron/Orchestr8_jr/orchestr8_mcp.py\".to_string())"
+    },
+    {
+      "line": 213,
+      "text": "Zed's Agent Panel can use MCP servers for context. Our `orchestr8_mcp.py` provides:"
+    },
+    {
+      "line": 231,
+      "text": "- maestro state indicator (OFF/OBSERVE/ON)"
+    },
+    {
+      "line": 244,
+      "text": "│   ├── orchestr8_app.py     # Main Marimo app"
+    },
+    {
+      "line": 249,
+      "text": "└── orchestr8_mcp.py         # MCP server (already created)"
+    },
+    {
+      "line": 258,
+      "text": "mkdir -p ~/Orchestr8_jr/orchestr8-zed/src"
+    },
+    {
+      "line": 259,
+      "text": "cd ~/Orchestr8_jr/orchestr8-zed"
+    },
+    {
+      "line": 265,
+      "text": "- Select `orchestr8-zed` directory"
+    },
+    {
+      "line": 285,
+      "text": "| Port maestro CSS | Convert 06_maestro.py styles to Zed theme | 4h |"
+    },
+    {
+      "line": 287,
+      "text": "| Status bar item | maestro state indicator | 2h |"
+    },
+    {
+      "line": 315,
+      "text": "### In orchestr8_mcp.py (Python subprocess)"
+    },
+    {
+      "line": 322,
+      "text": "The Marimo app (`IP/orchestr8_app.py`) could:"
+    },
+    {
+      "line": 335,
+      "text": "mkdir -p ~/Orchestr8_jr/orchestr8-zed/src"
+    },
+    {
+      "line": 338,
+      "text": "cat > ~/Orchestr8_jr/orchestr8-zed/extension.toml << 'EOF'"
+    },
+    {
+      "line": 339,
+      "text": "id = \"orchestr8\""
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

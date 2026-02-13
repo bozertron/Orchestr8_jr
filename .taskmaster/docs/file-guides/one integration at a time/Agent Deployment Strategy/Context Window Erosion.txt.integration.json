@@ -1,0 +1,140 @@
+{
+  "source": "one integration at a time/Agent Deployment Strategy/Context Window Erosion.txt",
+  "total_lines": 2556,
+  "sha256": "a1f504ca80aa86c5dc88fbc455c9367f66960f0809ff0d7f0de364e1d519e439",
+  "chunk_count": 22,
+  "observation_ids": [
+    342,
+    343,
+    344,
+    345,
+    346,
+    347,
+    348,
+    349,
+    350,
+    351,
+    352,
+    353,
+    354,
+    355,
+    356,
+    357,
+    358,
+    359,
+    360,
+    361,
+    362,
+    363
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 235,
+      "text": "Orchestrator Autonomy: How much decision-making authority should the Orchestrator have?"
+    },
+    {
+      "line": 245,
+      "text": "Failure Handling: If a Fixer breaks something (Validator fails), should Orchestrator:"
+    },
+    {
+      "line": 313,
+      "text": "Calculate Dependency Graph - which fixes must happen before others"
+    },
+    {
+      "line": 436,
+      "text": "Doesn't trace to termination\t\"I think this works\"\tScout must VERIFY"
+    },
+    {
+      "line": 453,
+      "text": "Orchestrator MUST escalate to main context when:"
+    },
+    {
+      "line": 482,
+      "text": "For the Scout's \"source of truth\" JSON, should it include:"
+    },
+    {
+      "line": 490,
+      "text": "When multiple issues require escalation, should I:"
+    },
+    {
+      "line": 608,
+      "text": "\"constraints\": {"
+    },
+    {
+      "line": 627,
+      "text": "\"must_escalate\": [\"strategy_selection\", \"architectural_changes\"]"
+    },
+    {
+      "line": 631,
+      "text": "\"must_include\": [\"file_paths\", \"integration_points\", \"code_snippets\", \"suggested_fixes\"],"
+    },
+    {
+      "line": 641,
+      "text": "\"scout_output_schema\": {"
+    },
+    {
+      "line": 716,
+      "text": "2. Evaluate each strategy against zero-tech-debt constraint"
+    },
+    {
+      "line": 814,
+      "text": "5. Agent must release lock when complete"
+    },
+    {
+      "line": 1029,
+      "text": "Apply the APPROVED fix strategy to your assigned file(s). Your work must be:"
+    },
+    {
+      "line": 1514,
+      "text": "\"reason\": \"Core module must load before anything else\","
+    },
+    {
+      "line": 1649,
+      "text": "Which fix strategy should we execute?"
+    },
+    {
+      "line": 1782,
+      "text": "Found issue in engine/design/__init__.py:16 - LoadCalculation should be Load."
+    },
+    {
+      "line": 1890,
+      "text": "Step 2. [This is a you problem ;-P , because it's pure strategy. ] Design a breathtaking load calculation module. Critical Development Note: Use 'all the tools in the toolbox' = We've got a bunch of very advanced calculators in this application; can you use them? Some of them? All of them? How will this particular load, affect other loads? = that should be accounted for. Go deep here, it'll pay off in spades when we're integrating other load calculators... in fact... my suggestion is that you parse all the tools to determine ALL the loads we need to calculate and figure out a crisp piece of code that can be manipulated to provide very sophisticated physics modelling that yields unprecedented big picture outputs and triggers warnings in other modules that get surfaced to the main UI page. I'm very much looking forward to reviewing your plan on this one."
+    },
+    {
+      "line": 1896,
+      "text": "Please carefully consider context window in this calculation as it will be computationally intense for some agents. I would rather deploy more agents per task than less. Also, please consider how this one wrapped up, and how we can use this - if viewed as a development strategy - to drive our ongoing efforts. For example, you now know that if you hit a stub, or an import that could simply 'be removed', your human team will not be a fan of that decision. Based on our leanings, should we create another Agent = 'The EPO Human Advocacy Agent'. My initial suggestion is that this agent considers the 'EPO human element' and performs an analysis on any/all failures, and considers what 'the user of the [tool name]' would want to perform their job to yield a delightful outcome, while experiencing a delightful UI and system experience. [something along those lines]"
+    },
+    {
+      "line": 1898,
+      "text": "#Other notes: Ralf Wiggum was NOT deployed as far as I could see, this cycle should be included everywhere appropriate [even though in this case it likely wouldn't have been used]."
+    },
+    {
+      "line": 1922,
+      "text": "My Role (Main Context) should be LIMITED to:"
+    },
+    {
+      "line": 1930,
+      "text": "Everything else should be delegated to agents."
+    },
+    {
+      "line": 2337,
+      "text": "│     • IMPLEMENT: Feature should be built, not removed           │"
+    },
+    {
+      "line": 2385,
+      "text": "1. **Stage Files** - Determine which files should be in commit"
+    },
+    {
+      "line": 2450,
+      "text": "- If code is referenced, it should exist"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

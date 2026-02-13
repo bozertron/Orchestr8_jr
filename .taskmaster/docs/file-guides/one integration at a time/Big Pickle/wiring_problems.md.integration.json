@@ -1,0 +1,48 @@
+{
+  "source": "one integration at a time/Big Pickle/wiring_problems.md",
+  "total_lines": 191,
+  "sha256": "b85f0b059cf0f447814dd6fee9e456bb5588fc801d2eada626e79b64eae8b614",
+  "chunk_count": 2,
+  "observation_ids": [
+    370,
+    371
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 5,
+      "text": "This audit focuses on the plugin architecture used in `IP/orchestr8_app.py` (v3.0). It identifies disconnected UI elements, hollow integrations, and architectural fragility."
+    },
+    {
+      "line": 55,
+      "text": "- **File:** `IP/plugins/06_maestro.py` (Line 691-757)"
+    },
+    {
+      "line": 58,
+      "text": "- `JFDI` (Tasks Panel)"
+    },
+    {
+      "line": 78,
+      "text": "- **File:** `IP/plugins/06_maestro.py` (Line 558, 811, 815, 819)"
+    },
+    {
+      "line": 90,
+      "text": "- **Problem:** These buttons should trigger tab switches or open specific panels, but they are currently dead-ends that only provide log feedback."
+    },
+    {
+      "line": 163,
+      "text": "- **Integration Point:** `.orchestr8/combat_state.json`"
+    },
+    {
+      "line": 164,
+      "text": "- **Problem:** `cleanup_stale_deployments` must be called explicitly. If the app crashes or is closed, \"Combat\" status (Purple) will persist indefinitely on files until a manual cleanup is triggered, leading to a \"ghost in the machine\" UI where files look active but aren't."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

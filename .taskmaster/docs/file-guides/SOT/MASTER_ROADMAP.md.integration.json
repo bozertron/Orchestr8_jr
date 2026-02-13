@@ -1,0 +1,125 @@
+{
+  "source": "SOT/MASTER_ROADMAP.md",
+  "total_lines": 690,
+  "sha256": "9a76ca463d3252796ced8431d1e09d2c08b609e185c5a7dd6e3532bfd0de6c1f",
+  "chunk_count": 6,
+  "observation_ids": [
+    139,
+    140,
+    141,
+    142,
+    143,
+    144
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 51,
+      "text": "**Goal**: Replace all legacy brand references with \"orchestr8\""
+    },
+    {
+      "line": 55,
+      "text": "- Brand text in 06_maestro.py"
+    },
+    {
+      "line": 68,
+      "text": "1. `orchestr8` button → Returns to home state"
+    },
+    {
+      "line": 69,
+      "text": "2. `collabor8` button → Opens agent dropdown (slides LEFT)"
+    },
+    {
+      "line": 70,
+      "text": "3. `JFDI` button → Opens TicketPanel (slides RIGHT)"
+    },
+    {
+      "line": 79,
+      "text": "**Files:** `IP/plugins/06_maestro.py` (lines 892-920)"
+    },
+    {
+      "line": 85,
+      "text": "**Goal**: HealthChecker influences Code City colors"
+    },
+    {
+      "line": 89,
+      "text": "1. Instantiate HealthChecker in 06_maestro.py"
+    },
+    {
+      "line": 91,
+      "text": "3. Buildings show Gold/Blue/Purple based on health"
+    },
+    {
+      "line": 95,
+      "text": "- `health = HealthChecker(project_root)` exists"
+    },
+    {
+      "line": 99,
+      "text": "**Files:** `IP/plugins/06_maestro.py`, `IP/health_checker.py`, `IP/woven_maps.py`"
+    },
+    {
+      "line": 109,
+      "text": "1. Parse existing campaign logs from `.orchestr8/campaigns/`"
+    },
+    {
+      "line": 119,
+      "text": "**Files:** `IP/briefing_generator.py`, `IP/plugins/06_maestro.py`"
+    },
+    {
+      "line": 139,
+      "text": "**Files:** `IP/combat_tracker.py`, `IP/plugins/06_maestro.py`"
+    },
+    {
+      "line": 155,
+      "text": "- ✅ Branding (orchestr8)"
+    },
+    {
+      "line": 157,
+      "text": "- ✅ Health Integration (HealthChecker)"
+    },
+    {
+      "line": 193,
+      "text": "**Files:** New `IP/mission_manager.py`, update `IP/plugins/06_maestro.py`"
+    },
+    {
+      "line": 205,
+      "text": "1. **Collabor8 Panel** (Lines 1037-1057 in 06_maestro.py)"
+    },
+    {
+      "line": 210,
+      "text": "2. **Summon Panel** (Lines 1081-1095 in 06_maestro.py)"
+    },
+    {
+      "line": 221,
+      "text": "**Files:** `IP/plugins/06_maestro.py`, `IP/carl_core.py`"
+    },
+    {
+      "line": 243,
+      "text": "**Files:** `IP/carl_core.py`, `IP/briefing_generator.py`, `IP/plugins/06_maestro.py`"
+    },
+    {
+      "line": 262,
+      "text": "| Generator | `01_generator.py` | Persist phase state to `.orchestr8/generator_state.json` |"
+    },
+    {
+      "line": 290,
+      "text": "Add to `orchestr8_settings.toml`:"
+    },
+    {
+      "line": 315,
+      "text": "**Files:** `orchestr8_settings.toml`, spawner, health_checker, connection_verifier"
+    },
+    {
+      "line": 355,
+      "text": "- [ ] `marimo run orchestr8.py` runs clean with all features working"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

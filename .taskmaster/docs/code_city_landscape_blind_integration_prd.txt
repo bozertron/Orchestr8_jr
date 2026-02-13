@@ -1,0 +1,287 @@
+<context>
+# Overview
+Orchestr8 needs a durable, execution-safe implementation package for Code City that survives context compaction and can be handed to any future agent without losing vision. The current knowledge exists across planning documents and code, but blind integration is blocked by missing contracts and missing wiring between existing components.
+
+This PRD defines a tightly scoped MVP:
+1) Generate concrete schema files from `SOT/CODE_CITY_LANDSCAPE.md`
+2) Implement the first two blind-safe wiring items:
+- Root health state in `orchestr8.py`
+- Node-click bridge into `handle_node_click()` in `IP/plugins/06_maestro.py`
+
+The result should be immediately task-generatable in Taskmaster and executable without recovering prior chat context.
+
+# Core Features
+1. Contract Pack Generation (Schema Files)
+- What it does:
+Creates concrete schema contracts for the core blind-integration surfaces.
+- Why it matters:
+Eliminates ambiguous integration assumptions and stabilizes handoffs.
+- High-level behavior:
+Adds strongly typed schema modules and examples for:
+  - `CodeCityNodeEvent`
+  - `CameraState`
+  - `SettlementSurvey`
+  - `StatusMergePolicy`
+
+2. Root Health State Wiring
+- What it does:
+Extends app root state to carry health data reactively.
+- Why it matters:
+Health flow cannot satisfy the locked data path without root state ownership.
+- High-level behavior:
+Adds `health` and `health_status` to `STATE_MANAGERS` in `orchestr8.py` and keeps plugin compatibility.
+
+3. Node Click Bridge to Maestro Handler
+- What it does:
+Turns `WOVEN_MAPS_NODE_CLICK` browser events into reactive Python state updates and invokes `handle_node_click()`.
+- Why it matters:
+Code City click semantics exist in JS but are not connected to the deploy/ticket flow in Python.
+- High-level behavior:
+Introduces a minimal bridge channel and callback path so broken-node click triggers deploy surface as designed.
+
+4. Canon Preservation Guard
+- What it does:
+Enforces non-negotiable visual/behavior contracts while implementing MVP.
+- Why it matters:
+Prevents drift from locked vision during incremental integration.
+- High-level behavior:
+Implementation must preserve:
+  - Top row `[orchestr8] [collabor8] [JFDI]`
+  - No `gener8`
+  - Emergence-only motion (no breathing/pulsing)
+  - Three-state color contract (`#D4AF37`, `#1fbdea`, `#9D4EDD`)
+
+# User Experience
+Primary users:
+- Founder/operator using The Void for rapid codebase triage
+- Future coding agents who receive only project files after context compaction
+
+Key flows in MVP:
+1. Open Orchestr8 -> state includes health channels
+2. Open Code City -> node click emits structured event
+3. Maestro receives event -> `handle_node_click()` executes
+4. Broken node click opens deploy flow with consistent context
+
+UX constraints:
+- No UI branding drift
+- No behavior drift on emergence/no-breathing rule
+- No regressions to panel visibility and current control surface
+</context>
+<PRD>
+# Technical Architecture
+## Canonical Constraints (Must Hold)
+1. Naming/UI:
+- App scope remains `orchestr8` only
+- No `gener8` in active top-row canonical frame
+2. Color:
+- Working: `#D4AF37`
+- Broken: `#1fbdea`
+- Combat: `#9D4EDD`
+3. Motion:
+- Emergence-only
+- No breathing/pulsing loops
+4. Data precedence:
+- `combat > broken > working`
+
+## Existing Anchors
+1. Root app:
+- `orchestr8.py` currently defines `STATE_MANAGERS` with `root/files/selected/logs` only
+2. Code City JS event source:
+- `IP/woven_maps.py` posts `WOVEN_MAPS_NODE_CLICK` with node payload
+3. Maestro click handling target:
+- `IP/plugins/06_maestro.py` defines `handle_node_click(node_data)`
+- Handler is not currently invoked from the posted event path
+4. Health merge utility:
+- `IP/woven_maps.py` has `build_from_health_results(...)` but root/state wiring is incomplete
+
+## Deliverable A: Schema Files
+Create schema modules under a dedicated contracts package (recommended path: `IP/contracts/`):
+
+1. `IP/contracts/code_city_node_event.py`
+- Schema fields:
+  - `path: str`
+  - `status: Literal["working","broken","combat"]`
+  - `loc: int`
+  - `errors: list[str]`
+  - `nodeType: str | None`
+  - `centrality: float | None`
+  - `inCycle: bool | None`
+  - `incomingCount: int | None`
+  - `outgoingCount: int | None`
+- Include:
+  - Validation function: `validate_code_city_node_event(payload) -> CodeCityNodeEvent`
+  - Serialization helper(s)
+  - Example payload constant
+
+2. `IP/contracts/camera_state.py`
+- Schema fields:
+  - `mode: Literal["overview","dive","focus","room","sitting_room"]`
+  - `position: tuple[float,float,float]`
+  - `target: tuple[float,float,float]`
+  - `zoom: float`
+  - `return_stack: list[dict]`
+  - `transition_ms: int`
+  - `easing: str`
+- Include:
+  - Defaults for overview entry perspective
+  - Safe clamp/normalize helpers
+
+3. `IP/contracts/settlement_survey.py`
+- Schema fields:
+  - `metadata`
+  - `fiefdoms`
+  - `boundary_contracts`
+  - `wiring_state`
+- Include:
+  - Typed objects for fiefdom, boundary contract, and wiring state
+  - Parser/validator for ingestion readiness
+  - Example survey fixture
+
+4. `IP/contracts/status_merge_policy.py`
+- Define canonical merge function:
+  - `merge_status(*statuses) -> Literal["working","broken","combat"]`
+- Rule:
+  - `combat > broken > working`
+- Include:
+  - Edge-case handling for unknown/null status values
+  - Unit-testable deterministic behavior
+
+## Deliverable B: Blind-Safe Wiring MVP
+1. Root health channels in `orchestr8.py`
+- Extend `STATE_MANAGERS` with:
+  - `"health": (get_health, set_health)`
+  - `"health_status": (get_health_status, set_health_status)`
+- Initialization defaults:
+  - `health = {}`
+  - `health_status = "idle"`
+- Compatibility requirement:
+  - Existing plugins expecting previous keys must continue to render
+
+2. Node-click bridge into `handle_node_click()` in `IP/plugins/06_maestro.py`
+- Current state:
+  - JS stores `window.__clicked_node__` and dispatches `node-clicked`, but Python callback path is absent
+- Required behavior:
+  - Convert click payload into validated `CodeCityNodeEvent`
+  - Update clicked-node state
+  - Invoke `handle_node_click(...)` on valid payload
+- Bridge design constraint:
+  - Must be deterministic and testable in Marimo runtime
+  - Must reject malformed payloads safely
+
+Recommended implementation pattern:
+1. Add a hidden bridge input/state channel in Maestro
+2. JS listener writes serialized node event payload to channel
+3. Python parses/validates payload via `code_city_node_event` schema
+4. On success, call `handle_node_click(validated_payload_dict)`
+5. On failure, log validation error without breaking UI
+
+## File-Level Scope
+Files to create:
+- `IP/contracts/__init__.py`
+- `IP/contracts/code_city_node_event.py`
+- `IP/contracts/camera_state.py`
+- `IP/contracts/settlement_survey.py`
+- `IP/contracts/status_merge_policy.py`
+
+Files to modify:
+- `orchestr8.py`
+- `IP/plugins/06_maestro.py`
+
+Optional test files (recommended):
+- `tests/test_code_city_node_event.py`
+- `tests/test_status_merge_policy.py`
+- `tests/test_settlement_survey_schema.py`
+
+# Development Roadmap
+## Phase 1: Contract Foundation
+Scope:
+1. Create `IP/contracts` package
+2. Implement all four schema files and examples
+3. Add validation and merge-policy unit tests
+
+Done criteria:
+1. Each schema validates good payloads
+2. Each schema rejects malformed payloads with clear errors
+3. Merge policy deterministic for all status combinations
+
+## Phase 2: Root State Wiring
+Scope:
+1. Add `health` and `health_status` to `STATE_MANAGERS` in `orchestr8.py`
+2. Keep existing plugin render flow unchanged
+
+Done criteria:
+1. `marimo run orchestr8.py` starts successfully
+2. Existing tabs/plugins still render
+3. `STATE_MANAGERS` exposes new keys everywhere
+
+## Phase 3: Node Click Bridge Wiring
+Scope:
+1. Wire iframe event payloads to Python callback path in Maestro
+2. Validate payload with schema contract
+3. Invoke `handle_node_click()` for valid events
+
+Done criteria:
+1. Clicking a broken node reaches Python handler
+2. Broken node click triggers deploy panel behavior
+3. Invalid events are ignored/logged safely
+
+## Phase 4: Acceptance Gate
+Scope:
+1. Verify canon constraints remain intact
+2. Verify no regressions to view-mode switching and panel behavior
+
+Done criteria:
+1. Top row remains `[orchestr8] [collabor8] [JFDI]`
+2. No `gener8` restored in active frame
+3. No breathing/pulsing introduced
+4. Three-state colors unchanged
+
+# Logical Dependency Chain
+1. Create contracts first:
+- Wiring without contracts recreates ambiguity.
+2. Wire root health state second:
+- Other runtime flows depend on shared state ownership.
+3. Wire node-click bridge third:
+- Requires validated event contract and stable state surfaces.
+4. Run acceptance checks last:
+- Confirm canonical constraints and regression safety.
+
+This sequence gets to usable frontend behavior quickly while minimizing integration risk.
+
+# Risks and Mitigations
+1. Risk: Marimo JS->Python bridge semantics differ across views
+- Mitigation:
+  - Use an explicit bridge channel and schema validation layer
+  - Fail closed on malformed payloads
+
+2. Risk: Root state changes break plugin assumptions
+- Mitigation:
+  - Additive state only
+  - Keep existing keys/shape untouched
+  - Smoke-run full plugin render
+
+3. Risk: Canon drift during implementation
+- Mitigation:
+  - Treat canonical constraints as acceptance gates
+  - Reject PRs that alter locked naming/motion/state-color semantics
+
+4. Risk: Partial implementation creates hidden coupling
+- Mitigation:
+  - Finish all deliverables in this PRD before adding new effects/features
+
+# Appendix
+## Source of Truth Inputs
+1. `SOT/CODE_CITY_LANDSCAPE.md`
+2. `SOT/CODE_CITY_PLAN_LOCK.md`
+3. `SOT/todo.md`
+4. `.planning/phases/CONTEXT.md`
+5. `.planning/VISION-ALIGNMENT.md`
+6. `.planning/phases/ARCHITECT-BARRADEAU.md`
+7. `.planning/phases/WORKORDERS-BARRADEAU.json`
+
+## Explicit Out of Scope For This PRD
+1. Patchbay rewiring implementation
+2. Sitting Room full implementation
+3. Settlement boundary visual rendering
+4. Advanced effect-math integrations (curl/wave/ping-pong) beyond schema prep
+</PRD>

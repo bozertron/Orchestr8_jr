@@ -1,0 +1,55 @@
+{
+  "source": ".planning/PROJECT.md",
+  "total_lines": 101,
+  "sha256": "9a3ade9955649cdbf8f50db0ae869590a8fb0d45491393f49b94931f2f1a3dc9",
+  "chunk_count": 1,
+  "observation_ids": [
+    1076
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 9,
+      "text": "The Code City visualization must render as an accurate, interactive spatial representation of the codebase — every file a building, every connection infrastructure, every health state visible — enabling human and AI to co-inhabit and co-evolve the same space."
+    },
+    {
+      "line": 22,
+      "text": "- Validate full pipeline: orchestr8.py → plugins → woven_maps → Code City"
+    },
+    {
+      "line": 46,
+      "text": "- [ ] HealthChecker instantiated and updating node colors"
+    },
+    {
+      "line": 70,
+      "text": "2. JFDI doesn't use the built TicketPanel"
+    },
+    {
+      "line": 71,
+      "text": "3. HealthChecker is imported but never instantiated"
+    },
+    {
+      "line": 86,
+      "text": "- **Target file:** Most changes in `IP/plugins/06_maestro.py` (44KB)"
+    },
+    {
+      "line": 87,
+      "text": "- **Validation:** Must pass `marimo run orchestr8.py` without errors"
+    },
+    {
+      "line": 95,
+      "text": "| Top row: [orchestr8] [collabor8] [JFDI] [gener8] | Per UI spec, naming rule: ends with 8 = lowercase start | — Pending |"
+    },
+    {
+      "line": 96,
+      "text": "| JFDI → TicketPanel (not new panel) | Component already built, just needs wiring | — Pending |"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "source": "one integration at a time/888/professor/breakthrough_engine.py",
+  "total_lines": 515,
+  "sha256": "cf3e8e367801be5463bd30c67fa3c0c634c3aa63d384fa0cbe8cdfb700e1149a",
+  "chunk_count": 5,
+  "observation_ids": [
+    284,
+    285,
+    286,
+    287,
+    288
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

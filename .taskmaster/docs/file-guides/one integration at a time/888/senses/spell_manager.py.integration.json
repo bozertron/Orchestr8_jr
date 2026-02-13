@@ -1,0 +1,52 @@
+{
+  "source": "one integration at a time/888/senses/spell_manager.py",
+  "total_lines": 696,
+  "sha256": "c37e3b7729f56acdd70c51cc4a1a38c9b550b7e91e5cddb136ad851a18c072b1",
+  "chunk_count": 6,
+  "observation_ids": [
+    336,
+    337,
+    338,
+    339,
+    340,
+    341
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 79,
+      "text": "'supported_panels': ['orchestr8', 'integr8', 'communic8', 'actu8', 'cre8', 'innov8']"
+    },
+    {
+      "line": 193,
+      "text": "errors.append('Spell ID must be a string with at least 3 characters')"
+    },
+    {
+      "line": 201,
+      "text": "errors.append(f'Spell name must be a string with max {self.validation_settings[\"max_spell_name_length\"]} characters')"
+    },
+    {
+      "line": 206,
+      "text": "errors.append(f'Description must be a string with max {self.validation_settings[\"max_description_length\"]} characters')"
+    },
+    {
+      "line": 216,
+      "text": "errors.append('Speech pattern must be at least 3 characters long')"
+    },
+    {
+      "line": 236,
+      "text": "errors.append(f'Confidence threshold must be between {min_threshold} and {max_threshold}')"
+    },
+    {
+      "line": 257,
+      "text": "current_panel = context.get('current_panel', 'orchestr8')"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

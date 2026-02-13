@@ -1,0 +1,124 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/type-check-file-tree.md",
+  "total_lines": 740,
+  "sha256": "4fd189059e441610c21bf6a4610b29a2edf8dbcb8d081d779d26683c9f5d9328",
+  "chunk_count": 7,
+  "observation_ids": [
+    796,
+    797,
+    798,
+    799,
+    800,
+    801,
+    802
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions."
+  ],
+  "anchors": [
+    {
+      "line": 1,
+      "text": "# JFDI Type-Checker System - Complete File Analysis"
+    },
+    {
+      "line": 19,
+      "text": "│   ├── contracts"
+    },
+    {
+      "line": 20,
+      "text": "│   │   ├── architectural_contracts.rs"
+    },
+    {
+      "line": 33,
+      "text": "│   │       ├── pattern_bible_contract_clusters.rs"
+    },
+    {
+      "line": 34,
+      "text": "│   │       ├── pattern_bible_contract_foundation.rs"
+    },
+    {
+      "line": 35,
+      "text": "│   │       ├── pattern_bible_contract_types.rs"
+    },
+    {
+      "line": 37,
+      "text": "│   │       ├── pattern_bible_validation_contracts.rs"
+    },
+    {
+      "line": 49,
+      "text": "│   │   │   ├── contract_analysis.rs"
+    },
+    {
+      "line": 103,
+      "text": "- [x] `build_time/intelligence/pattern_intelligence.rs` - ✅ IMPLEMENTED - Sophisticated pattern intelligence with modular contract discovery, hyper-modular learning, and usage pattern tracking"
+    },
+    {
+      "line": 104,
+      "text": "- [x] `build_time/intelligence/import_analysis.rs` - ✅ IMPLEMENTED - Comprehensive import analysis with compilation warning parsing, contract integrity validation, and file system traversal"
+    },
+    {
+      "line": 105,
+      "text": "- [x] `build_time/intelligence/helpers/mod.rs` - ✅ IMPLEMENTED - Helper module organization for batch resolution, contract analysis, and pattern analysis"
+    },
+    {
+      "line": 106,
+      "text": "- [x] `build_time/intelligence/helpers/batch_resolution.rs` - ⚠️ STUBBED - Contains placeholder functions that need real implementation for batch processing of import contracts"
+    },
+    {
+      "line": 107,
+      "text": "- [x] `build_time/intelligence/helpers/contract_analysis.rs` - ⚠️ STUBBED - Contains placeholder functions for contract analysis that need real implementation"
+    },
+    {
+      "line": 109,
+      "text": "- [x] `build_time/intelligence/core_intelligence/pattern_bible_core_intelligence.rs` - ✅ IMPLEMENTED - Sophisticated core intelligence with HashSet-based unique dependency tracking, modular contract discovery, and hyper-modular pattern learning"
+    },
+    {
+      "line": 110,
+      "text": "- [x] `build_time/contracts/mod.rs` - ✅ IMPLEMENTED - Well-structured contract validation system with proper module organization and architectural contract management"
+    },
+    {
+      "line": 111,
+      "text": "- [x] `build_time/contracts/architectural_contracts.rs` - ✅ IMPLEMENTED - Comprehensive architectural contract system with module dependency tracking and hyper-modular integrity validation"
+    },
+    {
+      "line": 112,
+      "text": "- [x] `build_time/contracts/hyper_modular_integrity.rs` - ✅ IMPLEMENTED - Comprehensive hyper-modular integrity validation with 56-file persistence layer compliance tracking and architectural drift prevention"
+    },
+    {
+      "line": 113,
+      "text": "- [x] `build_time/contracts/module_validation.rs` - ✅ IMPLEMENTED - Comprehensive module validation system with file size limit checking (200 lines) and function size validation (30 lines)"
+    },
+    {
+      "line": 114,
+      "text": "- [x] `build_time/contracts/pattern_analysis.rs` - ✅ IMPLEMENTED - Comprehensive pattern analysis system with hyper-modular pattern detection and architectural consistency validation"
+    },
+    {
+      "line": 115,
+      "text": "- [x] `build_time/contracts/patterns/mod.rs` - ✅ IMPLEMENTED - Well-structured pattern bible integration module with comprehensive pattern validation and evolution tracking"
+    },
+    {
+      "line": 116,
+      "text": "- [x] `build_time/contracts/patterns/pattern_bible_contract_clusters.rs` - ✅ IMPLEMENTED - Sophisticated contract cluster analysis with dynamic contract building and modular dependency tracking"
+    },
+    {
+      "line": 117,
+      "text": "- [x] `build_time/contracts/patterns/pattern_bible_contract_foundation.rs` - ✅ IMPLEMENTED - Comprehensive contract foundation system with modular contract definitions and architectural dependency management"
+    },
+    {
+      "line": 118,
+      "text": "- [x] `build_time/contracts/patterns/pattern_bible_contract_types.rs` - ✅ IMPLEMENTED - Comprehensive contract type definitions with essential import tracking and architectural contract management"
+    },
+    {
+      "line": 119,
+      "text": "- [x] `build_time/contracts/patterns/pattern_bible_validation_commands.rs` - ✅ IMPLEMENTED - Comprehensive pattern bible validation command system with build-time pattern checking and architectural compliance validation"
+    },
+    {
+      "line": 120,
+      "text": "- [x] `build_time/contracts/patterns/pattern_bible_validation_contracts.rs` - ✅ IMPLEMENTED - Comprehensive pattern bible validation contract system with modular contract validation and architectural compliance checking"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

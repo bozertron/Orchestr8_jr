@@ -1,0 +1,22 @@
+{
+  "source": "one integration at a time/888/actu8/__init__.py",
+  "total_lines": 13,
+  "sha256": "fc8d4086fd842d0c7947de267826cba7389c6b8eb974098eca31f7938828da7a",
+  "chunk_count": 1,
+  "observation_ids": [
+    184
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 4,
+      "text": "This module implements the LibreOffice wrapper following the orchestr8 (Newelle) pattern,"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

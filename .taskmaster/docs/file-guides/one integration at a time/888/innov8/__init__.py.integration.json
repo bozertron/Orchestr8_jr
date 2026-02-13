@@ -1,0 +1,22 @@
+{
+  "source": "one integration at a time/888/innov8/__init__.py",
+  "total_lines": 13,
+  "sha256": "335739dcb5e3db4c9d7a53532cc81f394bc50e9b5386806b8b5b57cfbbbb4267",
+  "chunk_count": 1,
+  "observation_ids": [
+    258
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 4,
+      "text": "This module implements the Jupyter wrapper following the orchestr8 (Newelle) pattern,"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

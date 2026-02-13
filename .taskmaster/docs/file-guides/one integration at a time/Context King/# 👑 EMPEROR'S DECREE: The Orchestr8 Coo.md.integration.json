@@ -1,0 +1,65 @@
+{
+  "source": "one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md",
+  "total_lines": 530,
+  "sha256": "0073e720a91325b9f22324070e3ea7506e8b13ebb5e3ada208491c3fd5d867d8",
+  "chunk_count": 7,
+  "observation_ids": [
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 34,
+      "text": "O -->|Visualizes| M[📊 Mermaid Graph<br/>Gold=Working, Blue=Broken]"
+    },
+    {
+      "line": 69,
+      "text": "| **Working** | Gold | `#D4AF37` | All imports resolve, typecheck passes, no blocking errors |"
+    },
+    {
+      "line": 86,
+      "text": "--gold-dark: #B8860B;      /* Gold accent */"
+    },
+    {
+      "line": 119,
+      "text": "J --> K{Node now Gold?}"
+    },
+    {
+      "line": 135,
+      "text": "# In 06_maestro.py - The Void plugin"
+    },
+    {
+      "line": 182,
+      "text": "# In 06_maestro.py or dedicated plugin"
+    },
+    {
+      "line": 366,
+      "text": "Gold (#D4AF37) = Working"
+    },
+    {
+      "line": 413,
+      "text": "N4[\"maestro\"]"
+    },
+    {
+      "line": 467,
+      "text": "- Gold/blue coloring"
+    },
+    {
+      "line": 473,
+      "text": "- Start with `src/llm/`, `src/modules/generator/`, `src/modules/maestro/`"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/key_lines_with_files.tsv"
+  }
+}

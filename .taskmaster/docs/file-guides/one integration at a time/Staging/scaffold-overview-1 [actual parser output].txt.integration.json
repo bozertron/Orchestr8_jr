@@ -1,0 +1,44 @@
+{
+  "source": "one integration at a time/Staging/scaffold-overview-1 [actual parser output].txt",
+  "total_lines": 281,
+  "sha256": "32481e1d9dc01cb22306296a2270b7471bd6fcbc1a2337cbf2317f2c500974bd",
+  "chunk_count": 3,
+  "observation_ids": [
+    838,
+    839,
+    840
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 19,
+      "text": "4: src-tauri/gen/schemas/acl-manifests.json"
+    },
+    {
+      "line": 20,
+      "text": "5: src-tauri/gen/schemas/capabilities.json"
+    },
+    {
+      "line": 21,
+      "text": "6: src-tauri/gen/schemas/desktop-schema.json"
+    },
+    {
+      "line": 22,
+      "text": "7: src-tauri/gen/schemas/windows-schema.json"
+    },
+    {
+      "line": 139,
+      "text": "- package.json: (Name: maestropremvp, Version: 0.0.0)"
+    },
+    {
+      "line": 200,
+      "text": "128: maestro-scaffolder"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

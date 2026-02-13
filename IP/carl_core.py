@@ -1,5 +1,5 @@
 """Carl Core - TypeScript Context Bridge
-Orchstr8 v3.0 - The Fortress Factory
+Orchestr8 v3.0
 
 Bridge between Python and TypeScript analysis tools.
 Executes unified-context-system.ts for deep project analysis.

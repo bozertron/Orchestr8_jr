@@ -1,0 +1,18 @@
+{
+  "source": "one integration at a time/888/senses/adapter.py",
+  "total_lines": 198,
+  "sha256": "5780ec1a035292d7a8eed4e96451e7bdd07daa8b0be87782d8acf061f3703c4e",
+  "chunk_count": 2,
+  "observation_ids": [
+    290,
+    291
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "source": ".planning/phases/ARCHITECT-SUMMON.md",
+  "total_lines": 150,
+  "sha256": "f863f650c4d73d9c9d4b90b14ceadbcfcd00e23dbc7164e0d2f03df9b54bc98e",
+  "chunk_count": 2,
+  "observation_ids": [
+    1055,
+    1056
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 11,
+      "text": "**Location:** `IP/plugins/06_maestro.py:1081-1095`"
+    },
+    {
+      "line": 33,
+      "text": "4. **Emergence Animation** — Panel emerges from Void, no breathing"
+    },
+    {
+      "line": 37,
+      "text": "## 3. Modification Order for 06_maestro.py"
+    },
+    {
+      "line": 98,
+      "text": "# This must NOT block — Carl runs async or returns cached data"
+    },
+    {
+      "line": 100,
+      "text": "carl = Carl(STATE_MANAGERS)"
+    },
+    {
+      "line": 114,
+      "text": "| Signal source wiring (HealthChecker, etc.) | **PENDING** | Context accuracy |"
+    },
+    {
+      "line": 143,
+      "text": "- [ ] Three-state colors only (gold, teal, purple)"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

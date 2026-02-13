@@ -10,7 +10,7 @@
 
 - **Application Name:** orchestr8 (lowercase, ends with 8)
 - **Naming Convention:** Words ending with 8 start lowercase (orchestr8, collabor8, gener8)
-- **Legacy Reference:** MaestroView.vue from stereOS is a UI REFERENCE only
+- **Legacy Reference:** `one integration at a time/UI Reference/MaestroView.vue` is a UI REFERENCE only
 
 ---
 
@@ -167,13 +167,13 @@
 
 ## VIII. CSS Class Naming
 
-Update from `.stereos-*` to `.orchestr8-*`:
+Use `.orchestr8-*` classes for branding. Legacy class names should not be used.
 
 ```css
-/* OLD */
-.stereos-brand { }
-.stereos-prefix { }
-.stereos-suffix { }
+/* LEGACY (DO NOT USE) */
+.legacy-brand { }
+.legacy-prefix { }
+.legacy-suffix { }
 
 /* NEW */
 .orchestr8-brand { }

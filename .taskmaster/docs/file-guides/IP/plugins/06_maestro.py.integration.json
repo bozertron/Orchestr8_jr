@@ -1,0 +1,61 @@
+{
+  "source": "IP/plugins/06_maestro.py",
+  "total_lines": 2307,
+  "sha256": "46938da17bbe489f576f087ff3e53efae190639531fdbef6ab2cebb330e95b80",
+  "role": "The Void runtime bridge hub",
+  "risks": [
+    "Bidirectional bridge flow increases coupling",
+    "Role metadata is not cryptographically verified",
+    "Large monolith makes localized edits high-risk"
+  ],
+  "anchors": [
+    {
+      "line": 500,
+      "text": "Connection action result state"
+    },
+    {
+      "line": 726,
+      "text": "emit_connection_action_result()"
+    },
+    {
+      "line": 762,
+      "text": "actorRole derivation"
+    },
+    {
+      "line": 871,
+      "text": "apply feature flag guard"
+    },
+    {
+      "line": 883,
+      "text": "role allowlist guard"
+    },
+    {
+      "line": 1567,
+      "text": "connection_action_result_bridge"
+    },
+    {
+      "line": 2145,
+      "text": "relayConnectionResult()"
+    }
+  ],
+  "integration_gaps": [
+    {
+      "gap": "Verified actor identity model",
+      "status": "pending"
+    },
+    {
+      "gap": "Persistent patchbay action history",
+      "status": "pending"
+    }
+  ],
+  "resolved_gaps": [
+    {
+      "gap": "Role-aware apply permission model",
+      "status": "complete"
+    },
+    {
+      "gap": "Result relay to Code City panel",
+      "status": "complete"
+    }
+  ]
+}

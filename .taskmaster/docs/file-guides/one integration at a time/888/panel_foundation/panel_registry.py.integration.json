@@ -1,0 +1,23 @@
+{
+  "source": "one integration at a time/888/panel_foundation/panel_registry.py",
+  "total_lines": 204,
+  "sha256": "42c5c9f4ff33922554427e8ed4f50dfc13a92f3dba988c86acf1a2835d3fe86e",
+  "chunk_count": 2,
+  "observation_ids": [
+    272,
+    273
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 157,
+      "text": "'orchestr8': PanelCapabilities("
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

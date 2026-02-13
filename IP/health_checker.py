@@ -62,6 +62,28 @@ class HealthCheckResult:
         """Get errors specific to a file path."""
         return [e for e in self.errors if file_path in e.file]
 
+    def to_dict(self) -> Dict[str, Any]:
+        """Serialize to dict for state storage and cross-component transport."""
+        return {
+            "status": self.status,
+            "errors": [
+                {"file": e.file, "line": e.line, "column": e.column,
+                 "error_code": e.error_code, "message": e.message,
+                 "severity": e.severity}
+                for e in self.errors
+            ],
+            "warnings": [
+                {"file": w.file, "line": w.line, "column": w.column,
+                 "error_code": w.error_code, "message": w.message,
+                 "severity": w.severity}
+                for w in self.warnings
+            ],
+            "error_count": self.error_count,
+            "warning_count": self.warning_count,
+            "last_check": self.last_check,
+            "checker_used": self.checker_used,
+        }
+
 
 class HealthChecker:
     """Multi-language health checker for TypeScript and Python projects."""

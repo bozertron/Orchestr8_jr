@@ -1,0 +1,48 @@
+{
+  "source": "one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/a.html",
+  "total_lines": 636,
+  "sha256": "476e19f9fa2d402a3b3aa5b44c88652c8148bb52bb2cd54cd434d1148093f8ac",
+  "chunk_count": 6,
+  "observation_ids": [
+    570,
+    571,
+    572,
+    573,
+    574,
+    575
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 281,
+      "text": "<button id=\"btn-fix-bug\">Restore (Gold)</button>"
+    },
+    {
+      "line": 341,
+      "text": "uniform float uState; // 0=Gold, 1=Blue(Broken)"
+    },
+    {
+      "line": 358,
+      "text": "// STATE LOGIC (Gold vs Blue):"
+    },
+    {
+      "line": 371,
+      "text": "// Gold State"
+    },
+    {
+      "line": 372,
+      "text": "targetColor = vec3(0.83, 0.68, 0.21); // Gold"
+    },
+    {
+      "line": 413,
+      "text": "uState: { value: 0.0 }     // 0 = Gold, 1 = Blue"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "source": "one integration at a time/Agent Deployment Strategy/orchestr8 Agents.md",
+  "total_lines": 574,
+  "sha256": "bbd249b2d8026f56b2e35c1539030a41bcc22f9074196e383fb3ce5363e40202",
+  "chunk_count": 5,
+  "observation_ids": [
+    364,
+    365,
+    366,
+    367,
+    368
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [
+    {
+      "line": 1,
+      "text": "## orchestr8's Foundational Principles - Agent Deployment Architecture"
+    },
+    {
+      "line": 402,
+      "text": "│     • IMPLEMENT: Feature should be built, not removed           │"
+    },
+    {
+      "line": 450,
+      "text": "1. **Stage Files** - Determine which files should be in commit"
+    },
+    {
+      "line": 515,
+      "text": "- If code is referenced, it should exist"
+    },
+    {
+      "line": 525,
+      "text": "- Every feature should work completely"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

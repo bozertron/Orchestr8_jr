@@ -1,0 +1,52 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/seeg before breakdown 05232025.txt",
+  "total_lines": 759,
+  "sha256": "ae59be7d8fa0e29f372ff40c985c7b6ab0e3f3c7a30e5ec409aee57a1944e383",
+  "chunk_count": 7,
+  "observation_ids": [
+    789,
+    790,
+    791,
+    792,
+    793,
+    794,
+    795
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions."
+  ],
+  "anchors": [
+    {
+      "line": 1,
+      "text": "// src-tauri/src/maestro_modules/seeg_engine.rs"
+    },
+    {
+      "line": 18,
+      "text": "use crate::maestro_modules::seeg_mcp_wrapper::{self, Step as McpStep};"
+    },
+    {
+      "line": 21,
+      "text": "use crate::maestro_modules::llm_clients::{LlmApiResponse, MockLlmClient, LlmClient};"
+    },
+    {
+      "line": 22,
+      "text": "use crate::maestro_modules::embeddings::{generate_embeddings_with_cache, EmbeddingProvider};"
+    },
+    {
+      "line": 544,
+      "text": "// Test with valid project ID (should return true)"
+    },
+    {
+      "line": 549,
+      "text": "// Test with invalid project ID (should return false)"
+    },
+    {
+      "line": 590,
+      "text": "let temp_dir = std::env::temp_dir().join(format!(\"maestro_seeg_verify_{}\", Uuid::new_v4()));"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -10,10 +10,6 @@ from typing import Dict, List, Optional, Any
 import time
 import uuid
 from .user_context import UserContext
-from .pattern_recognition import AdvancedPatternRecognition
-from .predictive_engine import PredictiveEngine
-from .workflow_optimizer import WorkflowOptimizer
-from .automation_engine import ContextAwareAutomation
 
 
 @dataclass
@@ -50,6 +46,13 @@ class OODAEngine:
     """
     
     def __init__(self):
+        # Local imports avoid circular dependency with predictive_engine:
+        # predictive_engine imports Suggestion from this module.
+        from .pattern_recognition import AdvancedPatternRecognition
+        from .predictive_engine import PredictiveEngine
+        from .workflow_optimizer import WorkflowOptimizer
+        from .automation_engine import ContextAwareAutomation
+
         self.context_history: List[UserContext] = []
         self.suggestion_templates = self._initialize_suggestion_templates()
         self.pattern_thresholds = {

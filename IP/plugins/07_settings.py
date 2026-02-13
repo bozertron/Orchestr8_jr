@@ -3,7 +3,7 @@ IP/plugins/07_settings.py - Settings Panel (Waves Icon)
 Orchestr8 v4.0 - Complete 888 settings integration
 
 Provides comprehensive settings UI for all agents, tools, and system configuration.
-Integrates with orchestr8_settings.toml and provides live editing capabilities.
+Integrates with pyproject_orchestr8_settings.toml and provides live editing capabilities.
 """
 
 from typing import Any, Dict, Optional
@@ -216,10 +216,10 @@ SETTINGS_CSS = """
 
 
 class SettingsManager:
-    """Manages loading, editing, and saving orchestr8_settings.toml"""
+    """Manages loading, editing, and saving pyproject_orchestr8_settings.toml"""
 
     def __init__(self):
-        self.settings_file = Path("orchestr8_settings.toml")
+        self.settings_file = Path("pyproject_orchestr8_settings.toml")
         self.settings = self.load_settings()
 
     def load_settings(self) -> Dict:
@@ -302,16 +302,41 @@ def render(STATE_MANAGERS: Dict) -> Any:
     settings_mgr = SettingsManager()
 
     # Get available models from settings
-    def get_available_models() -> list:
+    def get_available_models() -> list[str]:
         """Get available models from settings."""
         multi_llm = settings_mgr.get_section("tools").get("communic8", {}).get("multi_llm", {})
         models = multi_llm.get("default_models", [])
         if models:
-            return models
+            clean_models = [str(model).strip() for model in models if str(model).strip()]
+            if clean_models:
+                return clean_models
         # Fallback - these should be configured in settings
         return ["claude", "gpt-4", "gemini", "local"]
 
     available_models = get_available_models()
+
+    # Keep renamed model values from breaking dropdown rendering.
+    LEGACY_MODEL_ALIASES = {
+        "claude-opus": "claude",
+        "claude-sonnet": "claude",
+        "claude-3-opus": "claude",
+        "claude-3.5-sonnet": "claude",
+        "gpt-4o": "gpt-4",
+        "gpt-4.1": "gpt-4",
+        "gemini-pro": "gemini",
+        "gemini-1.5-pro": "gemini",
+    }
+
+    def resolve_model_option(value: Any) -> str:
+        """Normalize persisted model value to a valid dropdown option."""
+        default_model = available_models[0] if available_models else "claude"
+        if value in available_models:
+            return value
+        if isinstance(value, str):
+            mapped = LEGACY_MODEL_ALIASES.get(value.strip().lower())
+            if mapped and mapped in available_models:
+                return mapped
+        return default_model
 
     # Local state for UI
     get_active_tab, set_active_tab = mo.state("agents")
@@ -348,6 +373,11 @@ def render(STATE_MANAGERS: Dict) -> Any:
     def render_agents_tab():
         """Render agents configuration"""
         agents_config = settings_mgr.get_section("agents")
+        doctor_model_value = resolve_model_option(
+            agents_config.get("doctor", {}).get(
+                "model", available_models[0] if available_models else "claude"
+            )
+        )
 
         return mo.vstack(
             [
@@ -413,9 +443,7 @@ def render(STATE_MANAGERS: Dict) -> Any:
                         ),
                         mo.ui.dropdown(
                             options=available_models,
-                            value=agents_config.get("doctor", {}).get(
-                                "model", available_models[0] if available_models else "claude"
-                            ),
+                            value=doctor_model_value,
                             label="Model",
                             on_change=lambda v: update_setting(
                                 "agents.doctor.model", v

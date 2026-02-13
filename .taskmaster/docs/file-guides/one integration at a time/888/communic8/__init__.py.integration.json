@@ -1,0 +1,22 @@
+{
+  "source": "one integration at a time/888/communic8/__init__.py",
+  "total_lines": 13,
+  "sha256": "81e41e89912bc634ed69b17088db3dbd426a7b91ec8b3fa26b1f4de008b6977d",
+  "chunk_count": 1,
+  "observation_ids": [
+    201
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 4,
+      "text": "This module implements the Thunderbird wrapper following the orchestr8 (Newelle) pattern,"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

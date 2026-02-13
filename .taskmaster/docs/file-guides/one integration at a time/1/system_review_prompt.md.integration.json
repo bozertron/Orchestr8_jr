@@ -1,0 +1,121 @@
+{
+  "source": "one integration at a time/1/system_review_prompt.md",
+  "total_lines": 1787,
+  "sha256": "9766eaf26e067836e686fad641612858e31baa282b175e2a06dfc885c92e6829",
+  "chunk_count": 15,
+  "observation_ids": [
+    166,
+    167,
+    168,
+    169,
+    170,
+    171,
+    172,
+    173,
+    174,
+    175,
+    176,
+    177,
+    178,
+    179,
+    180
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 1,
+      "text": "# JFDI System Review Prompt Template"
+    },
+    {
+      "line": 65,
+      "text": "- Pattern Bible: `/home/bozertron/EPO - JFDI - Maestro/CLAUDE_jfdi_pattern_bible.md`"
+    },
+    {
+      "line": 141,
+      "text": "You MUST pause and create a checkpoint report if ANY of these occur:"
+    },
+    {
+      "line": 255,
+      "text": "- JavaScript state (should be Rust-only)"
+    },
+    {
+      "line": 266,
+      "text": "1. **Pattern Bible** (AUTHORITATIVE SOURCE):"
+    },
+    {
+      "line": 267,
+      "text": "- `/home/bozertron/EPO - JFDI - Maestro/CLAUDE_jfdi_pattern_bible.md`"
+    },
+    {
+      "line": 276,
+      "text": "- Any other docs in `/home/bozertron/EPO - JFDI - Maestro/docs/` related to this subsystem"
+    },
+    {
+      "line": 360,
+      "text": "- List types that SHOULD be in Pattern Bible but aren't"
+    },
+    {
+      "line": 361,
+      "text": "- Explain why they should be documented"
+    },
+    {
+      "line": 409,
+      "text": "- List files that SHOULD exist but don't"
+    },
+    {
+      "line": 498,
+      "text": "**Intended Integration (What SHOULD BE):**"
+    },
+    {
+      "line": 506,
+      "text": "- Connections that should exist but don't"
+    },
+    {
+      "line": 507,
+      "text": "- Events that should be emitted but aren't"
+    },
+    {
+      "line": 508,
+      "text": "- Data that should flow but doesn't"
+    },
+    {
+      "line": 556,
+      "text": "- [How it violates JFDI principles]"
+    },
+    {
+      "line": 705,
+      "text": "**6.4 Adherence to JFDI Principles**"
+    },
+    {
+      "line": 788,
+      "text": "**Dependencies**: [What must be fixed first]"
+    },
+    {
+      "line": 917,
+      "text": "4. ✅ **REALITY CHECK**—document what IS, not what should be (save recommendations for Section 7)"
+    },
+    {
+      "line": 919,
+      "text": "6. ✅ **PATTERN BIBLE IS LAW**—all recommendations must align with JFDI architectural principles"
+    },
+    {
+      "line": 1383,
+      "text": "- Document what IS, not what should be"
+    },
+    {
+      "line": 1774,
+      "text": "**Next Step**: [What should happen next]"
+    },
+    {
+      "line": 1787,
+      "text": "**Template saved**: `/home/bozertron/EPO - JFDI - Maestro/system_review_prompt.md`"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

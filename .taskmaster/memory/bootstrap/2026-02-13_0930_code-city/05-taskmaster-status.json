@@ -1,0 +1,605 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Create IP/contracts package foundation",
+      "description": "Initialize the contracts package structure with __init__.py to house all schema modules",
+      "status": "in-progress",
+      "priority": "high",
+      "dependencies": [],
+      "details": "Create the IP/contracts/ directory and __init__.py file. The __init__.py should export all contract schemas for clean imports. This is the foundation for all schema deliverables.\n\nImplementation:\n1. Create directory: IP/contracts/\n2. Create IP/contracts/__init__.py with:\n```python\n\"\"\"Code City Contract Schemas - Blind Integration Safety Layer\"\"\"\nfrom .code_city_node_event import CodeCityNodeEvent, validate_code_city_node_event\nfrom .camera_state import CameraState, get_default_camera_state\nfrom .settlement_survey import SettlementSurvey, parse_settlement_survey\nfrom .status_merge_policy import merge_status, STATUS_PRIORITY\n\n__all__ = [\n    'CodeCityNodeEvent',\n    'validate_code_city_node_event',\n    'CameraState',\n    'get_default_camera_state',\n    'SettlementSurvey',\n    'parse_settlement_survey',\n    'merge_status',\n    'STATUS_PRIORITY'\n]\n```",
+      "testStrategy": "Verify directory exists, __init__.py is valid Python, and can be imported without errors. Run: python -c 'import IP.contracts'",
+      "subtasks": [
+        {
+          "id": "1",
+          "title": "Create IP/contracts/ directory structure",
+          "description": "Create the IP/contracts/ directory that will house all contract schema modules for the Code City integration layer",
+          "dependencies": [],
+          "details": "Execute mkdir -p IP/contracts/ to create the contracts package directory. Verify the directory exists and is empty. This is the foundational filesystem structure needed before any Python module files can be created.",
+          "status": "pending",
+          "testStrategy": "Verify directory exists with: test -d IP/contracts/ && echo 'Directory created successfully'",
+          "parentId": "undefined"
+        },
+        {
+          "id": "2",
+          "title": "Create placeholder module files for imports",
+          "description": "Create empty placeholder files for each schema module that __init__.py will import from, preventing ImportError on package load",
+          "dependencies": [
+            1
+          ],
+          "details": "Create empty placeholder files: code_city_node_event.py, camera_state.py, settlement_survey.py, status_merge_policy.py. Each file should contain minimal stub exports (e.g., placeholder class/function definitions) that match what __init__.py expects to import. This allows the package to be importable before full implementations are complete.",
+          "status": "pending",
+          "testStrategy": "Verify all four .py files exist in IP/contracts/ and contain valid Python syntax with expected exports",
+          "parentId": "undefined"
+        },
+        {
+          "id": "3",
+          "title": "Create __init__.py with docstring and __all__ export list",
+          "description": "Create the IP/contracts/__init__.py file with module docstring and __all__ list defining the public API surface",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "Create IP/contracts/__init__.py with the docstring 'Code City Contract Schemas - Blind Integration Safety Layer' and import statements from all four schema modules. Include __all__ list with: CodeCityNodeEvent, validate_code_city_node_event, CameraState, get_default_camera_state, SettlementSurvey, parse_settlement_survey, merge_status, STATUS_PRIORITY",
+          "status": "pending",
+          "testStrategy": "Run: python -c 'import IP.contracts; print(IP.contracts.__all__)' and verify it returns the expected 8-item list",
+          "parentId": "undefined"
+        },
+        {
+          "id": "4",
+          "title": "Verify package import works without errors",
+          "description": "Test that the contracts package can be imported successfully and all expected symbols are accessible",
+          "dependencies": [
+            3
+          ],
+          "details": "Run python -c 'import IP.contracts' to verify no ImportError or SyntaxError occurs. Then verify each symbol in __all__ is accessible: 'from IP.contracts import CodeCityNodeEvent, CameraState, SettlementSurvey, merge_status' etc. This validates the package structure is correct.",
+          "status": "pending",
+          "testStrategy": "Execute: python -c 'from IP.contracts import *; print(\"All exports accessible\")' - should complete without exception",
+          "parentId": "undefined"
+        },
+        {
+          "id": "5",
+          "title": "Document package structure and usage in module docstring",
+          "description": "Add comprehensive module-level documentation explaining the contracts package purpose and usage patterns",
+          "dependencies": [
+            3
+          ],
+          "details": "Enhance the __init__.py docstring to include: purpose of the Blind Integration Safety Layer, brief description of each schema module's role, example usage showing typical import patterns, and reference to the Code City color system (Gold=#D4AF37 working, Teal=#1fbdea broken, Purple=#9D4EDD combat)",
+          "status": "pending",
+          "testStrategy": "Run: python -c 'import IP.contracts; help(IP.contracts)' and verify docstring displays with all documented sections",
+          "parentId": "undefined"
+        }
+      ],
+      "updatedAt": "2026-02-13T08:54:01.289Z",
+      "complexity": 2,
+      "recommendedSubtasks": 0,
+      "expansionPrompt": "No expansion needed - this is a straightforward directory and file creation task with boilerplate __init__.py content already specified in the task details.",
+      "blocks": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ]
+    },
+    {
+      "id": "2",
+      "title": "Implement CodeCityNodeEvent schema",
+      "description": "Create strongly-typed schema for Code City node click events with validation",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        "1"
+      ],
+      "details": "Create IP/contracts/code_city_node_event.py with TypedDict or dataclass schema matching the JS event payload from woven_maps.py.\n\nImplementation:\n```python\nfrom typing import Literal, Optional, TypedDict, List\nfrom dataclasses import dataclass, field, asdict\n\nCodeCityStatus = Literal[\"working\", \"broken\", \"combat\"]\n\n@dataclass\nclass CodeCityNodeEvent:\n    path: str\n    status: CodeCityStatus\n    loc: int\n    errors: List[str] = field(default_factory=list)\n    nodeType: Optional[str] = None\n    centrality: Optional[float] = None\n    inCycle: Optional[bool] = None\n    incomingCount: Optional[int] = None\n    outgoingCount: Optional[int] = None\n\n    def to_dict(self):\n        return asdict(self)\n\ndef validate_code_city_node_event(payload: dict) -> CodeCityNodeEvent:\n    \"\"\"Validate and parse node click payload into CodeCityNodeEvent.\n    \n    Raises ValueError on malformed payload.\n    \"\"\"\n    required = ['path', 'status', 'loc']\n    for key in required:\n        if key not in payload:\n            raise ValueError(f\"Missing required field: {key}\")\n    \n    if payload['status'] not in ('working', 'broken', 'combat'):\n        raise ValueError(f\"Invalid status: {payload['status']}\")\n    \n    return CodeCityNodeEvent(\n        path=payload['path'],\n        status=payload['status'],\n        loc=int(payload['loc']),\n        errors=payload.get('errors', []),\n        nodeType=payload.get('nodeType'),\n        centrality=payload.get('centrality'),\n        inCycle=payload.get('inCycle'),\n        incomingCount=payload.get('incomingCount'),\n        outgoingCount=payload.get('outgoingCount')\n    )\n\n# Example payload for testing\nEXAMPLE_NODE_EVENT = {\n    'path': 'IP/woven_maps.py',\n    'status': 'broken',\n    'loc': 2847,\n    'errors': ['TypeError on line 42'],\n    'nodeType': 'file',\n    'centrality': 0.85,\n    'inCycle': False,\n    'incomingCount': 12,\n    'outgoingCount': 8\n}\n```",
+      "testStrategy": "Unit test validation function with valid/invalid payloads. Test that validate_code_city_node_event(EXAMPLE_NODE_EVENT) succeeds and malformed payloads raise ValueError.",
+      "subtasks": [
+        {
+          "id": "1",
+          "title": "Create IP/contracts directory and __init__.py module",
+          "description": "Initialize the contracts package directory structure with proper Python module setup",
+          "dependencies": [],
+          "details": "Create the IP/contracts/ directory and add an __init__.py file that will export the CodeCityNodeEvent schema and validate_code_city_node_event function. The __init__.py should include: `from .code_city_node_event import CodeCityNodeEvent, CodeCityStatus, validate_code_city_node_event, EXAMPLE_NODE_EVENT`",
+          "status": "pending",
+          "testStrategy": "Verify directory exists and `from IP.contracts import CodeCityNodeEvent` works after module is complete",
+          "parentId": "undefined"
+        },
+        {
+          "id": "2",
+          "title": "Implement CodeCityStatus type alias and CodeCityNodeEvent dataclass",
+          "description": "Create the core dataclass schema matching the JS event payload structure from woven_maps.py CodeNode",
+          "dependencies": [
+            1
+          ],
+          "details": "Create IP/contracts/code_city_node_event.py with: (1) CodeCityStatus = Literal['working', 'broken', 'combat'] type alias, (2) CodeCityNodeEvent dataclass with required fields (path: str, status: CodeCityStatus, loc: int) and optional fields (errors: List[str], nodeType: Optional[str], centrality: Optional[float], inCycle: Optional[bool], incomingCount: Optional[int], outgoingCount: Optional[int]), (3) to_dict() method using dataclasses.asdict(). Field naming must use camelCase to match JS payload (nodeType not node_type) unlike Python-side CodeNode which uses snake_case.",
+          "status": "pending",
+          "testStrategy": "Instantiate CodeCityNodeEvent with minimal required fields and verify defaults are applied correctly",
+          "parentId": "undefined"
+        },
+        {
+          "id": "3",
+          "title": "Implement validate_code_city_node_event validation function",
+          "description": "Create the validation function that parses dict payloads into typed CodeCityNodeEvent instances",
+          "dependencies": [
+            2
+          ],
+          "details": "Add validate_code_city_node_event(payload: dict) -> CodeCityNodeEvent function that: (1) Checks required fields ['path', 'status', 'loc'] exist, raising ValueError with specific field name if missing, (2) Validates status is one of ('working', 'broken', 'combat'), raising ValueError if invalid, (3) Coerces loc to int for robustness, (4) Extracts optional fields with .get() defaulting to None or [], (5) Returns constructed CodeCityNodeEvent instance. Function should be defensive but not overly strict on optional fields.",
+          "status": "pending",
+          "testStrategy": "Test with valid payload returns CodeCityNodeEvent, missing 'path' raises ValueError('Missing required field: path'), invalid status raises ValueError",
+          "parentId": "undefined"
+        },
+        {
+          "id": "4",
+          "title": "Add EXAMPLE_NODE_EVENT fixture and docstrings",
+          "description": "Create the example payload constant for testing and documentation purposes",
+          "dependencies": [
+            2
+          ],
+          "details": "Add EXAMPLE_NODE_EVENT dict constant matching the specification: {'path': 'IP/woven_maps.py', 'status': 'broken', 'loc': 2847, 'errors': ['TypeError on line 42'], 'nodeType': 'file', 'centrality': 0.85, 'inCycle': False, 'incomingCount': 12, 'outgoingCount': 8}. Add comprehensive docstrings to the dataclass and validation function explaining the schema's purpose as the bridge between JS Code City events and Python handlers.",
+          "status": "pending",
+          "testStrategy": "Verify validate_code_city_node_event(EXAMPLE_NODE_EVENT) succeeds and returns correct CodeCityNodeEvent instance",
+          "parentId": "undefined"
+        },
+        {
+          "id": "5",
+          "title": "Write unit tests for CodeCityNodeEvent schema and validation",
+          "description": "Create comprehensive test coverage for the schema validation edge cases",
+          "dependencies": [
+            3,
+            4
+          ],
+          "details": "Create test file (location TBD based on project test structure) with tests: (1) test_valid_minimal_payload - only required fields, (2) test_valid_full_payload - all fields including EXAMPLE_NODE_EVENT, (3) test_missing_required_field_path/status/loc - each raises ValueError with field name, (4) test_invalid_status_value - non-enum value raises ValueError, (5) test_loc_coercion - string '100' coerces to int 100, (6) test_to_dict_roundtrip - to_dict() output can be re-validated, (7) test_optional_fields_default_none - unspecified optionals are None",
+          "status": "pending",
+          "testStrategy": "Run pytest on the test file, all 7+ test cases should pass with no failures",
+          "parentId": "undefined"
+        }
+      ],
+      "complexity": 3,
+      "recommendedSubtasks": 0,
+      "expansionPrompt": "No expansion needed - the complete dataclass implementation is provided in the task details including the validation function, type definitions, and example fixture.",
+      "blocks": [
+        "6",
+        "8"
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Implement CameraState schema",
+      "description": "Create schema for Code City camera position and animation state with defaults",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [
+        "1"
+      ],
+      "details": "Create IP/contracts/camera_state.py with dataclass for camera state management.\n\nImplementation:\n```python\nfrom typing import Literal, Tuple, List, Dict, Any\nfrom dataclasses import dataclass, field\n\nCameraMode = Literal[\"overview\", \"dive\", \"focus\", \"room\", \"sitting_room\"]\n\n@dataclass\nclass CameraState:\n    mode: CameraMode\n    position: Tuple[float, float, float]\n    target: Tuple[float, float, float]\n    zoom: float\n    return_stack: List[Dict[str, Any]] = field(default_factory=list)\n    transition_ms: int = 1000\n    easing: str = \"easeInOutCubic\"\n    \n    def clamp_zoom(self, min_zoom: float = 0.1, max_zoom: float = 10.0):\n        \"\"\"Clamp zoom to safe range.\"\"\"\n        self.zoom = max(min_zoom, min(max_zoom, self.zoom))\n    \n    def normalize_position(self, bounds: Tuple[float, float, float]):\n        \"\"\"Normalize position within scene bounds.\"\"\"\n        x, y, z = self.position\n        bx, by, bz = bounds\n        self.position = (\n            max(-bx, min(bx, x)),\n            max(-by, min(by, y)),\n            max(-bz, min(bz, z))\n        )\n\ndef get_default_camera_state() -> CameraState:\n    \"\"\"Return default overview camera perspective.\"\"\"\n    return CameraState(\n        mode=\"overview\",\n        position=(0.0, 500.0, 800.0),  # Bird's eye view\n        target=(0.0, 0.0, 0.0),         # Looking at origin\n        zoom=1.0,\n        return_stack=[],\n        transition_ms=1500,\n        easing=\"easeInOutCubic\"\n    )\n```",
+      "testStrategy": "Test get_default_camera_state() returns valid state. Test clamp_zoom() and normalize_position() edge cases. Verify all camera modes are valid Literal values.",
+      "subtasks": [
+        {
+          "id": "1",
+          "title": "Create IP/contracts directory and camera_state.py file skeleton",
+          "description": "Create the contracts directory structure and initialize camera_state.py with imports and type definitions",
+          "dependencies": [],
+          "details": "Create IP/contracts/ directory with __init__.py. Create camera_state.py with imports: typing (Literal, Tuple, List, Dict, Any), dataclasses (dataclass, field). Define CameraMode type alias as Literal[\"overview\", \"dive\", \"focus\", \"room\", \"sitting_room\"].",
+          "status": "pending",
+          "testStrategy": "Verify file exists and imports work: python -c \"from IP.contracts.camera_state import CameraMode\"",
+          "parentId": "undefined"
+        },
+        {
+          "id": "2",
+          "title": "Implement CameraState dataclass with core fields",
+          "description": "Define the CameraState dataclass with all required fields and default values",
+          "dependencies": [
+            1
+          ],
+          "details": "Create @dataclass CameraState with fields: mode (CameraMode), position (Tuple[float, float, float]), target (Tuple[float, float, float]), zoom (float), return_stack (List[Dict[str, Any]] with field(default_factory=list)), transition_ms (int = 1000), easing (str = \"easeInOutCubic\").",
+          "status": "pending",
+          "testStrategy": "Test instantiation: CameraState(mode=\"overview\", position=(0,0,0), target=(0,0,0), zoom=1.0) succeeds",
+          "parentId": "undefined"
+        },
+        {
+          "id": "3",
+          "title": "Implement clamp_zoom utility method",
+          "description": "Add clamp_zoom method to CameraState for constraining zoom values to safe ranges",
+          "dependencies": [
+            2
+          ],
+          "details": "Add method clamp_zoom(self, min_zoom: float = 0.1, max_zoom: float = 10.0) that sets self.zoom = max(min_zoom, min(max_zoom, self.zoom)). This ensures zoom stays within valid bounds for rendering.",
+          "status": "pending",
+          "testStrategy": "Test edge cases: zoom=0.01 clamps to 0.1, zoom=50.0 clamps to 10.0, zoom=5.0 stays at 5.0",
+          "parentId": "undefined"
+        },
+        {
+          "id": "4",
+          "title": "Implement normalize_position utility method",
+          "description": "Add normalize_position method to CameraState for constraining camera position within scene bounds",
+          "dependencies": [
+            2
+          ],
+          "details": "Add method normalize_position(self, bounds: Tuple[float, float, float]) that clamps each position coordinate to [-bound, bound] range. For each axis (x,y,z), apply: max(-bx, min(bx, x)). Updates self.position in place.",
+          "status": "pending",
+          "testStrategy": "Test: position (100,200,300) with bounds (50,50,50) normalizes to (50,50,50); negative values clamp correctly",
+          "parentId": "undefined"
+        },
+        {
+          "id": "5",
+          "title": "Implement get_default_camera_state factory function",
+          "description": "Create factory function returning default overview camera state for Code City initialization",
+          "dependencies": [
+            2
+          ],
+          "details": "Implement get_default_camera_state() -> CameraState returning CameraState with: mode=\"overview\", position=(0.0, 500.0, 800.0) for bird's eye view, target=(0.0, 0.0, 0.0) at origin, zoom=1.0, empty return_stack, transition_ms=1500, easing=\"easeInOutCubic\".",
+          "status": "pending",
+          "testStrategy": "Test get_default_camera_state() returns valid CameraState with mode==\"overview\" and expected position/target values",
+          "parentId": "undefined"
+        }
+      ],
+      "complexity": 3,
+      "recommendedSubtasks": 0,
+      "expansionPrompt": "No expansion needed - complete dataclass with two utility methods (clamp_zoom, normalize_position) and factory function is fully specified in task details.",
+      "blocks": [
+        "6"
+      ]
+    },
+    {
+      "id": "4",
+      "title": "Implement SettlementSurvey schema",
+      "description": "Create schema for Settlement System survey data with typed fiefdom and boundary structures",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [
+        "1"
+      ],
+      "details": "Create IP/contracts/settlement_survey.py with comprehensive schema for Settlement System integration.\n\nImplementation:\n```python\nfrom typing import Dict, List, Any, Optional\nfrom dataclasses import dataclass, field\nfrom enum import Enum\n\nclass WiringStatus(Enum):\n    WORKING = \"working\"    # Gold - #D4AF37\n    BROKEN = \"broken\"      # Teal - #1fbdea\n    COMBAT = \"combat\"      # Purple - #9D4EDD\n\n@dataclass\nclass FiefdomData:\n    name: str\n    files: List[str]\n    entry_points: List[str]\n    exports: List[str]\n    internal_coupling: float  # 0-1\n    external_coupling: float  # 0-1\n    \n@dataclass\nclass BoundaryContract:\n    from_fiefdom: str\n    to_fiefdom: str\n    allowed_types: List[str]\n    forbidden_crossings: List[str]\n    contract_status: str  # \"defined\" | \"draft\" | \"missing\"\n    \n@dataclass\nclass WiringConnection:\n    source: str\n    target: str\n    status: WiringStatus\n    agents_active: bool = False\n\n@dataclass\nclass SettlementSurvey:\n    metadata: Dict[str, Any]\n    fiefdoms: Dict[str, FiefdomData]\n    boundary_contracts: List[BoundaryContract]\n    wiring_state: List[WiringConnection]\n    \ndef parse_settlement_survey(data: Dict[str, Any]) -> SettlementSurvey:\n    \"\"\"Parse and validate settlement survey JSON.\"\"\"\n    # Validate required top-level keys\n    required = ['metadata', 'fiefdoms', 'boundary_contracts', 'wiring_state']\n    for key in required:\n        if key not in data:\n            raise ValueError(f\"Missing required survey field: {key}\")\n    \n    # Parse fiefdoms\n    fiefdoms = {}\n    for name, fief_data in data['fiefdoms'].items():\n        fiefdoms[name] = FiefdomData(**fief_data)\n    \n    # Parse boundary contracts\n    contracts = [BoundaryContract(**bc) for bc in data['boundary_contracts']]\n    \n    # Parse wiring state\n    wiring = []\n    for wire in data['wiring_state']:\n        wire['status'] = WiringStatus(wire['status'])\n        wiring.append(WiringConnection(**wire))\n    \n    return SettlementSurvey(\n        metadata=data['metadata'],\n        fiefdoms=fiefdoms,\n        boundary_contracts=contracts,\n        wiring_state=wiring\n    )\n\n# Example fixture for testing\nEXAMPLE_SURVEY = {\n    \"metadata\": {\"project\": \"Orchestr8\", \"timestamp\": \"2026-02-13\"},\n    \"fiefdoms\": {\n        \"core\": {\n            \"name\": \"core\",\n            \"files\": [\"orchestr8.py\"],\n            \"entry_points\": [\"orchestr8.py\"],\n            \"exports\": [\"STATE_MANAGERS\"],\n            \"internal_coupling\": 0.9,\n            \"external_coupling\": 0.3\n        }\n    },\n    \"boundary_contracts\": [],\n    \"wiring_state\": []\n}\n```",
+      "testStrategy": "Test parse_settlement_survey(EXAMPLE_SURVEY) succeeds. Test with missing fields raises ValueError. Verify WiringStatus enum maps to correct color values.",
+      "subtasks": [
+        {
+          "id": "1",
+          "title": "Create contracts directory and base file structure",
+          "description": "Create the IP/contracts directory and settlement_survey.py file with required imports",
+          "dependencies": [],
+          "details": "Create IP/contracts/ directory if it doesn't exist, then create settlement_survey.py with imports: typing (Dict, List, Any, Optional), dataclasses (dataclass, field), and enum (Enum). Add an empty __init__.py to make it a proper Python package.",
+          "status": "pending",
+          "testStrategy": "Verify directory exists and file imports successfully with 'python -c \"from IP.contracts import settlement_survey\"'",
+          "parentId": "undefined"
+        },
+        {
+          "id": "2",
+          "title": "Implement WiringStatus enum and FiefdomData dataclass",
+          "description": "Create the WiringStatus enum with three states and the FiefdomData dataclass for fiefdom information",
+          "dependencies": [
+            1
+          ],
+          "details": "Implement WiringStatus enum with WORKING='working' (#D4AF37 Gold), BROKEN='broken' (#1fbdea Teal), COMBAT='combat' (#9D4EDD Purple). Then implement FiefdomData dataclass with fields: name (str), files (List[str]), entry_points (List[str]), exports (List[str]), internal_coupling (float 0-1), external_coupling (float 0-1).",
+          "status": "pending",
+          "testStrategy": "Test WiringStatus.WORKING.value == 'working', WiringStatus('broken') == WiringStatus.BROKEN. Create FiefdomData instance and verify all fields.",
+          "parentId": "undefined"
+        },
+        {
+          "id": "3",
+          "title": "Implement BoundaryContract and WiringConnection dataclasses",
+          "description": "Create the BoundaryContract and WiringConnection dataclasses for inter-fiefdom relationships",
+          "dependencies": [
+            2
+          ],
+          "details": "Implement BoundaryContract dataclass with fields: from_fiefdom (str), to_fiefdom (str), allowed_types (List[str]), forbidden_crossings (List[str]), contract_status (str - 'defined'|'draft'|'missing'). Implement WiringConnection dataclass with fields: source (str), target (str), status (WiringStatus), agents_active (bool, default=False).",
+          "status": "pending",
+          "testStrategy": "Create BoundaryContract and WiringConnection instances. Verify WiringConnection.agents_active defaults to False. Test status accepts WiringStatus enum values.",
+          "parentId": "undefined"
+        },
+        {
+          "id": "4",
+          "title": "Implement SettlementSurvey dataclass and parse function",
+          "description": "Create the main SettlementSurvey dataclass and parse_settlement_survey validation function",
+          "dependencies": [
+            3
+          ],
+          "details": "Implement SettlementSurvey dataclass with fields: metadata (Dict[str, Any]), fiefdoms (Dict[str, FiefdomData]), boundary_contracts (List[BoundaryContract]), wiring_state (List[WiringConnection]). Implement parse_settlement_survey(data: Dict[str, Any]) -> SettlementSurvey that validates required keys, parses fiefdoms dict to FiefdomData, converts boundary_contracts list to BoundaryContract objects, and converts wiring_state with WiringStatus enum conversion.",
+          "status": "pending",
+          "testStrategy": "Test parse_settlement_survey with valid data returns SettlementSurvey. Test missing required fields raises ValueError with descriptive message.",
+          "parentId": "undefined"
+        },
+        {
+          "id": "5",
+          "title": "Add EXAMPLE_SURVEY fixture and export module API",
+          "description": "Add the example survey fixture for testing and configure module exports in __init__.py",
+          "dependencies": [
+            4
+          ],
+          "details": "Add EXAMPLE_SURVEY dict constant with metadata (project, timestamp), fiefdoms ('core' with all FiefdomData fields), empty boundary_contracts list, and empty wiring_state list. Update IP/contracts/__init__.py to export: WiringStatus, FiefdomData, BoundaryContract, WiringConnection, SettlementSurvey, parse_settlement_survey, EXAMPLE_SURVEY.",
+          "status": "pending",
+          "testStrategy": "Test parse_settlement_survey(EXAMPLE_SURVEY) succeeds and returns valid SettlementSurvey instance. Verify imports work: 'from IP.contracts.settlement_survey import SettlementSurvey, parse_settlement_survey, EXAMPLE_SURVEY'",
+          "parentId": "undefined"
+        }
+      ],
+      "complexity": 4,
+      "recommendedSubtasks": 0,
+      "expansionPrompt": "No expansion needed - while more complex with multiple nested dataclasses (FiefdomData, BoundaryContract, WiringConnection, SettlementSurvey) and an enum, all code is provided and follows straightforward patterns.",
+      "blocks": [
+        "6"
+      ]
+    },
+    {
+      "id": "5",
+      "title": "Implement status merge policy",
+      "description": "Create canonical status merge function following combat > broken > working precedence",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        "1"
+      ],
+      "details": "Create IP/contracts/status_merge_policy.py implementing the three-state color system merge logic.\n\nImplementation:\n```python\nfrom typing import Literal, Iterable, Optional\n\nStatusType = Literal[\"working\", \"broken\", \"combat\"]\n\n# Canonical precedence: combat > broken > working\nSTATUS_PRIORITY = {\n    \"combat\": 3,\n    \"broken\": 2,\n    \"working\": 1\n}\n\ndef merge_status(*statuses: StatusType) -> StatusType:\n    \"\"\"Merge multiple status values using canonical precedence.\n    \n    Rule: combat > broken > working\n    \n    Args:\n        *statuses: Variable number of status strings\n        \n    Returns:\n        The highest-priority status\n        \n    Raises:\n        ValueError: If any status is unknown/invalid\n    \n    Examples:\n        >>> merge_status(\"working\", \"broken\")\n        \"broken\"\n        >>> merge_status(\"working\", \"working\", \"combat\")\n        \"combat\"\n        >>> merge_status(\"broken\", \"broken\")\n        \"broken\"\n    \"\"\"\n    if not statuses:\n        return \"working\"  # Default to working\n    \n    # Filter out None/null values\n    valid_statuses = [s for s in statuses if s is not None]\n    \n    if not valid_statuses:\n        return \"working\"\n    \n    # Validate all statuses\n    for status in valid_statuses:\n        if status not in STATUS_PRIORITY:\n            raise ValueError(f\"Unknown status value: {status}\")\n    \n    # Return highest priority\n    return max(valid_statuses, key=lambda s: STATUS_PRIORITY[s])\n\ndef get_status_color(status: StatusType) -> str:\n    \"\"\"Get hex color for status.\n    \n    Returns:\n        Hex color string matching canonical color system\n    \"\"\"\n    colors = {\n        \"working\": \"#D4AF37\",  # Gold\n        \"broken\": \"#1fbdea\",   # Blue/Teal\n        \"combat\": \"#9D4EDD\"    # Purple\n    }\n    return colors.get(status, \"#D4AF37\")  # Default to gold\n```",
+      "testStrategy": "Unit tests: merge_status('working', 'broken') == 'broken', merge_status('combat', 'working', 'broken') == 'combat', merge_status() == 'working', merge_status('invalid') raises ValueError, get_status_color('combat') == '#9D4EDD'",
+      "subtasks": [
+        {
+          "id": "1",
+          "title": "Create IP/contracts directory and status_merge_policy.py module",
+          "description": "Create the contracts directory structure and initialize the status_merge_policy.py file with module docstring and imports",
+          "dependencies": [],
+          "details": "Create IP/contracts/ directory if not exists. Create __init__.py for package. Create status_merge_policy.py with typing imports (Literal, Iterable, Optional) and module-level docstring explaining the three-state color system merge logic.",
+          "status": "pending",
+          "testStrategy": "Verify directory and files exist. Import module successfully with no errors.",
+          "parentId": "undefined"
+        },
+        {
+          "id": "2",
+          "title": "Define StatusType literal and STATUS_PRIORITY constant",
+          "description": "Create the StatusType type alias and STATUS_PRIORITY dict establishing combat > broken > working precedence",
+          "dependencies": [
+            1
+          ],
+          "details": "Define StatusType = Literal['working', 'broken', 'combat'] for type safety. Define STATUS_PRIORITY dict mapping each status to integer priority (combat=3, broken=2, working=1). Add inline comments explaining the canonical precedence rule.",
+          "status": "pending",
+          "testStrategy": "Test STATUS_PRIORITY['combat'] > STATUS_PRIORITY['broken'] > STATUS_PRIORITY['working'] returns True.",
+          "parentId": "undefined"
+        },
+        {
+          "id": "3",
+          "title": "Implement merge_status function with validation",
+          "description": "Create the merge_status(*statuses) function implementing priority-based merge with input validation",
+          "dependencies": [
+            2
+          ],
+          "details": "Implement merge_status using max() with STATUS_PRIORITY key lookup. Handle empty input (return 'working'). Filter None values. Validate all inputs against STATUS_PRIORITY keys, raising ValueError for unknown statuses. Include comprehensive docstring with examples.",
+          "status": "pending",
+          "testStrategy": "Unit tests: merge_status('working', 'broken') == 'broken', merge_status('combat', 'working', 'broken') == 'combat', merge_status() == 'working', merge_status('invalid') raises ValueError.",
+          "parentId": "undefined"
+        },
+        {
+          "id": "4",
+          "title": "Implement get_status_color helper function",
+          "description": "Create get_status_color(status) function returning canonical hex colors for each status",
+          "dependencies": [
+            2
+          ],
+          "details": "Implement simple dict lookup for status colors: working=#D4AF37 (Gold), broken=#1fbdea (Blue/Teal), combat=#9D4EDD (Purple). Default to gold for unknown status. Add docstring documenting return type and color mapping.",
+          "status": "pending",
+          "testStrategy": "Test get_status_color('combat') == '#9D4EDD', get_status_color('broken') == '#1fbdea', get_status_color('working') == '#D4AF37'.",
+          "parentId": "undefined"
+        },
+        {
+          "id": "5",
+          "title": "Export public API in __init__.py and add type exports",
+          "description": "Update IP/contracts/__init__.py to export merge_status, get_status_color, StatusType, and STATUS_PRIORITY",
+          "dependencies": [
+            3,
+            4
+          ],
+          "details": "Add from .status_merge_policy import merge_status, get_status_color, StatusType, STATUS_PRIORITY to __init__.py. Define __all__ list for explicit public API. Verify imports work from IP.contracts namespace.",
+          "status": "pending",
+          "testStrategy": "Test from IP.contracts import merge_status, get_status_color, StatusType works correctly. Verify __all__ contains all public symbols.",
+          "parentId": "undefined"
+        }
+      ],
+      "complexity": 2,
+      "recommendedSubtasks": 0,
+      "expansionPrompt": "No expansion needed - the merge_status function and get_status_color helper are simple priority-based comparison functions with complete implementation provided.",
+      "blocks": [
+        "6",
+        "7",
+        "9"
+      ]
+    },
+    {
+      "id": "6",
+      "title": "Add unit tests for contract schemas",
+      "description": "Create comprehensive unit tests for all four schema modules",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "details": "Create tests/ directory and test files for each schema module.\n\nFiles to create:\n- tests/__init__.py\n- tests/test_code_city_node_event.py\n- tests/test_camera_state.py\n- tests/test_settlement_survey.py\n- tests/test_status_merge_policy.py\n\nEach test file should:\n1. Test valid payloads succeed\n2. Test invalid payloads raise appropriate errors\n3. Test edge cases (empty lists, None values, out-of-range numbers)\n4. Test serialization/deserialization roundtrips\n5. Use pytest fixtures for reusable test data\n\nExample test structure:\n```python\nimport pytest\nfrom IP.contracts.code_city_node_event import validate_code_city_node_event, EXAMPLE_NODE_EVENT\n\ndef test_valid_node_event():\n    result = validate_code_city_node_event(EXAMPLE_NODE_EVENT)\n    assert result.path == 'IP/woven_maps.py'\n    assert result.status == 'broken'\n\ndef test_missing_required_field():\n    invalid = {'status': 'broken', 'loc': 100}  # Missing 'path'\n    with pytest.raises(ValueError, match=\"Missing required field: path\"):\n        validate_code_city_node_event(invalid)\n\ndef test_invalid_status():\n    invalid = {**EXAMPLE_NODE_EVENT, 'status': 'unknown'}\n    with pytest.raises(ValueError, match=\"Invalid status\"):\n        validate_code_city_node_event(invalid)\n```\n\nRun tests with: pytest tests/ -v",
+      "testStrategy": "All tests pass with pytest. Coverage > 90% for each schema module. Edge cases handled correctly without crashes.",
+      "subtasks": [
+        {
+          "id": "1",
+          "title": "Create tests directory structure and __init__.py",
+          "description": "Initialize the tests/ directory with proper package structure for pytest discovery",
+          "dependencies": [],
+          "details": "Create the tests/ directory at the project root level alongside IP/. Add tests/__init__.py as an empty file to make it a proper Python package. Verify pytest can discover the test directory by running 'pytest tests/ --collect-only'. This establishes the foundation for all subsequent test files.",
+          "status": "pending",
+          "testStrategy": "Run 'pytest tests/ --collect-only' to verify directory structure is recognized. Import should work: 'python -c \"import tests\"'",
+          "parentId": "undefined"
+        },
+        {
+          "id": "2",
+          "title": "Write test_code_city_node_event.py with comprehensive test coverage",
+          "description": "Create unit tests for CodeCityNodeEvent schema covering valid payloads, invalid payloads, and edge cases",
+          "dependencies": [
+            1
+          ],
+          "details": "Create tests/test_code_city_node_event.py with pytest fixtures for reusable test data. Test cases must include: (1) test_valid_node_event - validates EXAMPLE_NODE_EVENT succeeds and fields match, (2) test_missing_required_field - missing 'path' raises ValueError, (3) test_invalid_status - status not in ['working','broken','combat'] raises ValueError, (4) test_invalid_loc_type - non-integer loc raises error, (5) test_empty_errors_list - empty list is valid, (6) test_none_optional_fields - nodeType=None is valid, (7) test_serialization_roundtrip - asdict() and reconstruction preserves data. Use @pytest.fixture for valid_event_data and invalid_event_variants.",
+          "status": "pending",
+          "testStrategy": "Run 'pytest tests/test_code_city_node_event.py -v' - all tests pass. Check coverage with 'pytest --cov=IP.contracts.code_city_node_event tests/test_code_city_node_event.py'",
+          "parentId": "undefined"
+        },
+        {
+          "id": "3",
+          "title": "Write test_camera_state.py testing defaults and utility methods",
+          "description": "Create unit tests for CameraState schema including default factory, clamp_zoom, and normalize_position utilities",
+          "dependencies": [
+            1
+          ],
+          "details": "Create tests/test_camera_state.py with comprehensive tests: (1) test_get_default_camera_state - returns valid CameraState with expected defaults (mode='overview', zoom in range), (2) test_all_camera_modes_valid - iterate CameraMode literals and verify each works, (3) test_clamp_zoom_lower_bound - values below min clamped correctly, (4) test_clamp_zoom_upper_bound - values above max clamped correctly, (5) test_clamp_zoom_within_range - valid values unchanged, (6) test_normalize_position_tuple - 3-tuple floats work, (7) test_invalid_position_length - wrong tuple size raises error, (8) test_return_stack_default_empty - default factory creates empty list, (9) test_serialization_roundtrip - asdict() reconstruction preserves all fields. Use fixtures for default and custom camera states.",
+          "status": "pending",
+          "testStrategy": "Run 'pytest tests/test_camera_state.py -v' - all tests pass. Verify edge cases don't cause crashes with extreme float values.",
+          "parentId": "undefined"
+        },
+        {
+          "id": "4",
+          "title": "Write test_settlement_survey.py and test_status_merge_policy.py",
+          "description": "Create unit tests for nested SettlementSurvey structure and StatusMergePolicy precedence rules with color mapping",
+          "dependencies": [
+            1
+          ],
+          "details": "Create tests/test_settlement_survey.py: (1) test_valid_settlement_survey - EXAMPLE passes validation, (2) test_nested_room_structure - rooms within files validate correctly, (3) test_empty_rooms_list - files can have empty rooms, (4) test_invalid_fiefdom_id - non-string ID raises error, (5) test_missing_required_nested_field - missing room.name raises error, (6) test_serialization_roundtrip - nested structures survive asdict/reconstruction. Create tests/test_status_merge_policy.py: (1) test_combat_takes_precedence - combat > broken > working, (2) test_broken_over_working - broken beats working, (3) test_same_status_merge - identical statuses return same, (4) test_color_mapping_working - returns '#D4AF37' (Gold), (5) test_color_mapping_broken - returns '#1fbdea' (Blue), (6) test_color_mapping_combat - returns '#9D4EDD' (Purple), (7) test_invalid_status_color - unknown status raises error. Use fixtures for survey structures and status pairs.",
+          "status": "pending",
+          "testStrategy": "Run 'pytest tests/test_settlement_survey.py tests/test_status_merge_policy.py -v' - all tests pass. Verify color hex codes match CLAUDE.md color system specification.",
+          "parentId": "undefined"
+        }
+      ],
+      "complexity": 5,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down into: 1) Create tests directory structure and __init__.py, 2) Write test_code_city_node_event.py with valid/invalid/edge cases, 3) Write test_camera_state.py testing defaults and utility methods, 4) Write test_settlement_survey.py with nested structure validation and test_status_merge_policy.py testing precedence rules and color mapping.",
+      "blocks": []
+    },
+    {
+      "id": "7",
+      "title": "Extend orchestr8.py root state with health channels",
+      "description": "Add health and health_status to STATE_MANAGERS while preserving existing state",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        "5"
+      ],
+      "details": "Modify orchestr8.py state_management cell to add health state channels without breaking existing plugins.\n\nImplementation:\nIn the state_management() function (around line 41), add:\n```python\n@app.cell\ndef state_management(mo, os):\n    \"\"\"Global state using Marimo's reactive state hooks.\n    \n    STATE_MANAGERS Pattern:\n        Each state is a tuple of (getter, setter) functions.\n        Plugins receive STATE_MANAGERS dict and can read/write state reactively.\n    \"\"\"\n    # Core state definitions\n    get_root, set_root = mo.state(os.getcwd())\n    get_files, set_files = mo.state(None)\n    get_selected, set_selected = mo.state(None)\n    get_logs, set_logs = mo.state([])\n    \n    # Health state channels (Code City integration)\n    get_health, set_health = mo.state({})\n    get_health_status, set_health_status = mo.state(\"idle\")\n    \n    # Bundle state for plugin injection\n    STATE_MANAGERS = {\n        \"root\": (get_root, set_root),\n        \"files\": (get_files, set_files),\n        \"selected\": (get_selected, set_selected),\n        \"logs\": (get_logs, set_logs),\n        \"health\": (get_health, set_health),\n        \"health_status\": (get_health_status, set_health_status)\n    }\n    \n    return (\n        STATE_MANAGERS,\n        get_files,\n        get_logs,\n        get_root,\n        get_selected,\n        get_health,\n        get_health_status,\n        set_files,\n        set_logs,\n        set_root,\n        set_selected,\n        set_health,\n        set_health_status,\n    )\n```\n\nKey constraints:\n- Keep all existing keys unchanged\n- Add health/health_status as NEW keys\n- Maintain backwards compatibility",
+      "testStrategy": "Run marimo run orchestr8.py and verify: (1) App starts without errors, (2) All existing plugins render correctly, (3) STATE_MANAGERS contains 6 keys including 'health' and 'health_status', (4) No console errors in browser",
+      "subtasks": [],
+      "complexity": 4,
+      "recommendedSubtasks": 0,
+      "expansionPrompt": "No expansion needed - this is a surgical modification to a single cell (state_management) with clear before/after state. The change pattern mirrors existing state definitions exactly.",
+      "blocks": [
+        "8",
+        "9",
+        "10"
+      ]
+    },
+    {
+      "id": "8",
+      "title": "Implement node-click bridge in maestro plugin",
+      "description": "Wire JS node click events to Python handle_node_click() callback with schema validation",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        "2",
+        "7"
+      ],
+      "details": "Create a bridge channel in IP/plugins/06_maestro.py to receive node click events from the Code City iframe and invoke handle_node_click().\n\nImplementation approach:\n1. Add a hidden marimo state channel for clicked node data\n2. Add JavaScript listener in Code City HTML template to post validated events\n3. Parse and validate events using CodeCityNodeEvent schema\n4. Invoke handle_node_click() on valid events\n\nIn 06_maestro.py, around line 300 (in render function):\n```python\n# Add state for node click bridge\nget_clicked_node_raw, set_clicked_node_raw = mo.state(None)\n\n# Bridge handler - validates and processes node clicks\ndef process_node_click(raw_payload):\n    if not raw_payload:\n        return\n    \n    try:\n        from IP.contracts.code_city_node_event import validate_code_city_node_event\n        \n        # Validate payload\n        validated = validate_code_city_node_event(raw_payload)\n        \n        # Update clicked node state\n        set_clicked_node(validated.to_dict())\n        \n        # Invoke existing handler\n        handle_node_click(validated.to_dict())\n        \n    except (ValueError, KeyError, TypeError) as e:\n        # Log validation errors safely\n        log_action(f\"Invalid node click payload: {e}\")\n        return\n\n# Add reactive effect to process clicks\nif get_clicked_node_raw():\n    process_node_click(get_clicked_node_raw())\n```\n\nModify woven_maps.py template to post to the bridge channel instead of just window.parent.postMessage. This requires adding a marimo callback mechanism.\n\nAlternative simpler approach using existing window.__clicked_node__:\nAdd JavaScript in maestro that polls window.frames and checks for clicked node, then validates and calls Python handler.",
+      "testStrategy": "Manual test: (1) Run marimo run orchestr8.py, (2) Open Code City view, (3) Click a broken node, (4) Verify deploy panel opens with correct file path and status, (5) Click working node - no deploy panel, (6) Send malformed event - verify logged safely without crash",
+      "subtasks": [
+        {
+          "id": "1",
+          "title": "Add hidden marimo state channel for clicked node data in maestro",
+          "description": "Create a new mo.state pair (get_clicked_node_raw, set_clicked_node_raw) in the render function of 06_maestro.py to serve as the bridge channel for receiving raw node click events from the Code City iframe.",
+          "dependencies": [],
+          "details": "In IP/plugins/06_maestro.py around line 470 (near the existing get_clicked_node state), add:\n\n```python\n# Raw node click bridge channel - receives unvalidated events from iframe\nget_clicked_node_raw, set_clicked_node_raw = mo.state(None)\n```\n\nThis state variable will hold the raw payload from the iframe's postMessage before validation occurs. The existing get_clicked_node state (line 470-472) will continue to hold validated, processed node data. The separation allows the bridge to receive untrusted data while the main state only holds validated data.",
+          "status": "pending",
+          "testStrategy": "Verify that after adding the state channel: (1) marimo run orchestr8.py starts without errors, (2) get_clicked_node_raw() returns None initially, (3) set_clicked_node_raw({'test': 'data'}) successfully updates the state. Manual verification by adding a temporary log_action() call.",
+          "parentId": "undefined"
+        },
+        {
+          "id": "2",
+          "title": "Modify woven_maps.py JavaScript template to postMessage validated events to parent",
+          "description": "Update the canvas click handler in WOVEN_MAPS_TEMPLATE (around line 2680-2703) to emit a more structured event payload that includes all fields needed for CodeCityNodeEvent schema validation.",
+          "dependencies": [
+            1
+          ],
+          "details": "The current postMessage at line 2688-2701 already sends a structured payload with type 'WOVEN_MAPS_NODE_CLICK'. Enhance it to:\n\n1. Add explicit field typing for the node object (ensure nodeType defaults to 'file' if undefined)\n2. Ensure errors is always an array (never undefined/null)\n3. Add timestamp to the event for debugging\n\nModify the postMessage in WOVEN_MAPS_TEMPLATE:\n```javascript\nwindow.parent.postMessage({\n    type: 'WOVEN_MAPS_NODE_CLICK',\n    timestamp: Date.now(),\n    node: {\n        path: node.path || '',\n        status: node.status || 'working',\n        loc: node.loc || 0,\n        errors: Array.isArray(node.errors) ? node.errors : [],\n        nodeType: node.nodeType || 'file',\n        centrality: node.centrality || 0,\n        inCycle: !!node.inCycle,\n        incomingCount: node.incomingCount || 0,\n        outgoingCount: node.outgoingCount || 0\n    }\n}, '*');\n```\n\nThis ensures the payload always has all required fields with safe defaults.",
+          "status": "pending",
+          "testStrategy": "Open browser DevTools console while running orchestr8.py, click a Code City building, verify console shows 'Node clicked:' log and the postMessage contains all required fields with no undefined values. Check that both working and broken nodes emit valid payloads.",
+          "parentId": "undefined"
+        },
+        {
+          "id": "3",
+          "title": "Create process_node_click() bridge handler with schema validation using CodeCityNodeEvent",
+          "description": "Implement the process_node_click() function in 06_maestro.py that validates raw payloads using the CodeCityNodeEvent schema and safely handles validation errors without crashing the UI.",
+          "dependencies": [
+            1
+          ],
+          "details": "Add the bridge handler function in 06_maestro.py after the event handlers section (around line 875):\n\n```python\ndef process_node_click(raw_payload: Optional[dict]) -> None:\n    \"\"\"Bridge handler - validates and processes node clicks from Code City iframe.\n    \n    Receives raw postMessage payload, validates against CodeCityNodeEvent schema,\n    and invokes handle_node_click() on valid events. Invalid payloads are logged\n    safely without crashing the UI.\n    \"\"\"\n    if not raw_payload:\n        return\n    \n    try:\n        # Import validation function (Task 2 dependency)\n        from IP.contracts.code_city_node_event import validate_code_city_node_event\n        \n        # Extract node data from postMessage wrapper\n        node_data = raw_payload.get('node') if isinstance(raw_payload, dict) else None\n        if not node_data:\n            log_action(\"Invalid node click: missing node data\")\n            return\n        \n        # Validate payload against schema\n        validated = validate_code_city_node_event(node_data)\n        \n        # Update validated clicked node state\n        set_clicked_node(validated.to_dict() if hasattr(validated, 'to_dict') else validated)\n        \n        # Invoke existing handler\n        handle_node_click(validated.to_dict() if hasattr(validated, 'to_dict') else validated)\n        \n    except ImportError:\n        # Schema not yet implemented - fall back to direct pass-through\n        log_action(\"CodeCityNodeEvent schema not available, using raw payload\")\n        if isinstance(raw_payload, dict) and 'node' in raw_payload:\n            handle_node_click(raw_payload['node'])\n    except (ValueError, KeyError, TypeError) as e:\n        # Log validation errors safely - don't crash UI\n        log_action(f\"Invalid node click payload: {e}\")\n        return\n```\n\nThis handler gracefully degrades when the schema contract (Task 2) isn't implemented yet.",
+          "status": "pending",
+          "testStrategy": "Unit test the function with: (1) valid payload matching expected schema - should call handle_node_click(), (2) missing 'node' key - should log and return, (3) invalid field types - should catch ValueError and log, (4) None payload - should return immediately. Manual test by triggering clicks in Code City and checking logs.",
+          "parentId": "undefined"
+        },
+        {
+          "id": "4",
+          "title": "Wire up reactive effect to invoke handle_node_click() on validated events and test integration end-to-end",
+          "description": "Connect the marimo state channel to the bridge handler using marimo's reactive pattern, and implement JavaScript-to-Python communication via the window.__clicked_node__ polling mechanism or marimo callback.",
+          "dependencies": [
+            1,
+            2,
+            3
+          ],
+          "details": "This is the most complex subtask as it bridges JS↔Python reactivity. Two implementation approaches:\n\n**Approach A - Polling (simpler, works now):**\nAdd JavaScript in node_click_js (line 1711) to update a hidden input that marimo can observe:\n\n```javascript\n// Add after window.__clicked_node__ assignment\nconst hiddenInput = document.getElementById('__node_click_bridge__');\nif (hiddenInput) {\n    hiddenInput.value = JSON.stringify(event.data.node);\n    hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));\n}\n```\n\nAdd hidden input element and reactive handler in maestro:\n```python\n# Hidden bridge input\nnode_click_bridge = mo.ui.text(\n    value='',\n    on_change=lambda v: process_node_click(json.loads(v) if v else None)\n)\nnode_click_bridge_html = mo.Html(\n    f'<div style=\"display:none\">{node_click_bridge}</div>'\n)\n```\n\n**Approach B - postMessage listener (cleaner, needs marimo support):**\nUse mo.js to register a callback that marimo invokes on postMessage events.\n\nImplement Approach A first as it's guaranteed to work with current marimo.\n\nAdd to the return vstack after node_click_js:\n```python\nnode_click_bridge_html,  # Hidden bridge element\n```\n\nTest the full flow: click building → JS postMessage → hidden input update → on_change fires → process_node_click() → validate → handle_node_click() → deploy panel opens for broken nodes.",
+          "status": "pending",
+          "testStrategy": "End-to-end integration test: (1) Run marimo run orchestr8.py, (2) Open Code City view, (3) Click a BROKEN (blue) building, (4) Verify deploy panel opens with correct file path and status showing 'House a Digital Native?', (5) Click a WORKING (gold) building - verify no deploy panel opens, (6) Open browser DevTools, send malformed postMessage manually - verify logs show 'Invalid node click payload' without UI crash, (7) Check that clicking multiple buildings in sequence works without state leakage.",
+          "parentId": "undefined"
+        }
+      ],
+      "complexity": 7,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down into: 1) Add hidden marimo state channel for clicked node data in maestro, 2) Modify woven_maps.py JavaScript template to postMessage validated events to parent, 3) Create process_node_click() bridge handler with schema validation using CodeCityNodeEvent, 4) Wire up reactive effect to invoke handle_node_click() on validated events and test integration end-to-end.",
+      "blocks": [
+        "10"
+      ]
+    },
+    {
+      "id": "9",
+      "title": "Update woven_maps.py to use status merge policy",
+      "description": "Integrate status_merge_policy into build_from_health_results function",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [
+        "5",
+        "7"
+      ],
+      "details": "Update IP/woven_maps.py to use the canonical merge_status function when combining health check results with existing node status.\n\nModify build_from_health_results() function (around line 527):\n```python\nfrom IP.contracts.status_merge_policy import merge_status\n\ndef build_from_health_results(\n    nodes: List[CodeNode], health_results: Dict[str, Any]\n) -> List[CodeNode]:\n    \"\"\"Merge HealthChecker output into CodeNode objects.\n    \n    Uses canonical status merge policy: combat > broken > working\n    \"\"\"\n    for node in nodes:\n        for path, result in health_results.items():\n            if path in node.path or node.path.startswith(path.rstrip(\"/\")):\n                # Use canonical merge instead of manual override\n                health_status = \"broken\" if result.status == \"broken\" else \"working\"\n                node.status = merge_status(node.status, health_status)\n                \n                if hasattr(result, \"errors\") and result.errors:\n                    node.health_errors = [\n                        {\"file\": e.file, \"line\": e.line, \"message\": e.message}\n                        for e in result.errors[:10]\n                    ]\n                break\n    \n    return nodes\n```\n\nThis ensures:\n- Combat status is never overridden by health results\n- Merge logic is consistent across the codebase\n- Status precedence is enforced via contract",
+      "testStrategy": "Unit test: node with status='combat' + health='broken' → final status='combat'. Node with status='working' + health='broken' → final status='broken'. Verify merge_status is called correctly.",
+      "subtasks": [],
+      "complexity": 3,
+      "recommendedSubtasks": 0,
+      "expansionPrompt": "No expansion needed - this is a surgical refactor of build_from_health_results() (line 527-556) to use the canonical merge_status function instead of inline status comparison logic.",
+      "blocks": [
+        "10"
+      ]
+    },
+    {
+      "id": "10",
+      "title": "Run canonical constraint acceptance tests",
+      "description": "Verify all canonical constraints remain intact after integration",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        "7",
+        "8",
+        "9"
+      ],
+      "details": "Manual acceptance testing to verify no canon drift occurred during implementation.\n\nAcceptance checklist:\n\n1. **Naming/UI constraints:**\n   - [ ] Top row shows: [orchestr8] [collabor8] [JFDI]\n   - [ ] No 'gener8' appears in active canonical frame\n   - [ ] App title remains 'Orchestr8 v3.0: The Fortress Factory'\n\n2. **Color constraints:**\n   - [ ] Working nodes render in gold (#D4AF37)\n   - [ ] Broken nodes render in blue/teal (#1fbdea)\n   - [ ] Combat nodes render in purple (#9D4EDD)\n   - [ ] Background remains The Void (#0A0A0B)\n\n3. **Motion constraints:**\n   - [ ] Code City buildings EMERGE (particles coalesce)\n   - [ ] NO breathing/pulsing animations\n   - [ ] NO animate-in effects on UI panels\n   - [ ] Transitions are instant or emergence-only\n\n4. **State precedence:**\n   - [ ] Combat status overrides broken and working\n   - [ ] Broken status overrides working\n   - [ ] merge_status() is used consistently\n\n5. **Behavioral constraints:**\n   - [ ] Clicking broken node opens deploy panel\n   - [ ] Clicking working node does NOT open deploy panel\n   - [ ] Clicking combat node shows combat status message\n   - [ ] All existing plugins still render\n   - [ ] No console errors in browser\n\n6. **State wiring:**\n   - [ ] STATE_MANAGERS contains health/health_status keys\n   - [ ] Root state initialization succeeds\n   - [ ] handle_node_click() is invoked on valid clicks\n\nDocument any deviations in tests/acceptance_report.md with screenshots if needed.",
+      "testStrategy": "Complete all checklist items. Take screenshots of: (1) Top navigation bar, (2) Code City with nodes in all three states, (3) Deploy panel triggered by broken node click, (4) Browser console showing no errors. Accept only if ALL items pass.",
+      "subtasks": [],
+      "complexity": 5,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "Break down into: 1) Run UI constraint verification (naming, colors, motion) with screenshots, 2) Run state/behavioral constraint tests (status precedence, click handlers, plugin rendering), 3) Document results in tests/acceptance_report.md with pass/fail status and any deviation notes.",
+      "blocks": []
+    }
+  ],
+  "metadata": {
+    "total": 10,
+    "filtered": 10,
+    "tag": "master",
+    "storageType": "file",
+    "allTags": false
+  }
+}

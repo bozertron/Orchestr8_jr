@@ -4,21 +4,45 @@ from pathlib import Path
 from typing import List, Dict, Optional
 import json
 
+from IP.mermaid_generator import Fiefdom, FiefdomStatus, generate_empire_mermaid
+
 
 class BriefingGenerator:
     def __init__(self, project_root: str):
         self.project_root = Path(project_root)
 
     def load_campaign_log(self, fiefdom_path: str, limit: int = 5) -> List[Dict]:
-        """Load recent entries from CAMPAIGN_LOG.md."""
-        log_path = self.project_root / fiefdom_path / "CAMPAIGN_LOG.md"
-        if not log_path.exists():
+        """Load recent campaign entries from .orchestr8/campaigns/ (JSON format).
+
+        Per canon (CONTEXT.md / VISION-ALIGNMENT.md):
+        - Format: JSON files
+        - Location: .orchestr8/campaigns/
+        """
+        campaigns_dir = self.project_root / ".orchestr8" / "campaigns"
+        if not campaigns_dir.exists():
             return []
 
-        # Parse markdown entries (simplified - would need proper parser)
         entries = []
-        # ... parsing logic ...
-        return entries[-limit:]
+        for json_file in sorted(campaigns_dir.glob("*.json")):
+            try:
+                data = json.loads(json_file.read_text())
+                # Accept single entry or list of entries
+                if isinstance(data, list):
+                    entries.extend(data)
+                elif isinstance(data, dict):
+                    entries.append(data)
+            except (json.JSONDecodeError, OSError):
+                continue
+
+        # Filter to this fiefdom if entries have a fiefdom field
+        fiefdom_entries = [
+            e for e in entries
+            if not e.get("fiefdom") or fiefdom_path in e.get("fiefdom", "")
+        ]
+
+        # Sort by date descending if available, return last N
+        fiefdom_entries.sort(key=lambda e: e.get("date", ""), reverse=True)
+        return fiefdom_entries[:limit]
 
     def get_locks_for_fiefdom(self, fiefdom_path: str) -> List[Dict]:
         """Get Louis locks relevant to this fiefdom."""
@@ -42,6 +66,43 @@ class BriefingGenerator:
                 )
         return locks
 
+    def build_fiefdom_diagram(self, fiefdom_path: str, context: Optional[Dict] = None) -> str:
+        """Generate Mermaid diagram of fiefdom structure for agent briefings.
+
+        Per canon: Carl deploys Mermaid diagrams to agents in briefing documents.
+        """
+        fiefdoms = []
+        # Build the target fiefdom node
+        status = FiefdomStatus.WORKING
+        error_count = 0
+        if context:
+            if context.get("health", {}).get("status") == "broken":
+                status = FiefdomStatus.BROKEN
+                error_count = len(context.get("health", {}).get("errors", []))
+            if context.get("combat", {}).get("active"):
+                status = FiefdomStatus.COMBAT
+
+        connections = context.get("imports_from", []) if context else []
+        fiefdoms.append(Fiefdom(
+            path=fiefdom_path,
+            status=status,
+            connections=connections,
+            error_count=error_count,
+        ))
+
+        # Add connected fiefdoms as nodes
+        for conn in connections:
+            fiefdoms.append(Fiefdom(
+                path=conn,
+                status=FiefdomStatus.WORKING,
+                connections=[],
+            ))
+
+        if len(fiefdoms) < 2:
+            return ""
+
+        return generate_empire_mermaid(fiefdoms)
+
     def generate(
         self,
         fiefdom_path: str,
@@ -61,6 +122,7 @@ class BriefingGenerator:
         now = datetime.now()
         locks = self.get_locks_for_fiefdom(fiefdom_path)
         campaign_history = self.load_campaign_log(fiefdom_path, limit=5)
+        mermaid_diagram = self.build_fiefdom_diagram(fiefdom_path, context)
 
         # Default context if not provided
         if context is None:
@@ -105,6 +167,12 @@ class BriefingGenerator:
   - Imports from: {", ".join(context.get("imports_from", [])) or "None identified"}
   - Exports to: {", ".join(context.get("exports_to", [])) or "None identified"}
 - **Patterns to Follow:** {", ".join(context.get("patterns", [])) or "See CLAUDE.md"}
+
+## Fiefdom Structure
+
+```mermaid
+{mermaid_diagram if mermaid_diagram else "graph TD\n    N0[\"No connections mapped\"]"}
+```
 
 ## Louis's Restrictions
 

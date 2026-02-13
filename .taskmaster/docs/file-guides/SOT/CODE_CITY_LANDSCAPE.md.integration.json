@@ -1,0 +1,74 @@
+{
+  "source": "SOT/CODE_CITY_LANDSCAPE.md",
+  "total_lines": 90,
+  "sha256": "0833f76a8dd526bd4fed39ed56e83339e028f9b6e5a228c6cdcc65d1c09de666",
+  "chunk_count": 2,
+  "observation_ids": [
+    68,
+    69
+  ],
+  "risks": [
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "JS/Python bridge risk: event transport and payload validation can silently fail.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce.",
+    "Behavioral sequencing risk: mode transitions need explicit state machine handling."
+  ],
+  "anchors": [
+    {
+      "line": 22,
+      "text": "| Canonical frame (`orchestr8/collabor8/JFDI`, no `gener8`) | behavior | `SOT/CODE_CITY_PLAN_LOCK.md:7`, `IP/plugins/06_maestro.py:1185` | Top-row labels, Void center, bottom control frame, no brand drift | UI regression check for top-row contract | partial |"
+    },
+    {
+      "line": 23,
+      "text": "| Three-state color contract | behavior | `SOT/CODE_CITY_PLAN_LOCK.md:22`, `IP/woven_maps.py:116` | Gold/Teal/Purple + Void/Surface, no extra states | Shared enum/constants module consumed by all renderers/services | partial |"
+    },
+    {
+      "line": 31,
+      "text": "| Tooltip + node click event contract | routine | `IP/woven_maps.py:2651`, `IP/woven_maps.py:2689`, `IP/plugins/06_maestro.py:1716` | Event schema (`path/status/errors/metrics`), routing to UI handlers | JS event arrives, but no Python bridge calling `handle_node_click()` | missing |"
+    },
+    {
+      "line": 35,
+      "text": "| Sitting Room transition + return | feature | `SOT/CODE_CITY_PLAN_LOCK.md:61` | Entry trigger, morph animation, context handoff to collaboration surface | No Sitting Room runtime implementation | missing |"
+    },
+    {
+      "line": 36,
+      "text": "| Health flow (`File Change -> HealthWatcher -> HealthChecker -> STATE -> Code City`) | routine | `IP/health_watcher.py:8`, `IP/plugins/06_maestro.py:1207`, `orchestr8.py:55`, `IP/woven_maps.py:527` | Global health state in app root, watcher lifecycle, merge function call in render pipeline | Root app state lacks `health` key; health merge function exists but not wired through `create_code_city()` | partial |"
+    },
+    {
+      "line": 45,
+      "text": "| Broken-node deploy + ticket generation flow | routine | `IP/plugins/06_maestro.py:678`, `IP/plugins/06_maestro.py:709`, `SOT/todo.md:102` | Ticket payload schema from Carl/health + deploy action chain | Auto-ticket generation from node click not wired end-to-end | partial |"
+    },
+    {
+      "line": 54,
+      "text": "- Transport: iframe `postMessage` payload + Marimo handler contract."
+    },
+    {
+      "line": 57,
+      "text": "- `mode` (`overview`, `dive`, `focus`, `room`, `sitting_room`), `position`, `target`, `zoom`, `return_stack`."
+    },
+    {
+      "line": 58,
+      "text": "- Includes warp-dive timing and easing parameters."
+    },
+    {
+      "line": 80,
+      "text": "2. Wire root state (`health`/`health_status`) in `orchestr8.py`."
+    },
+    {
+      "line": 81,
+      "text": "3. Wire node-click bridge (`postMessage` -> `handle_node_click` path)."
+    },
+    {
+      "line": 83,
+      "text": "5. Add camera overview + warp dive + return stack."
+    },
+    {
+      "line": 90,
+      "text": "If a future run remembers only one file, it should remember this one: `SOT/CODE_CITY_LANDSCAPE.md`."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/key_lines_with_files.tsv"
+  }
+}

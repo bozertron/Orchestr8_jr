@@ -1,0 +1,121 @@
+{
+  "source": ".planning/phases/WORKORDERS-FILEWATCHER.json",
+  "total_lines": 351,
+  "sha256": "c8df721a45848d1a36b2d96c83ea564a8f06a169721ec229584aa738cf66ad2c",
+  "chunk_count": 3,
+  "observation_ids": [
+    1066,
+    1067,
+    1068
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 14,
+      "text": "\"title\": \"Create HealthWatcherManager class skeleton\","
+    },
+    {
+      "line": 20,
+      "text": "\"description\": \"Create the HealthWatcherManager class with constructor and type hints\","
+    },
+    {
+      "line": 23,
+      "text": "\"Class HealthWatcherManager defined with __init__ signature\","
+    },
+    {
+      "line": 31,
+      "text": "\"Initialize _health_checker from IP.health_checker.HealthChecker\","
+    },
+    {
+      "line": 134,
+      "text": "\"__all__ = [\\\"HealthWatcherManager\\\"] defined\","
+    },
+    {
+      "line": 138,
+      "text": "\"Module docstring: Real-time file watcher bridge for health checking\""
+    },
+    {
+      "line": 143,
+      "text": "\"title\": \"Import HealthWatcherManager in orchestr8.py\","
+    },
+    {
+      "line": 144,
+      "text": "\"file\": \"orchestr8.py\","
+    },
+    {
+      "line": 149,
+      "text": "\"description\": \"Add import statement for HealthWatcherManager\","
+    },
+    {
+      "line": 151,
+      "text": "\"Import statement exists: from IP.health_watcher import HealthWatcherManager\","
+    },
+    {
+      "line": 161,
+      "text": "\"title\": \"Initialize HEALTH_WATCHER singleton in orchestr8.py\","
+    },
+    {
+      "line": 162,
+      "text": "\"file\": \"orchestr8.py\","
+    },
+    {
+      "line": 167,
+      "text": "\"description\": \"Create module-level HealthWatcherManager instance\","
+    },
+    {
+      "line": 170,
+      "text": "\"Initialized with PROJECT_ROOT, STATE_MANAGERS, watch_paths=[\\\"IP/\\\"]\","
+    },
+    {
+      "line": 171,
+      "text": "\"Placed after STATE_MANAGERS initialization\""
+    },
+    {
+      "line": 174,
+      "text": "\"Format: HEALTH_WATCHER = HealthWatcherManager(project_root=PROJECT_ROOT, state_managers=STATE_MANAGERS, watch_paths=[\\\"IP/\\\"])\","
+    },
+    {
+      "line": 181,
+      "text": "\"file\": \"orchestr8.py\","
+    },
+    {
+      "line": 193,
+      "text": "\"Check for existing app lifecycle hooks in orchestr8.py\","
+    },
+    {
+      "line": 200,
+      "text": "\"title\": \"Add health state key to STATE_MANAGERS if missing\","
+    },
+    {
+      "line": 201,
+      "text": "\"file\": \"orchestr8.py\","
+    },
+    {
+      "line": 208,
+      "text": "\"STATE_MANAGERS[\\\"health\\\"] exists\","
+    },
+    {
+      "line": 212,
+      "text": "\"Check existing STATE_MANAGERS initialization\","
+    },
+    {
+      "line": 219,
+      "text": "\"title\": \"Subscribe 06_maestro.py to health state changes\","
+    },
+    {
+      "line": 220,
+      "text": "\"file\": \"IP/plugins/06_maestro.py\","
+    },
+    {
+      "line": 227,
+      "text": "\"STATE_MANAGERS[\\\"health\\\"] accessed in render function\","
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "source": "one integration at a time/docs/EMERGE_ANIMATIONS_REFERENCE.md",
+  "total_lines": 802,
+  "sha256": "5f082d4cd3c4672412aaf870255f863835f9a8151f1cb754ec90c3bf4c4f1747",
+  "chunk_count": 7,
+  "observation_ids": [
+    415,
+    416,
+    417,
+    418,
+    419,
+    420,
+    421
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 24,
+      "text": "/* IP/styles/orchestr8.css */"
+    },
+    {
+      "line": 125,
+      "text": "custom_css = [\"IP/styles/orchestr8.css\"]"
+    },
+    {
+      "line": 269,
+      "text": "**IMPORTANT:** The `.style()` method wraps content in a `<div>`. The animation CSS must already be defined (via custom CSS file or earlier mo.Html injection)."
+    },
+    {
+      "line": 288,
+      "text": "/* In orchestr8.css */"
+    },
+    {
+      "line": 632,
+      "text": "| Infinite loops | UI should be static after emerge |"
+    },
+    {
+      "line": 642,
+      "text": "/* IP/styles/animations.css - Import via orchestr8.css */"
+    },
+    {
+      "line": 761,
+      "text": "- **Q:** CSS file vs. inline mo.Html() - which should be primary?"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,93 @@
+{
+	"meta": {
+		"generatedAt": "2026-02-13T08:20:31.234Z",
+		"tasksAnalyzed": 10,
+		"totalTasks": 10,
+		"analysisCount": 10,
+		"thresholdScore": 5,
+		"projectName": "Task Master",
+		"usedResearch": true
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "Create IP/contracts package foundation",
+			"complexityScore": 2,
+			"recommendedSubtasks": 0,
+			"expansionPrompt": "No expansion needed - this is a straightforward directory and file creation task with boilerplate __init__.py content already specified in the task details.",
+			"reasoning": "Simple scaffolding task: create one directory and one __init__.py file with predefined content. The implementation is fully specified in the task details. The only complexity is ensuring imports work correctly, but this is a standard Python package pattern. No dependencies, minimal risk of error."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Implement CodeCityNodeEvent schema",
+			"complexityScore": 3,
+			"recommendedSubtasks": 0,
+			"expansionPrompt": "No expansion needed - the complete dataclass implementation is provided in the task details including the validation function, type definitions, and example fixture.",
+			"reasoning": "The implementation is fully specified with dataclass definition, validation function, and example payload. Uses standard Python dataclasses and typing. The pattern mirrors existing CodeNode structure in woven_maps.py (lines 55-92), so consistency is straightforward. Low risk as validation logic is simple field presence checks."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Implement CameraState schema",
+			"complexityScore": 3,
+			"recommendedSubtasks": 0,
+			"expansionPrompt": "No expansion needed - complete dataclass with two utility methods (clamp_zoom, normalize_position) and factory function is fully specified in task details.",
+			"reasoning": "Similar to Task 2 - a self-contained dataclass with utility methods. The clamp_zoom and normalize_position methods are simple numerical operations. get_default_camera_state factory function returns hardcoded values. No external dependencies beyond standard library."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Implement SettlementSurvey schema",
+			"complexityScore": 4,
+			"recommendedSubtasks": 0,
+			"expansionPrompt": "No expansion needed - while more complex with multiple nested dataclasses (FiefdomData, BoundaryContract, WiringConnection, SettlementSurvey) and an enum, all code is provided and follows straightforward patterns.",
+			"reasoning": "More complex than Tasks 2-3 due to: (1) four nested dataclasses, (2) WiringStatus enum, (3) parse function with dictionary comprehension and enum conversion. However, all code is provided verbatim in the task details. The complexity is in understanding the data model, not implementation. Standard Python patterns throughout."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Implement status merge policy",
+			"complexityScore": 2,
+			"recommendedSubtasks": 0,
+			"expansionPrompt": "No expansion needed - the merge_status function and get_status_color helper are simple priority-based comparison functions with complete implementation provided.",
+			"reasoning": "Simplest schema task. merge_status is a max() operation over a priority dict. get_status_color is a simple lookup. Both functions are under 20 lines each. Complete implementation with docstrings and examples provided. Critical for canonical color system but trivially implementable."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Add unit tests for contract schemas",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down into: 1) Create tests directory structure and __init__.py, 2) Write test_code_city_node_event.py with valid/invalid/edge cases, 3) Write test_camera_state.py testing defaults and utility methods, 4) Write test_settlement_survey.py with nested structure validation and test_status_merge_policy.py testing precedence rules and color mapping.",
+			"reasoning": "Requires creating 5 new test files covering 4 schema modules. Each test file needs: valid payload tests, invalid payload tests, edge cases (None, empty lists, out-of-range), and roundtrip serialization. Depends on Tasks 2-5 being complete. Moderate complexity due to breadth (not depth) - need comprehensive coverage across multiple modules. Pytest fixtures pattern needed for reusable test data."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Extend orchestr8.py root state with health channels",
+			"complexityScore": 4,
+			"recommendedSubtasks": 0,
+			"expansionPrompt": "No expansion needed - this is a surgical modification to a single cell (state_management) with clear before/after state. The change pattern mirrors existing state definitions exactly.",
+			"reasoning": "Modifying core application state is sensitive but the change is well-scoped. orchestr8.py:41-72 shows the exact pattern to follow (get_X, set_X = mo.state()). Adding 2 new state channels (health, health_status) follows identical pattern. Main risk is breaking existing plugins, but the change is additive-only. Requires careful testing but implementation is mechanical."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Implement node-click bridge in maestro plugin",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down into: 1) Add hidden marimo state channel for clicked node data in maestro, 2) Modify woven_maps.py JavaScript template to postMessage validated events to parent, 3) Create process_node_click() bridge handler with schema validation using CodeCityNodeEvent, 4) Wire up reactive effect to invoke handle_node_click() on validated events and test integration end-to-end.",
+			"reasoning": "Most complex task due to cross-technology integration: Python ↔ JavaScript ↔ iframe postMessage ↔ Marimo reactive state. Requires understanding woven_maps.py iframe template (line 563+), maestro plugin render function, and Marimo's state/reactive patterns. Multiple failure modes: JS event structure, postMessage security, validation errors, reactive timing. The task description offers two approaches (callback vs polling) indicating design ambiguity. Needs careful testing across the bridge boundary."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Update woven_maps.py to use status merge policy",
+			"complexityScore": 3,
+			"recommendedSubtasks": 0,
+			"expansionPrompt": "No expansion needed - this is a surgical refactor of build_from_health_results() (line 527-556) to use the canonical merge_status function instead of inline status comparison logic.",
+			"reasoning": "Small, focused change. The existing build_from_health_results function (line 527-556) already has status merge logic that needs replacement with the canonical merge_status() call. The change is: replace 'if result.status == \"broken\" and node.status != \"combat\"' with 'node.status = merge_status(node.status, health_status)'. Import addition and one-line logic replacement. Low risk with clear test criteria."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Run canonical constraint acceptance tests",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down into: 1) Run UI constraint verification (naming, colors, motion) with screenshots, 2) Run state/behavioral constraint tests (status precedence, click handlers, plugin rendering), 3) Document results in tests/acceptance_report.md with pass/fail status and any deviation notes.",
+			"reasoning": "Manual acceptance testing across 6 categories with ~20 checkpoints. Requires running the full application, interacting with Code City, verifying visual elements, and checking browser console. Not technically complex but thorough - must verify no canon drift. Depends on Tasks 7, 8, 9 being complete. Time-consuming due to manual verification but straightforward checklist execution. Documentation deliverable required."
+		}
+	]
+}

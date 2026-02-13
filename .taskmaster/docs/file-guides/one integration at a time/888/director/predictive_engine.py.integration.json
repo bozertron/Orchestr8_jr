@@ -1,0 +1,26 @@
+{
+  "source": "one integration at a time/888/director/predictive_engine.py",
+  "total_lines": 518,
+  "sha256": "a2031c5628f3cfeeb8fae18a2e437b333d281a0842aa33a3343fc8b28cc63734",
+  "chunk_count": 5,
+  "observation_ids": [
+    232,
+    233,
+    234,
+    235,
+    236
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [
+    {
+      "line": 268,
+      "text": "all_zones = ['orchestr8', 'integr8', 'communic8', 'actu8', 'cre8', 'innov8']"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

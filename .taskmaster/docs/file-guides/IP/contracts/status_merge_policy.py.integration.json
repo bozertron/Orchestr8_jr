@@ -1,0 +1,26 @@
+{
+  "source": "IP/contracts/status_merge_policy.py",
+  "total_lines": 43,
+  "sha256": "64f01c4d86c17dcb367b16825077267c33ded69247533b1148e396cdf6e0f2a8",
+  "role": "Canonical Status Precedence — Three-state color system merge logic (combat > broken > working)",
+  "risks": [
+    "Status precedence is project-wide invariant: ALL merges MUST use this function",
+    "Color mapping must match CLAUDE.md spec exactly",
+    "Default to 'working' is a design decision affecting all callers"
+  ],
+  "anchors": [
+    {"line": 3, "text": "StatusType = Literal['working', 'broken', 'combat'] — Type alias"},
+    {"line": 6, "text": "STATUS_PRIORITY = {...} — Precedence dict (combat=3, broken=2, working=1)"},
+    {"line": 12, "text": "def merge_status(*statuses) — Main merge function"},
+    {"line": 36, "text": "def get_status_color(status) — Hex color lookup"},
+    {"line": 38, "text": "Color dict with exact hex values matching CLAUDE.md"}
+  ],
+  "integration_gaps": [],
+  "resolved_gaps": [
+    {
+      "gap": "Canonical status merge implementation",
+      "resolved_in": "Blind Integration PRD task 5",
+      "details": "merge_status() validates inputs, filters None, returns highest priority status"
+    }
+  ]
+}

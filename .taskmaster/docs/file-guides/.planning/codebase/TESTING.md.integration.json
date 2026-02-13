@@ -1,0 +1,41 @@
+{
+  "source": ".planning/codebase/TESTING.md",
+  "total_lines": 303,
+  "sha256": "f7642e15df4de734e1ebd004f4893259b7b4cfc4e627837ed98a8fa0c6a1c839",
+  "chunk_count": 3,
+  "observation_ids": [
+    1034,
+    1035,
+    1036
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 127,
+      "text": "'app_context': 'orchestr8'"
+    },
+    {
+      "line": 187,
+      "text": "{'invalid_structure': 'this should cause an error'}"
+    },
+    {
+      "line": 191,
+      "text": "# Adapter should handle gracefully"
+    },
+    {
+      "line": 233,
+      "text": "- STATE_MANAGERS injection: Not tested"
+    },
+    {
+      "line": 234,
+      "text": "- File path: `orchestr8.py` (lines 78-156) - plugin_loader function"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

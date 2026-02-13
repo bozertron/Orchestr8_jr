@@ -1,0 +1,20 @@
+{
+  "source": "one integration at a time/Staging/orchstr8_type_overview.txt",
+  "total_lines": 379,
+  "sha256": "06348b1507792cb4690e41dfd225f1514b14b5049714261f35f8d39a27b947b4",
+  "chunk_count": 4,
+  "observation_ids": [
+    833,
+    834,
+    835,
+    836
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

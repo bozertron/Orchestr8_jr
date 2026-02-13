@@ -1,0 +1,22 @@
+{
+  "source": ".planning/codebase/prompts/TERMINAL-6-REMAINING.md",
+  "total_lines": 40,
+  "sha256": "d16916ec7bf94d81d08317642d9dc4d50b6fd02cfa308ef4bd8ef7161b3c2f35",
+  "chunk_count": 1,
+  "observation_ids": [
+    1026
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 25,
+      "text": "13. `IP/styles/orchestr8.css` — FULL CSS AUDIT. Every class, every color value, any .stereos-* remnants"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

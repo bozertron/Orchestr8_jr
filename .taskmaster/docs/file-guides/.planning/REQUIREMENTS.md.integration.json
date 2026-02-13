@@ -1,0 +1,84 @@
+{
+  "source": ".planning/REQUIREMENTS.md",
+  "total_lines": 152,
+  "sha256": "d6a62c3ff71a2113050b1c32ed07296bf054ac82a8e233a4d6393888e87a53ef",
+  "chunk_count": 2,
+  "observation_ids": [
+    1077,
+    1078
+  ],
+  "risks": [
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 11,
+      "text": "- [x] **BRAND-01**: Application displays \"orchestr8\" instead of \"stereOS\" in all visible text"
+    },
+    {
+      "line": 12,
+      "text": "- [x] **BRAND-02**: CSS classes use `.orchestr8-*` prefix instead of `.stereos-*`"
+    },
+    {
+      "line": 13,
+      "text": "- [x] **BRAND-03**: Docstrings reference \"orchestr8\" not \"stereOS\""
+    },
+    {
+      "line": 19,
+      "text": "- [ ] **NAV-01**: Top row displays exactly: [orchestr8] [collabor8] [JFDI] [gener8]"
+    },
+    {
+      "line": 20,
+      "text": "- [ ] **NAV-02**: JFDI button opens the TicketPanel component (not placeholder)"
+    },
+    {
+      "line": 26,
+      "text": "- [ ] **HLTH-01**: HealthChecker is instantiated with project root on render"
+    },
+    {
+      "line": 45,
+      "text": "- [ ] **VMOD-04**: health_checker.py results map to Gold/Teal/Purple color system"
+    },
+    {
+      "line": 46,
+      "text": "- [ ] **VMOD-05**: combat_tracker.py integrates with Code City (Purple nodes for active combat)"
+    },
+    {
+      "line": 48,
+      "text": "- [ ] **VMOD-07**: ticket_manager.py links to JFDI panel correctly"
+    },
+    {
+      "line": 62,
+      "text": "- [ ] **VPLG-06**: 05_universal_bridge.py serves its stated purpose"
+    },
+    {
+      "line": 63,
+      "text": "- [ ] **VPLG-07**: 06_maestro.py implements full stereOS layout per SOT.md spec"
+    },
+    {
+      "line": 80,
+      "text": "- [ ] **MRIM-04**: `marimo run orchestr8.py` completes without errors or warnings"
+    },
+    {
+      "line": 87,
+      "text": "- [ ] **SETL-04**: Code City color system reflects Settlement agent activity (Purple = agents active)"
+    },
+    {
+      "line": 91,
+      "text": "- [ ] **PIPE-01**: orchestr8.py loads all plugins without error"
+    },
+    {
+      "line": 93,
+      "text": "- [ ] **PIPE-03**: 06_maestro.py renders full stereOS layout"
+    },
+    {
+      "line": 101,
+      "text": "- [ ] **CLEAN-03**: CSS uses consistent `.orchestr8-*` prefix (no `.stereos-*` remnants)"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "source": "IP/static/woven_maps_3d.js",
+  "total_lines": 450,
+  "sha256": "pending",
+  "role": "Three.js 3D Renderer — Code City visualization with Barradeau particle technique",
+  "risks": [
+    "Three.js dependency must be loaded before this module",
+    "Post-processing requires EffectComposer and UnrealBloomPass",
+    "Emergence animation must NOT include breathing (constraint)"
+  ],
+  "anchors": [
+    {"line": 15, "text": "CONFIG_3D — All rendering constants"},
+    {"line": 17, "text": "Canonical colors (0xD4AF37, 0x1fbdea, 0x9D4EDD)"},
+    {"line": 51, "text": "class CodeCityScene — Main scene manager"},
+    {"line": 107, "text": "_initPostProcessing() — EffectComposer + UnrealBloomPass"},
+    {"line": 285, "text": "playEmergenceAnimation() — Particles coalesce from Void"}
+  ],
+  "integration_gaps": [
+    "Need to wire to woven_maps.py for BuildingData JSON output",
+    "Need 2D/3D mode toggle in control panel"
+  ],
+  "resolved_gaps": [
+    {
+      "gap": "Three.js scene setup with bloom",
+      "resolved_in": "WO-BARRADEAU-002",
+      "details": "Full scene with OrbitControls and UnrealBloomPass"
+    }
+  ]
+}

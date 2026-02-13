@@ -1,0 +1,42 @@
+{
+  "source": "SOT/07-07-WOVEN-SYNTHESIS.md",
+  "total_lines": 609,
+  "sha256": "7ba6cc7d5450ae9d637b1e4a453f73adb9573c54e4f2c319a00d9d086bc436fe",
+  "chunk_count": 8,
+  "observation_ids": [
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 132,
+      "text": "// Color (from orchestr8)"
+    },
+    {
+      "line": 133,
+      "text": "COLOR: 0xD4AF37              // Gold - healthy state"
+    },
+    {
+      "line": 175,
+      "text": "// Color by health state (orchestr8 colors)"
+    },
+    {
+      "line": 277,
+      "text": "│ [Gold] [Teal] [Purple]  │  [1][2][3][4]  │  [🔊]  │  [densit8 ▽] │"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/key_lines_with_files.tsv"
+  }
+}

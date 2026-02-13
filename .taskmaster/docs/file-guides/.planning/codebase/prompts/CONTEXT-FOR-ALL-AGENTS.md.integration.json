@@ -1,0 +1,80 @@
+{
+  "source": ".planning/codebase/prompts/CONTEXT-FOR-ALL-AGENTS.md",
+  "total_lines": 80,
+  "sha256": "4b028a2ef3cff9cbf04d9fc76c7a7ac4dd1b1d9b4047ffbd0c5fa53af79562e2",
+  "chunk_count": 1,
+  "observation_ids": [
+    1019
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 9,
+      "text": "- **Entry point:** `orchestr8.py` — loads plugins from `IP/plugins/` via dynamic import"
+    },
+    {
+      "line": 10,
+      "text": "- **Central UI:** `IP/plugins/06_maestro.py` (1297 lines) — implements \"The Void\" stereOS layout"
+    },
+    {
+      "line": 23,
+      "text": "| Working | Gold | #D4AF37 |"
+    },
+    {
+      "line": 24,
+      "text": "| Broken | Teal | #1fbdea |"
+    },
+    {
+      "line": 25,
+      "text": "| Combat | Purple | #9D4EDD |"
+    },
+    {
+      "line": 31,
+      "text": "- **Top row:** [orchestr8] [collabor8] [JFDI] [gener8] — NO waves button"
+    },
+    {
+      "line": 35,
+      "text": "- **Naming rule:** Words ending with 8 start lowercase (orchestr8, collabor8, gener8)"
+    },
+    {
+      "line": 39,
+      "text": "1. HealthChecker imported but NEVER instantiated in 06_maestro.py"
+    },
+    {
+      "line": 40,
+      "text": "2. JFDI button opens placeholder \"coming soon\" — should use TicketPanel"
+    },
+    {
+      "line": 41,
+      "text": "3. Collabor8 button opens placeholder — should show agent management"
+    },
+    {
+      "line": 42,
+      "text": "4. Summon panel is placeholder — should wire to Carl"
+    },
+    {
+      "line": 43,
+      "text": "5. Gener8 button only logs — should open Settings"
+    },
+    {
+      "line": 44,
+      "text": "6. ~~~ waves button exists but shouldn't"
+    },
+    {
+      "line": 51,
+      "text": "Every file must: work (no stubs/TODOs), integrate correctly (wired to UI), and align with the vision (Code City metaphor, correct colors, emergence animations)."
+    },
+    {
+      "line": 75,
+      "text": "- Needs wiring to: [what should connect but doesn't]"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}
