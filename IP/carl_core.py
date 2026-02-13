@@ -186,6 +186,19 @@ class CarlContextualizer:
             locks=locks,
         )
 
+    def gather_context_json(self, fiefdom_path: str) -> str:
+        """
+        Get context as JSON string for UI display.
+
+        Args:
+            fiefdom_path: Relative path to fiefdom (e.g., "IP/")
+
+        Returns:
+            JSON string with indented formatting
+        """
+        ctx = self.gather_context(fiefdom_path)
+        return json.dumps(asdict(ctx), indent=2)
+
 
 @dataclass
 class FiefdomContext:
