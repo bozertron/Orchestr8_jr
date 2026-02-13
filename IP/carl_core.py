@@ -126,6 +126,66 @@ class CarlContextualizer:
             )
         return ""
 
+    def gather_context(self, fiefdom_path: str) -> "FiefdomContext":
+        """
+        Aggregate context from all signal sources for a fiefdom.
+
+        Carl collects data - he does NOT block operations.
+
+        Args:
+            fiefdom_path: Relative path to fiefdom (e.g., "IP/")
+
+        Returns:
+            FiefdomContext with aggregated data
+        """
+        health_result = self.health_checker.check_fiefdom(fiefdom_path)
+        health = {
+            "status": health_result.status,
+            "errors": [
+                {"file": e.file, "line": e.line, "message": e.message}
+                for e in health_result.errors
+            ],
+            "warnings": [
+                {"file": w.file, "line": w.line, "message": w.message}
+                for w in health_result.warnings
+            ],
+        }
+
+        conn_result = self.connection_verifier.verify_file(fiefdom_path)
+        connections = {
+            "imports_from": [imp.target_module for imp in conn_result.local_imports],
+            "broken": [
+                {"import": imp.target_module, "line": imp.line_number}
+                for imp in conn_result.broken_imports
+            ],
+        }
+
+        deployment = self.combat_tracker.get_deployment_info(fiefdom_path)
+        combat = {
+            "active": deployment is not None,
+            "model": deployment.get("model", "") if deployment else "",
+            "terminal_id": deployment.get("terminal_id", "") if deployment else "",
+        }
+
+        ticket_objs = self.ticket_manager.get_tickets_for_fiefdom(fiefdom_path)
+        tickets = [f"{t.id}: {t.title}" for t in ticket_objs if t.status != "archived"]
+
+        locks = []
+        if self.louis_warden:
+            protection = self.louis_warden.get_protection_status()
+            for path, status in protection.items():
+                if fiefdom_path in path and status.get("locked"):
+                    locks.append({"file": path, "reason": "Louis protection"})
+
+        return FiefdomContext(
+            fiefdom=fiefdom_path,
+            health=health,
+            connections=connections,
+            combat=combat,
+            tickets=tickets,
+            locks=locks,
+        )
+
 
 @dataclass
 class FiefdomContext:
