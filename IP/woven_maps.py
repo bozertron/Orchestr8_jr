@@ -503,6 +503,38 @@ def build_from_connection_graph(
     return GraphData(nodes=nodes, edges=edges, config=config)
 
 
+def build_from_health_results(
+    nodes: List[CodeNode], health_results: Dict[str, Any]
+) -> List[CodeNode]:
+    """
+    Merge HealthChecker output into CodeNode objects.
+
+    Updates node status to 'broken' if health check fails,
+    and populates health_errors for tooltip display.
+
+    Args:
+        nodes: List of CodeNode objects to update
+        health_results: Dict mapping file paths to HealthCheckResult
+
+    Returns:
+        Updated list of CodeNode objects
+    """
+    for node in nodes:
+        for path, result in health_results.items():
+            if path in node.path or node.path.startswith(path.rstrip("/")):
+                if result.status == "broken" and node.status != "combat":
+                    node.status = "broken"
+
+                if hasattr(result, "errors") and result.errors:
+                    node.health_errors = [
+                        {"file": e.file, "line": e.line, "message": e.message}
+                        for e in result.errors[:10]
+                    ]
+                break
+
+    return nodes
+
+
 # =============================================================================
 # ENHANCED IFRAME TEMPLATE - With Emergence Animations
 # =============================================================================
