@@ -67,7 +67,7 @@ except ImportError as e:
 # STANDARD LIBRARY IMPORTS
 # ============================================================================
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 from pathlib import Path
 import uuid
 
@@ -86,6 +86,7 @@ from IP.plugins.components.deploy_panel import DeployPanel
 # Optional: anthropic SDK for chat functionality
 try:
     import anthropic
+
     HAS_ANTHROPIC = True
 except ImportError:
     anthropic = None
@@ -99,6 +100,7 @@ def get_model_config() -> dict:
     """Get model configuration from orchestr8_settings.toml."""
     try:
         import toml
+
         settings_file = Path("orchestr8_settings.toml")
         if settings_file.exists():
             settings = toml.load(settings_file)
@@ -354,16 +356,23 @@ def render(STATE_MANAGERS: dict) -> Any:
     get_root, set_root = STATE_MANAGERS["root"]
     get_selected, set_selected = STATE_MANAGERS["selected"]
     get_logs, set_logs = STATE_MANAGERS["logs"]
+    get_health, set_health = STATE_MANAGERS.get("health", mo.state({}))
 
     # Get available models from settings
     def get_available_models() -> list:
         """Load available models from orchestr8_settings.toml."""
         try:
             import toml
+
             settings_file = Path("orchestr8_settings.toml")
             if settings_file.exists():
                 settings = toml.load(settings_file)
-                models = settings.get("tools", {}).get("communic8", {}).get("multi_llm", {}).get("default_models", [])
+                models = (
+                    settings.get("tools", {})
+                    .get("communic8", {})
+                    .get("multi_llm", {})
+                    .get("default_models", [])
+                )
                 if models:
                     return models
         except Exception:
@@ -392,7 +401,11 @@ def render(STATE_MANAGERS: dict) -> Any:
     model_config = get_model_config()
     config_model = model_config.get("model", "claude")
     # Ensure default_model is actually in available_models
-    default_model = config_model if config_model in available_models else (available_models[0] if available_models else "claude")
+    default_model = (
+        config_model
+        if config_model in available_models
+        else (available_models[0] if available_models else "claude")
+    )
     get_selected_model, set_selected_model = mo.state(default_model)
 
     # Initialize services
@@ -416,11 +429,15 @@ def render(STATE_MANAGERS: dict) -> Any:
 
     # Local state - Deploy panel (House a Digital Native?)
     get_show_deploy, set_show_deploy = mo.state(False)
-    get_clicked_node, set_clicked_node = mo.state(None)  # Node data from Code City click
+    get_clicked_node, set_clicked_node = mo.state(
+        None
+    )  # Node data from Code City click
 
     # Local state - Audio recording
     get_is_recording, set_is_recording = mo.state(False)
-    get_audio_data, set_audio_data = mo.state(None)  # Stores recorded audio as bytes/numpy
+    get_audio_data, set_audio_data = mo.state(
+        None
+    )  # Stores recorded audio as bytes/numpy
 
     # ========================================================================
     # EVENT HANDLERS (Transliterated from MaestroView.vue)
@@ -658,8 +675,14 @@ def render(STATE_MANAGERS: dict) -> Any:
         """Open Linux app store (gnome-software)."""
         try:
             import subprocess
+
             # Try gnome-software first (Ubuntu/Fedora), fall back to others
-            for app_store in ["gnome-software", "snap-store", "discover", "pamac-manager"]:
+            for app_store in [
+                "gnome-software",
+                "snap-store",
+                "discover",
+                "pamac-manager",
+            ]:
                 try:
                     subprocess.Popen([app_store])
                     log_action(f"Opened {app_store}")
@@ -677,6 +700,7 @@ def render(STATE_MANAGERS: dict) -> Any:
         """
         try:
             import subprocess
+
             # Open VS Code or preferred editor
             editors = ["code", "cursor", "codium", "subl", "atom", "gedit"]
             for editor in editors:
@@ -699,6 +723,7 @@ def render(STATE_MANAGERS: dict) -> Any:
         try:
             import subprocess
             import platform
+
             system = platform.system()
 
             if system == "Linux":
@@ -1233,13 +1258,17 @@ def render(STATE_MANAGERS: dict) -> Any:
     ticket_panel_content = ticket_panel.render() if get_show_tickets() else mo.md("")
 
     # Calendar panel (slides from right when visible)
-    calendar_panel_content = calendar_panel.render() if get_show_calendar() else mo.md("")
+    calendar_panel_content = (
+        calendar_panel.render() if get_show_calendar() else mo.md("")
+    )
 
     # Comms panel (slides from right when visible)
     comms_panel_content = comms_panel.render() if get_show_comms() else mo.md("")
 
     # File Explorer panel (slides from right when visible)
-    file_explorer_content = file_explorer_panel.render() if get_show_file_explorer() else mo.md("")
+    file_explorer_content = (
+        file_explorer_panel.render() if get_show_file_explorer() else mo.md("")
+    )
 
     # Deploy panel (House a Digital Native?) - modal overlay
     deploy_panel_content = deploy_panel.render() if get_show_deploy() else mo.md("")
