@@ -3,6 +3,7 @@ Health Watcher - Real-time file change detection with debouncing.
 Bridges file system events to HealthChecker for Code City visualization.
 """
 
+import asyncio
 import threading
 from collections import defaultdict
 from pathlib import Path
@@ -177,3 +178,55 @@ class HealthWatcherManager:
         except ValueError:
             # Path not relative to project root
             return str(path.parent) + "/"
+
+    async def _debounced_check(self) -> None:
+        """
+        Execute batched health checks after debounce period.
+
+        Waits DEBOUNCE_MS, then runs health checks on all pending
+        fiefdoms and updates state_managers.
+        """
+        try:
+            await asyncio.sleep(self.DEBOUNCE_MS / 1000)
+
+            pending_fiefdoms = list(self._pending.keys())
+
+            if not pending_fiefdoms:
+                return
+
+            results = {}
+            for fiefdom in pending_fiefdoms:
+                try:
+                    result = self._health_checker.check_fiefdom(fiefdom)
+
+                    results[fiefdom] = {
+                        "status": result.status,
+                        "errors": [
+                            {"file": e.file, "line": e.line, "message": e.message}
+                            for e in result.errors
+                        ],
+                        "warnings": [
+                            {"file": w.file, "line": w.line, "message": w.message}
+                            for w in result.warnings
+                        ],
+                        "last_check": result.last_check,
+                        "checker_used": result.checker_used,
+                    }
+                except Exception as e:
+                    results[fiefdom] = {
+                        "status": "broken",
+                        "errors": [{"file": fiefdom, "line": 0, "message": str(e)}],
+                    }
+
+            if "health" in self._state_managers:
+                get_health, set_health = self._state_managers["health"]
+                current = get_health() or {}
+                current.update(results)
+                set_health(current)
+
+            self._pending.clear()
+
+        except asyncio.CancelledError:
+            pass
+        except Exception as e:
+            print(f"HealthWatcherManager._debounced_check error: {e}")
