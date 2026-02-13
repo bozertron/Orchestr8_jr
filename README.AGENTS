@@ -282,57 +282,54 @@ vim .taskmaster/docs/file-guides/IP/your_file.py.integration.json
 
 ---
 
-## 8. CSS Architecture — Critical Synchronization Rule
+## 8. UI/CSS Runtime Architecture — Current State of the Art
 
-### The Dual-Source Problem
+### Canonical CSS Source
 
-Orchestr8 has **two CSS sources** that must stay synchronized:
+Orchestr8 uses a single active stylesheet source:
 
 | Source | Location | Status | Purpose |
 |--------|----------|--------|---------|
-| **Static CSS File** | `IP/styles/orchestr8.css` | ❌ Orphaned (never loaded) | Contains `:root` variables, Marimo overrides |
-| **Dynamic CSS Injection** | `06_maestro.py:ORCHESTR8_CSS` | ✅ Active | Injected via `mo.Html()`, uses f-string colors |
+| **Static CSS File (Loaded at Runtime)** | `IP/styles/orchestr8.css` | ✅ Active | Canonical colors, typography, overrides, interaction hardening |
+| **Inline ORCHESTR8_CSS f-string** | `IP/plugins/06_maestro.py` | ❌ Legacy/retired | Historical approach; not the canonical source now |
 
-### CRITICAL: LLM Blindspot Warning
-
-**This has happened a dozen times:** Agents edit `orchestr8.css` thinking they're styling the app, but those styles are NEVER LOADED. The active CSS is the f-string in `06_maestro.py`.
-
-### How CSS Actually Loads in Marimo
+Active load path:
 
 ```python
-# Line ~2136 in 06_maestro.py — this is the ONLY CSS that loads
-css_injection = mo.Html(ORCHESTR8_CSS)  # Injected as <style> tag
+# IP/plugins/06_maestro.py
+css_injection = mo.Html(load_orchestr8_css())
 ```
 
-**Marimo CSS Cascade Order:**
-1. `globals.css` — Radix UI + Tailwind base
-2. `App.css` — App shell
-3. `Cell.css` — Cell containers
-4. **Your `ORCHESTR8_CSS`** — Runtime injected
-5. Component-specific styles
+### Canonical UI Entry + Runtime Discipline
 
-### When Modifying Styles
+1. Entry point: `orchestr8.py`
+2. UI implementation: `IP/plugins/06_maestro.py`
+3. Visualization: `IP/woven_maps.py`
+4. Run one instance only:
+   - preferred launcher: `scripts/run_orchestr8_single.sh`
 
-**ALWAYS check both sources:**
-```bash
-# Check if you're editing the orphaned file
-grep -n "your-selector" IP/styles/orchestr8.css
+### Implementation Order (Locked)
 
-# Check the active injection
-grep -n "your-selector" IP/plugins/06_maestro.py
-```
+When building features, follow this order:
 
-**To consolidate (RECOMMENDED):**
-1. Move styles from `ORCHESTR8_CSS` f-string into `orchestr8.css`
-2. Replace f-string colors (`{BLUE_DOMINANT}`) with CSS variables
-3. Load file dynamically:
-   ```python
-   css_content = Path("IP/styles/orchestr8.css").read_text()
-   css_injection = mo.Html(f"<style>{css_content}</style>")
-   ```
+1. Visual contract first (colors, typography, spacing, emergence behavior)
+2. Browser compatibility pass (CSS syntax/at-rules/selectors/properties)
+3. Responsive behavior pass (desktop + mobile layout fit)
+4. Interaction wiring pass (buttons/panels/events)
+5. End-to-end test-drive pass (runtime + usability)
 
-### Specificity Protection
+### Button and Panel Wiring Rules
 
-The active `ORCHESTR8_CSS` has **zero `!important` declarations**, making it fragile against Marimo's React styles. The orphaned `orchestr8.css` has aggressive `!important` usage that would work if loaded.
+1. For marimo buttons, use `on_click` (not `on_change`).
+2. Prefer marimo UI elements over raw HTML `onclick` strings.
+3. If HTML-only controls are unavoidable, add an explicit bridge contract.
+4. Preserve right-panel mutual exclusion behavior (Calendar/Comms/Files).
+
+### What We Can Do Reliably Right Now
+
+1. Enforce canonical three-state palette in one place (`IP/styles/orchestr8.css`).
+2. Apply source-level marimo frontend compatibility patches (not minified one-offs).
+3. Run deterministic single-path startup and avoid duplicate-instance drift.
+4. Capture decisions in both local ledger and shared memory gateway for continuity.
 
 **Remember**: Sidecars are your integration contract. Keep them accurate, or downstream agents will break.

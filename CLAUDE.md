@@ -134,6 +134,23 @@ marimo edit orchestr8.py
    - check payload size guard/fallback path and marimo output byte limits.
 5. Treat websocket failures as downstream until compile/runtime health is confirmed.
 
+### Execution Order Lock (2026-02-13)
+
+For new integration waves, the implementation order is locked:
+
+1. Visual contract first:
+   - canonical colors/typography/emergence behavior
+2. Browser compatibility second:
+   - eliminate invalid CSS syntax and parser-breaking patterns
+3. Responsive fit third:
+   - desktop + mobile layout sanity before behavior wiring
+4. Wiring fourth:
+   - `on_click` button callbacks, panel toggles, bridge events
+5. End-to-end test-drive fifth:
+   - runtime stability + UX validation pass
+
+This prevents wiring churn before visual/runtime surfaces are stable.
+
 ### Constraints and Safety Notes
 
 - `IP/woven_maps.py` is sensitive; avoid destructive edits.
