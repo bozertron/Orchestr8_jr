@@ -75,6 +75,7 @@ import uuid
 from IP.mermaid_generator import Fiefdom, FiefdomStatus, generate_empire_mermaid
 from IP.terminal_spawner import TerminalSpawner
 from IP.health_checker import HealthChecker
+from IP.health_watcher import HealthWatcher
 from IP.briefing_generator import BriefingGenerator
 from IP.combat_tracker import CombatTracker
 from IP.plugins.components.ticket_panel import TicketPanel
@@ -418,6 +419,13 @@ def render(STATE_MANAGERS: dict) -> Any:
     comms_panel = CommsPanel(project_root_path)
     file_explorer_panel = FileExplorerPanel(project_root_path)
     deploy_panel = DeployPanel(project_root_path)
+
+    def on_health_change(results: dict) -> None:
+        """Callback when health check completes - updates health state."""
+        set_health(results)
+        log_action(f"Health update: {len(results)} file(s) checked")
+
+    health_watcher = HealthWatcher(str(project_root_path), on_health_change)
 
     def refresh_health() -> None:
         """Run HealthChecker on project root and update health state."""
