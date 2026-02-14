@@ -90,6 +90,7 @@ class CodeNode:
     export_count: int = 0  # Public/exported symbols used by geometry contract
     building_height: float = BUILDING_HEIGHT_BASE
     footprint: float = BUILDING_FOOTPRINT_BASE
+    is_locked: bool = False  # Louis lock status - file is read-only
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -110,6 +111,7 @@ class CodeNode:
             "exportCount": self.export_count,
             "buildingHeight": self.building_height,
             "footprint": self.footprint,
+            "isLocked": self.is_locked,
         }
 
 
@@ -524,6 +526,19 @@ def build_graph_data(
     except ImportError:
         pass  # CombatTracker not available
 
+    # Check Louis lock status - files protected by Louis Warden
+    try:
+        from IP.louis_core import LouisWarden, LouisConfig
+
+        config = LouisConfig(root_path=root)
+        # Check if Louis config exists and has protected files
+        if config.protected_list and config.protected_list.exists():
+            warden = LouisWarden(config)
+            for node in nodes:
+                node.is_locked = warden.is_locked(node.path)
+    except ImportError:
+        pass  # Louis not available
+
     config = GraphConfig(
         width=width,
         height=height,
@@ -615,6 +630,19 @@ def build_from_connection_graph(
                 node.status = "combat"  # Purple in visualization
     except ImportError:
         pass  # CombatTracker not available
+
+    # Check Louis lock status - files protected by Louis Warden
+    try:
+        from IP.louis_core import LouisWarden, LouisConfig
+
+        config = LouisConfig(root_path=project_root)
+        # Check if Louis config exists and has protected files
+        if config.protected_list and config.protected_list.exists():
+            warden = LouisWarden(config)
+            for node in nodes:
+                node.is_locked = warden.is_locked(node.path)
+    except ImportError:
+        pass  # Louis not available
 
     # Convert edges
     edges = []
@@ -746,11 +774,31 @@ def create_3d_code_city(
 # ENHANCED IFRAME TEMPLATE - With Emergence Animations
 # =============================================================================
 
+
+def _script_safe(source: str) -> str:
+    """Escape literal </script> sequences for inline script embedding."""
+    return source.replace("</script", "<\\/script")
+
+
+def _read_text_if_exists(path: Path) -> str:
+    """Read a UTF-8 file when present; otherwise return empty string."""
+    if not path.exists():
+        return ""
+    return path.read_text(encoding="utf-8")
+
+
+def _script_tag(local_source: str, fallback_src: str) -> str:
+    """Build a script tag preferring inline local source with CDN fallback."""
+    if local_source.strip():
+        return f"<script>{_script_safe(local_source)}</script>"
+    return f'<script src="{fallback_src}"></script>'
+
+
 WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
-    <script src="https://cdn.jsdelivr.net/npm/d3-delaunay@6"></script>
+    __DELAUNAY_LIB_TAG__
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -762,6 +810,8 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
         /* Canvas with animated border */
         #canvas-container {
             position: relative;
+            width: 100vw;
+            height: 100vh;
             border: 1px solid #1fbdea;
             border-radius: 4px;
             transition: border-color 1.5s ease;
@@ -770,7 +820,12 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
             border-color: #D4AF37;
         }
 
-        canvas { display: block; cursor: crosshair; }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
         #city-gpu {
             position: absolute;
             inset: 0;
@@ -816,6 +871,8 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
         #tooltip .status.broken { background: rgba(31, 189, 234, 0.2); color: #1fbdea; }
         #tooltip .status.combat { background: rgba(157, 78, 221, 0.2); color: #9D4EDD; }
         #tooltip .loc { color: #888; }
+        #tooltip .lock-indicator { display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; color: #ff6b6b; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+        #tooltip .lock-indicator::before { content: '🔒'; font-size: 9px; }
         #tooltip .errors { margin-top: 6px; padding-top: 6px; border-top: 1px solid #333; color: #1fbdea; font-size: 10px; line-height: 1.4; }
         #tooltip .error-item { margin: 2px 0; }
         #tooltip .health-errors { margin-top: 8px; padding-top: 8px; border-top: 1px solid #1fbdea; }
@@ -830,6 +887,9 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
             color: #666;
             font-size: 10px;
             letter-spacing: 0.05em;
+            z-index: 700;
+            max-width: calc(100vw - 20px);
+            line-height: 1.35;
         }
         #stats span { margin-right: 12px; }
         #stats .working { color: #D4AF37; }
@@ -842,7 +902,8 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
             top: 10px;
             right: 10px;
             width: 340px;
-            max-height: 280px;
+            max-width: min(360px, calc(100vw - 20px));
+            max-height: min(320px, calc(100vh - 20px));
             overflow: auto;
             background: rgba(18, 18, 20, 0.94);
             border: 1px solid rgba(212, 175, 55, 0.45);
@@ -852,6 +913,7 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
             font-size: 10px;
             z-index: 900;
             box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+            pointer-events: auto;
         }
         #connection-panel.hidden {
             display: none;
@@ -998,7 +1060,12 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
             font-size: 10px;
             color: #888;
             max-width: 180px;
+            max-height: calc(100vh - 20px);
+            overflow-y: auto;
+            overflow-x: hidden;
             transition: opacity 0.2s, border-color 0.3s;
+            z-index: 850;
+            pointer-events: auto;
         }
         #controls.docked-bottom {
             top: auto;
@@ -1181,6 +1248,54 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
         .freq-bar.low { background: linear-gradient(to top, #1fbdea, #1fbdea); }
         .freq-bar.mid { background: linear-gradient(to top, #9D4EDD, #9D4EDD); }
         .freq-bar.high { background: linear-gradient(to top, #D4AF37, #D4AF37); }
+
+        @media (max-width: 980px) {
+            #controls {
+                max-width: min(220px, calc(100vw - 20px));
+            }
+            #connection-panel {
+                width: min(320px, calc(100vw - 20px));
+            }
+            #stats {
+                background: rgba(10, 10, 11, 0.82);
+                border: 1px solid rgba(212, 175, 55, 0.22);
+                border-radius: 4px;
+                padding: 4px 6px;
+            }
+        }
+
+        @media (max-width: 720px) {
+            #controls,
+            #controls.docked-bottom {
+                left: 10px;
+                right: 10px;
+                top: auto;
+                bottom: 10px;
+                max-width: none;
+                width: auto;
+                max-height: 42vh;
+            }
+            #connection-panel {
+                left: 10px;
+                right: 10px;
+                top: 10px;
+                width: auto;
+                max-width: none;
+                max-height: 36vh;
+            }
+            #stats {
+                left: 10px;
+                right: 10px;
+                top: 46px;
+                bottom: auto;
+                max-width: none;
+                width: auto;
+            }
+            #phase {
+                top: 12px;
+                right: 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1224,6 +1339,15 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
                 <div class="ctrl-row">
                     <button class="ctrl-btn gold active" id="view2dBtn" onclick="setViewMode('2d')">2D</button>
                     <button class="ctrl-btn blue" id="view3dBtn" onclick="setViewMode('3d')">3D</button>
+                </div>
+            </div>
+
+            <!-- Labels -->
+            <div class="ctrl-section">
+                <span class="ctrl-label">Labels</span>
+                <div class="ctrl-row">
+                    <button class="ctrl-btn gold active" id="labelsOnBtn" onclick="toggleLabels(true)">On</button>
+                    <button class="ctrl-btn gold" id="labelsOffBtn" onclick="toggleLabels(false)">Off</button>
                 </div>
             </div>
 
@@ -1296,7 +1420,11 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
         window.BUILDING_DATA = __BUILDING_DATA__;
         const BUILDING_STREAM_BPS = __BUILDING_STREAM_BPS__;
         const { nodes, edges = [], config } = GRAPH_DATA;
-        const { width, height, maxHeight, wireCount, emergenceDuration = 2.0 } = config;
+        const { maxHeight, wireCount, emergenceDuration = 2.0 } = config;
+        const layoutBaseWidth = Math.max(320, Math.floor(Number(config.width) || window.innerWidth || 1600));
+        const layoutBaseHeight = Math.max(240, Math.floor(Number(config.height) || window.innerHeight || 900));
+        let width = layoutBaseWidth;
+        let height = layoutBaseHeight;
         const PATCHBAY_APPLY_ENABLED = __PATCHBAY_APPLY_ENABLED__;
         const perfCfg = config.performance || {};
         const PERF = {
@@ -1313,7 +1441,7 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
         };
 
         // ================================================================
-        // CAMERA STATE
+        // CAMERA STATE - Enhanced Navigation System
         // ================================================================
         const CAMERA_STATE = __CAMERA_STATE__;
         let cameraMode = CAMERA_STATE.mode;
@@ -1333,36 +1461,75 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
         let cameraTargetPanX = 0;
         let cameraTargetPanY = 0;
 
+        // Navigation level tracking for round-trip contract
+        const NAVIGATION_LEVELS = ['overview', 'neighborhood', 'building', 'room', 'sitting_room'];
+        let currentNavigationLevel = 0; // Start at overview
+
         function clamp01(v) {
             return Math.max(0, Math.min(1, v));
         }
 
-        // Easing function for smooth camera transitions
+        // Easing functions for smooth camera transitions
         function easeInOutCubic(t) {
             return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         }
 
-        // Warp dive to a specific node
-        function warpDiveTo(node) {
+        function easeOutQuad(t) {
+            return 1 - (1 - t) * (1 - t);
+        }
+
+        function easeInQuad(t) {
+            return t * t;
+        }
+
+        // Get easing function by name
+        function getEasing(name) {
+            switch(name) {
+                case 'easeOutQuad': return easeOutQuad;
+                case 'easeInQuad': return easeInQuad;
+                default: return easeInOutCubic;
+            }
+        }
+
+        // Initialize camera from default state (distant overview for hotspot triage)
+        function initializeCamera() {
+            // Apply distant overview position from CAMERA_STATE
+            cameraZoom = CAMERA_STATE.zoom || 0.5;
+            cameraPanX = width / 2 - (CAMERA_STATE.position ? CAMERA_STATE.position[0] : 0);
+            cameraPanY = height / 2 - (CAMERA_STATE.position ? CAMERA_STATE.position[2] : 0);
+            cameraMode = CAMERA_STATE.mode || 'overview';
+            currentNavigationLevel = NAVIGATION_LEVELS.indexOf(cameraMode);
+            if (currentNavigationLevel < 0) currentNavigationLevel = 0;
+        }
+
+        // Warp dive to a specific node with enhanced particle effects
+        function warpDiveTo(node, options = {}) {
             if (!node) return;
 
-            // Save current state to return stack
+            const isBroken = node.status === 'broken';
+            const isDeepDive = options.deepDive || false;
+
+            // Save current state to return stack with full context
             cameraReturnStack.push({
                 mode: cameraMode,
                 zoom: cameraZoom,
                 panX: cameraPanX,
                 panY: cameraPanY,
+                nodePath: node.path,
+                nodeStatus: node.status,
+                navigationLevel: currentNavigationLevel,
+                timestamp: Date.now(),
             });
 
             // Calculate target pan to center on node
             const targetPanX = width / 2 - node.x;
             const targetPanY = height / 2 - node.y;
-            const targetZoom = 3.0; // Zoom in 3x
+            const targetZoom = isDeepDive ? 4.0 : 3.0; // Zoom in deeper for broken nodes
 
             // Start animation
             cameraAnimating = true;
             cameraAnimStart = performance.now();
-            cameraAnimDuration = CAMERA_STATE.transition_ms;
+            cameraAnimDuration = options.transitionMs || (isBroken ? 1200 : CAMERA_STATE.transition_ms);
             cameraStartZoom = cameraZoom;
             cameraTargetZoom = targetZoom;
             cameraStartPanX = cameraPanX;
@@ -1370,12 +1537,111 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
             cameraTargetPanX = targetPanX;
             cameraTargetPanY = targetPanY;
 
-            cameraMode = 'focus';
+            // Update navigation level
+            cameraMode = isDeepDive ? 'building' : 'focus';
+            currentNavigationLevel = NAVIGATION_LEVELS.indexOf(cameraMode);
+            if (currentNavigationLevel < 0) currentNavigationLevel = 2; // Default to building level
+
+            // Trigger warp particle burst
+            spawnWarpBurst(node.x, node.y, isBroken ? COLORS.broken : COLORS.gold);
+
+            // Post navigation event for external tracking
+            window.parent.postMessage({
+                type: 'WOVEN_MAPS_CAMERA_NAVIGATE',
+                from: cameraReturnStack[cameraReturnStack.length - 1]?.mode || 'overview',
+                to: cameraMode,
+                node: { path: node.path, status: node.status },
+                level: currentNavigationLevel,
+            }, '*');
         }
 
-        // Return from dive to previous camera state
+        // Spawn intense warp burst particles (particles flying past camera effect)
+        function spawnWarpBurst(centerX, centerY, color) {
+            const burstCount = 50;
+            for (let i = 0; i < burstCount; i++) {
+                const angle = (Math.PI * 2 * i) / burstCount + Math.random() * 0.5;
+                const speed = 10 + Math.random() * 15;
+                const px = centerX + Math.cos(angle) * 200;
+                const py = centerY + Math.sin(angle) * 200;
+                const vx = Math.cos(angle) * speed;
+                const vy = Math.sin(angle) * speed;
+
+                const p = new Particle(px, py, color, 'emergence');
+                p.vx = vx;
+                p.vy = vy;
+                p.life = 1.0;
+                p.decay = 0.01 + Math.random() * 0.02;
+                particles.push(p);
+            }
+        }
+
+        // Navigate to a specific level in the hierarchy
+        function navigateToLevel(levelName, targetNode = null) {
+            const levelIndex = NAVIGATION_LEVELS.indexOf(levelName);
+            if (levelIndex < 0) return;
+
+            // Save current state
+            cameraReturnStack.push({
+                mode: cameraMode,
+                zoom: cameraZoom,
+                panX: cameraPanX,
+                panY: cameraPanY,
+                navigationLevel: currentNavigationLevel,
+            });
+
+            let targetZoom, targetPanX, targetPanY, duration;
+
+            switch(levelName) {
+                case 'overview':
+                    targetZoom = 0.5;
+                    targetPanX = width / 2;
+                    targetPanY = height / 2;
+                    duration = 1500;
+                    break;
+                case 'neighborhood':
+                    targetZoom = 1.2;
+                    targetPanX = targetNode ? width / 2 - targetNode.x : width / 2;
+                    targetPanY = targetNode ? height / 2 - targetNode.y : height / 2;
+                    duration = 1200;
+                    break;
+                case 'building':
+                    targetZoom = 2.5;
+                    targetPanX = targetNode ? width / 2 - targetNode.x : width / 2;
+                    targetPanY = targetNode ? height / 2 - targetNode.y : height / 2;
+                    duration = 1000;
+                    break;
+                case 'room':
+                case 'sitting_room':
+                    targetZoom = 4.0;
+                    targetPanX = targetNode ? width / 2 - targetNode.x : width / 2;
+                    targetPanY = targetNode ? height / 2 - targetNode.y : height / 2;
+                    duration = 800;
+                    break;
+                default:
+                    return;
+            }
+
+            cameraAnimating = true;
+            cameraAnimStart = performance.now();
+            cameraAnimDuration = duration;
+            cameraStartZoom = cameraZoom;
+            cameraTargetZoom = targetZoom;
+            cameraStartPanX = cameraPanX;
+            cameraStartPanY = cameraPanY;
+            cameraTargetPanX = targetPanX;
+            cameraTargetPanY = targetPanY;
+
+            cameraMode = levelName;
+            currentNavigationLevel = levelIndex;
+        }
+
+        // Return from dive to previous camera state (round-trip navigation)
         function returnFromDive() {
-            if (cameraReturnStack.length === 0) return;
+            if (cameraReturnStack.length === 0) {
+                // If no stack, return to overview
+                navigateToLevel('overview');
+                return;
+            }
 
             const prevState = cameraReturnStack.pop();
 
@@ -1391,6 +1657,21 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
             cameraTargetPanY = prevState.panY;
 
             cameraMode = prevState.mode;
+            currentNavigationLevel = prevState.navigationLevel || NAVIGATION_LEVELS.indexOf(cameraMode);
+
+            // Post return event
+            window.parent.postMessage({
+                type: 'WOVEN_MAPS_CAMERA_RETURN',
+                to: cameraMode,
+                stackDepth: cameraReturnStack.length,
+            }, '*');
+        }
+
+        // Return to overview from any level (emergency reset)
+        function returnToOverview() {
+            cameraReturnStack = []; // Clear stack
+            navigateToLevel('overview');
+            phaseEl.textContent = 'overview reset';
         }
 
         // Update camera animation
@@ -1399,40 +1680,53 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
 
             const elapsed = time - cameraAnimStart;
             const progress = Math.min(1, elapsed / cameraAnimDuration);
-            const eased = easeInOutCubic(progress);
+            const easingFn = getEasing(CAMERA_STATE.easing);
+            const eased = easingFn(progress);
 
             cameraZoom = cameraStartZoom + (cameraTargetZoom - cameraStartZoom) * eased;
             cameraPanX = cameraStartPanX + (cameraTargetPanX - cameraStartPanX) * eased;
             cameraPanY = cameraStartPanY + (cameraTargetPanY - cameraStartPanY) * eased;
 
-            // Spawn warp particles during dive transitions (middle 60% of animation)
-            if (progress > 0.2 && progress < 0.8 && Math.random() < 0.3) {
-                const warpColor = cameraMode === 'focus' ? COLORS.broken : COLORS.gold;
-                // Spawn particles from edges toward center
-                const edge = Math.floor(Math.random() * 4);
-                let px, py, vx, vy;
-                if (edge === 0) { // left
-                    px = 0;
-                    py = Math.random() * height;
-                    vx = 8 + Math.random() * 4;
-                    vy = (Math.random() - 0.5) * 2;
-                } else if (edge === 1) { // right
-                    px = width;
-                    py = Math.random() * height;
-                    vx = -8 - Math.random() * 4;
-                    vy = (Math.random() - 0.5) * 2;
-                } else if (edge === 2) { // top
-                    px = Math.random() * width;
-                    py = 0;
-                    vx = (Math.random() - 0.5) * 2;
-                    vy = 8 + Math.random() * 4;
-                } else { // bottom
-                    px = Math.random() * width;
-                    py = height;
-                    vx = (Math.random() - 0.5) * 2;
-                    vy = -8 - Math.random() * 4;
+            // Enhanced warp particles during dive transitions (middle 70% of animation)
+            if (progress > 0.15 && progress < 0.85) {
+                const warpColor = cameraMode === 'focus' || cameraMode === 'building' ? COLORS.broken : COLORS.gold;
+                const particleChance = 0.4 + (0.3 * Math.sin(progress * Math.PI)); // Peak in middle
+
+                if (Math.random() < particleChance) {
+                    // Spawn particles from edges flying toward center (warp effect)
+                    const edge = Math.floor(Math.random() * 4);
+                    let px, py, vx, vy;
+                    const speed = 8 + Math.random() * 8;
+
+                    if (edge === 0) { // left
+                        px = 0;
+                        py = Math.random() * height;
+                        vx = speed;
+                        vy = (Math.random() - 0.5) * 4;
+                    } else if (edge === 1) { // right
+                        px = width;
+                        py = Math.random() * height;
+                        vx = -speed;
+                        vy = (Math.random() - 0.5) * 4;
+                    } else if (edge === 2) { // top
+                        px = Math.random() * width;
+                        py = 0;
+                        vx = (Math.random() - 0.5) * 4;
+                        vy = speed;
+                    } else { // bottom
+                        px = Math.random() * width;
+                        py = height;
+                        vx = (Math.random() - 0.5) * 4;
+                        vy = -speed;
+                    }
+
+                    const p = new Particle(px, py, warpColor, 'emergence');
+                    p.vx = vx;
+                    p.vy = vy;
+                    p.life = 0.8;
+                    p.decay = 0.02;
+                    particles.push(p);
                 }
-                particles.push(new Particle(px, py, warpColor, 'emergence'));
             }
 
             if (progress >= 1) {
@@ -1478,6 +1772,8 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
                 this.bindGroup = null;
                 this.particleBuffer = null;
                 this.uniformBuffer = null;
+                this.letterTargetBuffer = null;
+                this.letterTargetCount = 0;
                 this.activeCount = 0;
                 this.maxParticles = 0;
                 this.lastTime = null;
@@ -1517,16 +1813,7 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
                 }
 
                 this.format = navigator.gpu.getPreferredCanvasFormat();
-                const dpr = window.devicePixelRatio || 1;
-                this.canvas.width = Math.floor(this.width * dpr);
-                this.canvas.height = Math.floor(this.height * dpr);
-                this.canvas.style.width = this.width + 'px';
-                this.canvas.style.height = this.height + 'px';
-                this.context.configure({
-                    device: this.device,
-                    format: this.format,
-                    alphaMode: 'premultiplied',
-                });
+                this.syncCanvasDimensions();
 
                 this.maxParticles = Math.max(
                     65536,
@@ -1564,6 +1851,13 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
                     usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
                 });
 
+                // Letter target buffer: up to 256 vec2<f32> targets (8 bytes each)
+                const letterTargetData = new Float32Array(256 * 2);
+                this.letterTargetBuffer = this.device.createBuffer({
+                    size: letterTargetData.byteLength,
+                    usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+                });
+
                 const shader = this.device.createShaderModule({
                     code: /* wgsl */`
 struct Particle {
@@ -1591,7 +1885,7 @@ struct Params {
     focusStrength: f32,
     seed: f32,
     activeCount: u32,
-    pad0: u32,
+    letterCount: u32,
     pad1: u32,
     pad2: u32,
     frameColor: vec4<f32>,
@@ -1604,6 +1898,7 @@ struct VSOut {
 
 @group(0) @binding(0) var<storage, read_write> particles: array<Particle>;
 @group(0) @binding(1) var<uniform> u: Params;
+@group(0) @binding(2) var<storage, read> letterTargets: array<vec2<f32>>;
 
 fn hash(x: f32) -> f32 {
     return fract(sin(x * 12.9898 + u.seed * 78.233) * 43758.5453);
@@ -1628,6 +1923,16 @@ fn cs_main(@builtin(global_invocation_id) gid: vec3<u32>) {
     let toFocus = focus - p.pos;
     let dFocus = max(length(toFocus), 0.001);
     accel = accel + normalize(toFocus) * (u.focusStrength * 0.08 / max(dFocus * 0.02, 1.0));
+
+    // Letter target attraction - particles flow toward text
+    for (var li = 0u; li < u.letterCount; li++) {
+        let lt = letterTargets[li];
+        let toLetter = lt - p.pos;
+        let dLetter = max(length(toLetter), 0.001);
+        if (dLetter > 5.0 && dLetter < 300.0) {
+            accel = accel + normalize(toLetter) * (0.03 / max(dLetter * 0.01, 1.0));
+        }
+    }
 
     p.phase = p.phase + (0.008 + u.audioHigh * 0.01);
     let swirl = vec2<f32>(cos(p.phase), sin(p.phase)) * (0.002 + u.audioMid * 0.004);
@@ -1739,11 +2044,35 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
                     entries: [
                         { binding: 0, resource: { buffer: this.particleBuffer } },
                         { binding: 1, resource: { buffer: this.uniformBuffer } },
+                        { binding: 2, resource: { buffer: this.letterTargetBuffer } },
                     ],
                 });
 
                 this.setDensityFromSlider(25);
                 this.initialized = true;
+            }
+
+            syncCanvasDimensions() {
+                const dpr = window.devicePixelRatio || 1;
+                this.canvas.width = Math.floor(this.width * dpr);
+                this.canvas.height = Math.floor(this.height * dpr);
+                this.canvas.style.width = this.width + 'px';
+                this.canvas.style.height = this.height + 'px';
+                if (this.context && this.device && this.format) {
+                    this.context.configure({
+                        device: this.device,
+                        format: this.format,
+                        alphaMode: 'premultiplied',
+                    });
+                }
+            }
+
+            resize(width, height) {
+                this.width = Math.max(1, Math.floor(width));
+                this.height = Math.max(1, Math.floor(height));
+                this.params.focusX = this.width * 0.5;
+                this.params.focusY = this.height * 0.5;
+                this.syncCanvasDimensions();
             }
 
             setDensityFromSlider(sliderValue) {
@@ -1787,6 +2116,17 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
                 this.params.focusStrength = 0.0;
             }
 
+            setLetterTargets(targets) {
+                if (!this.device || !this.letterTargetBuffer) return;
+                this.letterTargetCount = Math.min(targets.length, 256);
+                const data = new Float32Array(256 * 2);
+                for (let i = 0; i < this.letterTargetCount; i++) {
+                    data[i * 2] = targets[i].x;
+                    data[i * 2 + 1] = targets[i].y;
+                }
+                this.device.queue.writeBuffer(this.letterTargetBuffer, 0, data);
+            }
+
             reseed() {
                 this.params.seed += 1.0;
             }
@@ -1811,7 +2151,7 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
                 this.uniformF32[12] = this.params.focusStrength;
                 this.uniformF32[13] = this.params.seed;
                 this.uniformU32[14] = this.activeCount >>> 0;
-                this.uniformU32[15] = 0;
+                this.uniformU32[15] = this.letterTargetCount >>> 0;
                 this.uniformU32[16] = 0;
                 this.uniformU32[17] = 0;
                 this.uniformF32[18] = this.params.frameColor[0];
@@ -1934,7 +2274,216 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
         let connectionActionHistory = [];
 
         // ================================================================
-        // KEYFRAME SYSTEM
+        // LETTER TELEMETRY TARGETS - Cursor tracking + text targets
+        // ================================================================
+        let cursorState = {
+            x: 0, y: 0,           // Screen coordinates
+            worldX: 0, worldY: 0,  // World coordinates (accounting for camera)
+            isOverNode: false,
+            isOverEdge: false,
+            hoveredNodeId: null,
+            lastUpdateTime: 0
+        };
+
+        // Letter targets: array of {x, y, strength, emergeProgress, originX, originY, targetX, targetY} positions
+        let letterTargets = [];
+        let activeLetterText = null;
+        const LETTER_TARGET_MAX = 256;  // Max target positions
+        const LETTER_SAMPLE_STEP = 4;   // Sample every N pixels
+
+        // Emergence animation state
+        let letterEmergeStartTime = 0;
+        let letterEmergeAnimating = false;
+        const LETTER_EMERGE_DURATION = 400;  // ms - canon emergence timing
+
+        // Extract particle target positions from rendered text
+        function extractLetterTargets(text, screenX, screenY, fontSize = 32, fontFamily = 'Orchestr8 Mini Pixel') {
+            if (!text) return [];
+
+            // Create offscreen canvas
+            const offscreen = document.createElement('canvas');
+            const ctx = offscreen.getContext('2d');
+
+            // Measure text to size canvas
+            ctx.font = `bold ${fontSize}px ${fontFamily}`;
+            const metrics = ctx.measureText(text);
+            const textWidth = Math.ceil(metrics.width) + 20;
+            const textHeight = fontSize + 20;
+
+            offscreen.width = textWidth;
+            offscreen.height = textHeight;
+
+            // Render text centered
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = `bold ${fontSize}px ${fontFamily}`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, textWidth / 2, textHeight / 2);
+
+            // Extract pixel data
+            const imageData = ctx.getImageData(0, 0, textWidth, textHeight);
+            const data = imageData.data;
+            const targets = [];
+
+            // Sample pixels - only keep those with alpha > 128 (text pixels)
+            for (let py = 0; py < textHeight; py += LETTER_SAMPLE_STEP) {
+                for (let px = 0; px < textWidth; px += LETTER_SAMPLE_STEP) {
+                    const i = (py * textWidth + px) * 4;
+                    const alpha = data[i + 3];
+
+                    if (alpha > 128) {
+                        // Convert to world coordinates (centered on screenX, screenY)
+                        const worldX = (screenX - canvas.width / 2 + px - textWidth / 2);
+                        const worldY = (screenY - canvas.height / 2 + py - textHeight / 2);
+
+                        targets.push({
+                            x: worldX,
+                            y: worldY,
+                            strength: 1.0
+                        });
+
+                        if (targets.length >= LETTER_TARGET_MAX) {
+                            return targets;
+                        }
+                    }
+                }
+            }
+
+            return targets;
+        }
+
+        // Spawn letter targets at cursor position with emergence animation
+        function spawnLetterTargets(text, statusColor = '#D4AF37') {
+            if (!text) {
+                letterTargets = [];
+                activeLetterText = null;
+                letterEmergeAnimating = false;
+                return;
+            }
+
+            activeLetterText = text;
+
+            // Origin point: cursor position in world coordinates
+            const originX = cursorState.x - canvas.width / 2;
+            const originY = cursorState.y - canvas.height / 2;
+
+            // Extract targets centered on cursor and add emergence state
+            const rawTargets = extractLetterTargets(
+                text,
+                cursorState.x,
+                cursorState.y,
+                28,
+                'Orchestr8 Mini Pixel'
+            );
+
+            letterTargets = rawTargets.map(t => ({
+                x: originX,           // Start at cursor
+                y: originY,           // Start at cursor
+                strength: t.strength,
+                emergeProgress: 0,
+                originX: originX,
+                originY: originY,
+                targetX: t.x,         // Final destination
+                targetY: t.y,         // Final destination
+                color: statusColor    // Node status color for glow
+            }));
+
+            console.log(`Letter telemetry: "${text}" → ${letterTargets.length} targets`);
+
+            // Start emergence animation
+            animateLetterEmergence();
+        }
+
+        // Begin letter emergence animation
+        function animateLetterEmergence() {
+            letterEmergeStartTime = performance.now();
+            letterEmergeAnimating = true;
+            requestAnimationFrame(updateLetterEmergence);
+        }
+
+        // Update letter emergence each frame
+        function updateLetterEmergence(currentTime) {
+            if (!letterEmergeAnimating || !letterTargets.length) {
+                letterEmergeAnimating = false;
+                return;
+            }
+
+            const elapsed = currentTime - letterEmergeStartTime;
+            const progress = Math.min(1, elapsed / LETTER_EMERGE_DURATION);
+
+            // Ease out cubic: 1 - (1 - t)^3 (matches canon cubic-bezier(0.16, 1, 0.3, 1) approximation)
+            const eased = 1 - Math.pow(1 - progress, 3);
+
+            for (const target of letterTargets) {
+                // Lerp from origin to target position
+                target.x = target.originX + (target.targetX - target.originX) * eased;
+                target.y = target.originY + (target.targetY - target.originY) * eased;
+                target.emergeProgress = eased;
+            }
+
+            if (progress < 1) {
+                requestAnimationFrame(updateLetterEmergence);
+            } else {
+                letterEmergeAnimating = false;
+            }
+        }
+
+        // Clear letter targets
+        function clearLetterTargets() {
+            letterTargets = [];
+            activeLetterText = null;
+            letterEmergeAnimating = false;
+        }
+
+        // Draw letter target glow effect - shows where particles will coalesce
+        function drawLetterTargetGlow(ctx) {
+            if (!letterTargets || letterTargets.length === 0) return;
+
+            ctx.save();
+            ctx.globalCompositeOperation = 'screen';
+
+            for (const target of letterTargets) {
+                const screenX = target.x + canvas.width / 2;
+                const screenY = target.y + canvas.height / 2;
+                const color = target.color || '#D4AF37';
+
+                const gradient = ctx.createRadialGradient(
+                    screenX, screenY, 0,
+                    screenX, screenY, 30
+                );
+                const r = parseInt(color.slice(1, 3), 16);
+                const g = parseInt(color.slice(3, 5), 16);
+                const b = parseInt(color.slice(5, 7), 16);
+                gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.15)`);
+                gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(screenX, screenY, 30, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+
+        // Draw active letter text with subtle pulse at cursor position
+        function drawActiveLetterText(ctx) {
+            if (!activeLetterText) return;
+
+            ctx.save();
+            ctx.font = 'bold 24px Orchestr8 Mini Pixel, monospace';
+            ctx.fillStyle = '#D4AF37';
+            ctx.globalAlpha = 0.6 + Math.sin(Date.now() * 0.003) * 0.1;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            ctx.fillText(activeLetterText, cursorState.x, cursorState.y - 40);
+
+            ctx.restore();
+        }
+
+        // ================================================================
+        // KEYFRAME SYSTEM - Enhanced with Camera State
         // ================================================================
         const keyframes = [null, null, null, null];  // 4 slots
         let currentKeyframe = -1;
@@ -1944,6 +2493,7 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
 
         function captureState() {
             return {
+                // Visual state
                 frameColor: activeFrameColor,
                 waveAmp: parseFloat(document.getElementById('waveAmp').value),
                 waveSpeed: parseFloat(document.getElementById('waveSpeed').value),
@@ -1951,7 +2501,21 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
                 barradeauThreshold: barradeauThreshold,
                 layerIndex: activeLayerIndex,
                 // Store RGB values for smooth morphing
-                frameColorRGB: hexToRgb(getFrameColor())
+                frameColorRGB: hexToRgb(getFrameColor()),
+                // Camera state for 3D navigation keyframes
+                camera: {
+                    mode: cameraMode,
+                    zoom: cameraZoom,
+                    panX: cameraPanX,
+                    panY: cameraPanY,
+                    targetZoom: cameraTargetZoom,
+                    targetPanX: cameraTargetPanX,
+                    targetPanY: cameraTargetPanY,
+                },
+                // Focus state
+                focusedNodeId: focusedNodeId,
+                // Metadata
+                timestamp: Date.now(),
             };
         }
 
@@ -1982,21 +2546,53 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
         }
 
         function loadKeyframe(slot) {
-            if (!keyframes[slot]) return;
+            const kf = keyframes[slot];
+            if (!kf) return;
 
             const morphSpeed = parseFloat(document.getElementById('morphSpeed').value) / 100;
 
             // Start morphing
             morphStartState = captureState();
-            morphTarget = keyframes[slot];
+            morphTarget = kf;
             morphProgress = 0;
             currentKeyframe = slot;
+
+            // Restore camera state from keyframe if available
+            if (kf.camera) {
+                cameraMode = kf.camera.mode || 'overview';
+                cameraZoom = kf.camera.zoom || 1.0;
+                cameraPanX = kf.camera.panX || 0;
+                cameraPanY = kf.camera.panY || 0;
+
+                // Animate to keyframe camera position
+                cameraAnimating = true;
+                cameraAnimStart = performance.now();
+                cameraAnimDuration = CAMERA_STATE.transition_ms;
+                cameraStartZoom = cameraZoom;
+                cameraTargetZoom = kf.camera.targetZoom || kf.camera.zoom || 1.0;
+                cameraStartPanX = cameraPanX;
+                cameraStartPanY = cameraPanY;
+                cameraTargetPanX = kf.camera.targetPanX || kf.camera.panX || 0;
+                cameraTargetPanY = kf.camera.targetPanY || kf.camera.panY || 0;
+            }
+
+            // Restore focused node if available
+            if (kf.focusedNodeId && nodeById[kf.focusedNodeId]) {
+                focusedNodeId = kf.focusedNodeId;
+            }
 
             // Update UI
             document.querySelectorAll('.ctrl-btn.kf').forEach((btn, i) => {
                 btn.classList.remove('active', 'morphing');
                 if (i === slot) btn.classList.add('morphing');
             });
+
+            // Post keyframe load event
+            window.parent.postMessage({
+                type: 'WOVEN_MAPS_KEYFRAME_LOAD',
+                slot: slot,
+                camera: kf.camera ? { mode: kf.camera.mode, zoom: kf.camera.zoom } : null,
+            }, '*');
         }
 
         function updateMorph() {
@@ -2191,6 +2787,12 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
             toggle.textContent = panel.classList.contains('collapsed') ? '>' : 'v';
         }
 
+        function toggleLabels(on) {
+            showNodeLabels = on;
+            document.getElementById('labelsOnBtn').classList.toggle('active', on);
+            document.getElementById('labelsOffBtn').classList.toggle('active', !on);
+        }
+
         function setFrameColor(color) {
             activeFrameColor = color;
             // Update button states
@@ -2237,8 +2839,8 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
                 
                 const footprint = Math.max(1, (node.footprint || 2) * scale);
                 const height = Math.max(1, (node.buildingHeight || 5) * scale);
-                const centerX = (node.x - config.width / 2) * scale;
-                const centerZ = (node.y - config.height / 2) * scale;
+                const centerX = (node.x - width / 2) * scale;
+                const centerZ = (node.y - height / 2) * scale;
                 
                 const layers = 8;
                 const particlesPerLayer = Math.max(4, Math.floor(footprint * 8));
@@ -2346,8 +2948,35 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
             phaseEl.textContent = '3D ready';
         }
 
+        function has3DDependencies() {
+            return typeof THREE !== 'undefined' && typeof CodeCityScene !== 'undefined';
+        }
+
+        function sync3DButtonState() {
+            const view3dBtn = document.getElementById('view3dBtn');
+            if (!view3dBtn) return;
+            const depsReady = has3DDependencies();
+            view3dBtn.disabled = !depsReady;
+            view3dBtn.title = depsReady
+                ? 'Switch to 3D'
+                : '3D dependencies unavailable (network/CDN required)';
+            if (!depsReady && viewMode === '3d') {
+                viewMode = '2d';
+                document.getElementById('view2dBtn')?.classList.add('active');
+                view3dBtn.classList.remove('active');
+            }
+        }
+
         function setViewMode(mode) {
             console.log('[setViewMode] Switching to:', mode);
+            if (mode === '3d' && !has3DDependencies()) {
+                sync3DButtonState();
+                phaseEl.style.color = COLORS.broken;
+                phaseEl.textContent = navigator.onLine === false
+                    ? '3D unavailable offline (deps missing)'
+                    : '3D unavailable (dependency load failed)';
+                return;
+            }
             viewMode = mode;
             document.getElementById('view2dBtn').classList.toggle('active', mode === '2d');
             document.getElementById('view3dBtn').classList.toggle('active', mode === '3d');
@@ -2402,11 +3031,16 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
                         console.error('[3D] Failed to initialize 3D mode:', error);
                         alert('3D mode failed: ' + error.message);
                     }
+                } else if (typeof window.codeCity3D.start === 'function' && !window.codeCity3D.isRunning) {
+                    window.codeCity3D.start();
                 }
             } else {
                 city2d.style.display = 'block';
                 city3d.style.display = 'none';
                 city3d.style.pointerEvents = 'none';
+                if (window.codeCity3D && typeof window.codeCity3D.stop === 'function') {
+                    window.codeCity3D.stop();
+                }
                 phaseEl.textContent = currentPhase === PHASES.READY ? 'ready' : 'tuning...';
             }
         }
@@ -2427,13 +3061,45 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
             const node = nodeById[focusedNodeId];
             if (!node) return;
 
-            // Emphasize selected node and seed a local emergence burst
-            spawnEmergenceParticles(node.x, node.y, 20);
-            setFrameColor(node.status === 'broken' ? 'teal' : (node.status === 'combat' ? 'combat' : 'gold'));
+            // Enhanced focus8: perform warp dive to selected node
+            const isBroken = node.status === 'broken';
+
+            // Perform warp dive with focus8-specific behavior
+            warpDiveTo(node, {
+                deepDive: isBroken,
+                transitionMs: 800, // Fast dive for keyboard shortcut
+            });
+
+            // Emphasize selected node with emergence burst
+            spawnEmergenceParticles(node.x, node.y, 30);
+            setFrameColor(isBroken ? 'teal' : (node.status === 'combat' ? 'combat' : 'gold'));
+
+            // Update GPU focus if available
             if (backendState.gpuEnabled && backendState.gpuField) {
                 backendState.gpuField.setFocus(node.x, node.y, 1.0);
             }
+
             phaseEl.textContent = 'focus8 ' + node.path.split('/').pop();
+
+            // Post focus event
+            window.parent.postMessage({
+                type: 'WOVEN_MAPS_FOCUS8',
+                node: { path: node.path, status: node.status },
+            }, '*');
+        }
+
+        // Quick focus8 with keyboard shortcut (F key)
+        function quickFocus8() {
+            // If no node focused, try to focus first broken node
+            if (!focusedNodeId) {
+                const brokenNode = nodes.find(n => n.status === 'broken');
+                if (brokenNode) {
+                    focusedNodeId = brokenNode.id;
+                } else if (nodes.length > 0) {
+                    focusedNodeId = nodes[0].id;
+                }
+            }
+            focus8();
         }
 
         function cycleLayer8() {
@@ -2922,6 +3588,39 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
             return footprintRadius + centralityBoost;
         }
 
+        let showNodeLabels = true;
+
+        function drawNodeLabel(ctx, node, x, y, radius, alpha) {
+            if (!showNodeLabels) return;
+            if (radius < 6 && cameraZoom < 1.3) return;
+            if (alpha < 0.5) return;
+
+            const label = node.path.split('/').pop();
+            const maxLen = 14;
+            const displayLabel = label.length > maxLen ? label.slice(0, maxLen - 2) + '..' : label;
+
+            const labelY = y + radius + 10;
+            ctx.font = '8px Orchestr8 Mini Pixel, monospace';
+            const metrics = ctx.measureText(displayLabel);
+            const padding = 2;
+
+            ctx.fillStyle = 'rgba(10, 10, 11, 0.75)';
+            ctx.fillRect(
+                x - metrics.width / 2 - padding,
+                labelY - 6,
+                metrics.width + padding * 2,
+                10
+            );
+
+            ctx.fillStyle = node.status === 'broken' ? COLORS.broken
+                          : node.status === 'combat' ? COLORS.combat
+                          : COLORS.gold;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.globalAlpha = alpha * 0.9;
+            ctx.fillText(displayLabel, x, labelY);
+        }
+
         // ================================================================
         // EDGE RENDERING - Real import connections
         // ================================================================
@@ -3069,10 +3768,34 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
         const stats = document.getElementById('stats');
         const phaseEl = document.getElementById('phase');
 
-        canvas.width = width;
-        canvas.height = height;
-        gpuCanvas.width = width;
-        gpuCanvas.height = height;
+        function computeViewportSize() {
+            const rect = container.getBoundingClientRect();
+            const nextWidth = Math.max(320, Math.floor(rect.width || window.innerWidth || width));
+            const nextHeight = Math.max(240, Math.floor(rect.height || window.innerHeight || height));
+            return { nextWidth, nextHeight };
+        }
+
+        function applyCanvasSize() {
+            canvas.width = width;
+            canvas.height = height;
+            gpuCanvas.width = width;
+            gpuCanvas.height = height;
+        }
+
+        {
+            const viewport = computeViewportSize();
+            const scaleX = viewport.nextWidth / Math.max(1, layoutBaseWidth);
+            const scaleY = viewport.nextHeight / Math.max(1, layoutBaseHeight);
+            if (scaleX !== 1 || scaleY !== 1) {
+                for (const node of nodes) {
+                    node.x *= scaleX;
+                    node.y *= scaleY;
+                }
+            }
+            width = viewport.nextWidth;
+            height = viewport.nextHeight;
+            applyCanvasSize();
+        }
 
         const backendState = {
             mode: 'CPU Canvas',
@@ -3108,12 +3831,14 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
         const brokenCount = nodes.filter(n => n.status === 'broken').length;
         const combatCount = nodes.filter(n => n.status === 'combat').length;
         const cycleCount = nodes.filter(n => n.inCycle).length;
+        const lockedCount = nodes.filter(n => n.isLocked).length;
         const edgeCount = edges ? edges.length : 0;
         stats.innerHTML = `
             <span class="working">${workingCount} working</span>
             <span class="broken">${brokenCount} broken</span>
             ${combatCount ? `<span class="combat">${combatCount} combat</span>` : ''}
             ${cycleCount ? `<span style="color: #ff4444;">${cycleCount} in cycles</span>` : ''}
+            ${lockedCount ? `<span style="color: #ff6b6b;">${lockedCount} locked</span>` : ''}
             <span>${nodes.length} files</span>
             ${edgeCount ? `<span style="color: #666;">${edgeCount} imports</span>` : ''}
             <span style="color: #555;">CPU cap ${PERF.particleCpuCap.toLocaleString()}</span>
@@ -3181,6 +3906,57 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
             // Entry offset for wave field
             entryOffset: Math.random() * 4
         }));
+
+        function resizeCodeCity({ rescaleNodes = true } = {}) {
+            const viewport = computeViewportSize();
+            const nextWidth = viewport.nextWidth;
+            const nextHeight = viewport.nextHeight;
+            if (nextWidth === width && nextHeight === height) return;
+
+            const prevWidth = Math.max(1, width);
+            const prevHeight = Math.max(1, height);
+            const scaleX = nextWidth / prevWidth;
+            const scaleY = nextHeight / prevHeight;
+
+            if (rescaleNodes) {
+                for (let i = 0; i < nodes.length; i++) {
+                    const node = nodes[i];
+                    node.x *= scaleX;
+                    node.y *= scaleY;
+                    const state = nodeStates[i];
+                    if (state) {
+                        state.targetX *= scaleX;
+                        state.targetY *= scaleY;
+                        state.currentX *= scaleX;
+                        state.currentY *= scaleY;
+                    }
+                }
+                cameraPanX *= scaleX;
+                cameraPanY *= scaleY;
+            }
+
+            width = nextWidth;
+            height = nextHeight;
+            applyCanvasSize();
+            waveField.sourceLeftX = width * 0.2;
+            waveField.sourceRightX = width * 0.8;
+            buildDelaunayEdges();
+
+            if (backendState.gpuField) {
+                backendState.gpuField.resize(width, height);
+            }
+        }
+
+        if (typeof ResizeObserver !== 'undefined') {
+            const viewportObserver = new ResizeObserver(() => {
+                resizeCodeCity({ rescaleNodes: true });
+            });
+            viewportObserver.observe(container);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCodeCity({ rescaleNodes: true });
+        });
 
         // Wave field calculation - smooth mathematical landscape morphing
         function calcWaveDisplacement(x, y, elapsed) {
@@ -3253,8 +4029,10 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
                 this.color = color;
                 this.severity = severity;
 
+                this.trail = [];
+                this.maxTrailLength = type === 'emergence' ? 15 : 8;
+
                 if (type === 'emergence') {
-                    // Emergence particles: swirl toward target
                     this.vx = (Math.random() - 0.5) * 2;
                     this.vy = (Math.random() - 0.5) * 2;
                     this.size = 1 + Math.random() * 1.5;
@@ -3294,6 +4072,28 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
 
             update(time) {
                 if (this.type === 'emergence') {
+                    if (letterTargets && letterTargets.length > 0) {
+                        this.maxTrailLength = 25;
+                    }
+                    this.trail.push({ x: this.x, y: this.y });
+                    if (this.trail.length > this.maxTrailLength) {
+                        this.trail.shift();
+                    }
+
+                    if (letterTargets && letterTargets.length > 0) {
+                        for (const target of letterTargets) {
+                            const dx = target.x - this.x;
+                            const dy = target.y - this.y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+
+                            if (dist > 5 && dist < 300) {
+                                const force = target.strength * 0.15 / Math.max(dist, 10);
+                                this.vx += (dx / dist) * force;
+                                this.vy += (dy / dist) * force;
+                            }
+                        }
+                    }
+
                     this.x += this.vx;
                     this.y += this.vy;
                     this.vx *= this.friction;
@@ -3320,6 +4120,23 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
             }
 
             draw(ctx) {
+                if (this.trail.length > 1 && this.type === 'emergence') {
+                    for (let i = 1; i < this.trail.length; i++) {
+                        const trailAlpha = (i / this.trail.length) * this.alpha * 0.3;
+                        ctx.globalAlpha = trailAlpha;
+                        ctx.strokeStyle = this.color;
+                        ctx.lineWidth = this.size * 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(this.trail[i - 1].x, this.trail[i - 1].y);
+                        ctx.lineTo(this.trail[i].x, this.trail[i].y);
+                        ctx.stroke();
+                    }
+                    ctx.beginPath();
+                    ctx.moveTo(this.trail[this.trail.length - 1].x, this.trail[this.trail.length - 1].y);
+                    ctx.lineTo(this.x, this.y);
+                    ctx.stroke();
+                }
+
                 ctx.globalAlpha = this.alpha;
                 ctx.fillStyle = this.color;
                 ctx.beginPath();
@@ -3416,14 +4233,30 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
         }
 
         let delaunayEdges = [];
-        if (nodes.length >= 3) {
-            const points = nodes.map(n => [n.x, n.y]);
-            const delaunay = d3.Delaunay.from(points);
-            const triangles = delaunay.triangles;
+
+        function buildDelaunayEdges() {
+            delaunayEdges = [];
+            if (nodes.length < 3) return;
+
+            let triangles = null;
+            if (typeof d3 !== 'undefined' && d3.Delaunay && typeof d3.Delaunay.from === 'function') {
+                const points = nodes.map(n => [n.x, n.y]);
+                triangles = d3.Delaunay.from(points).triangles;
+            } else if (typeof delaunay !== 'undefined' && typeof delaunay.compute === 'function') {
+                const points = nodes.map(n => ({ x: n.x, y: n.y }));
+                triangles = delaunay.compute(points);
+            } else {
+                console.warn('[woven_maps] Delaunay dependency missing; mesh wires disabled');
+                return;
+            }
 
             for (let i = 0; i < triangles.length; i += 3) {
-                const [i0, i1, i2] = [triangles[i], triangles[i+1], triangles[i+2]];
-                const [p0, p1, p2] = [nodes[i0], nodes[i1], nodes[i2]];
+                const i0 = triangles[i];
+                const i1 = triangles[i + 1];
+                const i2 = triangles[i + 2];
+                const p0 = nodes[i0];
+                const p1 = nodes[i1];
+                const p2 = nodes[i2];
                 if (p0 && p1 && p2) {
                     delaunayEdges.push(
                         { length: distance(p0, p1), i0, i1 },
@@ -3433,6 +4266,8 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
                 }
             }
         }
+
+        buildDelaunayEdges();
 
         // ================================================================
         // RENDERING
@@ -3570,6 +4405,13 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
                     gpu.setFocus(focusX, focusY, 1.0);
                 } else {
                     gpu.clearFocus();
+                }
+
+                // Wire up letter targets for GPU shader attraction
+                if (letterTargets && letterTargets.length > 0) {
+                    gpu.setLetterTargets(letterTargets);
+                } else {
+                    gpu.setLetterTargets([]);
                 }
 
                 gpu.step(time);
@@ -3711,6 +4553,24 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
                 const nodeType = node.nodeType || 'file';
                 drawNodeShape(ctx, x, y, baseRadius, nodeType, color, 0.85 * alpha);
 
+                // LOCKED NODE INDICATOR - Red border overlay
+                if (node.isLocked && alpha > 0.5) {
+                    ctx.save();
+                    ctx.globalAlpha = 0.7 * alpha;
+                    ctx.strokeStyle = '#ff6b6b';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, baseRadius + 2, 0, Math.PI * 2);
+                    ctx.stroke();
+                    // Small lock icon in center
+                    ctx.font = '8px sans-serif';
+                    ctx.fillStyle = '#ff6b6b';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('🔒', x, y);
+                    ctx.restore();
+                }
+
                 // Inner highlight for larger nodes
                 if (alpha > 0.7 && baseRadius > 4) {
                     ctx.globalAlpha = 0.4 * alpha;
@@ -3755,6 +4615,9 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
                     ctx.arc(x, y, baseRadius + 6, 0, Math.PI * 2);
                     ctx.stroke();
                     ctx.restore();
+
+                // Draw node label
+                drawNodeLabel(ctx, node, x, y, baseRadius, alpha);
                 }
             }
 
@@ -3780,6 +4643,10 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
                     }
                 }
             }
+
+            // Draw letter telemetry visual effects
+            drawLetterTargetGlow(ctx);
+            drawActiveLetterText(ctx);
 
             // Restore camera transform after all drawing is complete
             restoreCameraTransform(ctx);
@@ -3818,8 +4685,21 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
+
+            // UPDATE CURSOR STATE for letter telemetry
+            cursorState.x = x;
+            cursorState.y = y;
+            cursorState.worldX = (x - cameraPanX) / cameraZoom;
+            cursorState.worldY = (y - cameraPanY) / cameraZoom;
+            cursorState.lastUpdateTime = performance.now();
+
             const node = findNodeAt(x, y);
             const edge = node ? null : findEdgeAt(x, y);
+
+            // Update cursor state flags
+            cursorState.isOverNode = !!node;
+            cursorState.isOverEdge = !!edge;
+            cursorState.hoveredNodeId = node ? node.id : null;
 
             if (node) {
                 const errorsHtml = node.errors.length
@@ -3886,6 +4766,7 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
                         <span class="loc">${node.loc} lines</span>
                         <span class="loc">${node.exportCount || 0} exports</span>
                         <span class="loc">h ${((node.buildingHeight || 3)).toFixed(1)}</span>
+                        ${node.isLocked ? '<span class="lock-indicator">locked</span>' : ''}
                     </div>
                     ${cameraModeIndicator}
                     ${connectionInfo}
@@ -3936,13 +4817,43 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
             const y = e.clientY - rect.top;
             const node = findNodeAt(x, y);
 
+            // SHIFT+CLICK: Spawn letter telemetry targets at cursor
+            if (e.shiftKey && !node) {
+                e.preventDefault();
+                // Toggle: if active, clear; otherwise spawn new
+                if (activeLetterText) {
+                    clearLetterTargets();
+                    phaseEl.style.color = '';
+                    phaseEl.textContent = 'letter telemetry cleared';
+                } else {
+                    spawnLetterTargets('TARGET');
+                    phaseEl.style.color = COLORS.gold;
+                    phaseEl.textContent = `letter telemetry: "TARGET" (${letterTargets.length})`;
+                }
+                return;
+            }
+
             if (node) {
                 clearSelectedConnection();
                 focusedNodeId = node.id;
 
-                // Warp dive to broken nodes
+                // Warp dive to broken nodes with enhanced particle effects
                 if (node.status === 'broken' && currentPhase === PHASES.READY) {
-                    warpDiveTo(node);
+                    warpDiveTo(node, { deepDive: true, transitionMs: 1200 });
+                }
+
+                // ALT+CLICK: Force warp dive even on working nodes
+                if (e.altKey && currentPhase === PHASES.READY) {
+                    warpDiveTo(node, { deepDive: false, transitionMs: 1000 });
+                }
+
+                // CTRL+CLICK on node: spawn letter targets with filename and status color
+                if (e.ctrlKey || e.metaKey) {
+                    const filename = node.path.split('/').pop().toUpperCase();
+                    const statusColor = COLORS[node.status] || COLORS.gold;
+                    spawnLetterTargets(filename, statusColor);
+                    phaseEl.style.color = statusColor;
+                    phaseEl.textContent = `letter telemetry: "${filename}" (${letterTargets.length})`;
                 }
 
                 window.parent.postMessage({
@@ -3976,6 +4887,14 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
             clearSelectedConnection();
         });
 
+        // RIGHT-CLICK: Letter telemetry at cursor
+        canvas.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            spawnLetterTargets('ORCHESTR8');
+            phaseEl.style.color = COLORS.gold;
+            phaseEl.textContent = `letter telemetry: "ORCHESTR8" (${letterTargets.length})`;
+        });
+
         canvas.addEventListener('mouseleave', () => {
             tooltip.classList.remove('visible');
         });
@@ -3997,13 +4916,66 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
         });
 
         window.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                // Return from camera dive if available, otherwise clear selection
-                if (cameraReturnStack.length > 0) {
-                    returnFromDive();
-                } else {
-                    clearSelectedConnection();
-                }
+            // Ignore if user is typing in an input
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
+
+            switch(event.key) {
+                case 'Escape':
+                    // Return from camera dive if available, otherwise clear selection
+                    if (cameraReturnStack.length > 0) {
+                        returnFromDive();
+                    } else {
+                        clearSelectedConnection();
+                    }
+                    break;
+
+                case 'f':
+                case 'F':
+                    // focus8: Quick dive to focused node (or first broken node)
+                    event.preventDefault();
+                    quickFocus8();
+                    break;
+
+                case 'o':
+                case 'O':
+                    // Return to overview
+                    event.preventDefault();
+                    returnToOverview();
+                    break;
+
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                    // Quick keyframe load with number keys
+                    if (event.ctrlKey || event.metaKey) {
+                        event.preventDefault();
+                        const slot = parseInt(event.key) - 1;
+                        if (event.shiftKey) {
+                            // Ctrl/Cmd+Shift+Number = Save keyframe
+                            saveKeyframe(slot);
+                        } else {
+                            // Ctrl/Cmd+Number = Load keyframe
+                            loadKeyframe(slot);
+                        }
+                    }
+                    break;
+
+                case 'ArrowUp':
+                    // Navigate up hierarchy (return)
+                    if (event.altKey) {
+                        event.preventDefault();
+                        returnFromDive();
+                    }
+                    break;
+
+                case 'ArrowDown':
+                    // Navigate down hierarchy (dive to selected)
+                    if (event.altKey && focusedNodeId) {
+                        event.preventDefault();
+                        focus8();
+                    }
+                    break;
             }
         });
 
@@ -4013,22 +4985,35 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
         updateWave();
         updateDensit8();
         updateConnectionPanel();
+        sync3DButtonState();
+        let depChecksRemaining = 30;
+        const depCheckTimer = setInterval(() => {
+            sync3DButtonState();
+            if (has3DDependencies() || depChecksRemaining <= 0) {
+                clearInterval(depCheckTimer);
+            }
+            depChecksRemaining -= 1;
+        }, 250);
+        window.addEventListener('load', () => sync3DButtonState(), { once: true });
         initParticleBackend();
+        window.addEventListener('beforeunload', () => {
+            if (window.codeCity3D && typeof window.codeCity3D.dispose === 'function') {
+                try {
+                    window.codeCity3D.dispose();
+                } catch (disposeError) {
+                    console.debug('[3D] Dispose warning:', disposeError);
+                } finally {
+                    window.codeCity3D = null;
+                }
+            }
+        });
         requestAnimationFrame(render);
         console.log('Woven Maps Enhanced initialized:', nodes.length, 'nodes');
     </script>
 
-    <!-- Three.js for 3D Code City -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-    <!-- Three.js addons for 3D Code City -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <!-- Three.js dependencies (local-first, CDN fallback) -->
+    __THREE_CORE_TAG__
+    __THREE_ORBIT_TAG__
 
     <!-- Barradeau 3D Code City Renderer (embedded inline) -->
     <script>__WOVEN_MAPS_3D_JS__</script>
@@ -4139,9 +5124,28 @@ def create_code_city(
         "on",
     }
 
+    repo_root = Path(__file__).resolve().parents[1]
     js_3d_path = Path(__file__).parent / "static" / "woven_maps_3d.js"
-    js_3d_content = (
-        js_3d_path.read_text(encoding="utf-8") if js_3d_path.exists() else ""
+    delaunay_local_path = repo_root / "Barradeau" / "woven_map" / "delaunay.js"
+    three_core_local_path = (
+        repo_root / "Barradeau" / "FBO-master" / "vendor" / "three.min.js"
+    )
+    three_orbit_local_path = (
+        repo_root / "Barradeau" / "FBO-master" / "vendor" / "OrbitControls.js"
+    )
+
+    js_3d_content = _read_text_if_exists(js_3d_path)
+    delaunay_tag = _script_tag(
+        _read_text_if_exists(delaunay_local_path),
+        "https://cdn.jsdelivr.net/npm/d3-delaunay@6",
+    )
+    three_core_tag = _script_tag(
+        _read_text_if_exists(three_core_local_path),
+        "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js",
+    )
+    three_orbit_tag = _script_tag(
+        _read_text_if_exists(three_orbit_local_path),
+        "https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js",
     )
 
     iframe_html = (
@@ -4152,6 +5156,9 @@ def create_code_city(
         .replace(
             "__PATCHBAY_APPLY_ENABLED__", "true" if patchbay_apply_enabled else "false"
         )
+        .replace("__DELAUNAY_LIB_TAG__", delaunay_tag)
+        .replace("__THREE_CORE_TAG__", three_core_tag)
+        .replace("__THREE_ORBIT_TAG__", three_orbit_tag)
         .replace("__WOVEN_MAPS_3D_JS__", js_3d_content)
     )
     escaped = html.escape(iframe_html)
@@ -4161,13 +5168,16 @@ def create_code_city(
             background: #0A0A0B;
             border-radius: 8px;
             overflow: hidden;
+            width: 100%;
+            max-width: 100%;
+            height: clamp(360px, 78vh, 1200px);
         ">
             <iframe
                 srcdoc="{escaped}"
-                width="{width}"
-                height="{height}"
-                style="border: none; display: block;"
-                sandbox="allow-scripts allow-same-origin"
+                width="100%"
+                height="100%"
+                style="border: none; display: block; width: 100%; height: 100%;"
+                sandbox="allow-scripts"
                 allow="microphone"
             ></iframe>
         </div>
