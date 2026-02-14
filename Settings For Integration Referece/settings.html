@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - JFDI</title>
+  <link rel="stylesheet" href="../styles/variables.css">
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <style>
+    body { background: var(--n0); color: var(--t1); padding: 20px; }
+    .settings-container { max-width: 900px; margin: 0 auto; }
+    .settings-header { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--bd); }
+    .settings-header h1 { font-size: 24px; margin: 0 0 8px 0; color: var(--t1); }
+    .settings-header .path { font-size: 12px; color: var(--t3); }
+    
+    .section { background: var(--n1); border: 1px solid var(--bd); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .section-title { font-size: 16px; font-weight: 700; color: var(--cyan); margin: 0 0 16px 0; }
+    
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; color: var(--t2); margin-bottom: 6px; }
+    .form-group input[type="text"], .form-group input[type="number"], .form-group textarea, .form-group select {
+      width: 100%; background: var(--n2); color: var(--t1); border: 1px solid var(--bd); border-radius: 8px;
+      padding: 10px 12px; font-size: 14px; font-family: inherit;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline: none; border-color: var(--cyan); background: #0b1118;
+    }
+    .form-group textarea { min-height: 80px; resize: vertical; }
+    
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .toggle-group { display: flex; align-items: center; gap: 10px; }
+    .toggle { position: relative; width: 44px; height: 24px; background: var(--n2); border: 1px solid var(--bd);
+      border-radius: 12px; cursor: pointer; transition: all 0.2s;
+    }
+    .toggle.active { background: var(--vio); border-color: var(--vio); }
+    .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px;
+      background: var(--t1); border-radius: 50%; transition: transform 0.2s;
+    }
+    .toggle.active::after { transform: translateX(20px); }
+    
+    .slider-group { display: flex; align-items: center; gap: 12px; }
+    .slider { flex: 1; height: 6px; background: var(--n2); border-radius: 3px; appearance: none; }
+    .slider::-webkit-slider-thumb { appearance: none; width: 16px; height: 16px; background: var(--cyan);
+      border-radius: 50%; cursor: pointer;
+    }
+    .slider::-moz-range-thumb { width: 16px; height: 16px; background: var(--cyan); border-radius: 50%;
+      cursor: pointer; border: none;
+    }
+    .slider-value { min-width: 40px; text-align: right; color: var(--t2); font-size: 13px; }
+    
+    .color-picker-group { display: flex; align-items: center; gap: 10px; }
+    .color-preview { width: 32px; height: 32px; border: 1px solid var(--bd); border-radius: 6px; cursor: pointer; }
+    input[type="color"] { width: 0; height: 0; opacity: 0; position: absolute; }
+    
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+    .btn { padding: 10px 16px; border-radius: 8px; border: 1px solid var(--bd); background: transparent;
+      color: var(--t1); cursor: pointer; font-size: 14px; font-family: inherit; transition: all 0.2s;
+    }
+    .btn:hover { background: var(--n2); border-color: var(--vio); }
+    .btn-primary { background: var(--vio); border-color: var(--vio); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.1); }
+    .btn-danger { border-color: var(--mag); color: var(--mag); }
+    .btn-danger:hover { background: rgba(255, 0, 153, 0.1); }
+    
+    .message { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; display: none; }
+    .message.success { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--grn); color: var(--grn); }
+    .message.error { background: rgba(255, 0, 153, 0.1); border: 1px solid var(--mag); color: var(--mag); }
+    .message.show { display: block; }
+    
+    .help-text { font-size: 11px; color: var(--t3); margin-top: 4px; }
+    input[type="file"] { display: none; }
+  </style>
+</head>
+<body>
+  <div class="settings-container">
+    <div class="settings-header">
+      <h1>Settings</h1>
+      <div class="path" id="config-path">Loading configuration path...</div>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <!-- Network Settings Section -->
+    <div class="section">
+      <h2 class="section-title">Network Settings</h2>
+      
+      <div class="form-group">
+        <div class="toggle-group">
+          <div class="toggle" id="p2p-enabled" data-field="p2p.enabled"></div>
+          <label>Enable P2P Communication</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="max-peers">Maximum Peers (1-1000)</label>
+        <div class="slider-group">
+          <input type="range" id="max-peers" class="slider" min="1" max="1000" value="50" data-field="p2p.max_peers">
+          <span class="slider-value" id="max-peers-value">50</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="discovery-interval">Discovery Interval (seconds)</label>
+          <input type="number" id="discovery-interval" min="1" max="300" value="30" data-field="p2p.discovery_interval_secs">
+        </div>
+        <div class="form-group">
+          <label for="connection-timeout">Connection Timeout (seconds)</label>
+          <input type="number" id="connection-timeout" min="1" max="120" value="30" data-field="p2p.connection_timeout_secs">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="relay-url">Relay Server URL</label>
+        <input type="text" id="relay-url" placeholder="wss://relay.jfdi.app" data-field="relay.server_url">
+        <div class="help-text">WebSocket URL for relay fallback</div>
+      </div>
+
+      <div class="form-group">
+        <label for="stun-servers">STUN Servers (one per line)</label>
+        <textarea id="stun-servers" placeholder="stun:stun.l.google.com:19302" data-field="webrtc.stun_servers"></textarea>
+        <div class="help-text">Used for WebRTC NAT traversal</div>
+      </div>
+    </div>
+
+    <!-- Security Settings Section -->
+    <div class="section">
+      <h2 class="section-title">Security Settings</h2>
+      
+      <div class="form-group">
+        <div class="toggle-group">
+          <div class="toggle active" id="encryption-enabled" data-field="encryption.enabled"></div>
+          <label>Enable Encryption</label>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="session-timeout">Session Timeout (days)</label>
+          <input type="number" id="session-timeout" min="1" max="365" value="30" data-field="auth.session_timeout_days">
+        </div>
+        <div class="form-group">
+          <label for="max-devices">Max Devices Per User</label>
+          <input type="number" id="max-devices" min="1" max="20" value="5" data-field="auth.max_devices_per_user">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="pairing-code-length">Pairing Code Length</label>
+          <input type="number" id="pairing-code-length" min="4" max="12" value="6" data-field="auth.pairing_code_length">
+        </div>
+        <div class="form-group">
+          <label for="pairing-expiry">Pairing Code Expiry (minutes)</label>
+          <input type="number" id="pairing-expiry" min="1" max="60" value="15" data-field="auth.pairing_code_expiry_mins">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="toggle-group">
+          <div class="toggle active" id="use-keyring" data-field="keys.use_platform_keyring"></div>
+          <label>Use Platform Keyring</label>
+        </div>
+        <div class="help-text">Store keys in system keychain/keyring</div>
+      </div>
+    </div>
+
+    <!-- UI Settings Section -->
+    <div class="section">
+      <h2 class="section-title">UI Settings</h2>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="theme-mode">Theme Mode</label>
+          <select id="theme-mode" data-field="theme.mode">
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="accent-color">Accent Color</label>
+          <div class="color-picker-group">
+            <div class="color-preview" id="accent-preview" style="background: #00ff00;"></div>
+            <input type="text" id="accent-color" value="#00ff00" data-field="theme.accent_color">
+            <input type="color" id="accent-picker" value="#00ff00">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="font-size">Font Size (8-32pt)</label>
+        <div class="slider-group">
+          <input type="range" id="font-size" class="slider" min="8" max="32" value="14" data-field="theme.font_size">
+          <span class="slider-value" id="font-size-value">14pt</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="language">Language</label>
+          <select id="language" data-field="language.locale">
+            <option value="en-US">English (US)</option>
+            <option value="en-GB">English (UK)</option>
+            <option value="es-ES">Español</option>
+            <option value="fr-FR">Français</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="time-format">Time Format</label>
+          <select id="time-format" data-field="language.time_format">
+            <option value="24h">24-hour</option>
+            <option value="12h">12-hour</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="toggle-group">
+          <div class="toggle active" id="notifications-enabled" data-field="notifications.enabled"></div>
+          <label>Enable Notifications</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="toggle-group">
+          <div class="toggle active" id="notification-sound" data-field="notifications.sound_enabled"></div>
+          <label>Notification Sounds</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="toggle-group">
+          <div class="toggle active" id="show-previews" data-field="notifications.show_previews"></div>
+          <label>Show Message Previews</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Network Expansion (10 new settings) -->
+    <div class="section">
+      <h2 class="section-title">Advanced Network Settings</h2>
+
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="mdns-enabled" data-field="p2p.mdns_enabled"></div>
+            <label>Enable mDNS Discovery</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="kad-enabled" data-field="p2p.kad_enabled"></div>
+            <label>Enable Kademlia DHT</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="max-idle-time">Max Idle Time (seconds)</label>
+          <input type="number" id="max-idle-time" min="60" max="3600" value="300" data-field="p2p.max_idle_time_secs">
+        </div>
+        <div class="form-group">
+          <label for="keep-alive-interval">Keep-Alive Interval (seconds)</label>
+          <input type="number" id="keep-alive-interval" min="10" max="300" value="60" data-field="p2p.keep_alive_interval_secs">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="transport-protocol">Transport Protocol</label>
+        <select id="transport-protocol" data-field="transport.protocol">
+          <option value="TCP">TCP</option>
+          <option value="WebSocket">WebSocket</option>
+          <option value="QUIC">QUIC</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="buffer-size">Buffer Size (KB)</label>
+          <input type="number" id="buffer-size" min="8" max="1024" value="64" data-field="transport.buffer_size_kb">
+        </div>
+        <div class="form-group">
+          <label for="max-frame-size">Max Frame Size (KB)</label>
+          <input type="number" id="max-frame-size" min="16" max="16384" value="1024" data-field="transport.max_frame_size_kb">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="compression-enabled" data-field="transport.compression_enabled"></div>
+            <label>Enable Compression</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="tcp-nodelay" data-field="transport.tcp_nodelay"></div>
+            <label>TCP No Delay</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security Expansion (9 new settings) -->
+    <div class="section">
+      <h2 class="section-title">Advanced Security Settings</h2>
+
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="per-message-encryption" data-field="encryption.per_message_encryption"></div>
+            <label>Per-Message Encryption</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="group-key-rotation">Group Key Rotation (days)</label>
+          <input type="number" id="group-key-rotation" min="1" max="365" value="30" data-field="encryption.group_key_rotation_days">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="key-storage-path">Key Storage Path</label>
+        <input type="text" id="key-storage-path" value="{app_data}/keys/" data-field="encryption.key_storage_path">
+        <div class="help-text">Use {app_data} for application data directory</div>
+      </div>
+
+      <div class="form-group">
+        <label for="device-name">Device Name</label>
+        <input type="text" id="device-name" placeholder="My Device" data-field="authentication.device_name">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle" id="auto-pair-trusted" data-field="authentication.auto_pair_trusted_devices"></div>
+            <label>Auto-Pair Trusted Devices</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="session-persistence" data-field="authentication.session_persistence"></div>
+            <label>Session Persistence</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="signing-enabled" data-field="signing.enabled"></div>
+            <label>Enable Message Signing</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="verify-all-messages" data-field="signing.verify_all_messages"></div>
+            <label>Verify All Messages</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="signature-algorithm">Signature Algorithm</label>
+          <select id="signature-algorithm" data-field="signing.signature_algorithm">
+            <option value="Ed25519">Ed25519</option>
+            <option value="ECDSA">ECDSA</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="trust-on-first-use" data-field="signing.trust_on_first_use"></div>
+            <label>Trust on First Use (TOFU)</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UI Expansion (6 new settings) -->
+    <div class="section">
+      <h2 class="section-title">Advanced UI Settings</h2>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="sidebar-width">Sidebar Width (px)</label>
+          <input type="number" id="sidebar-width" min="200" max="600" value="280" data-field="layout.sidebar_width">
+        </div>
+        <div class="form-group">
+          <label for="message-density">Message Density</label>
+          <select id="message-density" data-field="layout.message_density">
+            <option value="Compact">Compact</option>
+            <option value="Normal">Normal</option>
+            <option value="Comfortable">Comfortable</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="show-timestamps" data-field="layout.show_timestamps"></div>
+            <label>Show Timestamps</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="show-avatars" data-field="layout.show_avatars"></div>
+            <label>Show Avatars</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="auto-scroll" data-field="behavior.auto_scroll_on_new_message"></div>
+            <label>Auto-Scroll on New Message</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="focus-input-on-send" data-field="behavior.focus_input_on_send"></div>
+            <label>Focus Input After Send</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Link to Advanced Settings -->
+    <div class="section">
+      <h2 class="section-title">More Settings</h2>
+      <p style="color: var(--t2); margin-bottom: 12px;">
+        Configure message protocol, chat, database, and development options in Advanced Settings.
+      </p>
+      <a href="settings-advanced.html" class="btn">Open Advanced Settings →</a>
+    </div>
+
+    <!-- Actions Section -->
+    <div class="actions">
+      <button class="btn btn-primary" id="save-btn">Save Settings</button>
+      <button class="btn" id="reset-btn">Reset to Defaults</button>
+      <button class="btn" id="restore-btn">Restore Backup</button>
+      <button class="btn" id="export-btn">Export Config</button>
+      <label for="import-file" class="btn">Import Config</label>
+      <input type="file" id="import-file" accept=".json">
+    </div>
+  </div>
+
+  <script src="../scripts/settings_helpers.js"></script>
+  <script src="../scripts/settings_helpers_ui.js"></script>
+  <script src="../scripts/settings.js"></script>
+</body>
+</html>
+

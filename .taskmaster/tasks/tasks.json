@@ -569,13 +569,209 @@
         "recommendedSubtasks": 3,
         "expansionPrompt": "Break down into: 1) Run UI constraint verification (naming, colors, motion) with screenshots, 2) Run state/behavioral constraint tests (status precedence, click handlers, plugin rendering), 3) Document results in tests/acceptance_report.md with pass/fail status and any deviation notes.",
         "updatedAt": "2026-02-13T10:08:47.572Z"
+      },
+      {
+        "id": "11",
+        "title": "CSS Color System Audit and Normalization",
+        "description": "Audit all CSS color values across IP/styles/orchestr8.css, IP/plugins/06_maestro.py, and IP/woven_maps.py to ensure exact compliance with canonical color palette. Normalize any deviations to match MaestroView.vue color spec.",
+        "details": "1. Read canonical color definitions from MaestroView.vue lines 11-17:\n   - --blue-dominant: #1fbdea\n   - --gold-metallic: #D4AF37\n   - --gold-dark: #B8860B\n   - --gold-saffron: #F4C430\n   - --bg-primary: #0A0A0B\n   - --bg-elevated: #121214\n\n2. Audit IP/styles/orchestr8.css:\n   - Verify :root CSS variables match canonical values exactly\n   - Check all hardcoded hex values for compliance\n   - Ensure --purple-combat: #9D4EDD is present\n\n3. Audit IP/plugins/06_maestro.py:\n   - Verify BLUE_DOMINANT, GOLD_METALLIC, GOLD_DARK, GOLD_SAFFRON, BG_PRIMARY, BG_ELEVATED, PURPLE_COMBAT constants match\n   - Check any inline styles in mo.Html() calls\n\n4. Audit IP/woven_maps.py:\n   - Verify COLORS dict matches canonical values\n   - Verify JS_COLORS dict matches\n\n5. Audit IP/static/woven_maps_3d.js:\n   - Check CONFIG_3D color constants (hex format as integers)\n\n6. Create color-normalization.md report listing:\n   - All locations with color values\n   - Any deviations found\n   - Corrections made\n\nPseudo-code:\n```python\nCANONICAL = {\n    'gold_metallic': '#D4AF37',\n    'blue_dominant': '#1fbdea',\n    'gold_dark': '#B8860B',\n    'gold_saffron': '#F4C430',\n    'bg_primary': '#0A0A0B',\n    'bg_elevated': '#121214',\n    'purple_combat': '#9D4EDD'\n}\nfor file in FILES:\n    for color_ref in extract_colors(file):\n        if color_ref.value not in CANONICAL.values():\n            flag_deviation(color_ref)\n```",
+        "testStrategy": "1. grep -r for all hex color patterns (#[0-9A-Fa-f]{6}) across IP/ directory\n2. Verify each found value against canonical palette\n3. Run marimo run orchestr8.py and visually confirm gold/blue/purple rendering\n4. Check browser DevTools computed styles for key elements",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-02-14T00:18:39.684Z"
+      },
+      {
+        "id": "12",
+        "title": "Typography CSS Variable Definition and Font Stack Audit",
+        "description": "Define and normalize typography CSS variables following MaestroView.vue font-family patterns. Establish --font-headline, --font-body, and --font-mono variables in orchestr8.css with appropriate fallback stacks.",
+        "details": "1. Extract font-family patterns from MaestroView.vue:\n   - var(--font-headline) - used for buttons, titles\n   - var(--font-body) - used for chat input, message content\n   - var(--font-mono) - used for timestamps, code\n\n2. Update IP/styles/orchestr8.css :root block:\n```css\n:root {\n    /* Typography - Orchestr8 Font System */\n    --font-headline: 'Cal Sans', 'JetBrains Mono', 'IBM Plex Mono', monospace;\n    --font-body: 'IBM Plex Sans', 'Inter', system-ui, sans-serif;\n    --font-mono: 'JetBrains Mono', 'IBM Plex Mono', 'Fira Code', monospace;\n    \n    /* Override existing --font-ui */\n    --font-ui: var(--font-mono);\n}\n```\n\n3. Audit current typography usage:\n   - .orchestr8-brand uses font-family: monospace\n   - .orchestr8-btn uses font-family: monospace\n   - Replace direct 'monospace' with var(--font-mono)\n\n4. Update button and control element font declarations:\n   - .top-btn -> var(--font-headline)\n   - .ctrl-btn -> var(--font-headline)\n   - .chat-input -> var(--font-body)\n   - .message-content -> var(--font-body)\n   - .message-time -> var(--font-mono)\n\n5. Ensure letter-spacing values match MaestroView.vue:\n   - Headlines: 0.08em - 0.1em\n   - Body: normal\n   - Mono/times: inherit",
+        "testStrategy": "1. Inspect rendered fonts in browser DevTools\n2. Verify font-family inheritance chain works\n3. Check fallback fonts render correctly when primary unavailable\n4. Visual comparison of button text against MaestroView reference",
+        "priority": "high",
+        "dependencies": [
+          "11"
+        ],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-02-14T00:12:25.875Z"
+      },
+      {
+        "id": "13",
+        "title": "Local Font Registration System for Settings UI",
+        "description": "Create font registration infrastructure to expose local fonts from Font/ directory as selectable options in Settings UI. Include Cal Sans (woff), HardCompn (ttf), and mini_pixel-7 (ttf) as available deco-style options.",
+        "details": "1. Create font face declarations for local fonts:\n```css\n/* IP/styles/fonts.css */\n@font-face {\n    font-family: 'Cal Sans';\n    src: url('/static/fonts/CalSans-SemiBold.woff') format('woff');\n    font-weight: 600;\n    font-display: swap;\n}\n\n@font-face {\n    font-family: 'HardCompn';\n    src: url('/static/fonts/HardCompn.ttf') format('truetype');\n    font-weight: normal;\n    font-display: swap;\n}\n\n@font-face {\n    font-family: 'Mini Pixel 7';\n    src: url('/static/fonts/mini_pixel-7.ttf') format('truetype');\n    font-weight: normal;\n    font-display: swap;\n}\n```\n\n2. Create font configuration in pyproject_orchestr8_settings.toml:\n```toml\n[ui.fonts]\navailable = ['Cal Sans', 'HardCompn', 'Mini Pixel 7', 'JetBrains Mono', 'IBM Plex Mono']\ndefault_headline = 'Cal Sans'\ndefault_body = 'IBM Plex Sans'\ndefault_mono = 'JetBrains Mono'\n```\n\n3. Create static file serving for fonts:\n   - Copy Font/*.ttf and Font/*.woff to IP/static/fonts/\n   - Ensure marimo serves static files from IP/static/\n\n4. Create font loader helper in 06_maestro.py:\n```python\ndef load_font_css() -> str:\n    fonts_path = Path(__file__).parent.parent / 'styles' / 'fonts.css'\n    if fonts_path.exists():\n        return f'<style>{fonts_path.read_text()}</style>'\n    return ''\n```\n\n5. Add font injection to render() function alongside CSS injection",
+        "testStrategy": "1. Verify @font-face rules load without 404 errors\n2. Test each font renders correctly by setting as primary font\n3. Verify fallback behavior when font file missing\n4. Check font-display: swap prevents FOIT",
+        "priority": "high",
+        "dependencies": [
+          "12"
+        ],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-02-14T00:12:25.925Z"
+      },
+      {
+        "id": "14",
+        "title": "Settings UI Font Selector Implementation",
+        "description": "Add font selection dropdown to Settings panel in 06_maestro.py that persists preference and applies selected font to appropriate CSS variables at runtime.",
+        "details": "1. Add font state management in render():\n```python\nget_selected_headline_font, set_selected_headline_font = mo.state('Cal Sans')\nget_selected_body_font, set_selected_body_font = mo.state('IBM Plex Sans')\nget_selected_mono_font, set_selected_mono_font = mo.state('JetBrains Mono')\n```\n\n2. Load available fonts from settings:\n```python\ndef get_available_fonts() -> dict:\n    settings = load_settings()\n    return settings.get('ui', {}).get('fonts', {\n        'available': ['Cal Sans', 'HardCompn', 'Mini Pixel 7'],\n        'default_headline': 'Cal Sans'\n    })\n```\n\n3. Add font selectors to Settings panel section:\n```python\nif get_show_settings():\n    headline_font_picker = mo.ui.dropdown(\n        options=available_fonts,\n        value=get_selected_headline_font(),\n        label='Headline Font',\n        on_change=set_selected_headline_font\n    )\n    # Similar for body_font and mono_font\n```\n\n4. Generate runtime CSS override:\n```python\ndef build_font_override_css() -> str:\n    return f'''\n    :root {{\n        --font-headline: '{get_selected_headline_font()}', monospace;\n        --font-body: '{get_selected_body_font()}', sans-serif;\n        --font-mono: '{get_selected_mono_font()}', monospace;\n    }}\n    '''\n```\n\n5. Inject font override after base CSS in render()",
+        "testStrategy": "1. Change font selection and verify visual update\n2. Refresh page and verify preference persists (if using localStorage)\n3. Test fallback when selected font unavailable\n4. Verify font changes apply to correct element categories",
+        "priority": "medium",
+        "dependencies": [
+          "13"
+        ],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-02-14T00:13:16.473Z"
+      },
+      {
+        "id": "15",
+        "title": "CSS Browser Compatibility Audit and Source-Level Fixes",
+        "description": "Perform comprehensive CSS syntax audit across orchestr8.css and any inline styles for browser-incompatible features. Apply source-level fixes for unsupported syntax, not just runtime suppression.",
+        "details": "1. Audit for known problematic patterns (from CLAUDE.md ledger):\n   - @source directive (Tailwind-specific)\n   - @container style(...) queries\n   - Nested child selectors without proper syntax\n   - ::-webkit-scrollbar-thumb:hover vendor prefixes without fallback\n   - text-wrap property (limited support)\n   - -moz-osx-font-smoothing (Firefox-only)\n   - -webkit-text-size-adjust (Safari-only)\n   - break-after, orphans, widows (print-focused)\n\n2. Check orchestr8.css for:\n   - Invalid at-rules\n   - Unsupported pseudo-elements\n   - Malformed selectors\n\n3. Apply fixes:\n```css\n/* BEFORE (problematic) */\n.container {\n    text-wrap: balance;  /* Limited support */\n}\n\n/* AFTER (compatible) */\n.container {\n    /* text-wrap: balance; -- Not widely supported */\n    overflow-wrap: break-word;\n}\n```\n\n4. For vendor prefixes, use progressive enhancement:\n```css\n.element {\n    font-smoothing: antialiased;\n    -webkit-font-smoothing: antialiased;\n    -moz-osx-font-smoothing: grayscale;\n}\n```\n\n5. Document all changes in CSS_COMPATIBILITY_FIXES.md\n\n6. Test across Firefox, Chrome, Safari (if available)",
+        "testStrategy": "1. Run CSS validator on orchestr8.css\n2. Open browser DevTools Console and check for CSS parsing warnings\n3. Test in Firefox (primary per CLAUDE.md context)\n4. Verify no console warnings from project-owned styles",
+        "priority": "high",
+        "dependencies": [
+          "11",
+          "12"
+        ],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-02-14T00:23:45.168Z"
+      },
+      {
+        "id": "16",
+        "title": "3D Code City Frontend Compatibility Checklist",
+        "description": "Create and execute compatibility checklist for IP/static/woven_maps_3d.js including Three.js version compatibility, WebGL feature detection, and graceful degradation paths.",
+        "details": "1. Create compatibility checklist document:\n   - Three.js version requirements (check r150+ for WebGPU support)\n   - WebGL 1.0 vs 2.0 feature usage\n   - OrbitControls API compatibility\n   - EffectComposer/UnrealBloomPass requirements\n\n2. Audit woven_maps_3d.js for:\n   - WebGPU usage (navigator.gpu checks)\n   - Fallback to CPU canvas per CLAUDE.md\n   - Pixel ratio handling for high-DPI\n   - ResizeObserver vs window.resize\n\n3. Verify fallback paths:\n```javascript\n// Check current implementation\nfunction initParticleBackend() {\n    if (navigator.gpu) {\n        return initWebGPUBackend();\n    }\n    return initCPUCanvasBackend();\n}\n```\n\n4. Add feature detection guards:\n```javascript\nconst FEATURES = {\n    webgl2: !!document.createElement('canvas').getContext('webgl2'),\n    webgpu: !!navigator.gpu,\n    bloom: true, // Disable if performance issues\n};\n```\n\n5. Document mobile/low-power device considerations\n\n6. Create IP/static/woven_maps_3d_compatibility.md checklist",
+        "testStrategy": "1. Test with WebGL disabled (browser flag)\n2. Test on integrated graphics (if available)\n3. Verify graceful degradation shows fallback UI\n4. Check console for WebGL/Three.js errors\n5. Profile GPU memory usage",
+        "priority": "medium",
+        "dependencies": [
+          "15"
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": "17",
+        "title": "Responsive Layout Pass - Desktop Viewport",
+        "description": "Ensure Orchestr8 layout renders correctly across desktop viewport sizes (1024px - 2560px width). Focus on top row, VOID center, bottom control surface, and right-side panels.",
+        "details": "1. Define breakpoints:\n   - Large desktop: 1920px+\n   - Standard desktop: 1280px - 1919px\n   - Small desktop: 1024px - 1279px\n\n2. Test top row layout:\n   - [orchestr8] [collabor8] [JFDI] buttons\n   - Verify spacing and alignment at each breakpoint\n   - Ensure no overflow/wrapping\n\n3. Test VOID center:\n   - Code City visualization sizing\n   - Max-width constraints (700px for messages per MaestroView)\n   - Padding adjustment for viewport\n\n4. Test bottom control surface:\n   - Full-width behavior maintained\n   - Button groups stay on single row at desktop widths\n   - Chat input scaling\n\n5. Test right-side panels:\n   - Ticket, Calendar, Comms, File Explorer panels\n   - Fixed width (320px per MaestroView) or percentage?\n   - Overlay vs push behavior\n\n6. Add responsive CSS if needed:\n```css\n@media (min-width: 1920px) {\n    .void-center { max-width: 900px; }\n    .chat-input-container { max-width: 1100px; }\n}\n\n@media (max-width: 1279px) {\n    .control-row { gap: 8px; }\n    .ctrl-btn { padding: 4px 8px; }\n}\n```",
+        "testStrategy": "1. Resize browser window through breakpoint ranges\n2. Use DevTools device toolbar for exact widths\n3. Verify no horizontal scrollbar at any tested width\n4. Check button text truncation doesn't occur",
+        "priority": "high",
+        "dependencies": [
+          "11",
+          "15"
+        ],
+        "status": "in-progress",
+        "subtasks": [],
+        "updatedAt": "2026-02-14T00:24:43.672Z"
+      },
+      {
+        "id": "18",
+        "title": "Responsive Layout Pass - Mobile/Narrow Viewport",
+        "description": "Ensure Orchestr8 layout degrades gracefully on narrow viewports (320px - 1023px). Not full mobile redesign, but functional and non-broken display.",
+        "details": "1. Define narrow breakpoints:\n   - Tablet: 768px - 1023px\n   - Large phone: 480px - 767px\n   - Phone: 320px - 479px\n\n2. Handle top row at narrow widths:\n```css\n@media (max-width: 767px) {\n    .orchestr8-top-row {\n        flex-wrap: wrap;\n        justify-content: center;\n        gap: 8px;\n    }\n}\n```\n\n3. Handle control surface wrapping:\n```css\n@media (max-width: 767px) {\n    .control-row {\n        flex-direction: column;\n        align-items: center;\n    }\n    .control-group {\n        justify-content: center;\n    }\n    .maestro-center {\n        margin: 12px 0;\n    }\n}\n```\n\n4. Handle Code City at narrow widths:\n   - Consider hiding 3D view below 480px\n   - Show simplified list view or placeholder\n   - Maintain touch-friendly tap targets (44px minimum)\n\n5. Handle panels on narrow:\n   - Full-width overlays instead of side panels\n   - Stack instead of slide behavior\n\n6. Ensure no critical functionality lost:\n   - All buttons accessible\n   - Chat input usable\n   - Error states visible",
+        "testStrategy": "1. Use DevTools mobile device presets (iPhone, Galaxy)\n2. Physical device testing if available\n3. Verify touch targets meet 44px minimum\n4. Check no text overflow or clipping",
+        "priority": "medium",
+        "dependencies": [
+          "17"
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": "19",
+        "title": "MaestroView Button Style Pattern Extraction",
+        "description": "Extract button styling patterns from MaestroView.vue including border treatments, hover states, active states, and color transitions. Document patterns for Orchestr8 application.",
+        "details": "1. Extract .top-btn styles from MaestroView.vue (lines 735-753):\n```css\n.top-btn {\n    padding: 5px 12px;\n    border-radius: 4px;\n    background: #121214;\n    border: 1px solid rgba(31, 189, 234, 0.3);\n    color: #1fbdea;\n    font-family: var(--font-headline);\n    font-size: 10px;\n    letter-spacing: 0.1em;\n    cursor: pointer;\n    transition: all 200ms ease-out;\n}\n\n.top-btn:hover,\n.top-btn.active {\n    background: rgba(212, 175, 55, 0.1);\n    border-color: #D4AF37;\n    color: #D4AF37;\n}\n```\n\n2. Extract .ctrl-btn styles (lines 1009-1037):\n```css\n.ctrl-btn {\n    padding: 6px 12px;\n    background: transparent;\n    border: none;\n    color: #1fbdea;\n    font-family: var(--font-headline);\n    font-size: 10px;\n    letter-spacing: 0.08em;\n    transition: all 150ms ease-out;\n}\n\n.ctrl-btn:hover { color: #D4AF37; }\n.ctrl-btn.active { color: #D4AF37; }\n.ctrl-btn:disabled { opacity: 0.3; cursor: not-allowed; }\n```\n\n3. Extract special button variants:\n   - .apps-btn: Has background: rgba(31, 189, 234, 0.1)\n   - .send-btn: Gold background accent\n   - .maestro-center: Border with gold dark, larger padding\n\n4. Create pattern documentation:\n   - orchestr8_button_patterns.md\n   - Include visual examples (ASCII/description)\n   - Note transition timing (150ms vs 200ms)",
+        "testStrategy": "1. Side-by-side visual comparison with MaestroView\n2. Record hover/active state transitions\n3. Verify disabled state appearance\n4. Check keyboard focus states",
+        "priority": "high",
+        "dependencies": [
+          "11",
+          "12"
+        ],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-02-13T23:41:09.903Z"
+      },
+      {
+        "id": "20",
+        "title": "Apply MaestroView Button Styles to Orchestr8",
+        "description": "Apply extracted button style patterns to orchestr8.css, updating existing .orchestr8-btn and control button classes to match MaestroView visual treatment while preserving marimo button compatibility.",
+        "details": "1. Update .orchestr8-btn in orchestr8.css to match .top-btn:\n```css\n.orchestr8-btn {\n    padding: 5px 12px;\n    background: var(--bg-elevated);\n    border: 1px solid rgba(31, 189, 234, 0.3);\n    border-radius: 4px;\n    color: var(--blue-dominant);\n    font-family: var(--font-headline);\n    font-size: 10px;\n    letter-spacing: 0.1em;\n    cursor: pointer;\n    transition: all 200ms ease-out;\n}\n\n.orchestr8-btn:hover,\n.orchestr8-btn.active {\n    background: rgba(212, 175, 55, 0.1);\n    border-color: var(--gold-metallic);\n    color: var(--gold-metallic);\n}\n```\n\n2. Update marimo button overrides (lines 301-323):\n   - Remove !important where possible\n   - Use more specific selectors instead\n   - Preserve on_click functionality\n\n3. Add control button variants:\n```css\n.ctrl-btn-apps {\n    background: rgba(31, 189, 234, 0.1);\n    border-radius: 4px;\n}\n\n.ctrl-btn-send {\n    background: rgba(212, 175, 55, 0.15);\n    border-radius: 4px;\n    color: var(--gold-metallic);\n}\n\n.ctrl-btn-send:hover {\n    background: rgba(212, 175, 55, 0.25);\n    color: var(--gold-saffron);\n}\n```\n\n4. Ensure marimo mo.ui.button() elements receive correct styles:\n   - Check if button classes apply\n   - May need [data-marimo-element='button'] selector",
+        "testStrategy": "1. Visual comparison with MaestroView reference\n2. Click all buttons to verify on_click still fires\n3. Check hover/active states in DevTools\n4. Verify disabled button appearance",
+        "priority": "high",
+        "dependencies": [
+          "19"
+        ],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-02-13T23:41:09.913Z"
+      },
+      {
+        "id": "21",
+        "title": "Lower-Fifth Control Surface Rhythm Analysis",
+        "description": "Analyze the lower-fifth control surface button layout rhythm from MaestroView.vue. Document spacing, grouping, and visual balance patterns without changing macro geometry.",
+        "details": "1. Analyze MaestroView control-surface layout (lines 611-660):\n   - Single row layout: Left Group | Center (maestro) | Right Group\n   - Left Group: Apps, Matrix, Calendar, Comms, Files\n   - Center: maestro button (summon action)\n   - Right Group: Search, Record, Playback, Phreak>, Send, Attach\n\n2. Document spacing metrics:\n   - .control-row gap: 16px\n   - .control-group gap: 8px\n   - .maestro-center margin: 0 16px\n   - Button padding: 6px 12px\n\n3. Document visual rhythm:\n   - Left group: 5 buttons (navigation/utility)\n   - Center: 1 prominent maestro button\n   - Right group: 6 buttons (actions)\n   - Symmetry assessment: Left=5, Right=6 (slight right-heavy)\n\n4. Compare to current Orchestr8 implementation:\n   - Current left_buttons: Apps, Calendar*, Comms*, Files (4)\n   - Current center: maestro + @maestro state + Search (3 elements)\n   - Current action_buttons: Record, Playback, Phreak>, Send, Attach, Settings (6)\n\n5. Identify rhythm improvements:\n   - Move Settings out of action_buttons?\n   - Balance left/right counts?\n   - Maintain current surface width\n\n6. Document in lower_fifth_rhythm_analysis.md",
+        "testStrategy": "1. Screenshot comparison of current vs MaestroView layout\n2. Measure pixel spacing in DevTools\n3. Verify full-width behavior preserved\n4. Check wrapping behavior at narrow widths",
+        "priority": "medium",
+        "dependencies": [
+          "19"
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": "22",
+        "title": "Apply Lower-Fifth Symmetry Refinements",
+        "description": "Apply subtle spacing and alignment refinements to lower-fifth control surface to improve internal button rhythm while preserving full-width macro geometry.",
+        "details": "1. Update control-surface CSS in orchestr8.css:\n```css\n.control-surface {\n    width: 100%;\n    background: var(--bg-elevated);\n    border-top: 1px solid rgba(31, 189, 234, 0.2);\n    padding: 12px 24px;\n}\n\n.control-row {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    gap: 16px;\n}\n\n.control-group {\n    display: flex;\n    align-items: center;\n    gap: 8px;\n}\n```\n\n2. Apply consistent button sizing:\n   - All .ctrl-btn: padding 6px 12px\n   - .maestro-center: padding 10px 32px (larger prominence)\n\n3. Update 06_maestro.py build_control_surface():\n   - Regroup buttons following MaestroView pattern\n   - Move Matrix to left group\n   - Consider Search placement (currently with maestro)\n\n4. Adjust gap values for visual balance:\n```python\nleft_buttons = mo.hstack([...], gap='0.5rem')  # 8px\naction_buttons = mo.hstack([...], gap='0.5rem')  # 8px\n```\n\n5. Ensure maestro center button stands out:\n   - Larger padding maintained\n   - Border treatment distinct from ctrl-btn",
+        "testStrategy": "1. Visual comparison showing improved rhythm\n2. Verify no layout shift on interaction\n3. Check alignment at multiple viewport widths\n4. Verify full-width behavior unchanged",
+        "priority": "medium",
+        "dependencies": [
+          "21"
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": "23",
+        "title": "Emergence Animation CSS Verification",
+        "description": "Verify emergence animations in orchestr8.css conform to canon rules: things EMERGE from the void, NO breathing/pulsing animations. Ensure keyframe definitions align with MaestroView emergence patterns.",
+        "details": "1. Audit current emergence animations in orchestr8.css (lines 56-83):\n```css\n@keyframes emergence {\n    0% { opacity: 0; transform: translateY(12px); }\n    100% { opacity: 1; transform: translateY(0); }\n}\n\n@keyframes emergence-fade {\n    0% { opacity: 0; }\n    100% { opacity: 1; }\n}\n\n@keyframes emergence-scale {\n    0% { opacity: 0; transform: scale(0.95); }\n    100% { opacity: 1; transform: scale(1); }\n}\n```\n\n2. Compare with MaestroView.vue transitions (lines 852-869):\n```css\n.emerge-enter-active {\n    transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);\n}\n.emerge-enter-from {\n    opacity: 0;\n    transform: translateY(20px) scale(0.95);\n}\n```\n\n3. Verify NO breathing animations exist:\n   - Search for 'pulse', 'breathe', 'infinite'\n   - Remove any found\n\n4. Update emergence timing to match MaestroView:\n   - Duration: 400ms (vs current unspecified)\n   - Easing: cubic-bezier(0.16, 1, 0.3, 1)\n   - Transform: translateY(20px) scale(0.95)\n\n5. Ensure animation-fill-mode: both for persistent state\n\n6. Update orchestr8.css:\n```css\n@keyframes emergence {\n    0% {\n        opacity: 0;\n        transform: translateY(20px) scale(0.95);\n    }\n    100% {\n        opacity: 1;\n        transform: translateY(0) scale(1);\n    }\n}\n\n.emerged-message {\n    animation: emergence 400ms cubic-bezier(0.16, 1, 0.3, 1) both;\n}\n```",
+        "testStrategy": "1. Trigger panel/message emergence and observe animation\n2. Verify no infinite/looping animations\n3. Check animation timing feels consistent\n4. Record and compare to MaestroView emergence",
+        "priority": "medium",
+        "dependencies": [
+          "15"
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": "24",
+        "title": "Integration Test - Full Style Pass Validation",
+        "description": "Execute comprehensive integration test validating all styling changes work together: colors, typography, fonts, buttons, layout, and emergence animations across desktop and narrow viewports.",
+        "details": "1. Create test checklist covering all style changes:\n   - [ ] Color palette matches canonical values\n   - [ ] Typography variables defined and applied\n   - [ ] Local fonts load and render\n   - [ ] Font selector in Settings works\n   - [ ] No CSS parsing errors in console\n   - [ ] 3D Code City renders without errors\n   - [ ] Desktop layout correct at 1280px, 1920px\n   - [ ] Narrow layout functional at 768px, 480px\n   - [ ] Button styles match MaestroView\n   - [ ] Lower-fifth rhythm improved\n   - [ ] Emergence animations correct timing\n\n2. Execute test sequence:\n```bash\n# Start orchestr8\nmarimo run orchestr8.py\n\n# Open in browser at http://localhost:2718\n# Execute checklist items\n# Document any failures\n```\n\n3. Visual regression comparison:\n   - Screenshot key UI states\n   - Compare against MaestroView reference images\n   - Note any significant deviations\n\n4. Browser compatibility:\n   - Test in Firefox (primary)\n   - Test in Chrome (secondary)\n   - Document any browser-specific issues\n\n5. Generate test report:\n   - style_integration_test_report.md\n   - Include screenshots\n   - List any regressions\n   - Confirm acceptance criteria met",
+        "testStrategy": "1. Execute full checklist manually\n2. Screenshot each major UI state\n3. Compare visually to MaestroView\n4. Document pass/fail for each criterion",
+        "priority": "high",
+        "dependencies": [
+          "14",
+          "16",
+          "18",
+          "20",
+          "22",
+          "23"
+        ],
+        "status": "pending",
+        "subtasks": []
       }
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-02-13T10:08:47.572Z",
-      "taskCount": 10,
-      "completedCount": 10,
+      "lastModified": "2026-02-14T00:24:43.673Z",
+      "taskCount": 24,
+      "completedCount": 17,
       "tags": [
         "master"
       ]

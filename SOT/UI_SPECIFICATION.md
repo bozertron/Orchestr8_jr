@@ -30,7 +30,9 @@
     --bg-elevated: #121214;      /* Surface/cards */
 
     /* Typography */
-    --font-mono: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+    --font-headline: 'Orchestr8 HardCompn', 'Trebuchet MS', sans-serif;
+    --font-body: 'Orchestr8 CalSans', 'Segoe UI', sans-serif;
+    --font-mono: 'Orchestr8 Mini Pixel', 'Courier New', monospace;
 }
 ```
 

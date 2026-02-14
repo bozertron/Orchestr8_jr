@@ -28,12 +28,15 @@
     --status-broken: #1fbdea;
     --status-combat: #9D4EDD;
     
-    /* Fonts */
-    --font-mono: 'JetBrains Mono', 'IBM Plex Mono', monospace;
-    --font-ui: 'IBM Plex Mono', monospace;
+    /* Fonts (overridden by IP/styles/font_profiles.py at runtime) */
+    --font-headline: var(--orchestr8-font-headline, 'Orchestr8 HardCompn', 'Trebuchet MS', sans-serif);
+    --font-body: var(--orchestr8-font-body, 'Orchestr8 CalSans', 'Segoe UI', sans-serif);
+    --font-mono: var(--orchestr8-font-mono, 'Orchestr8 Mini Pixel', 'Courier New', monospace);
+    --font-ui: var(--font-body);
     
     /* Override Marimo defaults */
-    --marimo-heading-font: var(--font-mono);
+    --marimo-heading-font: var(--font-headline);
+    --marimo-text-font: var(--font-body);
     --marimo-monospace-font: var(--font-mono);
 }
 
@@ -58,11 +61,11 @@ body.light-theme {
 @keyframes emergence {
     0% {
         opacity: 0;
-        transform: translateY(12px);
+        transform: translateY(20px) scale(0.95);
     }
     100% {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 }
 
@@ -121,7 +124,7 @@ body {
     min-height: 70vh;
     display: flex;
     flex-direction: column;
-    animation: emergence-fade 0.3s ease-out forwards;
+    animation: emergence-fade 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .orchestr8-top-row {
@@ -130,11 +133,11 @@ body {
     align-items: center;
     padding: 12px 0;
     border-bottom: 1px solid rgba(31, 189, 234, 0.2);
-    animation: emergence 0.4s ease-out 0.1s both;
+    animation: emergence 400ms cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
 }
 
 .orchestr8-brand {
-    font-family: monospace;
+    font-family: var(--font-headline);
     font-size: 14px;
     letter-spacing: 0.08em;
 }
@@ -155,7 +158,7 @@ body {
     align-items: center;
     padding: 40px 20px;
     min-height: 300px;
-    animation: emergence-scale 0.5s ease-out 0.2s both;
+    animation: emergence-scale 400ms cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
 }
 
 .emerged-message {
@@ -166,7 +169,7 @@ body {
     margin-bottom: 16px;
     max-width: 700px;
     width: 100%;
-    animation: emergence 0.4s ease-out both;
+    animation: emergence 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .emerged-message:nth-child(1) { animation-delay: 0.1s; }
@@ -174,7 +177,7 @@ body {
 .emerged-message:nth-child(3) { animation-delay: 0.3s; }
 
 .emerged-message .content {
-    color: #e8e8e8;
+    color: var(--text-primary);
     font-size: 14px;
     line-height: 1.6;
     white-space: pre-wrap;
@@ -183,7 +186,7 @@ body {
 .emerged-message .meta {
     text-align: right;
     margin-top: 8px;
-    font-family: monospace;
+    font-family: var(--font-mono);
     font-size: 10px;
     color: var(--gold-dark);
 }
@@ -195,7 +198,7 @@ body {
 
 .orchestr8-state-indicator {
     color: var(--gold-metallic);
-    font-family: monospace;
+    font-family: var(--font-mono);
     font-size: 10px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -204,20 +207,72 @@ body {
 .control-surface {
     border-top: 1px solid rgba(31, 189, 234, 0.2);
     padding: 12px 0;
-    animation: emergence 0.4s ease-out 0.3s both;
+    animation: emergence 400ms cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
 }
 
 /* =========================================================
    BUTTON STYLES
    ========================================================= */
 
+/* Top-row buttons (solid background, bordered) */
+.orchestr8-btn-top {
+    padding: 5px 12px;
+    border-radius: 4px;
+    background: var(--bg-elevated);
+    border: 1px solid rgba(31, 189, 234, 0.3);
+    color: var(--blue-dominant);
+    font-family: var(--font-headline);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 200ms ease-out;
+}
+
+.orchestr8-btn-top:hover,
+.orchestr8-btn-top.active {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--gold-metallic);
+    color: var(--gold-metallic);
+}
+
+/* Control surface buttons (borderless, transparent) */
+.orchestr8-btn-ctrl {
+    padding: 6px 12px;
+    background: transparent;
+    border: none;
+    color: var(--blue-dominant);
+    font-family: var(--font-headline);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 150ms ease-out;
+}
+
+.orchestr8-btn-ctrl:hover {
+    color: var(--gold-metallic);
+}
+
+.orchestr8-btn-ctrl.active {
+    color: var(--gold-metallic);
+}
+
+.orchestr8-btn-ctrl:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.orchestr8-btn-ctrl:disabled:hover {
+    color: var(--blue-dominant);
+}
+
+/* Default button (hybrid - transparent with border) */
 .orchestr8-btn {
     padding: 6px 12px;
     background: transparent;
     border: 1px solid rgba(31, 189, 234, 0.3);
     border-radius: 4px;
     color: var(--blue-dominant);
-    font-family: monospace;
+    font-family: var(--font-headline);
     font-size: 10px;
     letter-spacing: 0.08em;
     cursor: pointer;
@@ -235,16 +290,23 @@ body {
     border-color: var(--gold-metallic);
 }
 
+.orchestr8-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Prominent center button (maestro-style) */
 .orchestr8-center-btn {
     padding: 10px 32px;
     background: none;
     border: 1px solid rgba(184, 134, 11, 0.3);
     border-radius: 4px;
     color: var(--gold-dark);
-    font-family: monospace;
+    font-family: var(--font-headline);
     font-size: 14px;
     letter-spacing: 0.1em;
     cursor: pointer;
+    transition: all 200ms ease-out;
 }
 
 .orchestr8-center-btn:hover {
@@ -254,8 +316,206 @@ body {
 }
 
 /* Button emergence with subtle scale */
-.orchestr8-btn, .orchestr8-center-btn {
-    animation: emergence 0.3s ease-out both;
+.orchestr8-btn, .orchestr8-btn-top, .orchestr8-btn-ctrl, .orchestr8-center-btn {
+    animation: emergence 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* =========================================================
+   STEREOS BUTTON VARIANTS (from settings.html)
+   ========================================================= */
+
+/* Primary button - filled accent */
+.orchestr8-btn-primary {
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: var(--gold-metallic);
+    border: 1px solid var(--gold-metallic);
+    color: var(--bg-primary);
+    font-family: var(--font-headline);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+}
+
+.orchestr8-btn-primary:hover {
+    filter: brightness(1.15);
+    background: var(--gold-saffron);
+    border-color: var(--gold-saffron);
+}
+
+/* Danger button - combat colored */
+.orchestr8-btn-danger {
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid var(--purple-combat);
+    color: var(--purple-combat);
+    font-family: var(--font-headline);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+}
+
+.orchestr8-btn-danger:hover {
+    background: rgba(157, 78, 221, 0.15);
+    border-color: var(--purple-combat);
+}
+
+/* =========================================================
+   TOGGLE SWITCH (from settings.html)
+   ========================================================= */
+
+.orchestr8-toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: var(--bg-surface);
+    border: 1px solid rgba(31, 189, 234, 0.3);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+}
+
+.orchestr8-toggle.active {
+    background: var(--gold-metallic);
+    border-color: var(--gold-metallic);
+}
+
+.orchestr8-toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background: var(--text-primary);
+    border-radius: 50%;
+    transition: transform 0.2s ease-out;
+}
+
+.orchestr8-toggle.active::after {
+    transform: translateX(20px);
+}
+
+.orchestr8-toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.orchestr8-toggle-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* =========================================================
+   SLIDER/RANGE INPUT (from settings.html)
+   ========================================================= */
+
+.orchestr8-slider {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-surface);
+    border-radius: 3px;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.orchestr8-slider::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--blue-dominant);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.15s ease-out;
+}
+
+.orchestr8-slider::-webkit-slider-thumb:hover {
+    background: var(--gold-metallic);
+}
+
+.orchestr8-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--blue-dominant);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+.orchestr8-slider::-moz-range-thumb:hover {
+    background: var(--gold-metallic);
+}
+
+.orchestr8-slider-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.orchestr8-slider-value {
+    min-width: 40px;
+    text-align: right;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-family: var(--font-mono);
+}
+
+/* =========================================================
+   FORM COMPONENTS (from settings.html)
+   ========================================================= */
+
+.orchestr8-form-group {
+    margin-bottom: 16px;
+}
+
+.orchestr8-form-group label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.orchestr8-form-group input[type="text"],
+.orchestr8-form-group input[type="number"],
+.orchestr8-form-group textarea,
+.orchestr8-form-group select {
+    width: 100%;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid rgba(31, 189, 234, 0.3);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: var(--font-body);
+    transition: border-color 0.2s ease-out;
+}
+
+.orchestr8-form-group input:focus,
+.orchestr8-form-group textarea:focus,
+.orchestr8-form-group select:focus {
+    outline: none;
+    border-color: var(--blue-dominant);
+    background: var(--bg-elevated);
+}
+
+.orchestr8-form-group textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.orchestr8-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.orchestr8-help-text {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
 }
 
 /* =========================================================
@@ -268,7 +528,7 @@ body {
     border-radius: 8px;
     padding: 16px;
     margin-bottom: 16px;
-    animation: emergence-scale 0.35s ease-out both;
+    animation: emergence-scale 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .panel-header {
@@ -282,7 +542,7 @@ body {
 
 .panel-title {
     color: var(--gold-metallic);
-    font-family: monospace;
+    font-family: var(--font-headline);
     font-size: 12px;
     letter-spacing: 0.1em;
 }
@@ -291,7 +551,7 @@ body {
     color: rgba(255, 255, 255, 0.3);
     font-style: italic;
     text-align: center;
-    animation: emergence-fade 0.8s ease-out 0.4s both;
+    animation: emergence-fade 400ms cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
 }
 
 /* =========================================================

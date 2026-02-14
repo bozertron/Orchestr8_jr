@@ -291,6 +291,7 @@ Orchestr8 uses a single active stylesheet source:
 | Source | Location | Status | Purpose |
 |--------|----------|--------|---------|
 | **Static CSS File (Loaded at Runtime)** | `IP/styles/orchestr8.css` | ✅ Active | Canonical colors, typography, overrides, interaction hardening |
+| **Runtime Font Profiles** | `IP/styles/font_profiles.py` | ✅ Active | Injects local `Font/` assets and profile variables from settings |
 | **Inline ORCHESTR8_CSS f-string** | `IP/plugins/06_maestro.py` | ❌ Legacy/retired | Historical approach; not the canonical source now |
 
 Active load path:
@@ -331,5 +332,6 @@ When building features, follow this order:
 2. Apply source-level marimo frontend compatibility patches (not minified one-offs).
 3. Run deterministic single-path startup and avoid duplicate-instance drift.
 4. Capture decisions in both local ledger and shared memory gateway for continuity.
+5. Switch global typography live via `ui.general.font_profile` without touching component CSS.
 
 **Remember**: Sidecars are your integration contract. Keep them accurate, or downstream agents will break.

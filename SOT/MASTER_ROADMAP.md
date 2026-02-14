@@ -659,6 +659,17 @@ compute.simMaterial.uniforms.uAudioTreble.value = uTreble;
 
 ---
 
+### Phase 19: Global Stylization Control Plane
+
+**Goal**: Make global UI behavior and styling switchable from a single desktop-friendly slider/toggle surface.
+
+- Add a "Stylize" control panel with global toggles (fonts, motion mode, contrast, panel density, interaction pacing).
+- Guarantee toggle changes propagate to all active surfaces without manual per-component edits.
+- Provide preset packs and a "quick revert to canon" option for safe experimentation.
+- Ensure settings persistence and instant visual application in `orchestr8.py` runtime.
+
+---
+
 # Summary: Complete Phase List
 
 | Milestone | Phase | Name | Status |
@@ -682,9 +693,10 @@ compute.simMaterial.uniforms.uAudioTreble.value = uTreble;
 | **4** | 16 | Audio Reactivity | Later |
 | | 17 | Canvas Fallback | Later |
 | | 18 | GPGPU Particle Scale | Later |
+| | 19 | Global Stylization Control Plane | Later |
 
 ---
 
-**Total Phases:** 18
+**Total Phases:** 19
 **Active Milestones:** 3
-**Later Roadmap:** 1 milestone (3 phases)
+**Later Roadmap:** 1 milestone (4 phases)

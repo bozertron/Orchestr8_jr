@@ -287,6 +287,7 @@ gpu_utilization_target = 0.8
 
 [ui.general]
 theme = "maestro"  # "maestro", "light", "dark"
+font_profile = "regal_deco"  # "regal_deco", "deco_console", "clean_utility"
 animation_speed = "normal"  # "slow", "normal", "fast"
 font_size = 12
 compact_mode = false

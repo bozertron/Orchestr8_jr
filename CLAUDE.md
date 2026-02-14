@@ -45,6 +45,13 @@ marimo edit orchestr8.py
     - Removed unsupported/invalid selectors and style-query rule causing parser warnings (`::-webkit-scrollbar-thumb:hover`, `@container style(...)`).
     - Replaced unsupported declarations (`text-wrap`, `-moz-osx-font-smoothing`, `-webkit-text-size-adjust`, `break-after`, `orphans`, `widows`) with safer equivalents or removed them.
   - Mirrored the same edits in `marimo/frontend/dist/assets/` for parity.
+- Font stack migration (2026-02-13):
+  - Canonical Orchestr8 font assets now live in `Font/`:
+    - `HardCompn.ttf`, `CalSans-SemiBold.woff`, `mini_pixel-7.ttf`
+  - Runtime font profile injection is centralized in `IP/styles/font_profiles.py`.
+  - `IP/plugins/06_maestro.py` now reads `ui.general.font_profile` and injects matching font CSS before `IP/styles/orchestr8.css`.
+  - Settings UI exposes profile selection in `IP/plugins/07_settings.py`.
+  - Legacy JetBrains/IBM/Lora/PT Sans/Fira defaults were removed from active Orchestr8 paths.
 
 ## Frontend/Runtime Troubleshooting Ledger (2026-02-13)
 

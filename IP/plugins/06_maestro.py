@@ -103,6 +103,7 @@ from IP.contracts.code_city_node_event import validate_code_city_node_event
 from IP.contracts.connection_action_event import validate_connection_action_event
 from IP.contracts.building_panel import validate_building_panel, BuildingPanel
 from IP.connection_verifier import dry_run_patchbay_rewire, apply_patchbay_rewire
+from IP.styles.font_profiles import build_font_profile_css, resolve_font_profile_name
 import json
 
 
@@ -156,17 +157,35 @@ MAESTRO_STATES = ("ON", "OFF", "OBSERVE")
 
 def load_orchestr8_css() -> str:
     """Load consolidated CSS from IP/styles/orchestr8.css.
-    
+
     This replaces the previous ORCHESTR8_CSS f-string approach.
     CSS variables in the file now handle dynamic colors instead of Python f-strings.
     """
     css_path = Path(__file__).parent.parent / "styles" / "orchestr8.css"
     try:
         css_content = css_path.read_text()
-        return f"<style>{css_content}</style>"
+        selected_font_profile = get_ui_font_profile()
+        font_css = build_font_profile_css(selected_font_profile)
+        return f"<style>{font_css}\n\n{css_content}</style>"
     except Exception as e:
         # Fallback: return minimal styles if file missing
         return f"<style>/* CSS load failed: {e} */</style>"
+
+
+def get_ui_font_profile() -> str:
+    """Get the configured UI font profile from settings."""
+    try:
+        import toml
+
+        settings_file = Path("pyproject_orchestr8_settings.toml")
+        if settings_file.exists():
+            settings = toml.load(settings_file)
+            ui_general = settings.get("ui", {}).get("general", {})
+            return resolve_font_profile_name(ui_general.get("font_profile"))
+    except Exception:
+        pass
+
+    return resolve_font_profile_name(None)
 
 
 def render(STATE_MANAGERS: dict) -> Any:
@@ -311,7 +330,9 @@ def render(STATE_MANAGERS: dict) -> Any:
 
     # Local state - Connection action bridge (edge panel actions from Code City)
     get_connection_action_payload, set_connection_action_payload = mo.state("")
-    get_connection_action_result_payload, set_connection_action_result_payload = mo.state("")
+    get_connection_action_result_payload, set_connection_action_result_payload = (
+        mo.state("")
+    )
 
     # Local state - Collabor8 deployment controls
     settlement_agent_groups = {
@@ -544,6 +565,7 @@ def render(STATE_MANAGERS: dict) -> Any:
         - dry_run_rewire: validate a rewire request without writing files
         - apply_rewire: apply a rewire with guardrails and rollback checks
         """
+
         def emit_connection_action_result(result_payload: dict) -> None:
             """Push structured action result back to the UI bridge."""
             try:
@@ -702,7 +724,9 @@ def render(STATE_MANAGERS: dict) -> Any:
             "ORCHESTR8_PATCHBAY_ALLOWED_ROLES", "founder,operator"
         )
         allowed_roles = {
-            role.strip().lower() for role in raw_allowed_roles.split(",") if role.strip()
+            role.strip().lower()
+            for role in raw_allowed_roles.split(",")
+            if role.strip()
         }
         if not allowed_roles:
             allowed_roles = {"founder", "operator"}
@@ -875,10 +899,12 @@ def render(STATE_MANAGERS: dict) -> Any:
                         "tickets": context.tickets,
                         "locks": context.locks,
                         "combat_active": context.combat.get("active", False),
-                    }
+                    },
                 }
 
-                log_action(f"Ticket payload generated: {len(all_errors)} error(s), {len(context.tickets)} ticket(s)")
+                log_action(
+                    f"Ticket payload generated: {len(all_errors)} error(s), {len(context.tickets)} ticket(s)"
+                )
 
             except Exception as e:
                 # Fallback to basic node data if Carl fails
@@ -888,7 +914,7 @@ def render(STATE_MANAGERS: dict) -> Any:
                     "status": status,
                     "errors": node_data.get("errors", []),
                     "suggested_action": f"Investigate and fix errors in {file_path.split('/')[-1]}",
-                    "context": {}
+                    "context": {},
                 }
 
             # Show deploy panel with enriched context
@@ -1176,7 +1202,9 @@ def render(STATE_MANAGERS: dict) -> Any:
             set_view_mode("chat")
 
             if state == "OFF":
-                assistant_content = "[INFO] @maestro is OFF. Use the maestro button to cycle mode."
+                assistant_content = (
+                    "[INFO] @maestro is OFF. Use the maestro button to cycle mode."
+                )
             elif state == "OBSERVE":
                 set_show_summon(True)
                 if command:
@@ -1518,7 +1546,10 @@ def render(STATE_MANAGERS: dict) -> Any:
                         f"({payload_size} bytes > {max_payload_bytes} bytes)."
                     )
                     result = create_code_city(
-                        str(ip_root), width=850, height=500, health_results=health_data or None
+                        str(ip_root),
+                        width=850,
+                        height=500,
+                        health_results=health_data or None,
                     )
                     payload_size = _payload_size_bytes(result)
 
@@ -1542,7 +1573,9 @@ def render(STATE_MANAGERS: dict) -> Any:
                     </div>
                     """)
             if health_data:
-                log_action(f"Code City rendered with {len(health_data)} health result(s)")
+                log_action(
+                    f"Code City rendered with {len(health_data)} health result(s)"
+                )
             return result
         except Exception as e:
             log_action(f"Code City error: {str(e)}")
@@ -1571,8 +1604,8 @@ def render(STATE_MANAGERS: dict) -> Any:
             """)
 
         if loading:
-            return mo.Html("""
-            <div class="void-placeholder" style="color: #D4AF37;">
+            return mo.Html(f"""
+            <div class="void-placeholder" style="color: {GOLD_METALLIC};">
                 Scanning the Void...
             </div>
             """)
@@ -1590,7 +1623,11 @@ def render(STATE_MANAGERS: dict) -> Any:
             health = result.get("health", {})
             status = health.get("status", "working")
 
-            status_color = "#D4AF37" if status == "working" else "#1fbdea"
+            status_color = {
+                "working": GOLD_METALLIC,
+                "broken": BLUE_DOMINANT,
+                "combat": PURPLE_COMBAT,
+            }.get(status, GOLD_METALLIC)
 
             error_count = len(health.get("errors", []))
             warning_count = len(health.get("warnings", []))
@@ -1601,11 +1638,11 @@ def render(STATE_MANAGERS: dict) -> Any:
                     <span style="color: {status_color}; font-family: monospace; font-weight: 600;">
                         {fiefdom}
                     </span>
-                    <span style="color: #666; font-size: 10px;">
+                    <span style="color: var(--text-muted); font-size: 10px;">
                         {status.upper()}
                     </span>
                 </div>
-                <div style="margin-top: 8px; font-size: 12px; color: #888;">
+                <div style="margin-top: 8px; font-size: 12px; color: var(--text-secondary);">
                     {error_count} errors, {warning_count} warnings
                 </div>
             </div>
@@ -1661,10 +1698,10 @@ def render(STATE_MANAGERS: dict) -> Any:
         matrix_header = mo.Html("""
         <div class="void-center" style="padding-bottom: 12px;">
             <div style="width: 100%; max-width: 820px;">
-                <div style="color:#D4AF37;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">
+                <div style="color:{GOLD_METALLIC};font-size:12px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">
                     App Matrix
                 </div>
-                <div style="color:#888;font-size:11px;line-height:1.5;">
+                <div style="color:var(--text-secondary);font-size:11px;line-height:1.5;">
                     Launch command interfaces without leaving THE VOID.
                 </div>
             </div>
@@ -1677,7 +1714,9 @@ def render(STATE_MANAGERS: dict) -> Any:
                 mo.ui.button(label="Files", on_click=lambda _: toggle_file_explorer()),
                 mo.ui.button(label="JFDI", on_click=lambda _: handle_jfdi()),
                 mo.ui.button(label="Chat", on_click=lambda _: set_view_mode("chat")),
-                mo.ui.button(label="Code City", on_click=lambda _: set_view_mode("city")),
+                mo.ui.button(
+                    label="Code City", on_click=lambda _: set_view_mode("city")
+                ),
             ],
             gap="0.5rem",
         )
@@ -1754,7 +1793,7 @@ def render(STATE_MANAGERS: dict) -> Any:
                 <div class="panel-header">
                     <span class="panel-title">COLLABOR8 - Settlement Agents</span>
                 </div>
-                <div style="color:#888;font-size:11px;margin-bottom:8px;">
+                <div style="color:var(--text-secondary);font-size:11px;margin-bottom:8px;">
                     Explore / Plan / Execute / Monitor / Strategic
                 </div>
             </div>
@@ -1776,10 +1815,10 @@ def render(STATE_MANAGERS: dict) -> Any:
             if selected_agent:
                 brief = mo.Html(f"""
                 <div class="panel-overlay" style="margin-top:8px;">
-                    <div style="color:#D4AF37;font-family:monospace;font-size:11px;">
+                    <div style="color:{GOLD_METALLIC};font-family:monospace;font-size:11px;">
                         {selected_agent["name"]} · Tier {selected_agent["tier"]}
                     </div>
-                    <div style="color:#888;font-size:11px;margin-top:6px;line-height:1.5;">
+                    <div style="color:var(--text-secondary);font-size:11px;margin-top:6px;line-height:1.5;">
                         {selected_agent["brief"]}
                     </div>
                 </div>
@@ -1798,7 +1837,7 @@ def render(STATE_MANAGERS: dict) -> Any:
         if get_show_settings():
             setting_rows = "".join(
                 f"<div style='display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);'>"
-                f"<span style='color:#888;'>parameter_{i:03d}</span><span style='color:#D4AF37;'>active</span></div>"
+                f"<span style='color:var(--text-secondary);'>parameter_{i:03d}</span><span style='color:{GOLD_METALLIC};'>active</span></div>"
                 for i in range(1, 161)
             )
             settings_panel = mo.Html(f"""
@@ -1806,7 +1845,7 @@ def render(STATE_MANAGERS: dict) -> Any:
                 <div class="panel-header">
                     <span class="panel-title">SETTINGS - Infinite Scroll</span>
                 </div>
-                <div style="color:#888;font-size:11px;margin-bottom:8px;">
+                <div style="color:var(--text-secondary);font-size:11px;margin-bottom:8px;">
                     Model and behavior configuration surface (150+ parameters).
                 </div>
                 <div style="max-height:280px;overflow-y:auto;padding-right:6px;">
@@ -1842,13 +1881,16 @@ def render(STATE_MANAGERS: dict) -> Any:
             try:
                 context_json = carl.gather_context_json(selected_fiefdom)
                 context_footer = f"""<details style="margin-top: 16px;">
-                    <summary style="color: #666; font-size: 11px; cursor: pointer;">
+                    <summary style="color: var(--text-muted); font-size: 11px; cursor: pointer;">
                         View Raw Context JSON
                     </summary>
-                    <pre style='color:#888;font-size:9px;white-space:pre-wrap;max-height:200px;overflow:auto;background:#0A0A0B;padding:8px;border-radius:4px;margin-top:8px;'>{context_json}</pre>
+                    <pre style='color:var(--text-secondary);font-size:9px;white-space:pre-wrap;max-height:200px;overflow:auto;background:{BG_PRIMARY};padding:8px;border-radius:4px;margin-top:8px;'>{context_json}</pre>
                 </details>"""
             except Exception as e:
-                context_footer = f"<span style='color:#1fbdea;font-size:10px;'>Context error: {e}</span>"
+                context_footer = (
+                    f"<span style='color:{BLUE_DOMINANT};font-size:10px;'>"
+                    f"Context error: {e}</span>"
+                )
 
             summon_panel = mo.Html(f"""
             <div class="panel-overlay" style="animation: emergence-scale 0.4s ease-out both;">
@@ -1856,8 +1898,8 @@ def render(STATE_MANAGERS: dict) -> Any:
                     <span class="panel-title">SUMMON - Neighborhood Search</span>
                 </div>
                 <div style="margin-bottom: 12px;">
-                    <span style="color:#666;font-size:11px;">Selected: </span>
-                    <span style="color:#D4AF37;font-family:monospace;">{selected_fiefdom}</span>
+                    <span style="color:var(--text-muted);font-size:11px;">Selected: </span>
+                    <span style="color:{GOLD_METALLIC};font-family:monospace;">{selected_fiefdom}</span>
                 </div>
             </div>
             """)
@@ -1943,7 +1985,9 @@ def render(STATE_MANAGERS: dict) -> Any:
         )
 
         # Center - maestro (summon)
-        center_btn = mo.ui.button(label="maestro", on_click=lambda _: cycle_maestro_state())
+        center_btn = mo.ui.button(
+            label="maestro", on_click=lambda _: cycle_maestro_state()
+        )
         maestro_state = mo.Html(
             f'<span class="maestro-state-indicator">@maestro {get_maestro_state().lower()}</span>'
         )
@@ -1979,7 +2023,12 @@ def render(STATE_MANAGERS: dict) -> Any:
             [
                 chat_input,
                 mo.hstack(
-                    [left_buttons, mo.hstack([center_btn, maestro_state, search_btn], gap="0.35rem")],
+                    [
+                        left_buttons,
+                        mo.hstack(
+                            [center_btn, maestro_state, search_btn], gap="0.35rem"
+                        ),
+                    ],
                     justify="space-between",
                     align="center",
                 ),
@@ -2034,7 +2083,8 @@ def render(STATE_MANAGERS: dict) -> Any:
         let lastResultRaw = null;
 
         function writePayloadToBridge(bridgeId, payload, label) {{
-            const bridgeInput = document.querySelector(`input[data-id="${{bridgeId}}"]`);
+            // Fixed: marimo renders <marimo-ui-element object-id="..."><input/></marimo-ui-element>
+            const bridgeInput = document.querySelector(`marimo-ui-element[object-id="${{bridgeId}}"] input`);
             if (!bridgeInput) {{
                 console.warn(label + ' bridge element not found');
                 return;
@@ -2057,7 +2107,8 @@ def render(STATE_MANAGERS: dict) -> Any:
         }}
 
         function relayConnectionResult() {{
-            const resultInput = document.querySelector(`input[data-id="${{resultBridgeId}}"]`);
+            // Fixed: marimo renders <marimo-ui-element object-id="..."><input/></marimo-ui-element>
+            const resultInput = document.querySelector(`marimo-ui-element[object-id="${{resultBridgeId}}"] input`);
             if (!resultInput) return;
 
             const raw = resultInput.value || '';

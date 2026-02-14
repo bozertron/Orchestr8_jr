@@ -180,6 +180,12 @@ Patchbay role+history pass: 2026-02-13 03:51 PST (`IP/plugins/06_maestro.py`, `I
 - [ ] After Step 2 architecture pass, integrate features incrementally with verification per feature
 - [ ] Gate each feature on visual + behavioral acceptance before next feature
 
+## Step 4: Global Stylization Control Plane
+
+- [ ] Add a desktop-friendly stylization control panel for global UI toggles and sliders.
+- [ ] Ensure one-toggle global propagation across typography, motion profile, panel density, and interaction pacing.
+- [ ] Add preset packs + instant revert to canonical visual contract.
+
 ## Tracking Notes
 
 - This file is the active stack tracker for Code City/WebGPU work.

@@ -27,7 +27,7 @@ DIRECTOR_CSS = """
     background: linear-gradient(135deg, #0A0A0B 0%, #121214 100%);
     border-radius: 8px;
     padding: 20px;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-body, 'Orchestr8 CalSans', 'Segoe UI', sans-serif);
 }
 
 .director-header {

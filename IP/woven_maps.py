@@ -49,6 +49,9 @@ JS_COLORS = {
     "wireframe": "#333333",
     "teal": "#1fbdea",
     "gold": "#D4AF37",
+    "cycle": "#ff4444",
+    "edge": "#333333",
+    "edge_broken": "#ff6b6b",
 }
 
 # Locked building geometry formulas from canon:
@@ -134,15 +137,15 @@ class EdgeData:
 class ColorScheme:
     """Color configuration for Woven Maps - matches orchestr8 three-state system."""
 
-    working: str = "#D4AF37"  # Gold - all imports resolve
-    broken: str = "#1fbdea"  # Blue/Teal - has errors
-    combat: str = "#9D4EDD"  # Purple - LLM deployed
-    void: str = "#0A0A0B"  # Background
-    surface: str = "#121214"  # Elevated surfaces
+    working: str = COLORS["gold_metallic"]  # Gold - all imports resolve
+    broken: str = COLORS["blue_dominant"]  # Blue/Teal - has errors
+    combat: str = COLORS["purple_combat"]  # Purple - LLM deployed
+    void: str = COLORS["bg_primary"]  # Background
+    surface: str = COLORS["bg_elevated"]  # Elevated surfaces
 
     # Frame colors (teal during scan, gold when complete)
-    frame_scanning: str = "#1fbdea"
-    frame_complete: str = "#D4AF37"
+    frame_scanning: str = COLORS["blue_dominant"]
+    frame_complete: str = COLORS["gold_metallic"]
 
     def to_dict(self) -> Dict[str, str]:
         return {
@@ -753,7 +756,7 @@ WOVEN_MAPS_TEMPLATE = """<!DOCTYPE html>
         body {
             background: #0A0A0B;
             overflow: hidden;
-            font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+            font-family: 'Orchestr8 Mini Pixel', 'Courier New', monospace;
         }
 
         /* Canvas with animated border */
@@ -1869,7 +1872,7 @@ fn fs_main(in: VSOut) -> @location(0) vec4<f32> {
             working: '#D4AF37',
             broken: '#1fbdea',
             combat: '#9D4EDD',
-            wireframe: '#2a2a2a',
+            wireframe: '#333333',
             teal: '#1fbdea',
             gold: '#D4AF37',
             cycle: '#ff4444',       // Red for cycle highlighting

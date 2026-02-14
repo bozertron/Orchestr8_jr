@@ -10,6 +10,10 @@ from typing import Any, Dict, Optional
 import toml
 import os
 from pathlib import Path
+from IP.styles.font_profiles import (
+    available_font_profile_labels,
+    resolve_font_profile_name,
+)
 
 PLUGIN_NAME = "Settings"
 PLUGIN_ORDER = 7
@@ -24,7 +28,7 @@ SETTINGS_CSS = """
     background: linear-gradient(135deg, #0A0A0B 0%, #121214 100%);
     border-radius: 8px;
     padding: 20px;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-body, 'Orchestr8 CalSans', 'Segoe UI', sans-serif);
 }
 
 .settings-header {
@@ -314,6 +318,8 @@ def render(STATE_MANAGERS: Dict) -> Any:
         return ["claude", "gpt-4", "gemini", "local"]
 
     available_models = get_available_models()
+    font_profile_labels = available_font_profile_labels()
+    font_profile_options = list(font_profile_labels.keys())
 
     # Keep renamed model values from breaking dropdown rendering.
     LEGACY_MODEL_ALIASES = {
@@ -531,6 +537,9 @@ def render(STATE_MANAGERS: Dict) -> Any:
     def render_ui_tab():
         """Render UI configuration"""
         ui_config = settings_mgr.get_section("ui")
+        current_font_profile = resolve_font_profile_name(
+            ui_config.get("general", {}).get("font_profile")
+        )
 
         return mo.vstack(
             [
@@ -544,6 +553,15 @@ def render(STATE_MANAGERS: Dict) -> Any:
                                 "ui.general.theme", v
                             ),
                         ),
+                        mo.ui.dropdown(
+                            options=font_profile_options,
+                            value=current_font_profile,
+                            label="Font Profile",
+                            on_change=lambda v: update_setting(
+                                "ui.general.font_profile",
+                                resolve_font_profile_name(v),
+                            ),
+                        ),
                         mo.ui.text(
                             label="Font Size",
                             value=str(
@@ -554,6 +572,10 @@ def render(STATE_MANAGERS: Dict) -> Any:
                             ),
                         ),
                     ]
+                ),
+                mo.md(
+                    f"*Active font profile:* `{current_font_profile}` - "
+                    f"{font_profile_labels.get(current_font_profile, 'Custom profile')}"
                 ),
                 mo.md("### Maestro Settings"),
                 mo.hstack(
