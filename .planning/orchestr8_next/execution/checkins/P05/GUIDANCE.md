@@ -1,0 +1,128 @@
+# Guidance Log
+
+Use this file for architect guidance drops and clarifications.
+
+## Entry Template
+- Date:
+- Author:
+- Context:
+- Guidance:
+- Impacted Files:
+- Required Follow-up:
+
+- Date: 2026-02-14 12:42:30
+- Author: Codex
+- Context: Pre-authorization guidance for P05 AnyWidget integration lane.
+- Guidance:
+  - Proceed with AnyWidget wrapper (`CodeCityWidget`) as primary frontend integration.
+  - Deliver first as a thin vertical slice:
+    - render a minimal 3D scene
+    - sync one traitlet state (selected node or camera mode)
+    - round-trip one command Python -> JS -> Python
+  - Add payload-size guardrails for >10k nodes (`traitlets.Bytes` + chunking fallback).
+  - Keep fallback path active via feature flag (`anywidget` vs `iframe`) until P05 gate evidence is green.
+- Impacted Files:
+  - `orchestr8_next/city/notebook.py`
+  - `orchestr8_next/city/*` (widget + bridge modules)
+  - `.planning/orchestr8_next/execution/checkins/P05/STATUS.md`
+  - `.planning/orchestr8_next/execution/checkins/P05/BLOCKERS.md`
+- Required Follow-up:
+  - Post first vertical-slice evidence and test outputs in `P05/STATUS.md`.
+  - Report blocker immediately if traitlet binary path or browser runtime constraints appear.
+
+- Date: 2026-02-14 12:46:55
+- Author: Codex
+- Context: Follow-on packet after AnyWidget mode toggle acknowledgment.
+- Guidance:
+  - Execute `P05-WP01` binary payload hardening now:
+    - Implement `traitlets.Bytes` transport for large graph payloads.
+    - Add chunking fallback with deterministic reassembly metadata (`chunk_index`, `chunk_total`, `payload_id`).
+    - Add strict max payload guardrail and explicit error surface when exceeded.
+  - Add bridge-level tests for:
+    - payload under threshold
+    - payload over threshold with chunking
+    - malformed chunk sequence rejection
+  - Keep `ORCHESTR8_RENDER_MODE` dual-path (`WIDGET`/`IFRAME`) active until these tests pass and are reported.
+- Impacted Files:
+  - `orchestr8_next/city/widget.py`
+  - `orchestr8_next/city/notebook.py`
+  - `tests/city/*`
+  - `.planning/orchestr8_next/execution/checkins/P05/STATUS.md`
+  - `.planning/orchestr8_next/execution/checkins/P05/BLOCKERS.md`
+- Required Follow-up:
+  - Update `P05/STATUS.md` with exact test command + pass counts.
+  - If runtime browser validation is unavailable in headless container, document host-access command and attach CLI proof.
+
+- Date: 2026-02-14 13:05:55
+- Author: Codex
+- Context: Founder requested explicit "how far can they go without us" boundary.
+- Guidance:
+  - Operate strictly inside `P05-WP01` autonomy window until new architect packet is issued.
+  - Use the boundary contract in:
+    - `.planning/orchestr8_next/execution/checkins/P05/AUTONOMY_BOUNDARY.md`
+  - Do not expand scope beyond binary payload hardening + evidence lane.
+- Impacted Files:
+  - `.planning/orchestr8_next/execution/checkins/P05/AUTONOMY_BOUNDARY.md`
+  - `.planning/orchestr8_next/execution/checkins/P05/STATUS.md`
+  - `.planning/orchestr8_next/execution/checkins/P05/BLOCKERS.md`
+- Required Follow-up:
+  - Post explicit acknowledgment in `P05/STATUS.md` referencing this autonomy boundary packet.
+  - Report green/yellow/red with exact command outputs for the required P05-WP01 tests.
+
+- Date: 2026-02-15 10:40:07
+- Author: Codex
+- Context: WP01 artifacts transferred to canonical repo and verified.
+- Guidance:
+  - `P05-WP01` accepted in canonical repo after verification:
+    - files present in `/home/bozertron/Orchestr8_jr`
+    - `pytest tests/city/test_binary_payload.py -vv` => 3 passed
+  - Boundary is now unlocked to `P05-WP02` only.
+  - Execute WP02 under:
+    - `.planning/orchestr8_next/execution/checkins/P05/AUTONOMY_BOUNDARY_WP02.md`
+  - Keep `wiring.py` integration constrained to 2D wiring lane + notebook view switch.
+- Impacted Files:
+  - `.planning/orchestr8_next/execution/checkins/P05/AUTONOMY_BOUNDARY_WP02.md`
+  - `.planning/orchestr8_next/execution/checkins/P05/STATUS.md`
+  - `.planning/orchestr8_next/execution/checkins/P05/BLOCKERS.md`
+- Required Follow-up:
+  - Post WP02 kickoff acknowledgment in `P05/STATUS.md`.
+  - Include exact wiring-view test command and pass counts in next update.
+
+- Date: 2026-02-15 10:47:06
+- Author: Codex
+- Context: WP02 artifacts transferred to canonical repo and verified.
+- Guidance:
+  - `P05-WP02` accepted in canonical repo after verification:
+    - `python3 -m py_compile orchestr8_next/city/notebook.py orchestr8_next/city/wiring.py orchestr8_next/city/widget.py` => pass
+    - `pytest tests/city/test_binary_payload.py -vv` => 3 passed
+    - `pytest tests/city/test_wiring_view.py -vv` => 2 passed
+  - Boundary is now unlocked to `P05-WP03` only.
+  - Execute WP03 under:
+    - `.planning/orchestr8_next/execution/checkins/P05/AUTONOMY_BOUNDARY_WP03.md`
+  - WP03 focus is parity report + promotion memo; no new feature expansion.
+- Impacted Files:
+  - `.planning/orchestr8_next/execution/checkins/P05/AUTONOMY_BOUNDARY_WP03.md`
+  - `.planning/orchestr8_next/execution/checkins/P05/STATUS.md`
+  - `.planning/orchestr8_next/execution/checkins/P05/BLOCKERS.md`
+  - `.planning/orchestr8_next/artifacts/P05/*`
+- Required Follow-up:
+  - Post WP03 kickoff acknowledgment in `P05/STATUS.md`.
+  - Include exact parity-test command set and promotion memo path in next update.
+
+- Date: 2026-02-15 10:55:11
+- Author: Codex
+- Context: WP03 artifacts transferred to canonical repo and verified.
+- Guidance:
+  - `P05-WP03` accepted in canonical repo after verification:
+    - `python3 -m py_compile orchestr8_next/city/notebook.py orchestr8_next/city/wiring.py orchestr8_next/city/widget.py` => pass
+    - `pytest tests/city/test_binary_payload.py tests/city/test_wiring_view.py tests/city/test_parity.py -vv` => 8 passed
+  - P05 packet is now complete and ready for gate review.
+  - No further feature work in P05 lane until gate decision.
+- Impacted Files:
+  - `.planning/orchestr8_next/execution/checkins/P05/STATUS.md`
+  - `.planning/orchestr8_next/execution/checkins/P05/BLOCKERS.md`
+  - `.planning/orchestr8_next/artifacts/P05/PARITY_REPORT.md`
+  - `.planning/orchestr8_next/artifacts/P05/PROMOTION_MEMO.md`
+- Required Follow-up:
+  - Prepare/submit P05 gate review packet.
+  - If gate reviewer requests revisions, reopen only the minimal affected slice.

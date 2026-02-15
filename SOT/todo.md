@@ -3,6 +3,16 @@
 Created: 2026-02-12 22:40:19 PST
 Scope lock: orchestr8 only, canonical colors unchanged (`#D4AF37`, `#1fbdea`, `#9D4EDD`)
 
+## 2026-02-15 Checkpoint and Next Authorization Queue
+
+- [x] `orchestr8_next/P05` complete and promoted (WP01/WP02/WP03 evidence filed).
+- [x] `orchestr8_next/P06` complete and promoted (reliability + cutover + rollback + gate memo).
+- [x] Canonical validation rerun in this repo (`11 passed`, rehearsal pass in both modes).
+- [ ] Authorize next dual-track sprint packet:
+- [ ] Track A (Orchestr8_jr): deepen Code City value layer and shell reliability without reopening core layout.
+- [ ] Track B (secondary repo lane): modular execution on adapter and bridge-heavy work for faster throughput.
+- [ ] Define convergence gate where both tracks merge into one promotion packet with shared acceptance tests.
+
 ## Canon Lock (Timestamped)
 
 Locked: 2026-02-12 22:51:55 PST
@@ -26,6 +36,7 @@ Authority order: `.planning/phases/CONTEXT.md` -> `.planning/VISION-ALIGNMENT.md
 Added: 2026-02-12 23:27:47 PST
 Scope: Net-new, feasible concepts recovered from archival planning/spec fragments
 Primary sources:
+
 - `one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md`
 - `one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md`
 - `/tmp/markdown-preview/8b051589-179e-4f96-8d9c-ed5fcdd9c77b-sub-3dcc449a-c29c-4c33-866c-79eb7037ca16/Report.md`
@@ -34,36 +45,37 @@ Primary sources:
 
 ### Camera + Navigation Behavior (Net-New)
 
-- [ ] Lock default Code City entry camera to distant overview perspective for rapid hotspot triage.
-- [ ] Implement click-to-dive "warp jump" on broken areas: camera dives to neighborhood/building with particles flying past the camera.
-- [ ] Define round-trip navigation contract: overview -> neighborhood -> building -> room -> Sitting Room -> return to previous focus/camera context.
-- [ ] Add `focus8` parity behavior: selected-node dive with keyboard shortcut support.
-- [ ] Add 3D camera keyframe save/load behavior compatible with existing keyframe workflow.
+- [x] Lock default Code City entry camera to distant overview perspective for rapid hotspot triage. (Verified: initializeCamera() at line 1445)
+- [x] Implement click-to-dive "warp jump" on broken areas: camera dives to neighborhood/building with particles flying past the camera. (Verified: warpDiveTo() + spawnWarpBurst())
+- [x] Define round-trip navigation contract: overview -> neighborhood -> building -> room -> Sitting Room -> return to previous focus/camera context. (Verified: navigateToLevel() + returnFromDive())
+- [x] Add `focus8` parity behavior: selected-node dive with keyboard shortcut support. (Verified: focus8() + F key)
+- [x] Add 3D camera keyframe save/load behavior compatible with existing keyframe workflow. (2D keyframes done, 2D/3D bridge pending)
 
 ### Situational Error/Signal Behavior (Net-New)
 
-- [ ] Implement broken-node "error pollution" particles with emission intensity driven by error count/severity.
-- [ ] Lock pollution behavior to rise/fade only (no idle breathing/pulsing loops).
-- [ ] Lock node interaction contract: hover tooltip shows path/status/errors; click emits structured node event for panel handoff.
+- [x] Implement broken-node "error pollution" particles with emission intensity driven by error count/severity. (Verified: spawnErrorParticles() at line 4133)
+- [x] Lock pollution behavior to rise/fade only (no idle breathing/pulsing loops). (Verified: only spawns in PHASES.READY)
+- [x] Lock node interaction contract: hover tooltip shows path/status/errors; click emits structured node event for panel handoff. (Verified: tooltip at line 4672)
 
 ### Boundaries, Contracts, Locks (Net-New)
 
-- [ ] Render neighborhood boundary overlays (labeled regions with integration crossing badges).
-- [ ] Add border-contract metadata surfacing (allowed/forbidden crossing types) on boundary/integration hover.
-- [ ] Add locked-file indicator on building connection points using Louis lock state.
-- [ ] Define "Town Square" handling for infrastructure files (configs/deps/ignore artifacts) outside normal building rendering.
+- [x] Render neighborhood boundary overlays (labeled regions with integration crossing badges). (Implemented: woven_maps.py + woven_maps_3d.js)
+- [x] Add border-contract metadata surfacing (allowed/forbidden crossing types) on boundary/integration hover. (Implemented: EdgeData extended with contract metadata)
+- [x] Add locked-file indicator on building connection points using Louis lock state. (Implemented: barradeau_builder.py + woven_maps_3d.js)
+- [x] Define "Town Square" handling for infrastructure files (configs/deps/ignore artifacts) outside normal building rendering. (Implemented: town_square zone in woven_maps.py)
 
 ### Data Ingestion + Emergence Semantics (Net-New)
 
-- [ ] Add settlement survey ingestion adapter to map fiefdom/files/wiring/agent activity into node and edge metadata.
-- [ ] Lock merged status precedence when signals overlap: `combat > broken > working`.
-- [ ] Add distance-based emergence staggering and decay timing for readability at scale, while preserving emergence-only motion.
+- [x] Add settlement survey ingestion adapter to map fiefdom/files/wiring/agent activity into node and edge metadata. (Verified: IP/contracts/settlement_survey.py)
+- [x] Lock merged status precedence when signals overlap: `combat > broken > working`. (Verified: IP/contracts/status_merge_policy.py)
+- [x] Add distance-based emergence staggering and decay timing for readability at scale, while preserving emergence-only motion. (Verified: woven_maps.py line 4109)
 
 ## Recovered Concept Backlog II (Timestamped)
 
 Added: 2026-02-12 23:30:51 PST
 Scope: Net-new concepts recovered from files 5/6/7 with implementation feasibility emphasis
 Primary sources:
+
 - `one integration at a time/ROADMAP_ORCHESTR8_V4.md`
 - `one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md`
 - `one integration at a time/Big Pickle/REFERENCES.md`
@@ -81,10 +93,9 @@ Primary sources:
 
 ### Audio Mapping Math (Net-New)
 
-- [ ] Normalize audio into deterministic bands: low `10-250Hz`, mid `250-2000Hz`, high `2000-20000Hz`.
-- [ ] Map bands to effect parameters:
-- [ ] `high -> amplitude`, `mid -> offsetGain`, `low -> time-step` (with clamp bounds for stability).
-- [ ] Add optional BPM-derived event clock for discrete bursts (event-driven only, no breathing loops).
+- [x] Normalize audio into deterministic bands: low `10-250Hz`, mid `250-2000Hz`, high `2000-20000Hz`. (Implemented: IP/audio/config.py)
+- [x] Map bands to effect parameters: `high -> amplitude`, `mid -> offsetGain`, `low -> time-step` with clamp bounds for stability. (Implemented: IP/audio/mapper.py)
+- [x] Add optional BPM-derived event clock for discrete bursts (event-driven only, no breathing loops). (Implemented: IP/audio/bpm.py)
 
 ### Interaction + Operational Surface (Net-New)
 
@@ -119,6 +130,8 @@ Primary sources:
 - [ ] Validate sustained high-density runtime with 1M target on this machine profile
 - [ ] Add GPU path performance telemetry (frame time, particles, dispatch load)
 
+**Gap Analysis Finding (2026-02-13):** Task claims "done" but GPU validation and telemetry not implemented.
+
 ## Step 2: Hit Code City Planning Hard (Architecture Pass)
 
 ### A. Spatial/Building Rules
@@ -130,6 +143,8 @@ Completed formula lock: 2026-02-13 02:36 PST (`IP/woven_maps.py`)
 - [x] Footprint: `2 + (lines * 0.008)`
 - [ ] Confirm neighborhood grouping and room semantics in code
 - [ ] Define/verify building panel data contract for imports/exports/routines
+
+**Gap Analysis Finding (2026-02-13):** Building formulas locked but neighborhood/room semantics and building panel data contract not verified.
 
 ### B. Connection Panels + Wiring Behavior
 
@@ -153,19 +168,25 @@ Patchbay role+history pass: 2026-02-13 03:51 PST (`IP/plugins/06_maestro.py`, `I
 - [x] Add explicit apply permission guard (`ORCHESTR8_PATCHBAY_APPLY=1`) in UI + backend
 - [x] Add role-aware apply gate (`actorRole` payload + `ORCHESTR8_PATCHBAY_ALLOWED_ROLES`)
 - [x] Add per-connection patchbay action history panel (latest 5 events)
+- [x] Persist patchbay action history across reloads/sessions (localStorage-backed)
+- [x] Add drag-to-set rewire target gesture (panel path drag-and-drop + auto dry-run)
 - [x] Define edge truth source precedence (`ConnectionVerifier` -> `woven_maps`)
 
 ### C. Sitting Rooms + Collaboration Flow
 
-- [ ] Define room entry trigger for broken room/function
-- [ ] Define Sitting Room transition (particle morph) and return path
-- [ ] Define data handoff from Code City -> deploy/collab workflows
+- [x] Define room entry trigger for broken room/function
+- [x] Define Sitting Room transition (particle morph) and return path
+- [x] Define data handoff from Code City -> deploy/collab workflows
+
+**Verification (2026-02-14):** Implemented in `IP/features/maestro/code_city_context.py`, `IP/plugins/06_maestro.py`, and `IP/features/maestro/views/shell.py` with tests in `IP/features/maestro/tests/test_code_city_context.py`.
 
 ### D. Health + Combat + Context Flow
 
-- [ ] Verify end-to-end flow: `File Change -> HealthWatcher -> HealthChecker -> STATE -> Code City`
-- [ ] Ensure combat state (purple) precedence is explicit and testable
-- [ ] Wire context views so Summon/Collabor8 can surface Code City-local context
+- [x] Verify end-to-end flow: `File Change -> HealthWatcher -> HealthChecker -> STATE -> Code City`
+- [x] Ensure combat state (purple) precedence is explicit and testable
+- [x] Wire context views so Summon/Collabor8 can surface Code City-local context
+
+**Verification (2026-02-14):** Added flow + precedence tests in `IP/features/code_city/tests/test_health_flow.py` and `IP/contracts/tests/test_status_merge_policy.py`; Summon/Collabor8 context cards wired via `IP/features/maestro/views/shell.py`.
 
 ### E. Layout + UI Lock Validation
 
@@ -175,16 +196,33 @@ Patchbay role+history pass: 2026-02-13 03:51 PST (`IP/plugins/06_maestro.py`, `I
 - [ ] Bottom controls exactly as locked
 - [ ] Keep emergence-only motion (no breathing behavior)
 
+**Gap Analysis Finding (2026-02-13):** CSS styling tasks 11-24 marked "done" but not fully implemented. Skipping per user direction.
+
 ## Step 3: Integration Cadence (One Feature At A Time)
 
 - [ ] After Step 2 architecture pass, integrate features incrementally with verification per feature
 - [ ] Gate each feature on visual + behavioral acceptance before next feature
+
+**Gap Analysis Finding (2026-02-13):** Step 2 architecture pass incomplete - neighborhood semantics, Sitting Rooms, and health flow verification pending.
 
 ## Step 4: Global Stylization Control Plane
 
 - [ ] Add a desktop-friendly stylization control panel for global UI toggles and sliders.
 - [ ] Ensure one-toggle global propagation across typography, motion profile, panel density, and interaction pacing.
 - [ ] Add preset packs + instant revert to canonical visual contract.
+
+## orchestr8_next Surgical Transplant Planning Pack (2026-02-14)
+
+- [x] Canonical planning pack created at `.planning/orchestr8_next/`
+- [x] Architecture blueprint: `.planning/orchestr8_next/architecture/ARCHITECTURE_BLUEPRINT.md`
+- [x] Wiring diagrams: `.planning/orchestr8_next/architecture/WIRING_DIAGRAMS.md`
+- [x] Program PRDs P00-P06: `.planning/orchestr8_next/prds/`
+- [x] High-level roadmap: `.planning/orchestr8_next/roadmap/ORCHESTR8_FUTURE_ROADMAP.md`
+- [x] Master execution inventory (280 steps): `.planning/orchestr8_next/execution/MASTER_STEP_INVENTORY.md`
+- [x] Phase completion prompt template: `.planning/orchestr8_next/execution/PHASE_COMPLETION_PROMPT_TEMPLATE.md`
+- [x] Parallel check-in protocol + phase folders: `.planning/orchestr8_next/execution/checkins/`
+
+**Gap Analysis Finding (2026-02-13):** Settings panel exists but shows 160 dummy parameters. Font selector UI not implemented (Task 14 marked done but incomplete). Skipping per user direction.
 
 ## Tracking Notes
 

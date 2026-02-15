@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-02-15 Program Checkpoint (orchestr8_next)
+
+- `P05` complete: binary payload hardening, 2D wiring view integration, parity/promotion packet.
+- `P06` complete: reliability harness, cutover+rollback rehearsals, gate review memo.
+- Gate decision: **PROMOTE** (`.planning/orchestr8_next/artifacts/P06/GATE_REVIEW.md`).
+- Runtime posture: **Clean/Parked** (no additional scope opened yet).
+
+### Last Verified Commands (Canonical Repo)
+
+- `pytest tests/reliability/test_reliability.py tests/city/test_binary_payload.py tests/city/test_wiring_view.py tests/city/test_parity.py -q` -> `11 passed`
+- `bash scripts/verify_rehearsal.sh` -> `WIDGET PASS`, `IFRAME PASS`
+
+---
+
 ## Canon Lock (2026-02-12 22:51:55 PST)
 
 - [x] Top row canonical: `[orchestr8] [collabor8] [JFDI]`

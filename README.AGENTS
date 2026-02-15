@@ -260,6 +260,51 @@ curl -s "http://127.0.0.1:37888/v1/memory/brief?q=YOUR_QUERY&budget=2000&file_li
 curl -s "http://127.0.0.1:37888/v1/memory/graph?q=YOUR_QUERY&file_limit=5&anchor_limit=3"
 ```
 
+## 8. Sprint Checkpoint (2026-02-15)
+
+### Program State
+
+- `orchestr8_next` phases `P05` and `P06` are complete and promoted (`PROMOTE` gate).
+- System status is **Clean/Parked** and ready for next authorization.
+- Phase evidence is under `.planning/orchestr8_next/artifacts/P05` and `.planning/orchestr8_next/artifacts/P06`.
+
+### Canonical Validation Snapshot
+
+```bash
+# Code City + reliability suite
+pytest tests/reliability/test_reliability.py \
+  tests/city/test_binary_payload.py \
+  tests/city/test_wiring_view.py \
+  tests/city/test_parity.py -q
+
+# Cutover + rollback rehearsal
+bash scripts/verify_rehearsal.sh
+```
+
+Expected last-known result:
+- test suite: `11 passed`
+- rehearsal: `WIDGET PASS` + `IFRAME PASS`
+
+## 9. Cross-Agent Comms Protocol (Codex <-> Antigravity)
+
+### Scripts
+
+- `scripts/agent_comms.sh` — send/fetch/check OR8-COMMS messages through shared memory gateway.
+- `scripts/ping_codex.sh` — shorthand for progress pings from secondary lane into canonical memory log.
+
+### Message Contract
+
+- `project`: `claude-mem`
+- title format: `OR8-COMMS to=<target> from=<source> kind=<kind> phase=<phase> cid=<cid>`
+- kind values: `progress`, `question`, `guidance`, `ack`
+
+### Working Rule
+
+1. Secondary lane writes status in its phase `STATUS.md`.
+2. Secondary lane sends ping with evidence summary.
+3. Canonical lane validates in this repo before accepting completion.
+4. Canonical lane writes acceptance/guidance back via OR8-COMMS.
+
 ### Save Memory Observation
 
 ```bash

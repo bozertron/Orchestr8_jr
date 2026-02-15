@@ -6,6 +6,10 @@
 **Status:** Active
 **Source of Truth:** This document supersedes all other roadmap references
 
+> 2026-02-15 checkpoint:
+> Active execution authority for the transplant program is `.planning/orchestr8_next/` (PRDs P00-P06 with gate artifacts).
+> `P05` and `P06` are complete/promoted; this document remains historical context for legacy wiring phases.
+
 ---
 
 ## Gap Analysis: GSD Roadmap vs SOT Documents
