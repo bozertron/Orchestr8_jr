@@ -1,0 +1,73 @@
+{
+  "source": "one integration at a time/IP--orchestr8_app.py",
+  "total_lines": 251,
+  "sha256": "29492d61e13b0a436c60b1d319c894be51edfaa03ca7f46c58e00e8e2c34daf4",
+  "chunk_count": 3,
+  "observation_ids": [
+    657,
+    658,
+    659
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 7,
+      "text": "marimo run IP/orchestr8_app.py"
+    },
+    {
+      "line": 8,
+      "text": "marimo edit IP/orchestr8_app.py"
+    },
+    {
+      "line": 53,
+      "text": "STATE_MANAGERS Pattern:"
+    },
+    {
+      "line": 55,
+      "text": "Plugins receive STATE_MANAGERS dict and can read/write state reactively."
+    },
+    {
+      "line": 64,
+      "text": "STATE_MANAGERS = {"
+    },
+    {
+      "line": 72,
+      "text": "STATE_MANAGERS,"
+    },
+    {
+      "line": 92,
+      "text": "Valid plugins must have:"
+    },
+    {
+      "line": 95,
+      "text": "- render(STATE_MANAGERS): function returning mo.Html or mo.md"
+    },
+    {
+      "line": 145,
+      "text": "def plugin_renderer(STATE_MANAGERS, load_plugins, mo):"
+    },
+    {
+      "line": 156,
+      "text": "# Render plugin, injecting STATE_MANAGERS"
+    },
+    {
+      "line": 157,
+      "text": "rendered = p[\"module\"].render(STATE_MANAGERS)"
+    },
+    {
+      "line": 221,
+      "text": "def render(STATE_MANAGERS):"
+    },
+    {
+      "line": 223,
+      "text": "get_root, set_root = STATE_MANAGERS[\"root\"]"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

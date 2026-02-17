@@ -1,0 +1,74 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/02-HUGGINGFACE-APPROACH.md",
+  "total_lines": 583,
+  "sha256": "e7a38eef17c38074177c9e0e3b67b4f3fb57622b04f71096b2d8690cef50c5d4",
+  "chunk_count": 5,
+  "observation_ids": [
+    682,
+    683,
+    684,
+    685,
+    686
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [
+    {
+      "line": 1,
+      "text": "# JFDI: HuggingFace Approach"
+    },
+    {
+      "line": 7,
+      "text": "This approach uses HuggingFace Spaces as a bridge environment—you get free GPU access for running local models while maintaining cloud accessibility. Think of it as the \"integrate and validate local LLMs\" phase before committing to full local infrastructure."
+    },
+    {
+      "line": 66,
+      "text": "5. **Working JFDI Core** (from Stage 1)"
+    },
+    {
+      "line": 139,
+      "text": "# JFDI - HuggingFace Spaces Edition"
+    },
+    {
+      "line": 143,
+      "text": "JFDI_SYSTEM_PROMPT = \"\"\"You are JFDI - Just Fucking Do It."
+    },
+    {
+      "line": 215,
+      "text": "system=JFDI_SYSTEM_PROMPT,"
+    },
+    {
+      "line": 221,
+      "text": "full_prompt = f\"{JFDI_SYSTEM_PROMPT}\\n\\nUser: {prompt}\\n\\nAssistant:\""
+    },
+    {
+      "line": 244,
+      "text": "\"X-Title\": \"JFDI\""
+    },
+    {
+      "line": 249,
+      "text": "{\"role\": \"system\", \"content\": JFDI_SYSTEM_PROMPT},"
+    },
+    {
+      "line": 277,
+      "text": "with gr.Blocks(title=\"JFDI - Manufacturing AI Coder\", theme=gr.themes.Soft()) as app:"
+    },
+    {
+      "line": 279,
+      "text": "# 🏭 JFDI - Just Fucking Do It"
+    },
+    {
+      "line": 318,
+      "text": "label=\"JFDI Chat\","
+    },
+    {
+      "line": 381,
+      "text": "git commit -m \"Initial JFDI HuggingFace Space\""
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

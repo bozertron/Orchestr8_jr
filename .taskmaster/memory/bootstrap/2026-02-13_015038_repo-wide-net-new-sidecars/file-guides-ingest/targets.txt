@@ -1,0 +1,319 @@
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/EXECUTION-PLAYBOOK.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/PLANNING-NOTES.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/PROJECT.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/REQUIREMENTS.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/ROADMAP.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/STATE.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/ARCHITECTURE.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/CONCERNS.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/CONVENTIONS.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/FIEFDOM-MAP.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/INTEGRATIONS.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/PHASE-6-MODULE-AUDIT-SUMMARY.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/STACK.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/STRUCTURE.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/SURVEY-IP-CORE.json.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/TESTING.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/prompts/CONTEXT-FOR-ALL-AGENTS.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/prompts/HOW-TO-RUN.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/prompts/TERMINAL-1-MAESTRO.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/prompts/TERMINAL-2-WOVEN-MAPS.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/prompts/TERMINAL-3-CORE-TRIO.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/prompts/TERMINAL-4-DATA-MODULES.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/prompts/TERMINAL-5-PLUGINS.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/codebase/prompts/TERMINAL-6-REMAINING.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/config.json.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/phases/01-branding/01-01-PLAN.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/phases/01-branding/01-01-SUMMARY.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/phases/01-branding/01-branding-VERIFICATION.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/phases/ARCH-CARL-CONTEXT.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/phases/ARCHITECT-CARL.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/phases/ARCHITECT-FILEWATCHER.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/phases/ARCHITECT-HEALTHCHECKER.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/phases/ARCHITECT-SUMMON.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/phases/ARCHITECTURE-health.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/phases/WORKORDERS-CARL.json.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/phases/WORKORDERS-FILEWATCHER.json.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/phases/WORKORDERS-HEALTHCHECKER.json.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/.planning/phases/WORKORDERS-SUMMON.json.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/SOT/CODE_CITY_PLAN_LOCK.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/SOT/CURRENT_STATE.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/SOT/MARIMO_API_REFERENCE.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/SOT/MASTER_ROADMAP.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/SOT/todo.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/1/Ben you have given me.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/1/explorerViewPlanning.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/1/import marimo as mo import.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/1/system_review_prompt.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/actu8/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/actu8/adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/actu8/tests/test_adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/calendar/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/calendar/adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/comms/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/comms/adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/communic8/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/communic8/adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/communic8/tests/test_adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/cre8/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/cre8/adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/cre8/tests/test_adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/director/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/director/adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/director/automation_engine.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/director/ooda_engine.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/director/pattern_recognition.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/director/predictive_engine.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/director/tests/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/director/tests/test_adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/director/tests/test_ooda_engine.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/director/tests/test_user_context.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/director/user_context.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/director/workflow_optimizer.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/innov8/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/innov8/adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/innov8/tests/test_adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/integr8/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/integr8/adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/integr8/tests/test_adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/panel_foundation/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/panel_foundation/base_panel.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/panel_foundation/panel_registry.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/panel_foundation/tests/test_panel_registry.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/professor/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/professor/adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/professor/breakthrough_engine.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/senses/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/senses/adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/senses/adaptive_gesture.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/senses/enhanced_speech.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/senses/fusion_learning.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/senses/gesture_recognition.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/senses/ml_integration.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/senses/multimodal_fusion.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/senses/speech_recognition.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/888/senses/spell_manager.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Agent Deployment Strategy/Context Window Erosion.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Agent Deployment Strategy/orchestr8 Agents.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Big Pickle/COMBAT_TRACKER_TASK.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Big Pickle/wiring_problems.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Context King/OLD*.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Context King/Parallel Workstreams for.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Context King/WOVEN MAPS CODE CITY!.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Context King/WOVEN MAPS CODE CITY.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/FileExplorer/FileExistsPlugin.js.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/FileExplorer/FileExportIcon.js.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Git Knowledge/Gitit.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/INTEGRATION_QUEUE.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/IP--888/panel_foundation/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/IP--888/panel_foundation/base_panel.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/IP--888/panel_foundation/panel_registry.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/IP--orchestr8_app.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/PRDs/PRD Orchestr8 v3.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/PRDs/PRD_ORCHESTR8_V4_CONSOLIDATED.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/02-HUGGINGFACE-APPROACH.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/ADVANCED_FILTERING_ENHANCEMENTS.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/COLLABKIT_INFERENCE_LAYER.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/DAC-O_rust_migration.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/Integr8_Phase2_Implementation.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/MVP_5th_Resourcing_GeneratorBallet.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/Maestro Awakening.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/backendDetails.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/connectionGraphPlanning.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/connectionVerifierPlanning.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/explorerViewPlanning.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/gi8.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/i8.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/i8_implementation_prompt.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/maestro_v98_todo.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/prdPlanning.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/seeg before breakdown 05232025.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/type-check-file-tree.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/workflow_rs_completely_error_free_1500linesBU.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/woven_map(1)/dat.js.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/woven_map(1)/delaunay.js.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/woven_map(1)/hammer.js.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/woven_map(1)/index.html.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Connection - Files/woven_map(1)/standalone.js.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/EXAMPLEpluginforparsers_references_command.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/Plug_In_Convention.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/context-vending-cli.ts.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/migrationAssistantParser.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/orchstr8_type_overview.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/Staging/scaffold-overview-1 [actual parser output].txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/888_INTEGRATION_ROADMAP.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/CLAUDE_EXECUTION_PROMPT.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/EMERGENCE_ANIMATION_CATALOG.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/EMERGE_ANIMATIONS_REFERENCE.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/IMPLEMENTATION_TASKS.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/INTERNAL_TASKS_BEFORE_IP.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/LLM_BEHAVIOR_SPEC.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/LLM_INFLUENCE_REFERENCE.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/MAESTROVIEW_MARIMO_CONTEXTUALIZATION.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/MARIMO_STYLING_TASKS.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/MCP_IDE_CONFIG.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/ORCHESTR8_STATUS_HANDOFF.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/PRD_HOLLOW_COMPONENTS_INTEGRATION.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/UI_ARCHITECTURE_SPEC.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/UI_PRESSURE_TEST_REPORT.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/UI_VISUAL_AUDIT.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/docs/ZED_INTEGRATION_PLAN.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/1/Things to Fix/Number_6!.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/888/director/models.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/Datastructure Comparisons/9.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/Datastructure Comparisons/Right right let s look.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/SOT/Mapping the Metaphor.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/2 COMPUTE PASS Update.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Architect.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/GPT5Pats.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/IP maestro py The Brain.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6.html.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/0.DVWLfLbK.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/2.DwZO_s2c.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/Chat.DZz06lJU.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/Collapsible.dhu8C6U4.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/ConfirmDialog.kaSBQ3kP.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/DrawerMenu.BvNZ1xbE.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/KiraKira.z_X1yUjy.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/Modal.CyLKLEmt.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/SettingsModal.Dm6rzRMf.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/Toaster.uaUbY3tS.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/WorkSpace.DXi42fdC.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/XlsxUniverViewer.GYDU0wJv.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/a.html.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/browser-sdk.js.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/Z.ai Chat - Free AI powered by GLM-4.7 & GLM-4.6_files/jquery.min.js.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/forblocking.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/suburbs.html.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test.html.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/0.DVWLfLbK.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/2.DwZO_s2c.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/Chat.DZz06lJU.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/Collapsible.dhu8C6U4.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/ConfirmDialog.kaSBQ3kP.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/DrawerMenu.BvNZ1xbE.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/KiraKira.z_X1yUjy.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/Modal.CyLKLEmt.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/SettingsModal.Dm6rzRMf.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/Toaster.uaUbY3tS.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/WorkSpace.DXi42fdC.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/XlsxUniverViewer.GYDU0wJv.css.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/a.html.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/browser-sdk.js.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/jquery.min.js.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/v2.html.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/v3.html.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/v4.html.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/zsphere.html.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/from-contextualize-branch/docs/code_city_feedback.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/frontend/tools/package-lock.json.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/frontend/tools/package.json.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/frontend/tools/parsers/overview.ts.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/frontend/tools/registry/01_scaffold.json.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/frontend/tools/scaffold-cli.ts.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/frontend/tools/tsconfig.json.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/frontend/tools/unified-context-system.ts.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/import marimo as mo import.txt.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/orchestr8-zed/Cargo.toml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/orchestr8-zed/extension.toml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/orchestr8_mcp.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/orchestr8_standalone.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/README.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/accelerate/1-gpu.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/accelerate/2-gpu.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/accelerate/4-gpu.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/accelerate/8-gpu.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/accelerate/deepspeed-1-gpu.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/accelerate/deepspeed-2-gpu.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/accelerate/deepspeed-4-gpu.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/accelerate/deepspeed-8-gpu.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/accelerate/deespeed.json.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/accelerate/val-deepspeed-1-gpu.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/generation/hf/starvector-1b/im2svg.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/generation/hf/starvector-8b/im2svg.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/generation/vllm/starvector-1b/im2svg.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/generation/vllm/starvector-8b/im2svg.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/metrics/im2svg.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/metrics/text2svg.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/models/default.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/models/starvector-1b/im2svg-emoji.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/models/starvector-1b/im2svg-fonts.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/models/starvector-1b/im2svg-icons.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/models/starvector-1b/im2svg-stack.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/models/starvector-1b/text2svg-figr.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/models/starvector-1b/text2svg-stack.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/models/starvector-8b/im2svg-emoji.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/models/starvector-8b/im2svg-fonts-simple.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/models/starvector-8b/im2svg-fonts.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/models/starvector-8b/im2svg-icons.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/models/starvector-8b/im2svg-stack.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/models/starvector-8b/text2svg-figr.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/configs/models/starvector-8b/text2svg-stack.yaml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/docker/README.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/pyproject.toml.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/scripts/quickstart-hf.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/scripts/quickstart-vllm.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/scripts/quickstart.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/clip_model.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/data/augmentation.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/data/base.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/data/dataset.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/data/emojisvg.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/data/figrsvg.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/data/fontsvg.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/data/iconsvg.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/data/stacksvg.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/data/util.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/image_encoder.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/metrics/base_metric.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/metrics/compute_LPIPS.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/metrics/compute_SSIM.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/metrics/compute_clip_score.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/metrics/compute_dino_score.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/metrics/compute_fid.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/metrics/compute_l2.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/metrics/count_token_length.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/metrics/inception.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/metrics/metrics.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/metrics/util.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/model/adapters/adapter.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/model/builder.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/model/gpt_bigcode/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/model/gpt_bigcode/configuration_gpt_bigcode.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/model/gpt_bigcode/modeling_gpt_bigcode.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/model/image_encoder/clip_model.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/model/image_encoder/image_encoder.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/model/llm/starcoder.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/model/llm/starcoder2.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/model/models/starvector_base.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/model/models/starvector_v1.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/model/models/starvector_v2.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/model/starvector_arch.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/serve/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/serve/constants.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/serve/controller.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/serve/conversation.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/serve/gradio_demo_with_updated_gradio.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/serve/gradio_web_server.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/serve/model_worker.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/serve/register_worker.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/serve/util.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/serve/vllm_api_gradio/controller.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/serve/vllm_api_gradio/gradio_vllm.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/serve/vllm_api_gradio/gradio_web_server.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/serve/vllm_api_gradio/model_worker.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/serve/vllm_api_gradio/scroll.js.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/train/train.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/train/util.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/train/zero_to_fp32.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/util.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/validation/README.md.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/validation/__init__.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/validation/starvector_hf_validator.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/validation/starvector_vllm_api_svg_validator.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/validation/starvector_vllm_svg_validator.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/validation/svg_validator_base.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/star-vector/starvector/validation/validate.py.integration.md
+.taskmaster/docs/file-guides-staging/2026-02-13_015038_repo-wide-net-new-sidecars/one integration at a time/style/MAESTROVIEW_REFERENCE.md.integration.md

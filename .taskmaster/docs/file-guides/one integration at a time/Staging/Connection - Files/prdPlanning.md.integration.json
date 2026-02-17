@@ -1,0 +1,43 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/prdPlanning.md",
+  "total_lines": 1528,
+  "sha256": "8195ec7f524163dabaad53af4cb723a30ef1037130f65a5719244e6dd6208710",
+  "chunk_count": 13,
+  "observation_ids": [
+    776,
+    777,
+    778,
+    779,
+    780,
+    781,
+    782,
+    783,
+    784,
+    785,
+    786,
+    787,
+    788
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions.",
+    "Data truth risk: edges must come from relationship graph, not UI-local assumptions."
+  ],
+  "anchors": [
+    {
+      "line": 7,
+      "text": "The PRDGenerator is the knowledge synthesizer of Orchestr8, transforming code structure and relationships into human-readable documentation and specifications. While the ConnectionVerifier validates relationships and the ConnectionGraph visualizes them, the PRDGenerator interprets these relationships to generate meaningful documentation that bridges technical implementation with product understanding."
+    },
+    {
+      "line": 1488,
+      "text": "The PRDGenerator component transforms the documentation process from a manual, error-prone task to an automated, intelligent system that keeps documentation in sync with code. By generating high-quality documentation directly from project analysis, it bridges the gap between technical implementation and product understanding."
+    },
+    {
+      "line": 1492,
+      "text": "1. Documentation is essential but often neglected due to time constraints"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

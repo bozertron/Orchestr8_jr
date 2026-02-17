@@ -1,0 +1,135 @@
+{
+  "source": "one integration at a time/Context King/WOVEN MAPS CODE CITY!.md",
+  "total_lines": 1511,
+  "sha256": "1a6b138d9ae93434c90c9bb17d1cc5f9ca274d7dcd570808baa38165e7309039",
+  "chunk_count": 13,
+  "observation_ids": [
+    376,
+    377,
+    378,
+    379,
+    380,
+    381,
+    382,
+    383,
+    384,
+    385,
+    386,
+    387,
+    388
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "JS/Python bridge risk: event transport and payload validation can silently fail.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce.",
+    "Behavioral sequencing risk: mode transitions need explicit state machine handling."
+  ],
+  "anchors": [
+    {
+      "line": 34,
+      "text": "- **Gold (#D4AF37)**: Working code - all imports resolve, no errors"
+    },
+    {
+      "line": 36,
+      "text": "- **Purple (#9D4EDD)**: Combat - LLM \"General\" is actively debugging"
+    },
+    {
+      "line": 46,
+      "text": "Implement Woven Maps in `IP/plugins/06_maestro.py` (The Void plugin) so that when the user opens Orchestr8, they see their codebase as a living, breathing city."
+    },
+    {
+      "line": 60,
+      "text": "│         IP/orchestr8_app.py             │  ← Main application entry"
+    },
+    {
+      "line": 69,
+      "text": "│  │ 05_universal_bridge.py          │    │"
+    },
+    {
+      "line": 70,
+      "text": "│  │ 06_maestro.py  ← THE VOID       │    │  ← THIS IS WHERE WE IMPLEMENT"
+    },
+    {
+      "line": 73,
+      "text": "│         STATE_MANAGERS                  │  ← Reactive state injection"
+    },
+    {
+      "line": 84,
+      "text": "Every plugin MUST have:"
+    },
+    {
+      "line": 89,
+      "text": "def render(STATE_MANAGERS: dict) -> Any:"
+    },
+    {
+      "line": 91,
+      "text": "get_root, set_root = STATE_MANAGERS[\"root\"]"
+    },
+    {
+      "line": 96,
+      "text": "### Current State of 06_maestro.py"
+    },
+    {
+      "line": 113,
+      "text": "│ [stereOS]              [Collabor8] [JFDI] [Summon]              │"
+    },
+    {
+      "line": 122,
+      "text": "│    │    Gold buildings = working code                    │     │"
+    },
+    {
+      "line": 124,
+      "text": "│    │    Purple buildings = combat (LLM active)           │     │"
+    },
+    {
+      "line": 127,
+      "text": "│    │    Click blue spot → zoom to neighborhood           │     │"
+    },
+    {
+      "line": 134,
+      "text": "│ [Apps][Matrix][Files]    (maestro)    [Search][Phreak>][Send]   │"
+    },
+    {
+      "line": 143,
+      "text": "4. Clicking the building zooms camera into that \"neighborhood\""
+    },
+    {
+      "line": 149,
+      "text": "2. The scale increases (zoom in)"
+    },
+    {
+      "line": 478,
+      "text": "// Purple glow for combat"
+    },
+    {
+      "line": 1000,
+      "text": "window.parent.postMessage({"
+    },
+    {
+      "line": 1021,
+      "text": "### Integration Function for 06_maestro.py"
+    },
+    {
+      "line": 1023,
+      "text": "def create_code_city(STATE_MANAGERS: dict, width: int = 800, height: int = 600) -> Any:"
+    },
+    {
+      "line": 1029,
+      "text": "get_root, _ = STATE_MANAGERS[\"root\"]"
+    },
+    {
+      "line": 1202,
+      "text": "function zoomToNode(node, camera, controls) {"
+    },
+    {
+      "line": 1276,
+      "text": "assert '#D4AF37' in html  # Gold color"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

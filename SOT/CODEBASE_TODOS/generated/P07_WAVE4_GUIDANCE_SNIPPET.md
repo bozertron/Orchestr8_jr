@@ -1,0 +1,35 @@
+- Date: 2026-02-16
+- Author: Codex
+- Context: Wave-4 unlock prep from one shared collaboration spec.
+- Guidance:
+  - Unlocked packets: P07-B7, P07-C7, P07-FC-06, P07-MSL-06
+  - Required read order: README.AGENTS -> HARD_REQUIREMENTS.md -> LONG_RUN_MODE.md -> boundary -> resume -> lane TODO
+  - Long-run mode enforced: low interruption, one end-of-window bundle, no assumptions
+  - Ambiguity rule enforced: local probe + cross-codebase probe, then defer and continue
+  - Founder questions still open: none
+  - Unlock observation IDs: unknown, unknown, unknown, unknown, unknown, unknown
+- Impacted Files:
+  - .planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_A7_ORCHESTR8JR.md
+  - .planning/orchestr8_next/execution/prompts/RESUME_POST_A6_ORCHESTR8JR.md
+  - .planning/orchestr8_next/execution/prompts/LAUNCH_P07_A7_ORCHESTR8JR.md
+  - SOT/CODEBASE_TODOS/generated/P07_A7_ORCHESTR8JR_TODO.md
+  - .planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_B7_A_CODEX_PLAN.md
+  - .planning/orchestr8_next/execution/prompts/RESUME_POST_B6_A_CODEX_PLAN.md
+  - .planning/orchestr8_next/execution/prompts/LAUNCH_P07_B7_A_CODEX_PLAN.md
+  - SOT/CODEBASE_TODOS/generated/P07_B7_A_CODEX_PLAN_TODO.md
+  - .planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_C7_2NDFID_EXPLORERS.md
+  - .planning/orchestr8_next/execution/prompts/RESUME_POST_C6_2NDFID_EXPLORERS.md
+  - .planning/orchestr8_next/execution/prompts/LAUNCH_P07_C7_2NDFID_EXPLORERS.md
+  - SOT/CODEBASE_TODOS/generated/P07_C7_2NDFID_EXPLORERS_TODO.md
+  - .planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_FC-06_OR8_FOUNDER_CONSOLE.md
+  - .planning/projects/or8_founder_console/prompts/RESUME_FC_06.md
+  - .planning/projects/or8_founder_console/prompts/LAUNCH_FC_06.md
+  - SOT/CODEBASE_TODOS/generated/P07_FC_06_OR8_FOUNDER_CONSOLE_TODO.md
+  - .planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_MSL-06_MINGOS_SETTLEMENT_LAB.md
+  - .planning/projects/mingos_settlement_lab/prompts/RESUME_MSL_06.md
+  - .planning/projects/mingos_settlement_lab/prompts/LAUNCH_MSL_06.md
+  - SOT/CODEBASE_TODOS/generated/P07_MSL_06_MINGOS_SETTLEMENT_LAB_TODO.md
+  - SOT/CODEBASE_TODOS/LAUNCH_PROMPTS_P07_WAVE4_LONGRUN.md
+- Required Follow-up:
+  - Collect checkout ACKs for every non-canonical lane.
+  - Intake one long-run evidence bundle per lane and replay before acceptance.

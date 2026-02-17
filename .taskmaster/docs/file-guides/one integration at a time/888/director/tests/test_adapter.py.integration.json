@@ -1,0 +1,100 @@
+{
+  "source": "one integration at a time/888/director/tests/test_adapter.py",
+  "total_lines": 358,
+  "sha256": "c0f82082beb05d45e7ca023df972999b1c88f7dc5968e61841f66e433a798bd6",
+  "chunk_count": 3,
+  "observation_ids": [
+    238,
+    239,
+    240
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [
+    {
+      "line": 43,
+      "text": "'app_context': 'orchestr8'"
+    },
+    {
+      "line": 51,
+      "text": "'from_zone': 'orchestr8',"
+    },
+    {
+      "line": 54,
+      "text": "'app_context': 'maestro'"
+    },
+    {
+      "line": 74,
+      "text": "\"\"\"Test getting suggestion when none should be provided.\"\"\""
+    },
+    {
+      "line": 75,
+      "text": "# Fresh context should not provide suggestions immediately"
+    },
+    {
+      "line": 87,
+      "text": "# Note: This test may not always produce a suggestion due to timing constraints"
+    },
+    {
+      "line": 95,
+      "text": "'last_app_context': 'orchestr8'"
+    },
+    {
+      "line": 138,
+      "text": "\"\"\"Test recording feedback with invalid rating (should be clamped).\"\"\""
+    },
+    {
+      "line": 141,
+      "text": "# Test high rating (should be clamped to 1)"
+    },
+    {
+      "line": 148,
+      "text": "# Test low rating (should be clamped to -1)"
+    },
+    {
+      "line": 166,
+      "text": "'app_context': 'orchestr8'"
+    },
+    {
+      "line": 174,
+      "text": "'from_zone': 'orchestr8',"
+    },
+    {
+      "line": 177,
+      "text": "'app_context': 'maestro'"
+    },
+    {
+      "line": 250,
+      "text": "'app_context': 'orchestr8'"
+    },
+    {
+      "line": 275,
+      "text": "self.assertEqual(context_after.current_zone, \"orchestr8\")  # Default value"
+    },
+    {
+      "line": 282,
+      "text": "'invalid_structure': 'this should cause an error'"
+    },
+    {
+      "line": 289,
+      "text": "# The adapter should handle this gracefully and not crash"
+    },
+    {
+      "line": 291,
+      "text": "# May succeed or fail depending on error handling, but should not crash"
+    },
+    {
+      "line": 301,
+      "text": "'from_zone': 'orchestr8',"
+    },
+    {
+      "line": 304,
+      "text": "'app_context': 'maestro'"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

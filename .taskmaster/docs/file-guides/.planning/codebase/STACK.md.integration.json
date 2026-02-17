@@ -1,0 +1,55 @@
+{
+  "source": ".planning/codebase/STACK.md",
+  "total_lines": 134,
+  "sha256": "0bed6dbceb5b77ced6a6630f5b34928b4669a58a3c3fc0f8c3b3940ca586f0d9",
+  "chunk_count": 2,
+  "observation_ids": [
+    1027,
+    1028
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 17,
+      "text": "- Python 3.12+ (required per `orchestr8.py` docstring)"
+    },
+    {
+      "line": 28,
+      "text": "- Used in `orchestr8.py` (entry point: `marimo.App()`)"
+    },
+    {
+      "line": 55,
+      "text": "- Try/except handling in `IP/plugins/06_maestro.py`"
+    },
+    {
+      "line": 63,
+      "text": "- toml - Configuration file parsing (`pyproject_orchestr8_settings.toml`)"
+    },
+    {
+      "line": 66,
+      "text": "- json - State persistence (`.orchestr8/combat_state.json`)"
+    },
+    {
+      "line": 77,
+      "text": "- Configuration via `pyproject_orchestr8_settings.toml` (340+ lines)"
+    },
+    {
+      "line": 101,
+      "text": "- Development: `marimo edit orchestr8.py` (hot reload)"
+    },
+    {
+      "line": 102,
+      "text": "- Production: `marimo run orchestr8.py`"
+    },
+    {
+      "line": 122,
+      "text": "- File system: `.orchestr8/` directory for state persistence"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

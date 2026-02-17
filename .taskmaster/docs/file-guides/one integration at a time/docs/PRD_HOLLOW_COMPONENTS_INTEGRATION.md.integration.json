@@ -1,0 +1,88 @@
+{
+  "source": "one integration at a time/docs/PRD_HOLLOW_COMPONENTS_INTEGRATION.md",
+  "total_lines": 263,
+  "sha256": "eee2ce20d2d2b35a32b83b75c72a2200cd5e50e9f22fe6b49c8ee772fb030770",
+  "chunk_count": 3,
+  "observation_ids": [
+    471,
+    472,
+    473
+  ],
+  "risks": [
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 25,
+      "text": "Combat Tracker → Purple Glow in Code City"
+    },
+    {
+      "line": 34,
+      "text": "**File:** `IP/plugins/06_maestro.py`"
+    },
+    {
+      "line": 47,
+      "text": "**File:** `IP/plugins/06_maestro.py`"
+    },
+    {
+      "line": 59,
+      "text": "**Current:** Nodes only show Gold (working) or Blue (broken)"
+    },
+    {
+      "line": 60,
+      "text": "**Needed:** Query CombatTracker and show Purple for files with active LLM"
+    },
+    {
+      "line": 70,
+      "text": "**Needed:** LLM integration should read model/API key from settings"
+    },
+    {
+      "line": 78,
+      "text": "**File:** `IP/plugins/06_maestro.py`"
+    },
+    {
+      "line": 124,
+      "text": "tracker.deploy(selected, \"maestro-chat\", \"claude-sonnet-4\")"
+    },
+    {
+      "line": 145,
+      "text": "**File:** `IP/plugins/06_maestro.py`"
+    },
+    {
+      "line": 162,
+      "text": "title=f\"actu8 - {selected or 'maestro'}\""
+    },
+    {
+      "line": 191,
+      "text": "node.status = \"combat\"  # Will render as Purple"
+    },
+    {
+      "line": 198,
+      "text": "**File:** `IP/plugins/06_maestro.py`"
+    },
+    {
+      "line": 207,
+      "text": "settings_file = Path(\"orchestr8_settings.toml\")"
+    },
+    {
+      "line": 227,
+      "text": "| Working | Gold | `#D4AF37` | All imports resolve, no active LLM |"
+    },
+    {
+      "line": 229,
+      "text": "| Combat | Purple | `#9D4EDD` | LLM currently deployed to this file |"
+    },
+    {
+      "line": 255,
+      "text": "- `IP/plugins/06_maestro.py` - Main integration point"
+    },
+    {
+      "line": 263,
+      "text": "- `orchestr8_settings.toml` - Settings source"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

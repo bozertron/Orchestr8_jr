@@ -1,0 +1,347 @@
+# PRD: Orchestr8 UI Design System Overhaul
+**Version:** 2.0 (Design Renaissance)
+**Architecture:** Marimo Reactive Dashboard
+**Design Direction:** Neo-Brutalist Command Center with Cinematic Polish
+
+## Executive Summary
+
+Transform Orchestr8 from a functional prototype into a visually stunning command center that feels like a cross between a NASA mission control interface and a high-end developer tool. The aesthetic is "Cinematic Brutalism" - bold, uncompromising structure with refined details and dramatic visual hierarchy.
+
+---
+
+## 1. Design Philosophy & Aesthetic Direction
+
+### 1.1 Core Aesthetic: "Mission Control Noir"
+- **Primary Mood:** Cinematic tension of a spacecraft command center
+- **Color Philosophy:** Deep space blacks with electric accent punctuation
+- **Typography:** Monospace precision meets editorial elegance
+- **Motion:** Purposeful micro-animations that reinforce the "live system" feeling
+
+### 1.2 Design Principles
+1. **Data Density with Clarity** - Pack information tightly but with clear visual hierarchy
+2. **Ambient Feedback** - The UI should feel "alive" with subtle pulsing, glows, and state indicators
+3. **Dramatic Negative Space** - Let key elements breathe while keeping secondary info compact
+4. **Brutalist Structure** - Visible grid lines, exposed borders, no rounded-corner softness
+
+---
+
+## 2. Color System Implementation
+
+### 2.1 Primary Palette (CSS Variables)
+```
+--bg-void: #0a0a0f          /* Deep space black */
+--bg-surface: #12121a       /* Elevated surface */
+--bg-panel: #1a1a28         /* Card/panel background */
+--bg-hover: #252538         /* Interactive hover state */
+
+--accent-cyan: #00fff2      /* Primary action/highlight */
+--accent-amber: #ffb800     /* Warning/attention */
+--accent-rose: #ff3366      /* Error/critical */
+--accent-lime: #b8ff00      /* Success/healthy */
+--accent-violet: #9d4edd    /* Complex/special */
+
+--text-primary: #f0f0f5     /* Main text */
+--text-secondary: #8888a0   /* Muted text */
+--text-accent: #00fff2      /* Highlighted text */
+
+--border-subtle: #2a2a3a    /* Subtle dividers */
+--border-strong: #3a3a4a    /* Prominent borders */
+--glow-cyan: 0 0 20px rgba(0, 255, 242, 0.3)  /* Accent glow */
+```
+
+### 2.2 Status Badge System (Refined)
+- **NORMAL:** Lime green (#b8ff00) with subtle pulse animation
+- **WARNING:** Amber (#ffb800) with attention-grabbing glow
+- **COMPLEX:** Violet (#9d4edd) with gradient shimmer
+- **ERROR:** Rose (#ff3366) with urgent pulse
+
+---
+
+## 3. Typography System
+
+### 3.1 Font Stack
+- **Display/Headers:** "JetBrains Mono" or "Berkeley Mono" - technical precision
+- **Body/UI:** "IBM Plex Mono" - excellent readability at small sizes
+- **Accent/Labels:** "Space Grotesk" - geometric sans for UI labels
+- **Fallbacks:** "SF Mono", "Consolas", monospace
+
+### 3.2 Type Scale
+```
+--text-xs: 0.75rem    /* 12px - metadata, timestamps */
+--text-sm: 0.875rem   /* 14px - secondary content */
+--text-base: 1rem     /* 16px - body text */
+--text-lg: 1.25rem    /* 20px - section headers */
+--text-xl: 1.5rem     /* 24px - tab titles */
+--text-2xl: 2rem      /* 32px - page title */
+--text-display: 3rem  /* 48px - hero elements */
+```
+
+---
+
+## 4. Component Design Specifications
+
+### 4.1 App Header - "The Masthead"
+**Current:** Simple markdown title with emoji
+**Redesign:**
+- Full-width dark bar with subtle gradient (top-to-bottom fade)
+- Title in large monospace with letter-spacing
+- Subtle animated underline using CSS gradient
+- System status indicator (pulsing dot showing "ONLINE" state)
+- Timestamp showing last scan time
+- Add ASCII art logo option for personality
+
+**Implementation:**
+```html
+<header class="masthead">
+  <div class="masthead-logo">
+    <span class="logo-glyph">⎔</span>
+    <h1>ORCHESTR8</h1>
+    <span class="subtitle">COMMAND CENTER v2.0</span>
+  </div>
+  <div class="masthead-status">
+    <span class="status-dot pulse"></span>
+    <span>SYSTEM ONLINE</span>
+  </div>
+</header>
+```
+
+### 4.2 Control Panel - "Mission Control Bar"
+**Current:** Simple text input and button in hstack
+**Redesign:**
+- Horizontal bar with distinct "command input" styling
+- Input field with monospace font, subtle inner glow on focus
+- Scan button with gradient background and hover lift effect
+- Add project stats summary (file count, connection count) after scan
+- Progress indicator during scan operation
+
+**Visual Treatment:**
+- Input: Dark inset with cyan border on focus
+- Button: Gradient from cyan to blue, uppercase text, slight shadow
+- Stats: Small badges showing counts with icons
+
+### 4.3 Tab Navigation - "Mission Selector"
+**Current:** Standard Marimo tabs with emoji labels
+**Redesign:**
+- Custom tab bar with brutalist aesthetic
+- Active tab has glowing underline and elevated background
+- Inactive tabs are muted but responsive to hover
+- Each tab has an icon + label with consistent spacing
+- Add subtle transition animations on tab switch
+
+**Tab Visual States:**
+- Default: Muted text, no background
+- Hover: Text brightens, subtle background fade-in
+- Active: Full brightness, cyan underline, elevated surface
+
+### 4.4 Explorer Tab - "File Matrix"
+**Current:** Basic table with HTML badge spans
+**Redesign:**
+- Dark table with alternating row backgrounds (very subtle)
+- Column headers with uppercase labels and border-bottom
+- Status badges as pill-shaped elements with glow effects
+- File paths in monospace with syntax-highlighting-style coloring
+- Hover state shows full row highlight
+- Selected row has cyan left border accent
+- Add file type icons based on extension
+- Sortable columns with visual indicators
+
+**Badge Animations:**
+- NORMAL: Subtle breathing glow
+- WARNING: Gentle pulse (1.5s cycle)
+- COMPLEX: Gradient shimmer animation
+- ERROR: Rapid pulse with higher intensity
+
+### 4.5 Connections Tab - "Neural Map"
+**Current:** PyVis graph with basic dark theme
+**Redesign:**
+- Enhanced PyVis configuration for visual impact
+- Node styling based on file type (different colors/shapes)
+- Edge styling with gradient colors based on connection type
+- Add legend panel showing node/edge meanings
+- Zoom controls with custom styling
+- "Focus mode" button to center on selected node
+- Connection stats panel (total nodes, edges, clusters)
+
+**Graph Enhancements:**
+- Nodes: Circular with glow halo, size based on connection count
+- Edges: Animated dash pattern showing "data flow" direction
+- Background: Subtle grid pattern for depth perception
+- Interactivity: Click node to select in Explorer tab
+
+### 4.6 PRD Generator Tab - "Document Forge"
+**Current:** Simple markdown rendering
+**Redesign:**
+- Split-pane layout: file info panel (left), generated PRD (right)
+- File info panel with structured data display
+- PRD output with custom markdown styling
+- Add "Export" button to save PRD as file
+- Template selector for different PRD formats
+- Live preview with smooth transitions on file change
+
+**Visual Treatment:**
+- Left panel: Compact data grid with labels and values
+- Right panel: Rich markdown with code block styling
+- Header: File name with status badge and quick stats
+
+### 4.7 Emperor Tab - "Command Throne"
+**Current:** Text area, button, and log list
+**Redesign:**
+- Terminal-inspired interface with scanline effect (optional)
+- Mission input as a proper "command line" with prompt character
+- Deploy button with dramatic hover/active states
+- Log display as scrollable terminal output with timestamps
+- Add "Clear Logs" button
+- Color-code log entries by type (deploy, success, error)
+- Add sound effects option for deployments (optional)
+
+**Log Entry Styling:**
+- Timestamp: Muted cyan, monospace
+- Action type: Colored badge (DEPLOY, SUCCESS, ERROR)
+- Message: Primary text color
+- Target file: Highlighted in accent color
+
+---
+
+## 5. Motion & Animation Specifications
+
+### 5.1 Micro-interactions
+- Button hover: Scale 1.02, shadow increase, 150ms ease
+- Button active: Scale 0.98, shadow decrease, 100ms ease
+- Tab switch: Content fade (200ms) with slight slide (10px)
+- Badge pulse: opacity 0.7-1.0, 2s infinite for warnings
+- Input focus: Border glow animation, 200ms ease
+
+### 5.2 Page Load Sequence
+1. Header fades in (0ms delay)
+2. Control bar slides down (100ms delay)
+3. Tabs fade in (200ms delay)
+4. Content area fades in (300ms delay)
+
+### 5.3 Data Loading States
+- Skeleton loaders for table rows during scan
+- Pulsing placeholder for graph during generation
+- Progress bar or spinner for long operations
+
+---
+
+## 6. Implementation Phases
+
+### Phase 1: CSS Foundation & Variables
+**Goal:** Establish the design system foundation
+1. Create comprehensive CSS variable system for colors, spacing, typography
+2. Implement dark theme base styles
+3. Add custom font imports (Google Fonts or self-hosted)
+4. Create utility classes for common patterns
+
+### Phase 2: Header & Control Panel Redesign
+**Goal:** Transform the top section into the "Mission Control" aesthetic
+1. Redesign app header with logo, title, and status indicator
+2. Style control panel with command-line aesthetic
+3. Add scan progress indicator
+4. Implement project stats display
+
+### Phase 3: Tab System Enhancement
+**Goal:** Create distinctive navigation experience
+1. Custom tab styling with active/hover states
+2. Add transition animations for tab content
+3. Implement icon + label tab headers
+4. Add subtle background patterns/textures
+
+### Phase 4: Explorer Table Overhaul
+**Goal:** Make the file table a visual centerpiece
+1. Implement custom table styling with row states
+2. Create animated status badges with glow effects
+3. Add file type icons
+4. Implement row selection highlighting
+5. Add column sorting indicators
+
+### Phase 5: Connection Graph Enhancement
+**Goal:** Transform the graph into a "neural map" visualization
+1. Configure enhanced PyVis settings for nodes/edges
+2. Add legend panel with node/edge explanations
+3. Implement custom node coloring by file type
+4. Add zoom controls and focus functionality
+5. Create connection stats panel
+
+### Phase 6: PRD Generator Refinement
+**Goal:** Create a polished document generation experience
+1. Implement split-pane layout
+2. Style file info panel with data grid
+3. Enhance markdown rendering with custom styles
+4. Add export functionality
+5. Implement template selector UI
+
+### Phase 7: Emperor Terminal Interface
+**Goal:** Create the ultimate command experience
+1. Implement terminal-aesthetic text area
+2. Style deploy button with dramatic effects
+3. Create scrollable log display with color coding
+4. Add log entry animations
+5. Implement clear logs functionality
+
+### Phase 8: Polish & Animation
+**Goal:** Add the finishing touches that make it memorable
+1. Implement page load animation sequence
+2. Add micro-interactions throughout
+3. Create loading/skeleton states
+4. Performance optimization
+5. Cross-browser testing
+
+---
+
+## 7. Technical Implementation Notes
+
+### 7.1 Marimo CSS Integration
+- Use `mo.md()` with raw HTML/CSS for custom styled components
+- Leverage `mo.Html()` for complex custom elements
+- Consider creating a `styles.py` cell with CSS string constants
+- Use inline styles sparingly; prefer CSS classes
+
+### 7.2 Custom CSS Injection
+```python
+# In a dedicated cell
+def inject_styles():
+    css = """
+    <style>
+    :root {
+        --bg-void: #0a0a0f;
+        /* ... all variables ... */
+    }
+    /* Component styles */
+    </style>
+    """
+    return mo.Html(css)
+```
+
+### 7.3 PyVis Customization
+- Use `net.set_options()` for comprehensive styling
+- Custom node/edge colors via options dict
+- Background and font colors in Network constructor
+- Consider generating custom HTML template for PyVis
+
+---
+
+## 8. Acceptance Criteria
+
+1. **Visual Impact:** Dashboard immediately feels like a premium developer tool
+2. **Consistency:** All components follow the established design system
+3. **Responsiveness:** UI remains functional at different viewport sizes
+4. **Performance:** Animations are smooth (60fps), no jank
+5. **Accessibility:** Sufficient color contrast, keyboard navigable
+6. **Delight:** At least 3 "wow" moments in the user experience
+
+---
+
+## 9. Future Enhancements (Post-MVP)
+
+1. Theme switcher (dark/light/high-contrast)
+2. Customizable accent colors
+3. Keyboard shortcuts overlay
+4. Minimap for large graphs
+5. Split-screen mode for comparing files
+6. Real-time collaboration indicators
+7. Sound design for interactions (optional)
+
+---
+
+*This PRD transforms Orchestr8 from a functional tool into a visually distinctive command center that developers will want to use and show off.*

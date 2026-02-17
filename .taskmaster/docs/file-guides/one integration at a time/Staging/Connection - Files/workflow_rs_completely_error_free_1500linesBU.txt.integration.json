@@ -1,0 +1,71 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/workflow_rs_completely_error_free_1500linesBU.txt",
+  "total_lines": 1533,
+  "sha256": "17fa2c4569fda60b2f6a1186297f7a342552c80fdf4b7a9d833a5d76d8c41d83",
+  "chunk_count": 13,
+  "observation_ids": [
+    803,
+    804,
+    805,
+    806,
+    807,
+    808,
+    809,
+    810,
+    811,
+    812,
+    813,
+    814,
+    815
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 1,
+      "text": "// src-tauri/src/maestro_modules/workflow_engine.rs"
+    },
+    {
+      "line": 109,
+      "text": "// Assessment data should be available in context.current_context_data"
+    },
+    {
+      "line": 124,
+      "text": "//              // maestro_change_requests::update_cr_assessment_internal(&state, cr_id, cost, time, ...).await?;"
+    },
+    {
+      "line": 174,
+      "text": "// Handle Execution/Triggering Result (Status should be set by handlers now)"
+    },
+    {
+      "line": 187,
+      "text": "// This case should ideally not happen if handlers correctly set status."
+    },
+    {
+      "line": 191,
+      "text": "// For safety, let's assume it should have completed if Ok was returned."
+    },
+    {
+      "line": 197,
+      "text": "// Error already logged by handler or dispatcher. Status should be Failed already."
+    },
+    {
+      "line": 901,
+      "text": "match maestro_change_requests::get_change_request_details_internal(state, cr_id).await {"
+    },
+    {
+      "line": 1421,
+      "text": "let cr = match maestro_change_requests::get_change_request_details_internal(state_ref, change_request_id).await {"
+    },
+    {
+      "line": 1485,
+      "text": "// The engine loop should naturally pick up any steps that become unblocked."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

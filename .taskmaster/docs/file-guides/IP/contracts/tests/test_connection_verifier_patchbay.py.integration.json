@@ -1,0 +1,39 @@
+{
+  "source": "IP/contracts/tests/test_connection_verifier_patchbay.py",
+  "total_lines": 153,
+  "sha256": "ff64e694fc349c2e394c34a7b36281b1c1231787b6078ad193b6719f75a6dc74",
+  "role": "Patchbay validator/apply tests",
+  "risks": [
+    "Apply safety can regress without negative-case coverage",
+    "Cross-language import rewrite behavior can drift"
+  ],
+  "anchors": [
+    {
+      "line": 13,
+      "text": "dry-run Python success"
+    },
+    {
+      "line": 80,
+      "text": "dry-run JavaScript success"
+    },
+    {
+      "line": 98,
+      "text": "apply Python success"
+    },
+    {
+      "line": 118,
+      "text": "apply JavaScript success"
+    },
+    {
+      "line": 137,
+      "text": "apply blocked when dry-run fails"
+    }
+  ],
+  "integration_gaps": [],
+  "resolved_gaps": [
+    {
+      "gap": "Coverage for guarded apply negative path",
+      "status": "complete"
+    }
+  ]
+}

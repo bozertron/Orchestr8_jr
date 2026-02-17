@@ -1,0 +1,155 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 25,
+        "title": "Set up Canonical Governor Project Infrastructure",
+        "description": "Initialize the project repository, development environment, and core configuration for Orchestr8_jr canonical lane governance system.",
+        "details": "Create a Node.js project using npm init with TypeScript (v5.6+ for 2026 standards). Install core dependencies: express@4.20+, typescript@5.6+, ts-node@10.9+, nodemon@3.1+, prisma@5.17+ for ORM, sqlite3@5.1+ for lightweight shared memory simulation via database. Set up project structure: /src (controllers, services, models), /prisma (schema), /docs (STATUS.md, GUIDANCE.md, BLOCKERS.md). Configure tsconfig.json with strict mode, 'moduleResolution': 'node16'. Add .gitignore for node_modules, dist. Use Prisma schema for Packet, Decision, Evidence, Blocker models with auto-increment IDs. Run 'npx prisma migrate dev --name init' for initial DB. Best practice: Use SQLite for MVP dev, migrate to PostgreSQL later for scalability.",
+        "testStrategy": "Verify project setup by running 'npm run dev' with nodemon, check Prisma studio at http://localhost:5555 shows empty tables, confirm MD files exist and are writable, lint with eslint (add @typescript-eslint/eslint-plugin@7.18+).",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "Implement Packet Data Models and Shared Memory",
+        "description": "Define Prisma models for packets, decisions, evidence, and status files to maintain auditable shared memory.",
+        "details": "Extend Prisma schema: model Packet { id Int @id @default(autoincrement()), laneId String, status String (PENDING|ACCEPTED|REWORKED|BLOCKED), artifactPath String?, evidenceIds Int[], createdAt DateTime @default(now()), updatedAt DateTime @updatedAt }; model Decision { id Int @id @default(autoincrement()), packetId Int, type String (ACK|GUIDANCE|UNLOCK), content String, observationId String @unique, timestamp DateTime @default(now()) }; model Evidence { id Int @id @default(autoincrement()), packetId Int, command String, passCount Int, replayOutput String }; model Blocker { id Int @id @default(autoincrement()), laneId String, description String, status String (ACTIVE|RESOLVED), createdAt DateTime @default(now()) }; Generate client: 'npx prisma generate'. Implement file watchers for STATUS.md, GUIDANCE.md, BLOCKERS.md using chokidar@3.6+ to sync DB changes bidirectionally. Use markdown-it@14.2+ for parsing/generating MD content. Ensure all records have timestamps for auditability.",
+        "testStrategy": "Insert test packet via Prisma client, query shared memory tables, verify MD files update with decision content, test file watcher by manual MD edit triggers DB update. Use jest@29.7+ with @prisma/client for unit tests.",
+        "priority": "high",
+        "dependencies": [
+          25
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 27,
+        "title": "Build Packet Intake API Endpoint",
+        "description": "Create REST API to receive lane checkouts, completion claims, canonical artifacts, and test evidence as inputs.",
+        "details": "Use Express.js with body-parser@1.20+ and cors@2.8+. Define POST /api/packets endpoint: validate input with zod@3.23+ schema { laneId: z.string(), artifactPath: z.string().optional(), evidence: z.array(z.object({command: z.string(), passCount: z.number()})) }. Store new Packet as PENDING, link evidence. Return immediate ACK with packetId. Implement input queue using bullmq@5.6+ with Redis@7+ (ioredis@5.4+) for high-throughput batched processing. Config: const queue = new Queue('packetIntake', { connection: { host: 'localhost', port: 6379 } }); Add job: await queue.add('processPacket', { packetId }). Scale with PM2@5.4+ for production. Ensure no lag with queue metrics.",
+        "testStrategy": "POST test payloads with Postman/Supertest@7.0+, verify packet created in DB with PENDING status, check queue job enqueued via bullmq UI, measure intake latency <50ms.",
+        "priority": "high",
+        "dependencies": [
+          26
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 28,
+        "title": "Implement Replay Validation Engine",
+        "description": "Develop command replay system to validate packets before acceptance, generating evidence.",
+        "details": "Create ReplayService class: async replayCommands(packetId: number): Promise<Evidence[]> { const packet = await prisma.packet.findUnique(...); for each evidence.command, execute via child_process.spawnSync('npm', ['run', command], { cwd: packet.artifactPath }); capture stdout/stderr, assert passCount matches expected; store replayOutput. } Use node:child_process (v22+ stdlib). Cache replay results in Redis with TTL 1h using ioredis. Handle failures by marking evidence invalid. Integrate into bullmq job processor: if all evidence valid, eligible for accept. Best practice: Sandbox replays with Docker-in-Docker if paths are untrusted, but MVP uses spawnSync for simplicity.",
+        "testStrategy": "Mock artifactPath with sample npm scripts, run replay on test packet, verify evidence.passCount matches, test failure case sets invalid flag, integration test full intake->replay flow.",
+        "priority": "high",
+        "dependencies": [
+          27
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 29,
+        "title": "Develop Decision Engine with Accept/Rework Logic",
+        "description": "Build core governance logic to make accept/rework decisions based on replay evidence and contract checks.",
+        "details": "DecisionService: async makeDecision(packetId: number): Promise<{type: 'ACCEPTED'|'REWORKED', content: string}> { const replayPassed = await checkAllEvidence(packetId); const contractValid = await validateContract(packetId); // Stub: check artifact against canonical UI/runtime schema using simple file diff or json-schema-validator@0.8+ if (replayPassed && contractValid) return {type: 'ACCEPTED', content: 'Accepted with evidence'}; else return {type: 'REWORKED', guidance: generateGuidance()}; } Record Decision in DB and update Packet.status. Enforce 'no accept without evidence'. Use uuid@10.0+ for observationId.",
+        "testStrategy": "Unit tests for decision logic with mocked replay/contract, integration test updates packet status and creates Decision record, verify no ACCEPT without evidence.",
+        "priority": "high",
+        "dependencies": [
+          28
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 30,
+        "title": "Implement Canonical Contract Enforcement",
+        "description": "Enforce visual UI/runtime contract integrity during packet validation.",
+        "details": "ContractValidator: check artifact files against canonical specs. For UI: parse package.json deps against allowed list (React@18.3+, etc.), scan for forbidden patterns with fast-glob@3.3+. For runtime: validate config files with ajv@8.17+ JSON schema. Define schemas in /contracts/ui.schema.json, runtime.schema.json. Integrate into makeDecision(): if (!contractValid) add to BLOCKERS.md. Preserve ownership by logging contract owner in Decision.",
+        "testStrategy": "Test valid/invalid artifacts, verify contract check fails on drift (e.g., wrong React version), check BLOCKERS.md updates on violation.",
+        "priority": "medium",
+        "dependencies": [
+          29
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 31,
+        "title": "Build Multi-Lane Batch Unlock Sequencer",
+        "description": "Process accepted packets in batches for high-throughput lane unlocks.",
+        "details": "UnlockQueue processor: every 30s cron (node-cron@3.4+), query ACCEPTED packets without unlock: const batch = await prisma.packet.findMany({where: {status: 'ACCEPTED', unlocked: false}, take: 50}); for each, POST unlock instruction to lane webhook (configurable), mark unlocked: true, update STATUS.md. Use transactions: prisma.$transaction([...]). Mitigation for intake lag: prioritize by laneId grouping.",
+        "testStrategy": "Mock webhook endpoint, simulate ACCEPTED packets, verify batch unlock jobs emit instructions, check STATUS.md reflects unlocks, test cadence with cron advance.",
+        "priority": "medium",
+        "dependencies": [
+          29
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 32,
+        "title": "Implement Program-Level Status Maintenance",
+        "description": "Automate updates to STATUS.md, GUIDANCE.md, BLOCKERS.md for truth maintenance.",
+        "details": "StatusSyncService: on Decision create/update, regenerate MD files. STATUS.md: table of packets by lane/status. GUIDANCE.md: list REWORKED guidance. BLOCKERS.md: active blockers by lane. Use markdown-table@3.0+ for tables. Webhook on DB changes via prisma.$use(ClientEvent) or poll every 5min. Ensure 'no parked lane unless blocker'.",
+        "testStrategy": "Trigger decisions, verify MD files regenerate accurately, check no parked lanes without explicit BLOCKER record.",
+        "priority": "medium",
+        "dependencies": [
+          26,
+          31
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 33,
+        "title": "Add Output API for Ack/Guidance/Unlock/Status",
+        "description": "Expose REST endpoints for outputs: ack/guidance decisions, unlock instructions, status updates, gate memos.",
+        "details": "GET /api/packets/:id/status, GET /api/lanes/:laneId/status, POST /api/unlock (admin), GET /api/blockers. Use swagger-jsdoc@6.2+ & swagger-ui-express@5.0+ for API docs at /api-docs. Secure with basic auth (express-basic-auth@1.2+) for MVP.",
+        "testStrategy": "Query endpoints post-decision, verify JSON matches DB/MD, test auth blocks unauthorized access.",
+        "priority": "medium",
+        "dependencies": [
+          27,
+          32
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 34,
+        "title": "Implement Audit Logging and Evidence Persistence",
+        "description": "Ensure all decisions are fully auditable with replay evidence and observation IDs.",
+        "details": "Use winston@3.14+ for structured logging: logger.info('Decision made', {packetId, observationId, evidenceIds}). Store all replay outputs in Evidence.replayOutput (text). Query audits: GET /api/audits/:packetId. Retention: auto-purge >30d old with cron.",
+        "testStrategy": "Review logs for decision events, query audit endpoint returns full evidence chain, verify purge removes old records.",
+        "priority": "medium",
+        "dependencies": [
+          28,
+          33
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 35,
+        "title": "Add Integration Tests and MVP Validation Suite",
+        "description": "Create end-to-end tests covering acceptance criteria: every packet accepted/reworked, replay evidence, MD accuracy, batch unlocks.",
+        "details": "Use supertest + jest for E2E: test full flow intake->replay->decision->unlock->status sync. Mock Redis/Docker for CI. Cover risks: lag simulation with slow replay, contract drift injection. Run with 'npm test'. Add Playwright@1.48+ if UI contract visual diff needed.",
+        "testStrategy": "Achieve 90% coverage, pass all acceptance criteria scenarios, fail on violations (no evidence accept, stale MD).",
+        "priority": "high",
+        "dependencies": [
+          34
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2026-02-16T06:09:10.683Z",
+      "updated": "2026-02-16T06:12:52.799Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

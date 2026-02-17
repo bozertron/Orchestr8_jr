@@ -1,0 +1,22 @@
+{
+  "source": "one integration at a time/888/cre8/__init__.py",
+  "total_lines": 13,
+  "sha256": "df14163e7fa6da171b80c31063a1a814b0748890ba994d374bb79f3f2f5e7d8b",
+  "chunk_count": 1,
+  "observation_ids": [
+    208
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 4,
+      "text": "This module implements the GIMP wrapper following the orchestr8 (Newelle) pattern,"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

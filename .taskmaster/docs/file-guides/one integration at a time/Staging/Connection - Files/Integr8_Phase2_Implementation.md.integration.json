@@ -1,0 +1,46 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/Integr8_Phase2_Implementation.md",
+  "total_lines": 104,
+  "sha256": "369b4eb5a595d7d2efb0940a7009f313dee313217f2083e705ccf351179b9a15",
+  "chunk_count": 1,
+  "observation_ids": [
+    763
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 5,
+      "text": "This guide outlines the next phase of implementation for the Integr8 feature extraction framework. Phase 1 has been successfully completed with the database schema extensions and backend API commands now properly integrated into the Orchestr8 codebase. Phase 2 will focus on implementing the frontend store and UI components to provide a complete user interface for managing Integr8 engineers and feature extraction tasks."
+    },
+    {
+      "line": 11,
+      "text": "1. Completed Phase 1 implementation (database schema and backend commands)"
+    },
+    {
+      "line": 24,
+      "text": "This store should implement the following functionality:"
+    },
+    {
+      "line": 32,
+      "text": "The store should be created using Pinia with the Composition API style, following the pattern of other stores in the application."
+    },
+    {
+      "line": 40,
+      "text": "This view should provide:"
+    },
+    {
+      "line": 67,
+      "text": "Follow the implementation details in i8.md Block 3 to create the Pinia store. The store should provide all required state management and API calls to the backend commands implemented in Phase 1."
+    },
+    {
+      "line": 71,
+      "text": "Implement the UI component as outlined in i8.md Block 4. This should provide a comprehensive interface for managing Integr8 engineers and tasks, displaying task progress, and viewing results."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

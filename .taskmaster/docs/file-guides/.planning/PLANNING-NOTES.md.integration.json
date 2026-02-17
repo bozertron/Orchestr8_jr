@@ -1,0 +1,50 @@
+{
+  "source": ".planning/PLANNING-NOTES.md",
+  "total_lines": 112,
+  "sha256": "9c47cd51d0b87e61e464b8a4fc404a925fc3d9ad95f4d23e18f424e4d33723f7",
+  "chunk_count": 1,
+  "observation_ids": [
+    1075
+  ],
+  "risks": [
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 8,
+      "text": "- Plus: `orchestr8.py` entry point (239 lines)"
+    },
+    {
+      "line": 12,
+      "text": "### `.orchestr8/tickets/` — Working ticket system"
+    },
+    {
+      "line": 17,
+      "text": "- **BUT** JFDI button in 06_maestro.py shows placeholder instead of using it"
+    },
+    {
+      "line": 56,
+      "text": "## Critical Insight From 06_maestro.py"
+    },
+    {
+      "line": 70,
+      "text": "- Line 893: Gener8 only logs `\"Switch to Generator tab\"` — should open settings"
+    },
+    {
+      "line": 72,
+      "text": "- Lines 1059-1079: JFDI panel is `<div>...coming soon...</div>` — despite TicketPanel being instantiated at line 403!"
+    },
+    {
+      "line": 75,
+      "text": "- Line 77: HealthChecker imported, NEVER instantiated"
+    },
+    {
+      "line": 77,
+      "text": "- Line 907: Button says \"Home\" instead of \"orchestr8\""
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

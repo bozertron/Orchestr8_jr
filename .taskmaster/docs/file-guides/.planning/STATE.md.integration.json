@@ -1,0 +1,22 @@
+{
+  "source": ".planning/STATE.md",
+  "total_lines": 51,
+  "sha256": "2d161c68eea230897596d74723bb1b2d0c891edf4c85443b68442a185d70d6f2",
+  "chunk_count": 1,
+  "observation_ids": [
+    1081
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 30,
+      "text": "- **v1.0**: Brand replaced stereOS → orchestr8 (Phase 1 complete)"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

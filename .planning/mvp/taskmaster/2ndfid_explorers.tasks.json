@@ -1,0 +1,397 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": "1",
+        "title": "Select C5 candidate systems",
+        "description": "Identify two high-value timeline/inspection components in source repo.",
+        "details": "MVP roadmap task for 2ndfid_explorers: Identify two high-value timeline/inspection components in source repo.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "1.1",
+            "title": "Plan select c5 candidate systems",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "1"
+          },
+          {
+            "id": "1.2",
+            "title": "Implement select c5 candidate systems",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "1"
+          },
+          {
+            "id": "1.3",
+            "title": "Verify select c5 candidate systems",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "1"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "2",
+        "title": "Produce C5 packet 01",
+        "description": "Create first extraction packet with provenance, value, clean-room conversion plan.",
+        "details": "MVP roadmap task for 2ndfid_explorers: Create first extraction packet with provenance, value, clean-room conversion plan.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "1"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "2.1",
+            "title": "Plan produce c5 packet 01",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "2"
+          },
+          {
+            "id": "2.2",
+            "title": "Implement produce c5 packet 01",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "2"
+          },
+          {
+            "id": "2.3",
+            "title": "Verify produce c5 packet 01",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "2"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "3",
+        "title": "Produce C5 packet 02",
+        "description": "Create second extraction packet with provenance, value, clean-room conversion plan.",
+        "details": "MVP roadmap task for 2ndfid_explorers: Create second extraction packet with provenance, value, clean-room conversion plan.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "2"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "3.1",
+            "title": "Plan produce c5 packet 02",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "3"
+          },
+          {
+            "id": "3.2",
+            "title": "Implement produce c5 packet 02",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "3"
+          },
+          {
+            "id": "3.3",
+            "title": "Verify produce c5 packet 02",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "3"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "4",
+        "title": "Run licensing risk pass",
+        "description": "Explicitly classify licensing/derivative risk for each packet.",
+        "details": "MVP roadmap task for 2ndfid_explorers: Explicitly classify licensing/derivative risk for each packet.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "3"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "4.1",
+            "title": "Plan run licensing risk pass",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "4"
+          },
+          {
+            "id": "4.2",
+            "title": "Implement run licensing risk pass",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "4"
+          },
+          {
+            "id": "4.3",
+            "title": "Verify run licensing risk pass",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "4"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "5",
+        "title": "Map target contracts for a_codex_plan",
+        "description": "Provide contract-ready integration notes for each packet.",
+        "details": "MVP roadmap task for 2ndfid_explorers: Provide contract-ready integration notes for each packet.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "4"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "5.1",
+            "title": "Plan map target contracts for a_codex_plan",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "5"
+          },
+          {
+            "id": "5.2",
+            "title": "Implement map target contracts for a_codex_plan",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "5"
+          },
+          {
+            "id": "5.3",
+            "title": "Verify map target contracts for a_codex_plan",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "5"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "6",
+        "title": "Deliver canonical artifacts with proof",
+        "description": "Copy packet docs to canonical path and include ls evidence.",
+        "details": "MVP roadmap task for 2ndfid_explorers: Copy packet docs to canonical path and include ls evidence.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "5"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "6.1",
+            "title": "Plan deliver canonical artifacts with proof",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "6"
+          },
+          {
+            "id": "6.2",
+            "title": "Implement deliver canonical artifacts with proof",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "6"
+          },
+          {
+            "id": "6.3",
+            "title": "Verify deliver canonical artifacts with proof",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "6"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "7",
+        "title": "Emit completion ping and memory references",
+        "description": "Send completion message with packet IDs and evidence pointers.",
+        "details": "MVP roadmap task for 2ndfid_explorers: Send completion message with packet IDs and evidence pointers.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "6"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "7.1",
+            "title": "Plan emit completion ping and memory references",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "7"
+          },
+          {
+            "id": "7.2",
+            "title": "Implement emit completion ping and memory references",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "7"
+          },
+          {
+            "id": "7.3",
+            "title": "Verify emit completion ping and memory references",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "7"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "8",
+        "title": "Draft next extraction shortlist",
+        "description": "Prepare C6 candidate list to keep lane non-idle.",
+        "details": "MVP roadmap task for 2ndfid_explorers: Prepare C6 candidate list to keep lane non-idle.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "7"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "8.1",
+            "title": "Plan draft next extraction shortlist",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "8"
+          },
+          {
+            "id": "8.2",
+            "title": "Implement draft next extraction shortlist",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "8"
+          },
+          {
+            "id": "8.3",
+            "title": "Verify draft next extraction shortlist",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "8"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      }
+    ],
+    "metadata": {
+      "version": "1.0.0",
+      "lastModified": "2026-02-16T04:12:58Z",
+      "taskCount": 8,
+      "completedCount": 0,
+      "tags": [
+        "master"
+      ]
+    }
+  }
+}

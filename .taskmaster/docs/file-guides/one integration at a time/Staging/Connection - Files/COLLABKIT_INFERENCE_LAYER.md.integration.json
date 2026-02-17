@@ -1,0 +1,28 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/COLLABKIT_INFERENCE_LAYER.md",
+  "total_lines": 1344,
+  "sha256": "3d2c9d5e34924f6ff5c48859efa8086b35d715189b13147e852ea40fc60f3b08",
+  "chunk_count": 12,
+  "observation_ids": [
+    693,
+    694,
+    695,
+    696,
+    697,
+    698,
+    699,
+    700,
+    701,
+    702,
+    703,
+    704
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

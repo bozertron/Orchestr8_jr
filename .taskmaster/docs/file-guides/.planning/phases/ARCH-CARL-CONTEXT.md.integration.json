@@ -1,0 +1,53 @@
+{
+  "source": ".planning/phases/ARCH-CARL-CONTEXT.md",
+  "total_lines": 250,
+  "sha256": "62a59b6ed8a64cfb419db32eb9b9a5bdaefe438718038ee06cb665c3dd89695a",
+  "chunk_count": 3,
+  "observation_ids": [
+    1045,
+    1046,
+    1047
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 9,
+      "text": "## LOCKED Decisions (from CONTEXT.md)"
+    },
+    {
+      "line": 14,
+      "text": "| SIGNAL SOURCES | HealthChecker, ConnectionVerifier, CombatTracker, TicketManager, LouisWarden |"
+    },
+    {
+      "line": 37,
+      "text": "### 1. HealthChecker (`IP/health_checker.py`)"
+    },
+    {
+      "line": 118,
+      "text": "health_checker: 'HealthChecker',"
+    },
+    {
+      "line": 152,
+      "text": "def _gather_health(self, fiefdom_path: str, checker: HealthChecker) -> Dict:"
+    },
+    {
+      "line": 210,
+      "text": "| HealthChecker → Carl | IN | `check_fiefdom(path) -> HealthCheckResult` |"
+    },
+    {
+      "line": 219,
+      "text": "## Constraints (MUST NOT)"
+    },
+    {
+      "line": 230,
+      "text": "2. Health signal reflects current HealthChecker status"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

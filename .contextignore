@@ -1,0 +1,4 @@
+# Context ingestion ignore rules for agent workflows.
+# Keep deprecated/quarantined material out of active context windows.
+
+deprecated assets/

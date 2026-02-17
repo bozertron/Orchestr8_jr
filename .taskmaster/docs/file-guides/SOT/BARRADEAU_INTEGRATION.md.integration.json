@@ -1,0 +1,63 @@
+{
+  "source": "SOT/BARRADEAU_INTEGRATION.md",
+  "total_lines": 287,
+  "sha256": "460b9b4963c11202a530682f156497c68ea7c8ebc208a82179fcaded465d040e",
+  "chunk_count": 4,
+  "observation_ids": [
+    78,
+    79,
+    80,
+    81
+  ],
+  "risks": [
+    "JS/Python bridge risk: event transport and payload validation can silently fail.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce.",
+    "Behavioral sequencing risk: mode transitions need explicit state machine handling."
+  ],
+  "anchors": [
+    {
+      "line": 33,
+      "text": "| Working | Gold | #D4AF37 | Healthy, passing tests |"
+    },
+    {
+      "line": 35,
+      "text": "| Combat | Purple | #9D4EDD | Active LLM engagement |"
+    },
+    {
+      "line": 55,
+      "text": "- Buildings change color in real-time (Gold → Blue → Gold)"
+    },
+    {
+      "line": 73,
+      "text": "User clicks building → camera smoothly zooms to building → shows file details"
+    },
+    {
+      "line": 80,
+      "text": "type: 'WOVEN_MAPS_NODE_CLICK',"
+    },
+    {
+      "line": 113,
+      "text": "zoom: camera.zoom"
+    },
+    {
+      "line": 125,
+      "text": "| Gold | `setFrameColor('gold')` | Filter to healthy files |"
+    },
+    {
+      "line": 126,
+      "text": "| Teal | `setFrameColor('teal')` | Filter to broken files |"
+    },
+    {
+      "line": 127,
+      "text": "| Purple | `setFrameColor('combat')` | Filter to combat files |"
+    },
+    {
+      "line": 148,
+      "text": "│ [Gold] [Teal] [Purple]  │  [1][2][3][4]  │  [🔊]  │  [densit8] │"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,668 @@
+{
+  "metadata": {
+    "source": "/home/bozertron/Orchestr8_jr/one integration at a time/p2p/",
+    "description": "Rust P2P system catalog - libp2p-based peer-to-peer networking with WebRTC support",
+    "version": "1.0.0",
+    "modules_documented": 11,
+    "total_rust_files": 100
+  },
+  "overview": {
+    "architecture": "Modular P2P networking stack with libp2p as the core transport layer, augmented with WebRTC for audio/video and direct data channels",
+    "key_components": [
+      "P2PNetwork - Main orchestrator",
+      "PeerManager - Connection management",
+      "Discovery - mDNS + Kademlia DHT",
+      "P2PTransport - TCP/WebSocket transport with Noise encryption and Yamux multiplexing",
+      "WebRtcService - WebRTC peer connections for media/data",
+      "MessageService - Encrypted/signed messaging with persistence",
+      "P2PService - Lifecycle coordinator"
+    ],
+    "transport_layer": {
+      "primary": "libp2p",
+      "transports": ["TCP", "WebSocket"],
+      "security": "Noise protocol",
+      "multiplexing": "Yamux",
+      "keypair": "Ed25519"
+    },
+    "discovery_mechanisms": {
+      "mdns": "Local peer discovery",
+      "kademlia": "Distributed hash table for peer routing"
+    }
+  },
+  "libp2p_integration": {
+    "version_requirements": "libp2p 0.52+ (inferred from API patterns)",
+    "key_types": {
+      "PeerId": "Unique peer identifier derived from public key",
+      "Multiaddr": "Multi-format network addresses (e.g., /ip4/.../tcp/.../p2p/...)",
+      "Keypair": "Ed25519 identity keypair for peer authentication",
+      "Transport": "libp2p transport trait for connection handling",
+      "Swarm": "Network behavior orchestration"
+    },
+    "features_used": [
+      "tcp::tokio::Transport - Async TCP transport",
+      "websocket::WsConfig - WebSocket transport",
+      "noise::Config - Noise protocol for encryption",
+      "yamux::Config - Connection multiplexing",
+      "kademlia - Kademlia DHT for peer discovery",
+      "mdns::tokio::Behaviour - mDNS for local discovery",
+      "swarm::NetworkBehaviour - Behavior composition"
+    ],
+    "protocols": {
+      "chat": "/jfdi/chat/1.0.0",
+      "file": "/jfdi/file/1.0.0",
+      "kademlia": "/ipfs/kad/1.0.0"
+    }
+  },
+  "modules": {
+    "root_mod": {
+      "path": "p2p/mod.rs",
+      "public_exports": [
+        "pub mod config",
+        "pub mod discovery",
+        "pub mod errors",
+        "pub mod events",
+        "pub mod integration",
+        "pub mod lifecycle",
+        "pub mod manager",
+        "pub mod message",
+        "pub mod service",
+        "pub mod transport",
+        "pub mod webrtc",
+        "pub use config::NetworkConfig",
+        "pub use discovery::{Discovery, DiscoveryEvent}",
+        "pub use manager::{PeerConnection, PeerManager}",
+        "pub use message::{MessageConfig, MessageEvent, MessageService, P2PMessage}",
+        "pub use service::{HealthStatus, LifecycleState, P2PService}",
+        "pub use transport::P2PTransport",
+        "pub use webrtc::{WebRtcConfig, WebRtcEvent, WebRtcService}"
+      ],
+      "key_structs": [
+        {
+          "name": "P2PNetwork",
+          "fields": ["peer_manager", "discovery", "transport", "webrtc_service", "config", "event_sender"],
+          "methods": [
+            "new() - Create new P2P network instance",
+            "start() - Start the P2P network",
+            "stop() - Stop the P2P network",
+            "connect_peer() - Connect to specific peer",
+            "send_message() - Send message to peer",
+            "connected_peers() - Get connected peers",
+            "network_stats() - Get network statistics",
+            "create_webrtc_connection() - Create WebRTC connection",
+            "send_webrtc_data() - Send data via WebRTC",
+            "webrtc_service() - Get WebRTC service reference",
+            "network_config() - Get network configuration",
+            "forward_event() - Forward event to external listeners",
+            "emit_startup_event() - Emit startup lifecycle event",
+            "emit_shutdown_event() - Emit shutdown lifecycle event"
+          ]
+        },
+        {
+          "name": "P2PEvent",
+          "variants": [
+            "PeerDiscovered { peer_id, addr }",
+            "PeerConnected { peer_id }",
+            "PeerDisconnected { peer_id }",
+            "MessageReceived { from, data }",
+            "ConnectionFailed { peer_id, error }",
+            "MaintenanceSummary(String)"
+          ]
+        },
+        {
+          "name": "NetworkStats",
+          "fields": ["connected_peers", "discovered_peers", "bytes_sent", "bytes_received"]
+        }
+      ],
+      "dependencies": ["libp2p", "tokio::sync::mpsc"]
+    },
+    "config": {
+      "path": "p2p/config/",
+      "submodules": ["defaults", "helpers", "network", "validation", "webrtc"],
+      "public_exports": [
+        "pub use network::*",
+        "pub use webrtc::*"
+      ],
+      "key_types": [
+        {
+          "name": "NetworkConfig",
+          "description": "Main network configuration struct",
+          "fields": {
+            "connection": ["max_peers", "connection_timeout", "ping_interval", "reconnect_interval"],
+            "discovery": ["enable_mdns", "enable_dht", "bootstrap_peers", "mdns_query_interval", "dht_replication_factor"],
+            "relay": ["relay_url", "use_relay_fallback", "relay_timeout"],
+            "nat": ["stun_servers", "turn_servers", "ice_timeout"],
+            "security": ["require_encryption", "allowed_protocols", "max_message_size"],
+            "performance": ["buffer_size", "max_concurrent_connections", "connection_pool_size"],
+            "webrtc": ["enable_webrtc", "webrtc_data_channels", "webrtc_ordered_delivery", "webrtc_max_retransmits"]
+          },
+          "methods": [
+            "default() - Default configuration",
+            "development() - Development config (10 peers, localhost relay)",
+            "production() - Production config with TURN servers",
+            "validate() - Validate configuration",
+            "effective_bootstrap_peers() - Get effective bootstrap peers",
+            "to_webrtc_config() - Convert to WebRTC configuration"
+          ]
+        },
+        {
+          "name": "TurnServer",
+          "fields": ["url", "username", "credential"]
+        }
+      ],
+      "defaults": {
+        "bootstrap_peers": [
+          "/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ",
+          "/ip4/104.131.131.82/udp/4001/quic/p2p/QmaCpDMGV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ"
+        ],
+        "stun_servers": ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"],
+        "protocols": ["/jfdi/chat/1.0.0", "/jfdi/file/1.0.0"]
+      }
+    },
+    "manager": {
+      "path": "p2p/manager/",
+      "submodules": ["connection", "maintenance", "peer_manager", "peer_ops", "peer_stats", "stats"],
+      "public_exports": [
+        "pub use connection::{ConnectionStatus, PeerConnection}",
+        "pub use peer_manager::PeerManager",
+        "pub use peer_ops::PeerOperations",
+        "pub use peer_stats::{ManagerStatsOps, PeerStatsOps}",
+        "pub use stats::PeerManagerStats"
+      ],
+      "key_types": [
+        {
+          "name": "PeerManager",
+          "description": "Peer connection manager core",
+          "fields": ["peers", "config", "event_sender", "stats"],
+          "methods": [
+            "new() - Create new peer manager",
+            "start() - Start peer manager",
+            "stop() - Stop peer manager",
+            "get_stats() - Get manager statistics",
+            "peer_count() - Get current peer count",
+            "is_peer_connected() - Check if peer is connected",
+            "validate_peer_config() - Validate peer against config",
+            "get_max_peers() - Get maximum peers from config"
+          ]
+        },
+        {
+          "name": "PeerConnection",
+          "description": "Individual peer connection",
+          "fields": ["peer_id", "address", "connected_at", "last_seen", "status", "bytes_sent", "bytes_received", "ping_rtt"],
+          "methods": [
+            "is_alive() - Check if connection is alive",
+            "duration() - Get connection duration",
+            "update_ping() - Update ping RTT"
+          ]
+        },
+        {
+          "name": "ConnectionStatus",
+          "variants": ["Connecting", "Connected", "Disconnected", "Failed(String)"]
+        }
+      ]
+    },
+    "discovery": {
+      "path": "p2p/discovery/",
+      "submodules": ["behaviour", "events"],
+      "public_exports": [
+        "pub use behaviour::{create_discovery_behaviour, DiscoveryBehaviour}",
+        "pub use events::{DiscoveryBehaviourEvent, DiscoveryEvent}"
+      ],
+      "key_types": [
+        {
+          "name": "Discovery",
+          "description": "Discovery service for finding peers",
+          "fields": ["local_peer_id", "discovered_peers", "peer_addresses", "event_sender", "config"],
+          "methods": [
+            "new() - Create new discovery service",
+            "start() - Start discovery service",
+            "stop() - Stop discovery service",
+            "handle_event() - Handle discovery events",
+            "discovered_count() - Get discovered peer count",
+            "discovered_peers() - Get discovered peers",
+            "is_running() - Check if discovery is running"
+          ]
+        },
+        {
+          "name": "DiscoveryBehaviour",
+          "description": "libp2p NetworkBehaviour for discovery",
+          "fields": ["kademlia", "mdns"],
+          "libp2p_types": ["Kademlia<MemoryStore>", "Mdns"]
+        },
+        {
+          "name": "DiscoveryEvent",
+          "variants": ["PeerDiscovered", "PeerExpired", "BootstrapComplete", "QueryProgressed"]
+        }
+      ],
+      "integration_points": [
+        "Uses libp2p::kademlia for DHT-based discovery",
+        "Uses libp2p::mdns for local network discovery",
+        "MemoryStore for Kademlia peer records"
+      ]
+    },
+    "transport": {
+      "path": "p2p/transport/",
+      "submodules": ["builder", "connection"],
+      "public_exports": [
+        "pub use builder::TransportBuilder",
+        "pub use connection::{ConnectionInfo, TransportStats}"
+      ],
+      "key_types": [
+        {
+          "name": "P2PTransport",
+          "description": "P2P transport layer",
+          "fields": ["keypair", "peer_id", "config"],
+          "methods": [
+            "new() - Create new transport",
+            "start() - Start transport",
+            "stop() - Stop transport",
+            "peer_id() - Get peer ID",
+            "keypair() - Get keypair",
+            "build_transport() - Build transport stack (TCP + WebSocket with Noise + Yamux)",
+            "validate_config() - Validate transport configuration",
+            "transport_stats() - Get transport statistics",
+            "is_connected() - Check if transport is connected"
+          ]
+        },
+        {
+          "name": "TransportBuilder",
+          "description": "Transport configuration builder",
+          "methods": [
+            "new() - Create new builder",
+            "with_keypair() - Set keypair",
+            "build() - Build transport"
+          ]
+        }
+      ],
+      "libp2p_components": {
+        "transports": ["tcp::tokio::Transport", "websocket::WsConfig"],
+        "security": "noise::Config::new()",
+        "multiplexing": "yamux::Config::default()",
+        "upgrades": "upgrade::Version::V1"
+      }
+    },
+    "webrtc": {
+      "path": "p2p/webrtc/",
+      "submodules": ["config", "connection", "data_channel", "manager"],
+      "public_exports": [
+        "pub use config::WebRtcConfig",
+        "pub use connection::{ConnectionState, WebRtcConnection}",
+        "pub use data_channel::{DataChannel, DataChannelEvent}",
+        "pub use manager::WebRtcManager"
+      ],
+      "key_types": [
+        {
+          "name": "WebRtcService",
+          "description": "WebRTC service for real-time peer communication",
+          "fields": ["manager", "config", "event_sender"],
+          "methods": [
+            "new() - Create new WebRTC service",
+            "start() - Start WebRTC service",
+            "stop() - Stop WebRTC service",
+            "create_connection() - Create connection to peer",
+            "accept_connection() - Accept connection from peer",
+            "send_data() - Send data through data channel",
+            "active_connections() - Get active connections",
+            "webrtc_stats() - Get WebRTC statistics",
+            "service_config() - Get service configuration",
+            "subscribe_events() - Subscribe to events",
+            "emit_service_started() - Emit service started event",
+            "emit_service_stopped() - Emit service stopped event"
+          ]
+        },
+        {
+          "name": "WebRtcConfig",
+          "description": "WebRTC configuration",
+          "fields": {
+            "ice": ["ice_servers", "ice_gathering_timeout", "ice_connection_timeout", "ice_restart_timeout"],
+            "data_channel": ["max_data_channels", "data_channel_buffer_size", "ordered_delivery", "max_retransmits", "max_packet_lifetime"],
+            "connection": ["connection_timeout", "keep_alive_interval", "max_message_size"],
+            "security": ["dtls_fingerprint_algorithm", "enable_dtls_srtp"],
+            "performance": ["bandwidth_limit", "cpu_adaptation", "network_adaptation"]
+          },
+          "methods": [
+            "default() - Default configuration",
+            "development() - Development config (shorter timeouts)",
+            "production() - Production config with bandwidth limit",
+            "add_stun_server() - Add STUN server",
+            "add_turn_server() - Add TURN server",
+            "validate() - Validate configuration"
+          ]
+        },
+        {
+          "name": "WebRtcManager",
+          "description": "WebRTC connection manager",
+          "fields": ["connections", "config", "event_sender", "stats"],
+          "methods": [
+            "new() - Create new manager",
+            "start() - Start manager",
+            "stop() - Stop manager",
+            "create_connection() - Create connection to peer",
+            "accept_connection() - Accept connection from peer",
+            "set_answer() - Set answer for existing connection",
+            "send_data() - Send data through channel",
+            "create_data_channel() - Create data channel",
+            "remove_connection() - Remove connection",
+            "active_connections() - Get active connections",
+            "connection_count() - Get connection count",
+            "webrtc_stats() - Get WebRTC statistics"
+          ]
+        },
+        {
+          "name": "WebRtcConnection",
+          "description": "WebRTC peer connection wrapper",
+          "fields": ["peer_id", "peer_connection", "data_channels", "state", "config", "created_at", "event_sender"],
+          "methods": [
+            "new() - Create new connection",
+            "create_offer() - Create SDP offer",
+            "create_answer() - Create SDP answer",
+            "set_answer() - Set remote answer",
+            "create_data_channel() - Create data channel",
+            "send_data() - Send data through channel",
+            "state() - Get connection state",
+            "peer_id() - Get peer ID",
+            "close() - Close connection",
+            "stats() - Get connection statistics"
+          ]
+        },
+        {
+          "name": "ConnectionState",
+          "variants": ["New", "Connecting", "Connected", "Disconnected", "Failed", "Closed"]
+        },
+        {
+          "name": "WebRtcEvent",
+          "variants": [
+            "ConnectionEstablished { peer_id }",
+            "ConnectionFailed { peer_id, error }",
+            "ConnectionClosed { peer_id }",
+            "DataChannelOpened { peer_id, channel_id }",
+            "DataChannelClosed { peer_id, channel_id }",
+            "MessageReceived { peer_id, channel_id, data }",
+            "IceCandidateReceived { peer_id, candidate }"
+          ]
+        }
+      ],
+      "external_dependencies": ["webrtc crate for RTCPeerConnection, ICE, DTLS"]
+    },
+    "message": {
+      "path": "p2p/message/",
+      "submodules": ["encryption", "encryption_keys", "persistence", "protocol", "routing", "signing", "types"],
+      "public_exports": [
+        "pub use encryption::*",
+        "pub use persistence::operations as persistence_operations",
+        "pub use persistence::PersistenceService",
+        "pub use protocol::*",
+        "pub use routing::operations as routing_operations",
+        "pub use routing::{DeliveryInfo, DeliveryStatus, RoutingError, RoutingService, RoutingServiceImpl, TransportMethod}",
+        "pub use signing::*",
+        "pub use types::*"
+      ],
+      "key_types": [
+        {
+          "name": "MessageService",
+          "description": "Message service for secure P2P messaging",
+          "fields": ["encryption", "signing", "routing", "persistence", "event_sender"],
+          "methods": [
+            "new() - Create new message service",
+            "send_message() - Send secure message to peer",
+            "handle_received_message() - Handle received encrypted message",
+            "flush_pending_messages() - Flush pending messages before shutdown",
+            "get_message_history() - Get message history with peer"
+          ],
+          "pipeline": "sign -> encrypt -> route -> persist"
+        },
+        {
+          "name": "MessageConfig",
+          "fields": ["database_path", "encryption_key_size", "signature_algorithm", "message_retention_days", "max_message_size"]
+        },
+        {
+          "name": "P2PMessage",
+          "description": "Message protocol enum",
+          "variants": [
+            "Chat - Chat messages with id, text, timestamp, reply_to",
+            "FileOffer/FileChunk/FileComplete/FileCancel - File transfer messages",
+            "CallInvite/CallAnswer/CallHangup/CallIceCandidate - Voice/video call signaling",
+            "StateSync/StateSyncRequest/StateSyncResponse - State synchronization",
+            "Ping/Pong - Keepalive messages",
+            "DeliveryConfirmation - Message delivery confirmation",
+            "TypingIndicator - Typing status"
+          ]
+        },
+        {
+          "name": "MessageEvent",
+          "variants": [
+            "MessageReceived { from, message }",
+            "MessageSent { to, message_id }",
+            "MessageDelivered { message_id }",
+            "MessageFailed { message_id, error }"
+          ]
+        },
+        {
+          "name": "SignatureAlgorithm",
+          "variants": ["Ed25519"]
+        }
+      ],
+      "sub_components": {
+        "encryption": {
+          "service": "EncryptionService",
+          "algorithm": "ChaCha20-Poly1305",
+          "key_derivation": "Per-peer message keys with nonce"
+        },
+        "signing": {
+          "service": "SigningService",
+          "algorithm": "Ed25519",
+          "key_source": "libp2p Keypair extraction"
+        },
+        "routing": {
+          "service": "RoutingService",
+          "delivery_status": ["Pending", "Sent", "Delivered", "Failed", "Timeout"],
+          "transport_method": ["WebRTC(channel_id)", "LibP2P", "Relay(address)"]
+        },
+        "persistence": {
+          "service": "PersistenceService",
+          "features": ["SQLite storage", "FTS search", "Message history", "Delivery tracking"]
+        }
+      }
+    },
+    "service": {
+      "path": "p2p/service/",
+      "submodules": ["components", "core", "health", "operations", "shutdown"],
+      "public_exports": [
+        "pub use core::{LifecycleState, P2PService}",
+        "pub use health::HealthStatus"
+      ],
+      "key_types": [
+        {
+          "name": "P2PService",
+          "description": "P2P Service coordinator for lifecycle management",
+          "fields": ["config", "discovery", "transport", "webrtc", "peer_manager", "message_service", "lifecycle_state", "event_sender", "event_receiver"],
+          "methods": [
+            "new() - Create new P2P service",
+            "start() - Start the P2P service",
+            "shutdown() - Shutdown the P2P service",
+            "lifecycle_state() - Get current lifecycle state",
+            "health_status() - Get health status",
+            "send_message() - Send message through P2P service",
+            "message_service() - Get MessageService for direct access",
+            "is_peer_connected() - Check if peer is connected",
+            "get_peer_count() - Get current peer count",
+            "take_event_receiver() - Get event receiver for external handling"
+          ]
+        },
+        {
+          "name": "LifecycleState",
+          "variants": ["Uninitialized", "Starting", "Running", "Degraded", "Stopping", "Stopped", "Failed(String)"]
+        },
+        {
+          "name": "HealthStatus",
+          "description": "Service health status"
+        }
+      ]
+    },
+    "lifecycle": {
+      "path": "p2p/lifecycle/",
+      "submodules": ["health", "recovery", "shutdown", "startup"],
+      "public_exports": [
+        "pub use health::{ComponentHealth, HealthMonitor}",
+        "pub use recovery::{RecoveryCoordinator, RecoveryStrategy}",
+        "pub use shutdown::ShutdownCoordinator",
+        "pub use startup::StartupCoordinator"
+      ],
+      "key_types": [
+        {
+          "name": "HealthMonitor",
+          "description": "Health monitor for P2P service components",
+          "fields": ["discovery", "transport", "webrtc", "peer_manager", "message_service", "lifecycle_state"],
+          "methods": [
+            "new() - Create new health monitor",
+            "check_component_health() - Check health of all components",
+            "detect_failures() - Detect failed components",
+            "trigger_recovery() - Trigger recovery for failed components",
+            "update_health_metrics() - Update health metrics"
+          ]
+        },
+        {
+          "name": "ComponentHealth",
+          "variants": ["Healthy", "Degraded", "Failed", "Unknown"]
+        },
+        {
+          "name": "ComponentHealthReport",
+          "fields": ["discovery", "transport", "webrtc", "peer_manager", "message_service"]
+        },
+        {
+          "name": "RecoveryCoordinator",
+          "description": "Coordinates recovery of failed components"
+        },
+        {
+          "name": "ShutdownCoordinator",
+          "description": "Coordinates graceful shutdown of all components"
+        },
+        {
+          "name": "StartupCoordinator",
+          "description": "Coordinates startup of all components"
+        }
+      ]
+    },
+    "events": {
+      "path": "p2p/events/",
+      "submodules": ["bus", "handlers", "subscriptions"],
+      "public_exports": [
+        "pub use bus::EventBus",
+        "pub use handlers::EventHandlerRegistry",
+        "pub use subscriptions::{Subscription, SubscriptionManager}"
+      ],
+      "key_types": [
+        {
+          "name": "P2PEventType",
+          "description": "Unified P2P event type for event bus",
+          "variants": [
+            "PeerDiscovered/PeerLost - Discovery events",
+            "ConnectionEstablished/ConnectionLost - Transport events",
+            "DataChannelOpen/DataChannelClosed - WebRTC events",
+            "MessageReceived/MessageSent/MessageDelivered/MessageFailed - Message events",
+            "RelayConnected/RelayDisconnected - Relay events",
+            "ServiceStarted/ServiceStopped/ServiceDegraded/ComponentFailed - Lifecycle events"
+          ]
+        }
+      ],
+      "integration": "Implements From<> for DiscoveryEvent, WebRtcEvent, MessageEvent to P2PEventType"
+    },
+    "integration": {
+      "path": "p2p/integration/",
+      "submodules": ["discovery_integration", "message_integration", "relay_integration", "transport_integration", "webrtc_integration"],
+      "public_exports": [
+        "pub use discovery_integration::wire_discovery_service",
+        "pub use message_integration::wire_message_service",
+        "pub use relay_integration::wire_relay_fallback",
+        "pub use transport_integration::wire_transport_layer",
+        "pub use webrtc_integration::wire_webrtc_manager"
+      ]
+    },
+    "errors": {
+      "path": "p2p/errors.rs",
+      "key_types": [
+        {
+          "name": "P2PError",
+          "variants": [
+            "Transport(String)",
+            "Discovery(String)",
+            "Connection(String)",
+            "Config(String)",
+            "InvalidMessage(String)",
+            "Serialization(String)",
+            "Storage(String)",
+            "PersistenceError(String)",
+            "NotFound(String)",
+            "NotInitialized(String)",
+            "Io(StdIoError)",
+            "Anyhow(AnyhowError)"
+          ]
+        }
+      ]
+    }
+  },
+  "integration_points": {
+    "P2PNetwork_dependencies": {
+      "creates": ["PeerManager", "Discovery", "P2PTransport", "Option<WebRtcService>"],
+      "uses": ["NetworkConfig", "tokio::mpsc for events"]
+    },
+    "P2PService_dependencies": {
+      "creates": ["Discovery", "P2PTransport", "Option<WebRtcService>", "PeerManager", "Option<MessageService>"],
+      "lifecycle": ["start() -> Running", "shutdown() -> Stopped"],
+      "components": "ComponentManager for startup coordination"
+    },
+    "MessageService_pipeline": {
+      "outbound": "sign_message -> encrypt_message -> route_message -> persist",
+      "inbound": "decrypt_message -> verify_message -> persist -> emit event"
+    },
+    "WebRtcService_uses": {
+      "webrtc_crate": "RTCPeerConnection, ICE, DTLS, Data Channels",
+      "signaling": "SDP offer/answer exchange via external channel",
+      "data_channels": "Reliable/ordered binary data transfer"
+    },
+    "Discovery_uses": {
+      "libp2p_kademlia": "MemoryStore for peer records",
+      "libp2p_mdns": "Local network discovery",
+      "protocol": "/ipfs/kad/1.0.0"
+    }
+  },
+  "external_crates": {
+    "libp2p": {
+      "purpose": "Core P2P networking",
+      "key_modules": ["transport", "swarm", "kademlia", "mdns", "noise", "yamux", "tcp", "websocket"]
+    },
+    "webrtc": {
+      "purpose": "WebRTC peer connections",
+      "key_types": ["RTCPeerConnection", "RTCIceServer", "DataChannel"]
+    },
+    "chacha20poly1305": {
+      "purpose": "Message encryption",
+      "algorithm": "AEAD ChaCha20-Poly1305"
+    },
+    "ed25519_dalek": {
+      "purpose": "Message signing",
+      "algorithm": "Ed25519"
+    },
+    "tokio": {
+      "purpose": "Async runtime",
+      "features": ["sync::mpsc for events", "sync::RwLock for state"]
+    },
+    "serde": {
+      "purpose": "Serialization"
+    },
+    "uuid": {
+      "purpose": "Message IDs"
+    },
+    "chrono": {
+      "purpose": "Timestamps"
+    },
+    "thiserror": {
+      "purpose": "Error definitions"
+    },
+    "anyhow": {
+      "purpose": "Error handling"
+    },
+    "tracing": {
+      "purpose": "Logging"
+    }
+  }
+}

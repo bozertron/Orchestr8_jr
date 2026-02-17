@@ -1,0 +1,69 @@
+{
+  "source": "one integration at a time/docs/UI_PRESSURE_TEST_REPORT.md",
+  "total_lines": 225,
+  "sha256": "19ff84c1671199976a7a577c0c1df853e5f91497fe8b3df6ac43e95da40eb0ac",
+  "chunk_count": 2,
+  "observation_ids": [
+    479,
+    480
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 1,
+      "text": "# UI Pressure Test Report: 06_maestro.py"
+    },
+    {
+      "line": 6,
+      "text": "**Subject:** `IP/plugins/06_maestro.py` (The Void plugin)"
+    },
+    {
+      "line": 12,
+      "text": "The `06_maestro.py` plugin has a solid foundation but requires updates to align with the authoritative MaestroView.vue style guide. The plugin is **functional** but **incomplete** for production use."
+    },
+    {
+      "line": 86,
+      "text": "The Void should display:"
+    },
+    {
+      "line": 88,
+      "text": "2. **Status Overlays** - Three-color node states (Gold/Blue/Purple)"
+    },
+    {
+      "line": 138,
+      "text": ".maestro-top-row {"
+    },
+    {
+      "line": 171,
+      "text": "✓ STATE_MANAGERS pattern correctly implemented"
+    },
+    {
+      "line": 174,
+      "text": "✓ 06_maestro.py render() executes without errors"
+    },
+    {
+      "line": 202,
+      "text": "- Plugin architecture with `STATE_MANAGERS` injection"
+    },
+    {
+      "line": 204,
+      "text": "- Event handler pattern (toggle_collabor8, toggle_jfdi, etc.)"
+    },
+    {
+      "line": 208,
+      "text": "- The Void center should default to **graph view**, not chat"
+    },
+    {
+      "line": 209,
+      "text": "- Chat should be a **secondary mode** or overlay"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

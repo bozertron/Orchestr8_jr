@@ -1,0 +1,32 @@
+{
+  "source": "one integration at a time/IP--888/panel_foundation/base_panel.py",
+  "total_lines": 275,
+  "sha256": "0ec8e148ed4b46bbec1ebfb112900f12a9c8182eeb32972024acc53c2177f933",
+  "chunk_count": 3,
+  "observation_ids": [
+    650,
+    651,
+    652
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance."
+  ],
+  "anchors": [
+    {
+      "line": 3,
+      "text": "Base Panel - Abstract base class that ALL [name]8 tools must implement"
+    },
+    {
+      "line": 73,
+      "text": "All panels must implement this interface to work with Orchestr8's"
+    },
+    {
+      "line": 110,
+      "text": "config: Panel configuration from orchestr8_settings.toml"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

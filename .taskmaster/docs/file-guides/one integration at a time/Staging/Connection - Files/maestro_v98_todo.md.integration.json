@@ -1,0 +1,87 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/maestro_v98_todo.md",
+  "total_lines": 430,
+  "sha256": "d2daf01ecbc8df539bda28a3c1bcbb2c3996785b061475135d2b18a344739e72",
+  "chunk_count": 4,
+  "observation_ids": [
+    769,
+    770,
+    771,
+    772
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 13,
+      "text": "- Base64 asset: /mnt/user-data/uploads/maestro_mark_teal.b64 (90,607 chars, 519×339px)"
+    },
+    {
+      "line": 14,
+      "text": "- Progress tracker: /home/claude/maestro_v98_todo.md"
+    },
+    {
+      "line": 15,
+      "text": "- Output target: /mnt/user-data/outputs/maestro_awakening_v9.8.html"
+    },
+    {
+      "line": 22,
+      "text": "Please read /home/claude/maestro_v98_todo.md for current progress and next task."
+    },
+    {
+      "line": 40,
+      "text": "| READY | 28-30s | Gold M breathing | Fade out |"
+    },
+    {
+      "line": 57,
+      "text": "// Validate count (must be 1000-6000 for valid M shape)"
+    },
+    {
+      "line": 80,
+      "text": "const hasTealHue = (g > r) || (b > r); // Teal has higher G/B than R"
+    },
+    {
+      "line": 82,
+      "text": "if (isNotBlack && hasTealHue) {"
+    },
+    {
+      "line": 365,
+      "text": "**Build Output:** /mnt/user-data/outputs/maestro_awakening_v9.9.html"
+    },
+    {
+      "line": 378,
+      "text": "- [ ] Gold transition at t=26s: ⬜ — AWAITING USER TEST"
+    },
+    {
+      "line": 394,
+      "text": "| 27s | Gold sweep with white flash | | ⬜ |"
+    },
+    {
+      "line": 395,
+      "text": "| 29s | Gold M breathing | | ⬜ |"
+    },
+    {
+      "line": 420,
+      "text": "| Teal Base64 | Full resolution asset | /mnt/user-data/uploads/maestro_mark_teal.b64 |"
+    },
+    {
+      "line": 421,
+      "text": "| Gold Base64 | Alternative color | /mnt/user-data/uploads/maestro_mark_gold.png |"
+    },
+    {
+      "line": 422,
+      "text": "| This Tracker | Progress & context | /home/claude/maestro_v98_todo.md |"
+    },
+    {
+      "line": 423,
+      "text": "| Final Output | v9.8 build | /mnt/user-data/outputs/maestro_awakening_v9.8.html |"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "source": "one integration at a time/docs/UI_VISUAL_AUDIT.md",
+  "total_lines": 311,
+  "sha256": "037864627ff35fcc1344bf9dc7f889005af8ade6db799c3af0bf41ee469e4efb",
+  "chunk_count": 3,
+  "observation_ids": [
+    481,
+    482,
+    483
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 14,
+      "text": "| **Layer 1: Top Panel** | Fully specified | Partial (06_maestro.py) | MEDIUM |"
+    },
+    {
+      "line": 15,
+      "text": "| **Layer 2: Bottom Panel** | Fully specified | Partial (06_maestro.py) | MEDIUM |"
+    },
+    {
+      "line": 16,
+      "text": "| **Layer 3: Right Slider (JFDI)** | Fully specified | Placeholder only | HIGH |"
+    },
+    {
+      "line": 33,
+      "text": "- Gold = Working, Blue = Broken, Purple = Combat"
+    },
+    {
+      "line": 41,
+      "text": "- `orchestr8_mcp.py` can generate Mermaid text diagrams"
+    },
+    {
+      "line": 65,
+      "text": "**Implementation (06_maestro.py):**"
+    },
+    {
+      "line": 84,
+      "text": "- maestro (m) logo with 3 states: OFF/OBSERVE/ON"
+    },
+    {
+      "line": 90,
+      "text": "**Implementation (06_maestro.py):**"
+    },
+    {
+      "line": 93,
+      "text": "# Has: Apps, Matrix, Files, maestro, Search, Terminal, Send, Attach"
+    },
+    {
+      "line": 95,
+      "text": "# Missing: 3-state maestro toggle (OFF/OBSERVE/ON)"
+    },
+    {
+      "line": 105,
+      "text": "- maestro 3-state cycle (currently just a button)"
+    },
+    {
+      "line": 108,
+      "text": "- Color states for maestro logo"
+    },
+    {
+      "line": 114,
+      "text": "### Layer 3: Right Slider (JFDI Tickets)"
+    },
+    {
+      "line": 124,
+      "text": "**Implementation (06_maestro.py):**"
+    },
+    {
+      "line": 126,
+      "text": "# Lines 424-443: JFDI panel"
+    },
+    {
+      "line": 149,
+      "text": "- No left slider in 06_maestro.py"
+    },
+    {
+      "line": 172,
+      "text": "- Reads/writes orchestr8_settings.toml"
+    },
+    {
+      "line": 211,
+      "text": "**Implementation (06_maestro.py lines 43-49):**"
+    },
+    {
+      "line": 255,
+      "text": "| maestro | State toggle |"
+    },
+    {
+      "line": 263,
+      "text": "| maestro | Summon toggle (wrong behavior) |"
+    },
+    {
+      "line": 272,
+      "text": "1. **maestro 3-state toggle** - Core UX"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

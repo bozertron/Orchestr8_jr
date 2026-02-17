@@ -1,0 +1,34 @@
+{
+  "source": "one integration at a time/orchestr8-zed/extension.toml",
+  "total_lines": 27,
+  "sha256": "aee908f38ddd6310dba4f626cab076cd47c8facea60d683fedf8b95b500d3a0e",
+  "chunk_count": 1,
+  "observation_ids": [
+    672
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 1,
+      "text": "id = \"orchestr8\""
+    },
+    {
+      "line": 4,
+      "text": "schema_version = 1"
+    },
+    {
+      "line": 7,
+      "text": "repository = \"https://github.com/bozertron/orchestr8-zed\""
+    },
+    {
+      "line": 10,
+      "text": "[context_servers.orchestr8]"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

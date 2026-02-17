@@ -1,0 +1,56 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/connectionVerifierPlanning.md",
+  "total_lines": 1206,
+  "sha256": "2e7fe8b876562176efc31622f355d50d2f79407e28045843aa135e9749355216",
+  "chunk_count": 11,
+  "observation_ids": [
+    719,
+    720,
+    721,
+    722,
+    723,
+    724,
+    725,
+    726,
+    727,
+    728,
+    729
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions."
+  ],
+  "anchors": [
+    {
+      "line": 85,
+      "text": "> As a DevOps engineer, I want to integrate connection verification into our CI pipeline so that we catch connection issues before they reach production."
+    },
+    {
+      "line": 706,
+      "text": "2. Check SQL query correctness against schema"
+    },
+    {
+      "line": 707,
+      "text": "3. Validate GraphQL queries against schema"
+    },
+    {
+      "line": 721,
+      "text": "1. Generate contract tests from verification"
+    },
+    {
+      "line": 861,
+      "text": "1. Implement schema extensions"
+    },
+    {
+      "line": 1182,
+      "text": "3. Set up database schema and integration"
+    },
+    {
+      "line": 1199,
+      "text": "4. What level of customization should be provided for verification rules?"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

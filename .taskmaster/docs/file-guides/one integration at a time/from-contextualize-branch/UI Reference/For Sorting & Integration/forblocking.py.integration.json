@@ -1,0 +1,40 @@
+{
+  "source": "one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/forblocking.py",
+  "total_lines": 178,
+  "sha256": "19779abecf5ea6e2e2ebb3eddd5384899bfc237257b9ac0aa6b69a2ee1821469",
+  "chunk_count": 2,
+  "observation_ids": [
+    500,
+    501
+  ],
+  "risks": [
+    "Visual canon risk: color/motion contract regressions are easy to introduce.",
+    "Behavioral sequencing risk: mode transitions need explicit state machine handling."
+  ],
+  "anchors": [
+    {
+      "line": 9,
+      "text": "Since you have access to a file system (/home/bozertron/), we can use Python to render the \"Code City\" directly in your command line. It will use ASCII art to visualize the Fiefdoms, Gold/Blue states, and Thresholds—proving the logic works without needing a web browser."
+    },
+    {
+      "line": 57,
+      "text": "def render_ascii(self, view_offset, cam_zoom):"
+    },
+    {
+      "line": 67,
+      "text": "# Logic: Is this point inner (Wisdom) or outer (Gold)?"
+    },
+    {
+      "line": 84,
+      "text": "char_color = C_GOLD # Gold Standard"
+    },
+    {
+      "line": 139,
+      "text": "print(f\"\\n  {C_WHITE}█{C_RESET} = Structure / Gold\")"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/i8.md",
+  "total_lines": 155,
+  "sha256": "2622f7177678401c786acd0e796534392bf008236ee135decb26f48a62d97c6f",
+  "chunk_count": 2,
+  "observation_ids": [
+    761,
+    762
+  ],
+  "risks": [
+    "Behavioral sequencing risk: mode transitions need explicit state machine handling."
+  ],
+  "anchors": [
+    {
+      "line": 7,
+      "text": "- **Phase 1**: Database schema extensions and backend API commands"
+    },
+    {
+      "line": 14,
+      "text": "The next phase should focus on deeper integration with existing components and adding advanced functionality."
+    },
+    {
+      "line": 30,
+      "text": "- ConnectionVerifier should pass verification results to the Integr8 system"
+    },
+    {
+      "line": 31,
+      "text": "- The verification logic should understand feature boundaries and dependencies"
+    },
+    {
+      "line": 50,
+      "text": "- Enable zooming and filtering to focus on specific parts of the feature graph"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

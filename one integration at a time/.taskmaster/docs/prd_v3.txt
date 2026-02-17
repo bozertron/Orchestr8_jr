@@ -1,0 +1,336 @@
+# PRD: Orchestr8 v3.0 - The Fortress Factory
+
+**Version:** 3.0
+**Philosophy:** "The Mainframe." A modular, reactive Command Center that orchestrates Python logic and TypeScript tools through a unified Plugin Architecture.
+**Core Stack:** Marimo (UI/State), Python (Glue), TypeScript (Analysis), SQLite (Data).
+
+---
+
+## 1. The Directory Structure (The "IP" Protocol)
+
+The system relies on a rigid directory layout. The Agent must verify this structure exists.
+
+```
+project_root/
+├── IP/
+│   ├── __init__.py         # (Empty) Makes IP importable
+│   ├── orchestr8_app.py    # (Host) The Main Marimo Application
+│   ├── louis_core.py       # (Logic) The File Warden
+│   ├── carl_core.py        # (Logic) The Context Bridge
+│   ├── connie.py           # (Logic) The Database Converter
+│   └── plugins/            # (Python UI Plugins)
+│       ├── 01_generator.py # The 7-Phase Wizard
+│       ├── 02_explorer.py  # The Carl UI
+│       ├── 03_gatekeeper.py# The Louis UI
+│       ├── 04_connie_ui.py # The Connie UI
+│       └── 05_cli_bridge.py# (New) The TypeScript Scaffold Bridge
+├── frontend/tools/
+│   ├── scaffold-cli.ts     # (The TS Protocol Source)
+│   ├── unified-context-system.ts
+│   └── parsers/            # (Future TS Plugins live here)
+└── .louis-control/         # Configuration storage
+```
+
+---
+
+## 2. The Host Application (orchestr8_app.py)
+
+**Role:** The Chassis. It manages global state and loads the UI plugins.
+
+### 2.1 State Management (The Bus)
+
+The Host must initialize a STATE_MANAGERS dictionary passed to every plugin.
+
+Required State Keys:
+- root: The Project Root path (getter/setter)
+- files: The DataFrame of project files (getter/setter)
+- selected: The currently selected file path (getter/setter)
+- logs: A list of system events (getter/setter)
+
+Implementation Pattern:
+```python
+STATE_MANAGERS = {
+    'root': (get_root, set_root),
+    'files': (get_files, set_files),
+    'selected': (get_selected, set_selected),
+    'logs': (get_logs, set_logs)
+}
+```
+
+### 2.2 The Plugin Loader
+
+Logic Flow:
+1. Scan IP/plugins/*.py for plugin files
+2. Dynamically import modules using importlib
+3. Read metadata: PLUGIN_NAME and PLUGIN_ORDER from each module
+4. Execute module.render(STATE_MANAGERS) to get UI content
+5. Construct the mo.ui.tabs dictionary from collected plugins
+6. Sort tabs by PLUGIN_ORDER for consistent ordering
+
+Required Plugin Contract:
+- Each plugin must export PLUGIN_NAME (str)
+- Each plugin must export PLUGIN_ORDER (int)
+- Each plugin must export render(state_managers) -> mo.Html or similar
+
+---
+
+## 3. The Core Logic Modules
+
+### 3.1 Louis v2.1 (The Warden)
+
+**Source:** IP/louis_core.py
+**Purpose:** File protection and security enforcement
+
+Capabilities:
+- scan_and_protect(): Scans folders defined in .louis-control/louis-config.json
+- install_git_hook(): Writes the pre-commit hook to .git/hooks/
+- lock_file(path): Uses os.chmod to set read-only status (0o444)
+- unlock_file(path): Uses os.chmod to restore write status (0o644)
+- get_protection_status(): Returns dict of file protection states
+
+Configuration File (.louis-control/louis-config.json):
+```json
+{
+  "protected_paths": ["src/core/", "config/"],
+  "excluded_patterns": ["*.test.*", "*.spec.*"],
+  "auto_lock_on_commit": true
+}
+```
+
+### 3.2 Connie (The Converter)
+
+**Source:** IP/connie.py
+**Purpose:** Database conversion and export
+
+Class: ConversionEngine
+- __init__(db_path): Connect to SQLite database
+- list_tables(): Returns list of table names
+- export_to_json(table, output_path): Export table to JSON
+- export_to_md(table, output_path): Export table to Markdown
+- export_to_csv(table, output_path): Export table to CSV
+- close(): Close database connection
+
+Requirement: Must run headless (no PyQt dependencies)
+
+### 3.3 Carl v2.0 (The Context Bridge)
+
+**Source:** IP/carl_core.py
+**Purpose:** Bridge between Python and TypeScript analysis tools
+
+Capabilities:
+- execute_context_analysis(root_path): Runs unified-context-system.ts
+- parse_context_output(json_str): Converts JSON to DataFrame
+- get_file_context(file_path): Returns context for specific file
+
+Implementation:
+```python
+def execute_context_analysis(root_path):
+    result = subprocess.run(
+        ["npx", "tsx", "frontend/tools/unified-context-system.ts", root_path],
+        capture_output=True,
+        text=True
+    )
+    return json.loads(result.stdout)
+```
+
+---
+
+## 4. The UI Plugins
+
+### 4.1 Plugin 01: The Generator (01_generator.py)
+
+**PLUGIN_NAME:** "Generator"
+**PLUGIN_ORDER:** 1
+**Function:** The "New Project" Wizard implementing 7-Phase Build Spec
+
+Phases:
+1. Project Identity (name, description, type)
+2. Architecture Selection (monolith, microservices, serverless)
+3. Technology Stack (frontend, backend, database)
+4. Feature Definition (core features list)
+5. Integration Points (APIs, services)
+6. Security Requirements (auth, permissions)
+7. Deployment Configuration (hosting, CI/CD)
+
+UI Elements:
+- Phase indicator (1-7 progress)
+- Text input for current phase
+- "Lock Phase" button to confirm and advance
+- "Review" panel showing locked phases
+- "Export BUILD_SPEC.json" button
+
+Output: Writes to BUILD_SPEC.json in project root
+
+### 4.2 Plugin 02: The Explorer (02_explorer.py)
+
+**PLUGIN_NAME:** "Explorer"
+**PLUGIN_ORDER:** 2
+**Function:** The File Tree and Context Viewer
+
+Integration: Calls Carl to get file data
+
+UI Elements:
+- Path input for project root
+- "Scan" button to trigger Carl analysis
+- mo.ui.table with columns: path, type, size, status, context_score
+- Selection mode: single (updates global 'selected' state)
+- File details panel showing selected file context
+
+Behavior:
+- On scan: Call carl_core.execute_context_analysis()
+- On row select: Update STATE_MANAGERS['selected']
+- Display file context in details panel
+
+### 4.3 Plugin 03: The Gatekeeper (03_gatekeeper.py)
+
+**PLUGIN_NAME:** "Gatekeeper"
+**PLUGIN_ORDER:** 3
+**Function:** Louis's Dashboard for file protection
+
+UI Elements:
+- Status Indicator: Large badge showing "SECURE" (green) or "VULNERABLE" (amber)
+- Protection Stats: Count of locked/unlocked files
+- "Lock All" Button: Batch lock all configured paths
+- "Unlock All" Button: Batch unlock (with confirmation)
+- "Install Git Hook" Button: One-click hook installation
+- Per-file Toggle: Lock/Unlock for the currently selected file
+- Activity Log: Recent protection events
+
+Integration:
+- Reads from louis_core for all operations
+- Updates on STATE_MANAGERS['selected'] changes
+- Logs all actions to STATE_MANAGERS['logs']
+
+### 4.4 Plugin 04: Connie UI (04_connie_ui.py)
+
+**PLUGIN_NAME:** "Converter"
+**PLUGIN_ORDER:** 4
+**Function:** Database conversion tools
+
+UI Elements:
+- Database selector: Dropdown of found .db files in project
+- Table selector: Dropdown populated after DB selection
+- Format selector: Radio buttons (JSON, Markdown, CSV)
+- Output path input: Destination for export
+- "Convert" button: Execute export
+- Preview panel: Show first 10 rows of selected table
+- Status message: Success/error feedback
+
+Integration:
+- Scans project for .db files on load
+- Uses connie.ConversionEngine for all operations
+
+### 4.5 Plugin 05: CLI Bridge (05_cli_bridge.py)
+
+**PLUGIN_NAME:** "Scaffold"
+**PLUGIN_ORDER:** 5
+**Function:** TypeScript CLI tool integration
+
+The Protocol:
+- Discovery command: npx tsx frontend/tools/scaffold-cli.ts list-plugins
+- Expected JSON output: [{"name": "stores", "description": "...", "command": "analyze-stores"}, ...]
+
+Dynamic UI Generation:
+For each plugin returned by list-plugins:
+1. Create a collapsible section with plugin name as header
+2. Display plugin description
+3. Provide "Run Analysis" button
+4. On click: Execute npx tsx frontend/tools/scaffold-cli.ts [command] --target [root]
+5. Capture JSON result
+6. Render as mo.ui.table or formatted output
+
+Error Handling:
+- Show "No TypeScript tools found" if list-plugins fails
+- Display stderr output on command failure
+- Timeout after 30 seconds with cancellation option
+
+---
+
+## 5. UI/UX Design Specifications
+
+### 5.1 Color System (stereOS Compliant)
+
+```css
+--bg-primary: #0A0A0B      /* The Void - main background */
+--bg-elevated: #121214     /* Surface - cards, panels */
+--blue-dominant: #1fbdea   /* UI default - borders, links */
+--gold-metallic: #D4AF37   /* UI highlight - hover states */
+--gold-dark: #B8860B       /* Timestamps, secondary gold */
+--gold-saffron: #F4C430    /* Active states, emphasis */
+```
+
+### 5.2 Typography
+
+```css
+--font-headline: 'Futura', sans-serif    /* 10-18px, weight 500-600, letter-spacing 0.08-0.25em */
+--font-body: 'Avenir', sans-serif        /* 13-15px, weight 400, normal spacing */
+--font-mono: 'SF Mono', monospace        /* 10-12px, weight 400, letter-spacing 0.1em */
+```
+
+### 5.3 Interaction States
+
+Default: Blue border (rgba(31, 189, 234, 0.3)), blue text
+Hover: Gold border (#D4AF37), gold text, subtle gold background (rgba(212, 175, 55, 0.1))
+Active: Gold saffron (#F4C430), elevated background
+Disabled: 30% opacity, no hover effect
+
+### 5.4 Animation (Void Emergence)
+
+Transitions: 150-300ms ease-out
+Emerge pattern: translateY(20px) scale(0.95) -> translateY(0) scale(1)
+NO breathing/pulse animations
+NO emojis in UI
+
+---
+
+## 6. Execution Instructions
+
+### Phase 1: Directory Setup
+1. Create IP/ directory structure
+2. Create IP/__init__.py (empty)
+3. Create IP/plugins/ directory
+4. Create .louis-control/ directory
+5. Verify frontend/tools/ exists (or create stub)
+
+### Phase 2: Core Module Migration
+1. Implement IP/louis_core.py with all Warden capabilities
+2. Implement IP/connie.py with ConversionEngine class
+3. Implement IP/carl_core.py with subprocess bridge
+
+### Phase 3: Host Application
+1. Create IP/orchestr8_app.py
+2. Implement STATE_MANAGERS with all required states
+3. Implement dynamic plugin loader
+4. Create tab assembly logic
+
+### Phase 4: Plugin Implementation
+1. Create 01_generator.py with 7-phase wizard
+2. Create 02_explorer.py with Carl integration
+3. Create 03_gatekeeper.py with Louis dashboard
+4. Create 04_connie_ui.py with conversion tools
+5. Create 05_cli_bridge.py with TS discovery
+
+### Phase 5: Integration and Polish
+1. Wire all plugins to STATE_MANAGERS
+2. Apply stereOS design system
+3. Test plugin hot-loading
+4. Verify TS bridge discovery
+
+---
+
+## 7. Acceptance Criteria
+
+1. IP/ directory structure matches specification exactly
+2. Plugin loader discovers and loads all 5 plugins dynamically
+3. STATE_MANAGERS propagates changes across all plugins
+4. Louis can lock/unlock files and install git hooks
+5. Connie exports databases without PyQt dependency
+6. Carl successfully bridges to TypeScript tools
+7. CLI Bridge auto-discovers TS plugins and generates UI
+8. UI follows stereOS color/typography specifications
+9. No emojis anywhere in the interface
+10. Adding a new TS parser automatically appears in Scaffold tab
+
+---
+
+**Architecture Note:** This plugin system ensures extensibility. New Python plugins in IP/plugins/ are auto-discovered. New TypeScript parsers in frontend/tools/parsers/ are auto-discovered via the CLI Bridge. Zero code changes to the host required for extension.

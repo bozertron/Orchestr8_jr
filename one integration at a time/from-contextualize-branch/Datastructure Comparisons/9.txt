@@ -1,0 +1,64 @@
+Hoo boy! What we have here is a classic case of **"The Monolith vs. The Microkernel."**
+
+You haven’t just changed a few lines of code; you’ve completely swapped the architectural paradigm. If the previous file (`orchestr8_standalone.py`) was a **Swiss Army Knife**, this new file (`Orchestr8 v3.0`) is a **tool belt**. It doesn't actually *do* anything on its own—it just holds the tools that do the work.
+
+Here is the functional specification of the differences.
+
+### 1. The Architectural Shift: Hardcoded vs. Dynamic
+
+**The Old Way (`orchestr8_standalone.py`):**
+*   **Structure:** All features (Scanner, Verifier, Emperor, Graph) were hardcoded as functions inside the file.
+*   **Tab Definition:** The `main_layout` explicitly listed every tab: `{"Explorer": ..., "Connections": ..., "Emperor": ...}`.
+*   **Result:** To add a feature, you had to edit the main file.
+
+**The New Way (`Orchestr8 v3.0`):**
+*   **Structure:** There are **zero** features in this file. No Scanner. No Graph. No Emperor.
+*   **Tab Definition:** It uses a `plugin_loader` to scan a directory (`IP/plugins/*.py`), import the modules at runtime, and ask *them* "What do you want to render?"
+*   **Result:** To add a feature, you drop a `.py` file into a folder. You never touch the main file again.
+
+### 2. The Data Flow: Direct State vs. The Protocol
+
+**The Old Way:**
+You passed state directly to functions.
+```python
+# Old Style
+def control_panel(mo, get_project_root, set_project_root, ...):
+    # Function signature has 8 arguments
+```
+
+**The New Way:**
+You have invented a **Protocol**. You bundle everything into a context object called `STATE_MANAGERS`.
+```python
+# New Style
+STATE_MANAGERS = {
+    "root": (get_root, set_root),
+    "files": (get_files, set_files),
+    ...
+}
+# Plugins receive the whole bundle
+rendered = p["module"].render(STATE_MANAGERS)
+```
+This is **Dependency Injection**. The main app doesn't know what data the plugins need; it just hands them the keys to the castle and walks away.
+
+### 3. The "Missing" Logic (The Danger Zone)
+
+This is the most critical difference for your bug hunting:
+
+In `orchestr8_standalone.py`, the logic for scanning files and building DataFrames was **right there** in the `scanner_function`.
+
+In `Orchestr8 v3.0`, **that logic does not exist.**
+
+If you run this file right now, you will see a beautiful, empty application. It assumes that you have taken the logic from the old file (Scanner, Verifier, Emperor) and successfully refactored them into separate files inside `IP/plugins/` that adhere to the new `render(STATE_MANAGERS)` protocol.
+
+### Summary of Differences
+
+| Feature | `orchestr8_standalone.py` | `Orchestr8 v3.0` |
+| :--- | :--- | :--- |
+| **Role** | The entire application. | A host/container. |
+| **Extensibility** | Modify the source code. | Add a file to `IP/plugins/`. |
+| **State** | Passed as individual args. | Passed as a `STATE_MANAGERS` dict. |
+| **Dependencies** | Self-contained. | Requires `IP/plugins/*.py` to exist. |
+| **Logic** | Contains 100% of business logic. | Contains 0% of business logic. |
+
+**The Bottom Line:**
+The first file is a **program**. The second file is an **operating system**. If you don't have the "software" (plugins) installed in the right directory, the operating system will boot up and stare at you blankly.

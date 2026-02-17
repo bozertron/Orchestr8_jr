@@ -1,0 +1,104 @@
+{
+  "source": "one integration at a time/888/director/tests/test_user_context.py",
+  "total_lines": 287,
+  "sha256": "020512dcdffb01b43d4fcd87f76bd5d2b4a46fffec449c528dfb12331e3a63e8",
+  "chunk_count": 3,
+  "observation_ids": [
+    244,
+    245,
+    246
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 18,
+      "text": "self.assertEqual(self.context.current_zone, \"orchestr8\")"
+    },
+    {
+      "line": 30,
+      "text": "'from_zone': 'orchestr8',"
+    },
+    {
+      "line": 33,
+      "text": "'app_context': 'maestro'"
+    },
+    {
+      "line": 42,
+      "text": "self.assertEqual(self.context.zone_transitions[0]['from_zone'], 'orchestr8')"
+    },
+    {
+      "line": 54,
+      "text": "'app_context': 'orchestr8'"
+    },
+    {
+      "line": 61,
+      "text": "self.assertEqual(self.context.active_tools['orchestr8'], 'chat_interface')"
+    },
+    {
+      "line": 62,
+      "text": "self.assertEqual(self.context.tool_usage_patterns['orchestr8:chat_interface'], 1)"
+    },
+    {
+      "line": 91,
+      "text": "'last_app_context': 'orchestr8'"
+    },
+    {
+      "line": 109,
+      "text": "'app_context': 'orchestr8'"
+    },
+    {
+      "line": 130,
+      "text": "'app_context': 'orchestr8'"
+    },
+    {
+      "line": 141,
+      "text": "'app_context': 'orchestr8'"
+    },
+    {
+      "line": 162,
+      "text": "'from_zone': 'orchestr8',"
+    },
+    {
+      "line": 165,
+      "text": "'app_context': 'maestro'"
+    },
+    {
+      "line": 209,
+      "text": "def test_should_show_suggestion(self):"
+    },
+    {
+      "line": 211,
+      "text": "# Initially should not show (too recent)"
+    },
+    {
+      "line": 212,
+      "text": "self.assertFalse(self.context.should_show_suggestion())"
+    },
+    {
+      "line": 221,
+      "text": "self.assertTrue(self.context.should_show_suggestion())"
+    },
+    {
+      "line": 227,
+      "text": "self.assertFalse(self.context.should_show_suggestion())"
+    },
+    {
+      "line": 233,
+      "text": "self.assertFalse(self.context.should_show_suggestion())"
+    },
+    {
+      "line": 239,
+      "text": "self.assertTrue(self.context.should_show_suggestion())"
+    },
+    {
+      "line": 274,
+      "text": "'app_context': 'maestro'"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

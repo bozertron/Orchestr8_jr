@@ -1,0 +1,27 @@
+{
+  "source": "one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/zsphere.html",
+  "total_lines": 193,
+  "sha256": "20733c288a10e9114bbee1bf2e8b6fcb7f8615aa5c26987a3864722fb7d2ddfe",
+  "chunk_count": 2,
+  "observation_ids": [
+    622,
+    623
+  ],
+  "risks": [
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 100,
+      "text": "// Inner core is White (Wisdom), Outer is Gold"
+    },
+    {
+      "line": 102,
+      "text": "vec3 shellColor = vec3(0.83, 0.68, 0.21); // Gold"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

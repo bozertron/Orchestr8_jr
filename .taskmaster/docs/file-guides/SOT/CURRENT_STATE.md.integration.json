@@ -1,0 +1,80 @@
+{
+  "source": "SOT/CURRENT_STATE.md",
+  "total_lines": 164,
+  "sha256": "bf9dc350d9cacd0ba651737ac953707425baac7b2b96346aae83ade1d5956d59",
+  "chunk_count": 2,
+  "observation_ids": [
+    135,
+    136
+  ],
+  "risks": [
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 31,
+      "text": "| `IP/combat_tracker.py` | 4KB | Deployment tracking | COMPLETE - Purple state management |"
+    },
+    {
+      "line": 40,
+      "text": "| `ticket_panel.py` | JFDI ticket panel | COMPLETE - Full UI, wired to TicketManager |"
+    },
+    {
+      "line": 55,
+      "text": "| `05_universal_bridge.py` | Tool registry | FIXED (marimo API) |"
+    },
+    {
+      "line": 56,
+      "text": "| `06_maestro.py` | THE VOID | PARTIALLY WIRED |"
+    },
+    {
+      "line": 62,
+      "text": "## II. What's Wired in 06_maestro.py"
+    },
+    {
+      "line": 80,
+      "text": "from IP.health_checker import HealthChecker           # IMPORTED, NEVER INSTANTIATED"
+    },
+    {
+      "line": 97,
+      "text": "| Brand uses legacy naming | Lines 873-876 | Should be \"orchestr8\" |"
+    },
+    {
+      "line": 98,
+      "text": "| CSS uses legacy class names | Lines 189-200 | Should be `.orchestr8-*` |"
+    },
+    {
+      "line": 100,
+      "text": "| JFDI opens placeholder | Lines 1059-1079 | Has \"coming soon\" text, ignores TicketPanel |"
+    },
+    {
+      "line": 104,
+      "text": "| HealthChecker never runs | Line 77 | Imported but never instantiated |"
+    },
+    {
+      "line": 113,
+      "text": "| Phase 1 | Build mermaid, health checker, spawner | ALL EXIST - but HealthChecker not wired |"
+    },
+    {
+      "line": 114,
+      "text": "| Phase 2 | Create ticket system | COMPLETE - but JFDI button doesn't use it |"
+    },
+    {
+      "line": 129,
+      "text": "4. **Maestro \"coming soon\" panels** - Placeholder UI (Collabor8, JFDI, Summon)"
+    },
+    {
+      "line": 156,
+      "text": "2. JFDI doesn't use TicketPanel"
+    },
+    {
+      "line": 157,
+      "text": "3. HealthChecker never runs"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

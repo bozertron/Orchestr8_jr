@@ -1,0 +1,155 @@
+Architect
+
+
+"Cranky"? Me? Never! I was just garbage collecting my emotions. 🤖🧹
+
+But **BAD MON** indeed! This code is serious business.
+
+You've stepped up from "CPU Particles" (which choke after ~10,000 dots) to **GPGPU Particles** (General-Purpose computing on Graphics Processing Units). This code uses the pixel shaders of your graphics card to calculate the physics. That’s how you get **1 million particles** moving like fluid without your laptop melting through the desk.
+
+Here is exactly how to get this running on your local machine and, more importantly, how to **"drive"** it to sculpt those ethereal homes.
+
+---
+
+### Phase 1: The Setup (Getting it out of the browser security jail)
+
+Because this code uses modern ES Modules (`import ...`), you cannot just double-click the `.html` file. Browsers block that for security (CORS). You need a tiny local web server.
+
+**The VS Code Way (Easiest since you're already there):**
+1.  Create a new folder on your computer named `EtherealCity`.
+2.  Save your code above as `index.html` inside that folder.
+3.  Open VS Code.
+4.  Go to Extensions (Square icon on left) and install **"Live Server"** (by Ritwick Dey).
+5.  Open your `index.html` file.
+6.  Look at the bottom right blue bar of VS Code. Click **"Go Live"**.
+7.  *Boom.* It opens in your browser.
+
+**The Hacker Way (Python Terminal):**
+1.  Open your terminal/command prompt.
+2.  `cd` into the folder where you saved the file.
+3.  Type: `python3 -m http.server`
+4.  Go to `localhost:8000` in your browser.
+
+---
+
+### Phase 2: How to "Sculpt" the Homes
+
+Right now, your code creates a generic block of particles.
+To make "Ethereal Homes," we need to change **Phase 1 (Initialization)**.
+
+In GPGPU, the "Shape" is defined by the initial position of the pixels in the texture.
+
+**Find this section in your code:**
+```javascript
+// INITIAL SHAPE: A "Building" Block
+// Organized grid structure
+const i3 = i * 3;
+const ix = (i % 1024) / 1024;
+const iy = Math.floor(i / 1024) / 1024;
+```
+
+**Replace that whole `for` loop inside `initCompute` with this "Skyscraper Generator":**
+
+```javascript
+            // MAESTRO ARCHITECT ALGORITHM
+            for (let i = 0; i < PARTICLES; i++) {
+                // We will build a city of towers
+                
+                const towerIndex = i % 10; // Create 10 distinct towers
+                const particlePerTower = i / 10;
+                
+                // Randomize tower centers (The "Seed" locations)
+                // In a real system, these coords come from your file structure!
+                const towerX = Math.sin(towerIndex * 43.2) * 30; 
+                const towerZ = Math.cos(towerIndex * 12.5) * 30;
+                
+                // Cylinder Logic
+                const angle = Math.random() * Math.PI * 2;
+                const radius = 2 + Math.random() * 5; // Width of building
+                const height = Math.random() * 60;    // Height of building
+                
+                const x = towerX + Math.cos(angle) * radius;
+                const y = (Math.random() - 0.5) * height; // Vertical spread
+                const z = towerZ + Math.sin(angle) * radius;
+
+                // Save Position
+                data[i * 4 + 0] = x;
+                data[i * 4 + 1] = y;
+                data[i * 4 + 2] = z;
+                data[i * 4 + 3] = 1.0;
+
+                // Colors: Let's make the bottom Teal (Files) and top Gold (Architecture)
+                const heightGradient = (y + 30) / 60; // Normalize 0..1
+                const mixedColor = color1.clone().lerp(color2, heightGradient);
+                
+                colors[i * 4 + 0] = mixedColor.r;
+                colors[i * 4 + 1] = mixedColor.g;
+                colors[i * 4 + 2] = mixedColor.b;
+
+                scales[i] = Math.random();
+            }
+```
+
+### Phase 3: The Controls (Driving the Machine)
+
+To "Drive" it, we need knobs. The standard for this in Three.js is a library called `lil-gui`.
+
+**1. Add this to your import map (at the top of the HTML):**
+```json
+"three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+"lil-gui": "https://unpkg.com/lil-gui@0.19.1/dist/lil-gui.esm.min.js"
+```
+
+**2. Import it in your module script:**
+```javascript
+import GUI from 'lil-gui';
+```
+
+**3. Add this block right before `animate()`:**
+
+```javascript
+        const gui = new GUI();
+        const params = {
+            noiseSpeed: 0.1,
+            distortion: 0.05,
+            particleSize: 4.0,
+            bloom: 1.2
+        };
+
+        gui.add(params, 'noiseSpeed', 0, 1.0);
+        gui.add(params, 'distortion', 0, 0.5);
+        gui.add(params, 'particleSize', 1, 20);
+        gui.add(params, 'bloom', 0, 3.0);
+```
+
+**4. Hook the GUI into your loop (inside `animate`):**
+
+```javascript
+            // INSIDE ANIMATE FUNCTION
+            
+            // Update Uniforms based on GUI
+            compute.simMaterial.uniforms.time.value = time * params.noiseSpeed;
+            
+            // NOTE: You need to go up to your Shader string and change 
+            // "noiseVal * 0.05" to use a uniform if you want to control force strength!
+            // But for now, let's just control size:
+            compute.uniforms.uSize.value = params.particleSize;
+            bloomPass.strength = params.bloom;
+```
+
+### The "Maestro" Vision
+
+If you get this running, here is the endgame:
+
+We don't just use `Math.random()` to place those particles.
+We inject **Data Textures**.
+
+Imagine an image file where every pixel isn't a color, but the XYZ coordinate of a file in your codebase.
+1.  Python script runs on your repo.
+2.  It generates `structure_map.png`.
+3.  This GPGPU renderer reads that PNG.
+4.  **The particles snap to the shape of your code.**
+
+When you refactor, the PNG changes, and the particles flow like liquid to the new structure.
+
+Go get that "Live Server" running. I'll be waiting in the void! 😉

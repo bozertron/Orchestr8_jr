@@ -1,0 +1,301 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": "1",
+        "title": "Refine test hooks coverage",
+        "description": "Expand test hooks to all active MVP module domains.",
+        "details": "MVP roadmap task for mingos_settlement_lab: Expand test hooks to all active MVP module domains.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "1.1",
+            "title": "Plan refine test hooks coverage",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "1"
+          },
+          {
+            "id": "1.2",
+            "title": "Implement refine test hooks coverage",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "1"
+          },
+          {
+            "id": "1.3",
+            "title": "Verify refine test hooks coverage",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "1"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "2",
+        "title": "Refine acceptance matrix strictness",
+        "description": "Define explicit pass/fail criteria and evidence map by module.",
+        "details": "MVP roadmap task for mingos_settlement_lab: Define explicit pass/fail criteria and evidence map by module.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "1"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "2.1",
+            "title": "Plan refine acceptance matrix strictness",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "2"
+          },
+          {
+            "id": "2.2",
+            "title": "Implement refine acceptance matrix strictness",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "2"
+          },
+          {
+            "id": "2.3",
+            "title": "Verify refine acceptance matrix strictness",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "2"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "3",
+        "title": "Cross-link matrix to active packets",
+        "description": "Map acceptance criteria to B/C/FC packet IDs and outputs.",
+        "details": "MVP roadmap task for mingos_settlement_lab: Map acceptance criteria to B/C/FC packet IDs and outputs.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "2"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "3.1",
+            "title": "Plan cross-link matrix to active packets",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "3"
+          },
+          {
+            "id": "3.2",
+            "title": "Implement cross-link matrix to active packets",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "3"
+          },
+          {
+            "id": "3.3",
+            "title": "Verify cross-link matrix to active packets",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "3"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "4",
+        "title": "Publish implementation handoff notes",
+        "description": "Write direct handoff notes for a_codex_plan integration use.",
+        "details": "MVP roadmap task for mingos_settlement_lab: Write direct handoff notes for a_codex_plan integration use.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "3"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "4.1",
+            "title": "Plan publish implementation handoff notes",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "4"
+          },
+          {
+            "id": "4.2",
+            "title": "Implement publish implementation handoff notes",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "4"
+          },
+          {
+            "id": "4.3",
+            "title": "Verify publish implementation handoff notes",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "4"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "5",
+        "title": "Publish canonical MSL-04 report updates",
+        "description": "Deliver updated report with traceability matrix and proof.",
+        "details": "MVP roadmap task for mingos_settlement_lab: Deliver updated report with traceability matrix and proof.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "4"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "5.1",
+            "title": "Plan publish canonical msl-04 report updates",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "5"
+          },
+          {
+            "id": "5.2",
+            "title": "Implement publish canonical msl-04 report updates",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "5"
+          },
+          {
+            "id": "5.3",
+            "title": "Verify publish canonical msl-04 report updates",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "5"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "6",
+        "title": "Draft MSL-05 support packet",
+        "description": "Prepare follow-up synthesis packet aligned to new integration findings.",
+        "details": "MVP roadmap task for mingos_settlement_lab: Prepare follow-up synthesis packet aligned to new integration findings.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "5"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "6.1",
+            "title": "Plan draft msl-05 support packet",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "6"
+          },
+          {
+            "id": "6.2",
+            "title": "Implement draft msl-05 support packet",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "6"
+          },
+          {
+            "id": "6.3",
+            "title": "Verify draft msl-05 support packet",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "6"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      }
+    ],
+    "metadata": {
+      "version": "1.0.0",
+      "lastModified": "2026-02-16T04:12:58Z",
+      "taskCount": 6,
+      "completedCount": 0,
+      "tags": [
+        "master"
+      ]
+    }
+  }
+}

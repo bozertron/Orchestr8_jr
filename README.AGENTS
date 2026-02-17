@@ -1,0 +1,349 @@
+# README.AGENTS - Universal Operator Source
+
+This is the canonical operator handbook for all current and future agents working on Orchestr8.
+
+## 0. Hard Requirements (Read First)
+
+Before any packet work, read and follow:
+- `.planning/orchestr8_next/execution/HARD_REQUIREMENTS.md`
+- `.planning/orchestr8_next/execution/LONG_RUN_MODE.md`
+- `SOT/THE_MAYOR_OPERATIONS_PLAYBOOK.md` (cross-codebase continuity and restart runbook)
+- `SOT/CODEBASE_ROADMAP_CANONICAL.md`
+- `SOT/CODE_CITY_AGGREGATED_TODO.md`
+- `SOT/PLATFORM_TARGET_DESKTOP_LINUX.md`
+- `SOT/APP_FIRST_TAURI_READY_PLAN.md`
+
+Hard requirement commands (must run at kickoff and closeout for each packet in a long-run window):
+
+```bash
+scripts/packet_bootstrap.sh <PHASE> <PACKET_ID> <AGENT_ID>
+scripts/packet_lint.sh <PROMPT_FILE> <BOUNDARY_FILE>
+scripts/packet_closeout.sh <PHASE> <PACKET_ID>
+```
+
+Rule:
+- The generated packet worklist is the active TODO list and must be followed explicitly.
+
+Phase prep compiler (mayor/canonical operations):
+
+```bash
+python scripts/phase_prep_builder.py init --output SOT/CODEBASE_TODOS/NEXT_PHASE_COLLAB_WORKING.toml
+python scripts/phase_prep_builder.py render --spec SOT/CODEBASE_TODOS/NEXT_PHASE_COLLAB_WORKING.toml
+```
+
+Purpose:
+- Build boundaries/prompts/TODOs/launch-pack/guidance-status snippets from one shared collaboration spec.
+- Optional send + kickoff mode:
+`python scripts/phase_prep_builder.py render --spec SOT/CODEBASE_TODOS/NEXT_PHASE_COLLAB_WORKING.toml --send --kickoff-canonical`
+
+## 1. Current Program State (Live)
+
+Do not treat this file as a static phase snapshot.
+
+Live execution truth is:
+- `.planning/orchestr8_next/execution/checkins/P07/STATUS.md`
+- `.planning/orchestr8_next/execution/checkins/P07/GUIDANCE.md`
+- `.planning/orchestr8_next/execution/checkins/P07/BLOCKERS.md`
+- `SOT/CODEBASE_ROADMAP_CANONICAL.md`
+- `SOT/CODE_CITY_AGGREGATED_TODO.md`
+
+Historical lock reference (kept for provenance):
+- Date lock snapshot: 2026-02-15
+
+- `P05` and `P06` are complete and promoted.
+- Snapshot posture at that time: `Clean/Parked` pending `P07` authorization.
+- Canonical evidence:
+- `.planning/orchestr8_next/artifacts/P05/`
+- `.planning/orchestr8_next/artifacts/P06/`
+
+### Last canonical validation snapshot
+
+```bash
+pytest tests/reliability/test_reliability.py \
+  tests/city/test_binary_payload.py \
+  tests/city/test_wiring_view.py \
+  tests/city/test_parity.py -q
+bash scripts/verify_rehearsal.sh
+```
+
+Expected result:
+- `11 passed`
+- `WIDGET PASS` and `IFRAME PASS`
+
+## 2. Where We Are Going (P07 Direction)
+
+We are running a three-lane model with strict promotion gates.
+
+- `Orchestr8_jr` (canonical lane): UI contract authority, approval authority, final promotion.
+- `a_codex_plan` (core integration lane): marimo-first core integration, adapters, middleware, backend reliability.
+- `2ndFid_explorers` (extraction lane): line-by-line pattern extraction and conversion proposals from 2ndFid.
+
+Sequence lock:
+- Core completion and approval first.
+- Approved extraction integrations first.
+- Compliance and packaging start only after core acceptance.
+
+## 2.1 Execution Cadence (Founder Directive)
+
+We run in long-run batch mode:
+
+1. All lanes develop in parallel unless explicitly blocked.
+2. One kickoff sequence per lane (`checkout` + worklist + lint).
+3. Minimal interruption during implementation window (blocker/safety only).
+4. One end-of-window evidence bundle per lane (artifacts + commands + pass counts + closeout).
+5. Mayor performs replay and returns consolidated `accept`/`rework`.
+
+## 3. Non-Negotiables
+
+- `maestro` always and only refers to the flagship agent identity.
+- Runtime canon is marimo-first.
+- Production target is Linux desktop (`x86_64`) at fullscreen/high-resolution; Android/tablet/mobile targets are out of scope unless explicitly unlocked.
+- Code City render contract is `WIDGET` default with `IFRAME` fallback verification maintained on every replay gate.
+- Shared frontend components must remain packaging-agnostic: no direct `window.__TAURI__` calls; use host-bridge adapters.
+- Core controls must work without mandatory IDE plugin dependency.
+- Visual contract is canonical and owned by `Orchestr8_jr`.
+- No packet is complete without proof.
+
+Desktop planning reference snapshot:
+- `third_party_refs/marimo_docs_upstream_main_20260216/docs/`
+- `third_party_refs/marimo_docs_upstream_main_20260216/SOURCE_PIN.txt`
+
+## 4. Visual Contract and Ownership Boundaries
+
+Visual baseline reference:
+- `/home/bozertron/mingos_settlement_lab/Human Dashboard Aesthetic Reference/orchestr8_ui_reference.html`
+
+Rules:
+- Non-canonical lanes do not decide final UI placement.
+- Non-canonical lanes expose capability contracts and streams.
+- Canonical lane maps streams to final visual surfaces.
+
+Frozen to canonical lane unless explicitly unlocked by packet:
+- `IP/styles/*`
+- `IP/static/woven_maps_3d.js`
+- `IP/static/woven_maps_template.html`
+- Visual/layout sections in `IP/plugins/06_maestro.py`
+
+Shared contract files (change by approval only):
+- `orchestr8_next/city/contracts.py`
+- `orchestr8_next/shell/contracts.py`
+- Reserved events in `.planning/orchestr8_next/architecture/WIRING_DIAGRAMS.md`
+
+## 5. Deprecated Asset Quarantine Policy (Mandatory)
+
+When deprecated, move the asset to:
+- `deprecated assets/`
+
+Enforcement:
+- `deprecated assets/` is git-ignored.
+- `deprecated assets/` is context-ignored.
+- No active runtime/module may import from this path.
+- If revived, copy to an active lane and log the decision in check-ins and shared memory.
+
+## 6. Shared Memory and Comms Backbone
+
+Memory gateway:
+- `http://127.0.0.1:37888`
+
+### Lane Provisioning Matrix (Hardening Guidance)
+
+Recommended immediate operating model to avoid port flapping:
+
+1. `Orchestr8_jr` is memory stack owner:
+- may run `memory-stack.sh start|stop|restart`
+2. `a_codex_plan` and `2ndFid_explorers` are non-owner lanes:
+- may run `start` only for repair/recovery when system is down
+- must not run `stop`/`restart` unless explicitly authorized with override reason
+- use canonical gateway via `/home/bozertron/Orchestr8_jr/scripts/agent_comms.sh`
+
+Reason:
+- multiple repo-local stack managers share default ports and can interrupt each other.
+
+Memory stack bootstrap (run from repo root):
+
+```bash
+# Start shared memory stack
+bash .taskmaster/tools/memory-gateway/memory-stack.sh start
+
+# Check stack status
+bash .taskmaster/tools/memory-gateway/memory-stack.sh status
+
+# Stop shared memory stack
+bash .taskmaster/tools/memory-gateway/memory-stack.sh stop
+```
+
+Health check:
+
+```bash
+curl -s http://127.0.0.1:37888/v1/memory/health
+```
+
+Primary comms tool:
+- `scripts/agent_comms.sh`
+
+Shorthand progress ping:
+- `scripts/ping_codex.sh`
+
+Canonical comms protocol:
+- `.planning/orchestr8_next/execution/AGENT_COMMS_PROTOCOL.md`
+
+Canonical check-in protocol:
+- `.planning/orchestr8_next/execution/CHECKIN_PROTOCOL.md`
+
+## 7. How Any Agent Reaches Codex for Guidance
+
+Use this path first:
+
+```bash
+scripts/agent_comms.sh send <your_agent_id> codex <phase> question true "<message>"
+```
+
+If in another workspace, use absolute path:
+
+```bash
+/home/bozertron/Orchestr8_jr/scripts/agent_comms.sh send <your_agent_id> codex <phase> question true "<message>"
+```
+
+For completion pings:
+
+```bash
+/home/bozertron/Orchestr8_jr/scripts/ping_codex.sh <percent> "<status message>"
+```
+
+Rules:
+- Use `requires_ack=true` for checkout, blockers, and guidance requests.
+- Include phase and packet ID in every message.
+- Use one `cid` thread per packet/topic.
+
+## 8. Agent Identity and Packet Declaration (Required)
+
+Every agent must identify itself consistently.
+
+Identity fields:
+- `agent_id`: stable unique name
+- `lane`: `orchestr8_jr` or `a_codex_plan` or `2ndFid_explorers`
+- `repo_path`: absolute workspace path
+- `branch`: current branch
+- `phase`: current phase (example: `P07`)
+- `packet_id`: assigned packet
+
+Required checkout message content:
+- Objective
+- Scope boundaries
+- Target files
+- Expected tests
+- ETA
+
+## 9. Packet Lifecycle (Mandatory)
+
+1. Checkout
+- Send `checkout` comms with required ack before coding starts.
+- Generate packet worklist (`scripts/packet_bootstrap.sh ...`) and track all tasks there.
+- Run prompt/boundary lint (`scripts/packet_lint.sh ...`) before edits.
+
+2. In progress
+- During long-run execution windows, avoid micro-checkins.
+- Report immediately only for blockers/safety/legal concerns.
+
+3. Completion
+- Post one end-of-window evidence bundle:
+- exact commands and pass counts
+- artifact paths (canonical)
+- memory observation IDs
+- residual risks or `none`
+- Run closeout gate (`scripts/packet_closeout.sh ...`) before completion ping.
+
+4. Canonical replay
+- Canonical lane reruns validation before acceptance.
+
+5. Decision
+- `accept` or `rework` must be recorded in guidance + shared memory.
+
+## 9.1 Canonical Artifact Delivery Contract (Critical)
+
+Cross-repo lanes must deliver packet evidence into canonical repo paths, not only local lane paths.
+
+Canonical root:
+- `/home/bozertron/Orchestr8_jr`
+
+Canonical artifact destination pattern:
+- `/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/<PHASE>/`
+
+Required delivery proof (from non-canonical lanes):
+1. Source path in lane repo
+2. Destination path in canonical repo
+3. Copy command used
+4. Existence verification output (`ls -l` or `test -f`)
+5. Optional checksum (`sha256sum`) for critical reports
+
+Minimum command template:
+
+```bash
+install -d /home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/<PHASE>/
+cp <lane_source_file> /home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/<PHASE>/<target_name>
+ls -l /home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/<PHASE>/<target_name>
+```
+
+Rule:
+- A packet is not review-ready until evidence exists at canonical destination path.
+
+## 10. Required Status Files
+
+Per phase:
+- `.planning/orchestr8_next/execution/checkins/Pxx/STATUS.md`
+- `.planning/orchestr8_next/execution/checkins/Pxx/BLOCKERS.md`
+- `.planning/orchestr8_next/execution/checkins/Pxx/GUIDANCE.md`
+
+Minimum status payload:
+- Owner
+- Branch
+- Packet ID
+- Percent complete
+- Gate color (`green`, `yellow`, `red`)
+- Completed items
+- In-progress items
+- Next three actions
+- Proof links and command outputs
+- Memory observation IDs
+
+## 11. Sidecar Discipline (Still Required)
+
+When modifying a tracked source file with sidecars:
+- Update corresponding files under `.taskmaster/docs/file-guides/`
+- Keep anchors and hashes current
+- Record resolved and open integration gaps accurately
+
+## 12. Memory Write Patterns
+
+Save checkpoint/decision:
+
+```bash
+curl -sS -X POST http://127.0.0.1:37888/v1/memory/save \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"<title>","text":"<summary>"}'
+```
+
+Search:
+
+```bash
+curl -s "http://127.0.0.1:37888/v1/memory/search?query=<query>&limit=20"
+```
+
+## 13. Handoff Prompts for New Agents
+
+Primary handoff prompts:
+- `.planning/orchestr8_next/execution/prompts/HANDOFF_A_CODEX_PLAN.md`
+- `.planning/orchestr8_next/execution/prompts/HANDOFF_2NDFID_EXPLORERS.md`
+
+These are mandatory startup prompts for those lanes.
+
+## 14. Immediate Priority Order
+
+1. Keep canonical reliability and contract gates green.
+2. Run approved packet execution in `a_codex_plan` and `2ndFid_explorers`.
+3. Promote only with canonical replay evidence.
+4. Start compliance and packaging only after explicit core acceptance.
+
+## 15. One-Line Principle
+
+If it is not checked out, evidenced, replayed, and accepted, it is not done.

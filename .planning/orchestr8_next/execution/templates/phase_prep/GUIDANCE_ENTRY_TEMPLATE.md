@@ -1,0 +1,15 @@
+- Date: <YYYY-MM-DD>
+- Author: Codex
+- Context: <why this wave is being launched>
+- Guidance:
+  - <packet unlock summary>
+  - <required read paths>
+  - <long-run/no-assumption rules>
+  - <unlock observation IDs>
+- Impacted Files:
+  - <boundary files>
+  - <launch/resume prompts>
+  - <status/guidance files>
+- Required Follow-up:
+  - <checkout ack expectations>
+  - <bundle intake expectations>

@@ -1,0 +1,17 @@
+{
+  "source": "one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/test_files/Modal.CyLKLEmt.css",
+  "total_lines": 1,
+  "sha256": "beb6c5d8affda36636814fc66fa417bdbf5747b8720c347677998b12e06b99cd",
+  "chunk_count": 1,
+  "observation_ids": [
+    518
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

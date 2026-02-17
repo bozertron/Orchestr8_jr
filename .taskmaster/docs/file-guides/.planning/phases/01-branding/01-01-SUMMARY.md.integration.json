@@ -1,0 +1,110 @@
+{
+  "source": ".planning/phases/01-branding/01-01-SUMMARY.md",
+  "total_lines": 115,
+  "sha256": "65274a109e870aa280e10744525eb35c9590cdb5a56b718b8a129d8cafa5c548",
+  "chunk_count": 1,
+  "observation_ids": [
+    1042
+  ],
+  "risks": [
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 11,
+      "text": "- orchestr8-brand-identity"
+    },
+    {
+      "line": 23,
+      "text": "- IP/plugins/06_maestro.py"
+    },
+    {
+      "line": 29,
+      "text": "title: Use 'orchestr8' as primary brand identity"
+    },
+    {
+      "line": 41,
+      "text": "**One-liner:** Complete rebrand from stereOS to orchestr8 across UI display, CSS classes, and documentation"
+    },
+    {
+      "line": 45,
+      "text": "Replaced all \"stereOS\" branding references with \"orchestr8\" across the active codebase to establish consistent product identity."
+    },
+    {
+      "line": 49,
+      "text": "1. **Brand Display (06_maestro.py)**"
+    },
+    {
+      "line": 50,
+      "text": "- Changed top row brand from \"stereOS\" to \"orchestr8\""
+    },
+    {
+      "line": 53,
+      "text": "2. **CSS Classes (06_maestro.py)**"
+    },
+    {
+      "line": 54,
+      "text": "- `.stereos-brand` → `.orchestr8-brand`"
+    },
+    {
+      "line": 55,
+      "text": "- `.stereos-prefix` → `.orchestr8-prefix`"
+    },
+    {
+      "line": 56,
+      "text": "- `.stereos-suffix` → `.orchestr8-suffix`"
+    },
+    {
+      "line": 60,
+      "text": "- \"stereOS three-state system\" → \"orchestr8 three-state system\""
+    },
+    {
+      "line": 65,
+      "text": "✅ CSS classes updated to `.orchestr8-*` prefix"
+    },
+    {
+      "line": 67,
+      "text": "✅ Brand display HTML uses orchestr8 classes and text"
+    },
+    {
+      "line": 75,
+      "text": "- Color scheme unchanged (Blue #1fbdea, Gold #D4AF37)"
+    },
+    {
+      "line": 77,
+      "text": "- Three-state system (Gold/Blue/Purple) preserved"
+    },
+    {
+      "line": 82,
+      "text": "### IP/plugins/06_maestro.py"
+    },
+    {
+      "line": 89,
+      "text": "- Line 110: Three-state system reference"
+    },
+    {
+      "line": 93,
+      "text": "- Line 118: Three-state system reference"
+    },
+    {
+      "line": 97,
+      "text": "- `ec1abe4`: feat(01-branding): replace stereOS with orchestr8 in maestro plugin"
+    },
+    {
+      "line": 98,
+      "text": "- `d8e599e`: feat(01-branding): update woven maps docstrings to orchestr8"
+    },
+    {
+      "line": 104,
+      "text": "The branding foundation is established. Phase 01-02 can now implement top row button functionality with correct \"orchestr8\" branding."
+    },
+    {
+      "line": 115,
+      "text": "branding, stereOS, orchestr8, CSS classes, UI identity, product naming, visual identity, rebrand"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

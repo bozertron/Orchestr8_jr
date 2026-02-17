@@ -1,0 +1,65 @@
+{
+  "source": "IP/plugins/06_maestro.py",
+  "total_lines": 1673,
+  "sha256": "e7d7f76d1070f4d000b31085c3154adf4f72553235e10b37d1c99058eb568891",
+  "role": "The Void runtime bridge hub",
+  "risks": [
+    "Multi-bridge channel coupling (node, camera, connection result)",
+    "Role metadata is not cryptographically verified",
+    "Large monolith makes localized edits high-risk"
+  ],
+  "anchors": [
+    {
+      "line": 426,
+      "text": "Code City context payload build on node click"
+    },
+    {
+      "line": 1043,
+      "text": "process_camera_navigation() bridge handler"
+    },
+    {
+      "line": 1090,
+      "text": "camera_nav_bridge hidden input"
+    },
+    {
+      "line": 1261,
+      "text": "build_sitting_room() view runtime"
+    },
+    {
+      "line": 1503,
+      "text": "relayConnectionResult() iframe broadcast"
+    },
+    {
+      "line": 1544,
+      "text": "camera navigation postMessage listener"
+    }
+  ],
+  "integration_gaps": [
+    {
+      "gap": "Verified actor identity model",
+      "status": "pending"
+    },
+    {
+      "gap": "2D/3D keyframe behavior bridge",
+      "status": "pending"
+    }
+  ],
+  "resolved_gaps": [
+    {
+      "gap": "Role-aware apply permission model",
+      "status": "complete"
+    },
+    {
+      "gap": "Result relay to Code City panel",
+      "status": "complete"
+    },
+    {
+      "gap": "Node click context handoff + sitting-room transition",
+      "status": "complete"
+    },
+    {
+      "gap": "Patchbay history persistence and drag-to-set target gesture",
+      "status": "complete"
+    }
+  ]
+}

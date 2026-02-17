@@ -1,0 +1,147 @@
+{
+  "meta": {
+    "generated": "2026-02-12",
+    "tier": 8,
+    "agent": "Work Order Compiler",
+    "source": "ARCHITECT-SUMMON.md",
+    "priority": 3,
+    "blocked_by": "Carl gather_context() implementation",
+    "total_agents": 12
+  },
+  "work_orders": [
+    {
+      "id": "SUMMON-001",
+      "title": "Add Summon state variables to 06_maestro.py",
+      "file": "IP/plugins/06_maestro.py",
+      "location": "~line 50",
+      "action": "INSERT",
+      "tokens": 200,
+      "agents": 3,
+      "tier": 9,
+      "atomic": true,
+      "description": "Add mo.ui.text() for search input and mo.state() for results/loading",
+      "code_spec": {
+        "variables": [
+          {"name": "summon_query", "type": "mo.ui.text", "placeholder": "Search codebase, tasks, agents..."},
+          {"name": "summon_results", "type": "mo.state", "default": "[]"},
+          {"name": "summon_loading", "type": "mo.state", "default": "False"}
+        ]
+      },
+      "constraints": ["Must use mo.ui.text with on_change callback", "State must be reactive"],
+      "dependencies": []
+    },
+    {
+      "id": "SUMMON-002",
+      "title": "Add build_summon_results() function",
+      "file": "IP/plugins/06_maestro.py",
+      "location": "near build_panel_overlays()",
+      "action": "INSERT",
+      "tokens": 600,
+      "agents": 3,
+      "tier": 9,
+      "atomic": true,
+      "description": "Render Carl's FiefdomContext as emergent UI cards",
+      "code_spec": {
+        "function": "build_summon_results(query: str, results: list) -> str",
+        "logic": [
+          "Return placeholder text if no query",
+          "Return 'Scanning the Void...' if no results",
+          "Iterate results and render context-card divs",
+          "Apply status_color: gold if working, teal if broken"
+        ]
+      },
+      "constraints": ["Three-state colors only (gold #D4AF37, teal #1fbdea, purple #9D4EDD)", "NO breathing animations"],
+      "dependencies": []
+    },
+    {
+      "id": "SUMMON-003",
+      "title": "Add trigger_carl_search() function",
+      "file": "IP/plugins/06_maestro.py",
+      "location": "after build_summon_results()",
+      "action": "INSERT",
+      "tokens": 400,
+      "agents": 3,
+      "tier": 9,
+      "atomic": true,
+      "description": "Non-blocking call to Carl's gather_context() with query filter",
+      "code_spec": {
+        "function": "trigger_carl_search(query: str)",
+        "logic": [
+          "Return early if query < 2 characters",
+          "Import Carl from IP.carl_core",
+          "Instantiate Carl with STATE_MANAGERS",
+          "Call carl.gather_context(filter_query=query)",
+          "Update summon_results state"
+        ]
+      },
+      "constraints": ["Carl does NOT block (async/cached)", "Minimum 2 characters before query"],
+      "dependencies": ["IP/carl_core.py exists", "Carl.gather_context() method implemented"]
+    },
+    {
+      "id": "SUMMON-004",
+      "title": "Replace placeholder Summon panel HTML",
+      "file": "IP/plugins/06_maestro.py",
+      "location": "lines 1081-1095",
+      "action": "REPLACE",
+      "tokens": 800,
+      "agents": 3,
+      "tier": 9,
+      "atomic": true,
+      "description": "Replace static placeholder with reactive Marimo components",
+      "code_spec": {
+        "old_content": "Placeholder HTML panel with static text",
+        "new_content": {
+          "query_section": "mo.vstack with panel-title and summon_query",
+          "results_section": "build_summon_results() call",
+          "panel_html": "div.panel-overlay with emergence animation (0.4s ease-out)"
+        }
+      },
+      "constraints": ["Use emergence animation (NOT breathing)", "Void background #0A0A0B"],
+      "dependencies": ["SUMMON-001", "SUMMON-002"]
+    },
+    {
+      "id": "SUMMON-005",
+      "title": "Wire Carl import to Summon panel",
+      "file": "IP/plugins/06_maestro.py",
+      "location": "trigger_carl_search() function",
+      "action": "WIRE",
+      "tokens": 500,
+      "agents": 3,
+      "tier": 4,
+      "atomic": true,
+      "description": "Connect Carl's gather_context() to Summon panel search flow",
+      "code_spec": {
+        "import": "from IP.carl_core import Carl",
+        "instantiation": "carl = Carl(STATE_MANAGERS)",
+        "method_call": "carl.gather_context(filter_query=query)",
+        "state_update": "summon_results.set(results)"
+      },
+      "constraints": ["Non-blocking operation required", "Handle missing Carl gracefully"],
+      "dependencies": ["IP/carl_core.py", "Carl.gather_context() returns FiefdomContext JSON"]
+    }
+  ],
+  "execution_order": ["SUMMON-001", "SUMMON-002", "SUMMON-003", "SUMMON-004", "SUMMON-005"],
+  "blockers": [
+    {
+      "blocker_id": "CARL-001",
+      "description": "IP/carl_core.py must exist with gather_context() method",
+      "required_for": ["SUMMON-003", "SUMMON-005"],
+      "status": "PENDING"
+    }
+  ],
+  "validation": {
+    "success_criteria": [
+      "Search input renders in Summon panel",
+      "Typing 2+ characters triggers Carl query",
+      "Results display as emergent cards with correct colors",
+      "No blocking behavior during search",
+      "Panel uses emergence animation (0.4s ease-out)"
+    ],
+    "failure_conditions": [
+      "Breathing/pulsing animations present",
+      "Red color used for errors",
+      "Carl blocks UI thread",
+      "Search triggers on < 2 characters"
+    ]
+  }
+}

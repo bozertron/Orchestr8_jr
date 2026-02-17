@@ -1,0 +1,29 @@
+{
+  "source": "one integration at a time/888/panel_foundation/tests/test_panel_registry.py",
+  "total_lines": 383,
+  "sha256": "2f42a2bd907c12678de1b3de8d13c73f827ef41630d62b727925c042c0fcd671",
+  "chunk_count": 4,
+  "observation_ids": [
+    274,
+    275,
+    276,
+    277
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [
+    {
+      "line": 352,
+      "text": "# Test orchestr8 defaults"
+    },
+    {
+      "line": 353,
+      "text": "caps = registry._get_default_capabilities(\"orchestr8\")"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

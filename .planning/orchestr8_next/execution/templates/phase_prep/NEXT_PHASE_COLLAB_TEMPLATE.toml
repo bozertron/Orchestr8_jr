@@ -1,0 +1,301 @@
+# Shared next-phase planning document.
+# Workflow:
+# 1) Fill this file collaboratively (founder + mayor) from top to bottom.
+# 2) Keep every value concrete (no <placeholder> tokens).
+# 3) Run:
+#      python scripts/phase_prep_builder.py render --spec <this file>
+
+[meta]
+phase_id = "P07"
+wave_id = "<WAVE_ID>"
+window_id = "<WINDOW_ID>"
+date = "<YYYY-MM-DD>"
+unlock_authority = "Codex"
+canonical_agent_mirror = "antigravity"
+
+[paths]
+checkin_dir = ".planning/orchestr8_next/execution/checkins/P07"
+exec_prompt_dir = ".planning/orchestr8_next/execution/prompts"
+founder_prompt_dir = ".planning/projects/or8_founder_console/prompts"
+mingos_prompt_dir = ".planning/projects/mingos_settlement_lab/prompts"
+artifact_dir = ".planning/orchestr8_next/artifacts/P07"
+launch_pack_output = "SOT/CODEBASE_TODOS/LAUNCH_PROMPTS_P07_LONGRUN.md"
+exploration_notes_output = "SOT/CODEBASE_TODOS/generated/P07_WAVE3_TARGET_EXPLORATION.md"
+guidance_snippet_output = "SOT/CODEBASE_TODOS/generated/P07_WAVE3_GUIDANCE_SNIPPET.md"
+status_snippet_output = "SOT/CODEBASE_TODOS/generated/P07_WAVE3_STATUS_SNIPPET.md"
+unlock_commands_output = "scripts/generated/P07_wave3_unlock_broadcast.sh"
+kickoff_commands_output = "scripts/generated/P07_wave3_canonical_kickoff.sh"
+
+[exploration]
+sot_sources = [
+  "SOT/CURRENT_STATE.md",
+  "SOT/MASTER_ROADMAP.md",
+  "SOT/CODEBASE_ROADMAP_CANONICAL.md",
+  "SOT/CODE_CITY_AGGREGATED_TODO.md"
+]
+checkin_sources = [
+  ".planning/orchestr8_next/execution/checkins/P07/STATUS.md",
+  ".planning/orchestr8_next/execution/checkins/P07/GUIDANCE.md",
+  ".planning/orchestr8_next/execution/checkins/P07/BLOCKERS.md"
+]
+artifact_sources = [
+  ".planning/orchestr8_next/artifacts/P07/A5_ACTIVE_GOVERNANCE_REPORT.md",
+  ".planning/orchestr8_next/artifacts/P07/B5_INTEGRATION_SMOKE_REPORT.md",
+  ".planning/orchestr8_next/artifacts/P07/FC-04_REPORT.md",
+  ".planning/orchestr8_next/artifacts/P07/MSL-04_REPORT.md"
+]
+roadmap_sources = [
+  "SOT/CODEBASE_TODOS/A_CODEX_PLAN_TODO.md",
+  "SOT/CODEBASE_TODOS/2NDFID_EXPLORERS_TODO.md",
+  "SOT/CODEBASE_TODOS/OR8_FOUNDER_CONSOLE_TODO.md",
+  "SOT/CODEBASE_TODOS/MINGOS_SETTLEMENT_LAB_TODO.md"
+]
+runtime_anchors = [
+  "README.AGENTS",
+  ".planning/orchestr8_next/execution/HARD_REQUIREMENTS.md",
+  ".planning/orchestr8_next/execution/LONG_RUN_MODE.md"
+]
+current_posture = [
+  "Wave-2 accepted and Wave-3 unlocked in canonical status files.",
+  "Canonical lane is active governance and replay authority.",
+  "Non-canonical lanes execute in long-run/no-assumption mode."
+]
+
+[founder_direction]
+primary_goal = "Advance all codebases in parallel while reducing setup chatter."
+success_criteria = [
+  "Each lane receives one actionable long-run packet with clear evidence rules.",
+  "Ambiguities are logged in TODOs and resolved post-window without blocking execution.",
+  "Mayor can produce accept/rework decisions from one end-of-window replay set."
+]
+non_negotiables = [
+  "No assumptions allowed.",
+  "Two hard-fact probes max on ambiguity (local then cross-codebase), then defer and continue.",
+  "Canonical artifact copy proof required for non-canonical lanes."
+]
+
+[[phase_questions]]
+id = "Q1"
+owner = "founder"
+status = "open"
+question = "Which packet IDs should be active in this next wave for each lane?"
+answer = ""
+impact_if_unanswered = "Incorrect packet mapping and drifted checkins."
+
+[[phase_questions]]
+id = "Q2"
+owner = "founder"
+status = "open"
+question = "Any lane-specific constraints or must-ship outcomes to enforce in this wave?"
+answer = ""
+impact_if_unanswered = "Scope can sprawl and reduce delivery confidence."
+
+[[phase_questions]]
+id = "Q3"
+owner = "founder"
+status = "open"
+question = "What should be the acceptance gate for this wave (minimum tests/evidence)?"
+answer = ""
+impact_if_unanswered = "Acceptance decisions become subjective or delayed."
+
+# Canonical lane first.
+[[lanes]]
+lane = "orchestr8_jr"
+agent_id = "orchestr8_jr"
+is_canonical = true
+prompt_group = "execution"
+packet_id = "P07-A6"
+boundary_file = "AUTONOMY_BOUNDARY_A6_ORCHESTR8JR.md"
+launch_file = "LAUNCH_P07_A6_ORCHESTR8JR.md"
+resume_file = "RESUME_POST_A5_ORCHESTR8JR.md"
+todo_output_file = "SOT/CODEBASE_TODOS/generated/P07_A6_ORCHESTR8JR_TODO.md"
+objective = "Govern active wave with replay acceptance and zero parked lanes."
+scope = "Canonical governance and replay intake loop"
+allowed_work = [
+  "Intake/replay/accept-rework decisions for active wave packets",
+  "Continuous status/guidance/blocker updates",
+  "Rolling unlock preparation for next wave"
+]
+must_not = [
+  "Skip replay before acceptance decisions",
+  "Allow non-canonical artifact delivery to pass gate"
+]
+required_evidence = [
+  "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/A6_ACTIVE_GOVERNANCE_REPORT.md"
+]
+validation_commands = [
+  "pytest tests/reliability/test_reliability.py tests/city/test_binary_payload.py tests/city/test_wiring_view.py tests/city/test_parity.py -q"
+]
+read_paths = [
+  "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/execution/checkins/P07/GUIDANCE.md"
+]
+completion_artifact = "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/A6_ACTIVE_GOVERNANCE_REPORT.md"
+checkout_scope = "active governance + replay intake"
+tasks = [
+  "Monitor and ACK all lane checkouts",
+  "Intake evidence bundles and issue accept/rework",
+  "Prepare next unlock set"
+]
+
+[[lanes]]
+lane = "a_codex_plan"
+agent_id = "a_codex_plan"
+is_canonical = false
+prompt_group = "execution"
+packet_id = "P07-B6"
+boundary_file = "AUTONOMY_BOUNDARY_B6_A_CODEX_PLAN.md"
+launch_file = "LAUNCH_P07_B6_A_CODEX_PLAN.md"
+resume_file = "RESUME_POST_B5_A_CODEX_PLAN.md"
+todo_output_file = "SOT/CODEBASE_TODOS/generated/P07_B6_A_CODEX_PLAN_TODO.md"
+objective = "Integrate next core capability wave in marimo-first core."
+scope = "Core integration packet"
+allowed_work = [
+  "Implement core service and integration test changes",
+  "Deliver canonical smoke report with pass counts"
+]
+must_not = [
+  "Final visual UI placement/theming",
+  "Direct code lift from non-canonical sources",
+  "Packaging/compliance scope"
+]
+required_evidence = [
+  "orchestr8_next/city/temporal_state.py",
+  "orchestr8_next/city/tour_service.py",
+  "orchestr8_next/city/agent_conversation.py",
+  "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/B6_INTEGRATION_SMOKE_REPORT.md"
+]
+validation_commands = [
+  "pytest tests/integration/test_temporal_state.py tests/integration/test_city_tour_service.py tests/integration/test_agent_conversation.py -q"
+]
+read_paths = [
+  "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/P07_C5_01_SessionActivityGraph.md",
+  "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/P07_C5_02_HistoryPanel.md"
+]
+completion_artifact = "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/B6_INTEGRATION_SMOKE_REPORT.md"
+checkout_scope = "core integration packet"
+tasks = [
+  "Implement packet scope",
+  "Run integration tests and capture pass counts",
+  "Deliver canonical report and proof"
+]
+
+[[lanes]]
+lane = "2ndFid_explorers"
+agent_id = "2ndFid_explorers"
+is_canonical = false
+prompt_group = "execution"
+packet_id = "P07-C6"
+boundary_file = "AUTONOMY_BOUNDARY_C6_2NDFID_EXPLORERS.md"
+launch_file = "LAUNCH_P07_C6_2NDFID_EXPLORERS.md"
+resume_file = "RESUME_POST_C5_2NDFID_EXPLORERS.md"
+todo_output_file = "SOT/CODEBASE_TODOS/generated/P07_C6_2NDFID_EXPLORERS_TODO.md"
+objective = "Produce next clean-room extraction packet pair."
+scope = "Extraction packet pair"
+allowed_work = [
+  "Line-by-line source analysis",
+  "Produce clean-room extraction packets with provenance",
+  "Map target contracts"
+]
+must_not = [
+  "Direct code lift into Orchestr8 outputs",
+  "Skip canonical delivery proof"
+]
+required_evidence = [
+  "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/P07_C6_01_*.md",
+  "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/P07_C6_02_*.md"
+]
+validation_commands = []
+read_paths = [
+  "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/P07_C5_01_SessionActivityGraph.md",
+  "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/P07_C5_02_HistoryPanel.md"
+]
+completion_artifact = "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/P07_C6_01_*.md and /home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/P07_C6_02_*.md"
+checkout_scope = "next extraction packet pair"
+tasks = [
+  "Select candidate components",
+  "Produce packet pair with licensing/risk notes",
+  "Deliver canonical artifacts and proof"
+]
+
+[[lanes]]
+lane = "or8_founder_console"
+agent_id = "or8_founder_console"
+is_canonical = false
+prompt_group = "founder_console"
+packet_id = "P07-FC-05"
+boundary_file = "AUTONOMY_BOUNDARY_FC-05_OR8_FOUNDER_CONSOLE.md"
+launch_file = "LAUNCH_FC_05.md"
+resume_file = "RESUME_FC_05.md"
+todo_output_file = "SOT/CODEBASE_TODOS/generated/P07_FC_05_OR8_FOUNDER_CONSOLE_TODO.md"
+objective = "Ship next founder workflow acceleration packet."
+scope = "Founder console packet"
+allowed_work = [
+  "Add packet endpoints/features",
+  "Add tests and consistency checks",
+  "Deliver canonical packet report"
+]
+must_not = [
+  "Modify Orchestr8_jr runtime code",
+  "Add destructive memory controls"
+]
+required_evidence = [
+  "/home/bozertron/or8_founder_console/routers/review_bundle.py",
+  "/home/bozertron/or8_founder_console/routers/audit_export.py",
+  "/home/bozertron/or8_founder_console/tests/test_review_bundle.py",
+  "/home/bozertron/or8_founder_console/tests/test_audit_export.py",
+  "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/FC-05_REPORT.md"
+]
+validation_commands = [
+  "python -m pytest tests/ -v"
+]
+read_paths = [
+  "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/FC-04_REPORT.md"
+]
+completion_artifact = "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/FC-05_REPORT.md"
+checkout_scope = "founder console packet"
+tasks = [
+  "Implement endpoint changes",
+  "Run tests",
+  "Deliver canonical report and proof"
+]
+
+[[lanes]]
+lane = "mingos_settlement_lab"
+agent_id = "mingos_settlement_lab"
+is_canonical = false
+prompt_group = "mingos_settlement_lab"
+packet_id = "P07-MSL-05"
+boundary_file = "AUTONOMY_BOUNDARY_MSL-05_MINGOS_SETTLEMENT_LAB.md"
+launch_file = "LAUNCH_MSL_05.md"
+resume_file = "RESUME_MSL_05.md"
+todo_output_file = "SOT/CODEBASE_TODOS/generated/P07_MSL_05_MINGOS_SETTLEMENT_LAB_TODO.md"
+objective = "Publish next settlement transfer packet for implementation lanes."
+scope = "Settlement/visual transfer packet"
+allowed_work = [
+  "Create test-hook/constraints/handoff artifacts",
+  "Cross-link to active packet outputs",
+  "Deliver canonical report"
+]
+must_not = [
+  "Implement runtime code in Orchestr8_jr",
+  "Omit provenance links"
+]
+required_evidence = [
+  "/home/bozertron/mingos_settlement_lab/transfer/MSL_05_UI_CONSTRAINTS_PACKET.md",
+  "/home/bozertron/mingos_settlement_lab/transfer/MSL_05_INTEGRATION_HANDOFF.md",
+  "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/MSL-05_REPORT.md"
+]
+validation_commands = [
+  "Traceability table complete in report"
+]
+read_paths = [
+  "/home/bozertron/mingos_settlement_lab/Human Dashboard Aesthetic Reference/orchestr8_ui_reference.html",
+  "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/MSL-04_REPORT.md"
+]
+completion_artifact = "/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/MSL-05_REPORT.md"
+checkout_scope = "settlement transfer packet"
+tasks = [
+  "Produce transfer artifacts",
+  "Cross-link traceability",
+  "Deliver canonical report and proof"
+]

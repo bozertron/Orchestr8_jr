@@ -1,0 +1,25 @@
+{
+  "source": "one integration at a time/star-vector/starvector/validation/svg_validator_base.py",
+  "total_lines": 452,
+  "sha256": "4a3a97527154bda8b80bc3c4b4ea95adf9d104a51bf5bf3f5604d63eda44b898",
+  "chunk_count": 4,
+  "observation_ids": [
+    999,
+    1000,
+    1001,
+    1002
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [
+    {
+      "line": 31,
+      "text": "# Flag to determine if we should report to wandb"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

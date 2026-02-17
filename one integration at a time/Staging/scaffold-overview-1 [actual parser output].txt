@@ -1,0 +1,281 @@
+Maestro is not just an application; it's a **sentient operational fabric** designed to revolutionize how complex projects, particularly in hardware and integrated systems, are managed and executed. 
+Our mission is **to make the process of bringing incredible ideas to life dramatically less painful and exponentially more successful.** Maestro achieves this through a unique combination of:
+
+*   **Intelligent AI Collaboration:** Leveraging multiple specialized LLM agents working alongside human users.
+*   **Dynamic "Smart PRD":** An immutable, versioned source of truth for product requirements that evolves via controlled changes.
+*   **Workflow Orchestration:** An intelligent engine that manages complex, multi-step processes involving both humans and AI.
+*   **Secure Communication:** Robust layers for real-time internal updates, efficient P2P transfers, and secure federated instance communication.
+*   **Verifiable Computation:** Integration of Zero-Knowledge Proofs (Noir) for trustless verification.
+*   **Standardized Extensibility:** Interaction with external tools via the Model Context Protocol (MCP).
+*   **Local-First & Secure Architecture:** Built with Rust, Tauri, SQLite, and Stronghold for performance, reliability, and data sovereignty.
+
+Maestro Project Scaffold: Overview - Generated: 2025-04-17T23:36:15.531Z
+===========================================================================
+
+=== Numbered File Index ===
+1: src-tauri/Cargo.lock
+2: src-tauri/Cargo.toml
+3: src-tauri/build.rs
+4: src-tauri/gen/schemas/acl-manifests.json
+5: src-tauri/gen/schemas/capabilities.json
+6: src-tauri/gen/schemas/desktop-schema.json
+7: src-tauri/gen/schemas/windows-schema.json
+8: src-tauri/icons/128x128.png
+9: src-tauri/icons/128x128@2x.png
+10: src-tauri/icons/32x32.png
+11: src-tauri/icons/Square107x107Logo.png
+12: src-tauri/icons/Square142x142Logo.png
+13: src-tauri/icons/Square150x150Logo.png
+14: src-tauri/icons/Square284x284Logo.png
+15: src-tauri/icons/Square30x30Logo.png
+16: src-tauri/icons/Square310x310Logo.png
+17: src-tauri/icons/Square44x44Logo.png
+18: src-tauri/icons/Square71x71Logo.png
+19: src-tauri/icons/Square89x89Logo.png
+20: src-tauri/icons/StoreLogo.png
+21: src-tauri/icons/icon.icns
+22: src-tauri/icons/icon.ico
+23: src-tauri/icons/icon.png
+24: src-tauri/src/ZZ Plaintext References/commands.txt
+25: src-tauri/src/ZZ Plaintext References/database.txt
+26: src-tauri/src/ZZ Plaintext References/error.txt
+27: src-tauri/src/ZZ Plaintext References/llm_clients.txt
+28: src-tauri/src/ZZ Plaintext References/llm_config.txt
+29: src-tauri/src/ZZ Plaintext References/llm_interaction.txt
+30: src-tauri/src/ZZ Plaintext References/main.txt
+31: src-tauri/src/ZZ Plaintext References/main_mcp_backup.txt
+32: src-tauri/src/ZZ Plaintext References/models.txt
+33: src-tauri/src/ZZ Plaintext References/workflow_engine.txt
+34: src-tauri/src/change_management.rs
+35: src-tauri/src/commands/change_requests.rs
+36: src-tauri/src/commands/llm_diagnostics.rs
+37: src-tauri/src/commands/llm_entities.rs
+38: src-tauri/src/commands/llm_interaction.rs
+39: src-tauri/src/commands/mod.rs
+40: src-tauri/src/commands/prd.rs
+41: src-tauri/src/commands/project_management.rs
+42: src-tauri/src/commands/utils.rs
+43: src-tauri/src/commands/workflow.rs
+44: src-tauri/src/database.rs
+45: src-tauri/src/dependencies.test.rs
+46: src-tauri/src/embeddings.rs
+47: src-tauri/src/error.rs
+48: src-tauri/src/llm_clients.rs
+49: src-tauri/src/llm_config.rs
+50: src-tauri/src/llm_interaction.rs
+51: src-tauri/src/main.rs
+52: src-tauri/src/main_mcp_backup.rs
+53: src-tauri/src/mcp_client.rs
+54: src-tauri/src/mcp_server_manager.rs
+55: src-tauri/src/models.rs
+56: src-tauri/src/noir_verifier.rs
+57: src-tauri/src/relay_server.rs
+58: src-tauri/src/rendezvous_server.rs
+59: src-tauri/src/routing_engine.rs
+60: src-tauri/src/sdk_mcp_client.rs
+61: src-tauri/src/seeg_engine.rs
+62: src-tauri/src/stronghold_utils.rs
+63: src-tauri/src/test_commands.rs
+64: src-tauri/src/websocket_server.rs
+65: src-tauri/src/workflow_engine.rs
+66: src-tauri/tauri.conf.json
+67: src-tauri/workspace.code-PREMVP.code-workspace
+68: src/App.vue
+69: src/components/ActionGrid.vue
+70: src/components/AddFieldForm.vue
+71: src/components/AppHeader.vue
+72: src/components/ChangeRequestForm.vue
+73: src/components/ChangeRequestList.vue
+74: src/components/ChangeRequestViewer.vue
+75: src/components/ChatInterface.vue
+76: src/components/ChatMessage.vue
+77: src/components/ChatMessageInput.vue
+78: src/components/ChatMessageList.vue
+79: src/components/IntercomBar.vue
+80: src/components/IntercomBarSubComponents/IntercomSlot.vue
+81: src/components/IntercomSettingsPopover.vue
+82: src/components/LLMSettingsPage.vue
+83: src/components/LLMSettingsSubComponents/LLMEntityForm.vue
+84: src/components/LLMSettingsSubComponents/LLMEntityList.vue
+85: src/components/PrdEditor.vue
+86: src/components/ProposedChangesRenderer.vue
+87: src/components/SettingsPopover.vue
+88: src/components/SidePanelWrapper.vue
+89: src/components/views/BdMenuView.vue
+90: src/components/views/CustomerDetailView.vue
+91: src/components/views/DocumentMenuView.vue
+92: src/components/views/EntitySelectionView.vue
+93: src/components/views/FullContactList.vue
+94: src/components/views/MarketMenuView.vue
+95: src/components/views/NotificationSettingsView.vue
+96: src/components/views/PersonalContactDetailView.vue
+97: src/components/views/PlaceholderView.vue
+98: src/components/views/PrdMenuView.vue
+99: src/components/views/VendorDetailView.vue
+100: src/composables/useWebRTC.ts
+101: src/lib/api.ts
+102: src/lib/prdDefinitions.ts
+103: src/lib/security.ts
+104: src/lib/tauriCheck.ts
+105: src/lib/utils.ts
+106: src/main.ts
+107: src/router/index.ts
+108: src/stores/authStore.ts
+109: src/stores/chatStore.ts
+110: src/stores/index.test.ts
+111: src/stores/index.ts
+112: src/stores/projectStore.ts
+113: src/stores/settingsStore.ts
+114: src/stores/uiStateStore.ts
+115: src/styles.css
+116: src/styles/scss/global/variable.scss
+117: src/types/intercom.d.ts
+118: src/types/signaling.ts
+119: src/views/HomePage.vue
+120: src/vite-env.d.ts
+===========================
+
+=== Key Config Files ===
+- package.json: (Name: maestropremvp, Version: 0.0.0)
+- vite.config.ts: (Found - Details TBD)
+- tauri.conf.json: (ID: N/A, Version: N/A)
+- tsconfig.json: (Found - Details TBD)
+========================
+
+=== Entry Points ===
+- src/main.ts: (Found)
+- src-tauri/src/main.rs: (Found)
+====================
+
+=== Core Dependencies ===
+--- Frontend (package.json) ---
+- vue: ^3.5.13
+- pinia: ^3.0.1
+- vue-router: ^4.0.13
+- naive-ui: ^2.41.0
+- @tauri-apps/api: ^2.4.1
+
+--- Backend (Cargo.toml - Basic Scan) ---
+- tauri
+- tokio
+- serde
+- rusqlite
+=========================
+
+=== Top-Level Directory Summary ===
+- .npm/
+- .vscode/
+- PRDs/
+- projects/
+- Prompts/
+- public/
+- Reference Library/
+- Roadmap/
+- Scaffolding/
+- src/
+  - components/
+  - composables/
+  - lib/
+  - router/
+  - stores/
+  - styles/
+  - types/
+  - views/
+- src-tauri/
+  - gen/
+  - Glaver's Plain Text Reference Files from Ben/
+  - icons/
+  - src/
+- Surgeries/
+- TSX for Later/
+
+- Top-level files:
+  121: .gitignore
+  122: build_and_report.ps1
+  123: code_surgery_3.md
+  124: Front_End_Relationships.md
+  125: Frontend_Architecture_Overview.md
+  126: Frontend_Fix_Plan.md
+  127: index.html
+  128: maestro-scaffolder
+  129: package-lock.json
+  130: package.json
+  131: tsconfig.json
+  132: tsconfig.node.json
+  133: unocss.config.ts
+  134: vite.config.ts
+=================================
+
+============================= End of Overview ==============================
+
+The Distributed Alignment and Context Orchestration tool (DAC-O) was created by Benjamin Webster, Founder of Electronic Pixel Orchestra Inc. and Co-Founder of Maestro.tech, to furnish both humans and LLMs - otherwise known as "friends of Maestro" - with the ability to quickly, and comprehensively, acquire precision context for any project they were working on collaboratively, in service of providing the most help in the fewest amount of thought cycles. 
+
+Here are the commands available in the DAC-O tool! 
+
+## Primary Command
+
+**scaffold \<type\>** - Generate scaffolding context for a Maestro project. Run from project root.
+
+### Scaffold Types
+
+- **overview** - Generates a comprehensive overview of the project, including file index, key config files, entry points, dependencies, and directory structure.
+  - Example: `scaffold overview`
+  - Output: A numbered file index and project structure summary in Scaffolding/scaffold-overview-N.txt
+  - #To Execute Command in PowerShell: node dist/index.js scaffold overview
+
+- **stores** - Analyzes Pinia stores in the project, extracting state, getters, and actions.
+  - Example: `scaffold stores`
+  - Output: Pinia store analysis in Scaffolding/scaffold-stores-N.txt
+  - #To Execute Command in PowerShell: node dist/index.js scaffold stores
+
+- **routes** - Analyzes Vue Router routes in the project.
+  - Example: `scaffold routes`
+  - Output: Vue Router routes analysis in Scaffolding/scaffold-routes-N.txt
+  - #To Execute Command in PowerShell: node dist/index.js scaffold routes
+
+- **commands** - Analyzes Tauri commands in the project, both frontend invocations and backend declarations.
+  - Example: `scaffold commands`
+  - Output: Tauri commands analysis in Scaffolding/scaffold-commands-N.txt
+  - #To Execute Command in PowerShell: node dist/index.js scaffold commands
+
+- **types** - Analyzes TypeScript type definitions in the project.
+  - Example: `scaffold types`
+  - Output: TypeScript types analysis in Scaffolding/scaffold-types-N.txt
+  - Optional filter: `scaffold types --filter <pattern>` to focus on specific types
+  - #To Execute Command in PowerShell: node dist/index.js scaffold types
+  - #With filter: node dist/index.js scaffold types --filter Auth
+
+- **ui** - Analyzes UI components (particularly Naive UI) used in the project.
+  - Example: `scaffold ui`
+  - Output: UI components analysis in Scaffolding/scaffold-ui-N.txt
+  - #To Execute Command in PowerShell: node dist/index.js scaffold ui
+
+- **files** - Retrieves the content of specific files by index (from the overview report).
+  - Example: `scaffold files --indices 1,5,10`
+  - Output: Content of specified files in Scaffolding/scaffold-files-N.txt
+  - #To Execute Command in PowerShell: node dist/index.js scaffold files --indices 1,5,10
+
+### Options
+
+- **--indices, -i** - Comma-separated list of file indices (from overview) for --files type
+  - Example: `scaffold files --indices 1,5,10`
+
+- **--filter, -f** - Filter pattern for --types command
+  - Example: `scaffold types --filter Auth`
+  - Example: `scaffold types --filter Prd` (special case to scan PRDs directory)
+
+- **--help, -h** - Show help information
+  - Example: `scaffold --help`
+
+- **--version, -v** - Show version information
+  - Example: `scaffold --version`
+
+All output files are saved to the alignmentAndContextCache folder in whatever directory you installed the DAC-O application.
+
+The last output you generated remains on the screen for you to work with.
+
+Context is King! 
+
+Love, 
+
+          Ben       ;-*

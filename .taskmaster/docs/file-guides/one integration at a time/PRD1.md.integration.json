@@ -1,0 +1,36 @@
+{
+  "source": "one integration at a time/PRD1.md",
+  "total_lines": 150,
+  "sha256": "c428ac94aa3558157d593ddf3e4d085cc70f1f1b42c393bf6e19a7df1770f696",
+  "chunk_count": 2,
+  "observation_ids": [
+    22,
+    23
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 59,
+      "text": "* **Constraint:** The table must be selectable (`selection='single'`). When a row is clicked, update `selected_file`."
+    },
+    {
+      "line": 75,
+      "text": "* **Rendering:** Create a helper `render_badge(status)` that returns HTML spans (Green/Orange/Purple) for the table view."
+    },
+    {
+      "line": 89,
+      "text": "* **Marimo Integration:** The graph must return an HTML string (`net.generate_html()`) and be wrapped in `mo.Html()`."
+    },
+    {
+      "line": 91,
+      "text": "* The graph must auto-update when `scan_button` is pressed."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/key_lines_with_files.tsv"
+  }
+}

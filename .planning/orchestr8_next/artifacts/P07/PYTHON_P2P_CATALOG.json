@@ -1,0 +1,344 @@
+{
+  "catalog_version": "1.0.0",
+  "source_file": "one integration at a time/888/comms/adapter.py",
+  "description": "Python P2P adapter for PyO3 integration - provides peer-to-peer messaging, WebRTC, and contact management",
+  "architecture": {
+    "pattern": "PyO3 Python wrapper",
+    "option_enforcement": "Option B - Python primitives only",
+    "mirrors": [
+      "P2PNetwork (main service)",
+      "PeerManager (connection management)",
+      "Discovery (peer discovery)",
+      "WebRtcService (video/audio calls)",
+      "MessageService (text messaging)"
+    ]
+  },
+  "public_functions": [
+    {
+      "name": "get_version",
+      "signature": "() -> str",
+      "description": "Get the comms (P2P) wrapper version",
+      "returns": "Version string '1.0.0'"
+    },
+    {
+      "name": "health_check",
+      "signature": "() -> Dict[str, Any]",
+      "description": "Perform a health check of the P2P communication system",
+      "returns": "Dictionary with success, status, active_sessions, total_contacts, active_calls, message_threads, checked_at"
+    },
+    {
+      "name": "create_session",
+      "signature": "(peer_id: Optional[str] = None, storage_path: Optional[str] = None) -> Dict[str, Any]",
+      "description": "Create a new P2P communication session",
+      "args": {
+        "peer_id": "Optional custom peer ID (auto-generated if not provided)",
+        "storage_path": "Optional path for message persistence"
+      },
+      "returns": "Dictionary with success, session_id, peer_id, storage_path, created_at"
+    },
+    {
+      "name": "get_network_stats",
+      "signature": "(session_id: str) -> Dict[str, Any]",
+      "description": "Get network statistics for a session",
+      "args": {
+        "session_id": "Active session identifier"
+      },
+      "returns": "Dictionary with success, connected_peers, discovered_peers, bytes_sent, bytes_received, messages_sent, messages_received"
+    },
+    {
+      "name": "list_contacts",
+      "signature": "(session_id: str) -> Dict[str, Any]",
+      "description": "List all contacts",
+      "args": {
+        "session_id": "Active session identifier"
+      },
+      "returns": "Dictionary with success, contacts (list), count"
+    },
+    {
+      "name": "add_contact",
+      "signature": "(session_id: str, name: str, peer_id: str, email: Optional[str] = None, notes: Optional[str] = None) -> Dict[str, Any]",
+      "description": "Add a new contact",
+      "args": {
+        "session_id": "Active session identifier",
+        "name": "Contact display name",
+        "peer_id": "Contact's peer ID for P2P connection",
+        "email": "Optional email address",
+        "notes": "Optional notes about the contact"
+      },
+      "returns": "Dictionary with success, contact_id, name, peer_id"
+    },
+    {
+      "name": "remove_contact",
+      "signature": "(session_id: str, contact_id: str) -> Dict[str, Any]",
+      "description": "Remove a contact",
+      "args": {
+        "session_id": "Active session identifier",
+        "contact_id": "Contact identifier"
+      },
+      "returns": "Dictionary with success, contact_id, removed_at"
+    },
+    {
+      "name": "send_message",
+      "signature": "(session_id: str, recipient_peer_id: str, content: str, message_type: str = 'text', attachments: Optional[List[str]] = None) -> Dict[str, Any]",
+      "description": "Send a message to a peer",
+      "args": {
+        "session_id": "Active session identifier",
+        "recipient_peer_id": "Recipient's peer ID",
+        "content": "Message content",
+        "message_type": "Type of message (text, file, image)",
+        "attachments": "Optional list of attachment paths"
+      },
+      "returns": "Dictionary with success, message_id, conversation_id, sent_at"
+    },
+    {
+      "name": "get_messages",
+      "signature": "(session_id: str, limit: int = 50, offset: int = 0) -> Dict[str, Any]",
+      "description": "Get recent messages across all conversations",
+      "args": {
+        "session_id": "Active session identifier",
+        "limit": "Maximum number of messages to return (default 50)",
+        "offset": "Offset for pagination (default 0)"
+      },
+      "returns": "Dictionary with success, messages (list), count, total"
+    },
+    {
+      "name": "get_conversation",
+      "signature": "(session_id: str, peer_id: str, limit: int = 100) -> Dict[str, Any]",
+      "description": "Get messages from a specific conversation",
+      "args": {
+        "session_id": "Active session identifier",
+        "peer_id": "Peer ID of the conversation partner",
+        "limit": "Maximum number of messages to return (default 100)"
+      },
+      "returns": "Dictionary with success, conversation_id, peer_id, messages (list), count"
+    },
+    {
+      "name": "start_webrtc_call",
+      "signature": "(session_id: str, peer_id: str, video: bool = True, audio: bool = True) -> Dict[str, Any]",
+      "description": "Start a WebRTC call with a peer",
+      "args": {
+        "session_id": "Active session identifier",
+        "peer_id": "Peer ID to call",
+        "video": "Enable video (default True)",
+        "audio": "Enable audio (default True)"
+      },
+      "returns": "Dictionary with success, call_id, peer_id, video, audio, status"
+    },
+    {
+      "name": "end_webrtc_call",
+      "signature": "(session_id: str, call_id: str) -> Dict[str, Any]",
+      "description": "End a WebRTC call",
+      "args": {
+        "session_id": "Active session identifier",
+        "call_id": "Call identifier"
+      },
+      "returns": "Dictionary with success, call_id, ended_at, duration_seconds"
+    },
+    {
+      "name": "get_active_calls",
+      "signature": "(session_id: str) -> Dict[str, Any]",
+      "description": "Get list of active calls",
+      "args": {
+        "session_id": "Active session identifier"
+      },
+      "returns": "Dictionary with success, calls (list), count"
+    }
+  ],
+  "global_state_management": {
+    "_p2p_sessions": {
+      "type": "Dict[str, Dict[str, Any]]",
+      "description": "Active P2P sessions keyed by session_id",
+      "session_data_structure": {
+        "session_id": "str",
+        "peer_id": "str",
+        "storage_path": "Optional[str]",
+        "created_at": "int (milliseconds)",
+        "connected_peers": "List",
+        "settings": "Dict (P2P settings)",
+        "network_stats": "Dict (bytes_sent, bytes_received, messages_sent, messages_received)"
+      }
+    },
+    "_contacts": {
+      "type": "Dict[str, Dict[str, Any]]",
+      "description": "Contacts keyed by contact_id",
+      "contact_data_structure": {
+        "contact_id": "str",
+        "name": "str",
+        "peer_id": "str",
+        "email": "Optional[str]",
+        "notes": "Optional[str]",
+        "added_at": "int (milliseconds)",
+        "status": "str (offline/online)",
+        "last_seen": "Optional[int]"
+      }
+    },
+    "_messages": {
+      "type": "Dict[str, List[Dict[str, Any]]]",
+      "description": "Messages organized by conversation_id",
+      "message_data_structure": {
+        "message_id": "str",
+        "conversation_id": "str",
+        "sender": "str (peer_id)",
+        "recipient": "str (peer_id)",
+        "content": "str",
+        "message_type": "str (text/file/image)",
+        "attachments": "List[str]",
+        "sent_at": "int (milliseconds)",
+        "delivered": "bool",
+        "read": "bool"
+      }
+    },
+    "_active_calls": {
+      "type": "Dict[str, Dict[str, Any]]",
+      "description": "Active WebRTC calls keyed by call_id",
+      "call_data_structure": {
+        "call_id": "str",
+        "peer_id": "str",
+        "video": "bool",
+        "audio": "bool",
+        "started_at": "int (milliseconds)",
+        "status": "str (connecting/active/ended)",
+        "duration_seconds": "int"
+      }
+    }
+  },
+  "session_management": {
+    "create": {
+      "function": "create_session",
+      "session_id_generation": "f'p2p_session_{int(time.time() * 1000)}'",
+      "peer_id_generation": "f'peer_{int(time.time() * 1000)}' if not provided",
+      "default_settings": {
+        "enable_webrtc": true,
+        "enable_discovery": true,
+        "max_peers": 50,
+        "message_retention_days": 30,
+        "encryption_enabled": true
+      }
+    },
+    "connect": {
+      "note": "Connection management is handled by Rust P2PNetwork/PeerManager"
+    },
+    "disconnect": {
+      "note": "Handled by Rust layer"
+    },
+    "destroy": {
+      "note": "Session cleanup handled by garbage collection; explicit destroy not implemented"
+    }
+  },
+  "peer_contact_management": {
+    "add_contact": {
+      "contact_id_generation": "f'contact_{int(time.time() * 1000)}'",
+      "initial_status": "offline",
+      "fields": ["name", "peer_id", "email", "notes"]
+    },
+    "list_contacts": {
+      "returns": "List of contacts with contact_id, name, peer_id, status, last_seen"
+    },
+    "remove_contact": {
+      "operation": "Delete from _contacts dictionary",
+      "returns": "contact_id, removed_at timestamp"
+    }
+  },
+  "message_handling": {
+    "send_message": {
+      "message_id_generation": "f'msg_{int(time.time() * 1000)}'",
+      "conversation_id": "Deterministic via sorted peer IDs: f'conv_{sorted([peer_a, peer_b])[0]}_{sorted([peer_a, peer_b])[1]}'",
+      "message_types": ["text", "file", "image"],
+      "storage": "Appended to _messages[conversation_id]",
+      "stats_update": "Increments messages_sent and bytes_sent"
+    },
+    "get_messages": {
+      "scope": "All conversations",
+      "sorting": "By sent_at descending (newest first)",
+      "pagination": "offset and limit parameters"
+    },
+    "get_conversation": {
+      "scope": "Specific peer conversation",
+      "sorting": "By sent_at ascending",
+      "limit": "Last N messages"
+    }
+  },
+  "call_handling": {
+    "start_webrtc_call": {
+      "call_id_generation": "f'call_{int(time.time() * 1000)}'",
+      "initial_status": "connecting",
+      "media_options": {"video": "bool", "audio": "bool"},
+      "storage": "Stored in _active_calls"
+    },
+    "end_webrtc_call": {
+      "duration_calculation": "(ended_at - started_at) // 1000",
+      "cleanup": "Removed from _active_calls"
+    },
+    "get_active_calls": {
+      "duration_update": "Recalculated on each call (current_time - started_at)"
+    }
+  },
+  "storage_persistence": {
+    "storage_format": "JSON files",
+    "storage_structure": {
+      "contacts_file": "storage_path/contacts.json",
+      "messages_file": "storage_path/messages.json"
+    },
+    "load_operation": {
+      "function": "_load_from_storage",
+      "contacts_format": "List under 'contacts' key",
+      "messages_format": "Dictionary under 'conversations' key",
+      "error_handling": "Silent failure (pass)"
+    },
+    "save_operation": {
+      "function": "_save_to_storage",
+      "directory_creation": "mkdir(parents=True, exist_ok=True)",
+      "contacts_format": '{"contacts": list(_contacts.values())}',
+      "messages_format": '{"conversations": _messages}',
+      "error_handling": "Silent failure (pass)"
+    }
+  },
+  "helper_functions": {
+    "_get_default_p2p_settings": {
+      "returns": "Dict with default P2P settings"
+    },
+    "_get_conversation_id": {
+      "purpose": "Generate consistent conversation ID for two peers",
+      "method": "Sort peer IDs alphabetically, format as 'conv_{sorted[0]}_{sorted[1]}'"
+    },
+    "_load_from_storage": "Internal storage loader",
+    "_save_to_storage": "Internal storage saver"
+  },
+  "rust_p2p_modules": {
+    "location": "one integration at a time/p2p/",
+    "main_modules": [
+      "mod.rs - P2PNetwork main service",
+      "service/ - P2PService lifecycle management",
+      "transport/ - P2PTransport layer",
+      "manager/ - PeerManager connection management",
+      "discovery/ - Peer discovery",
+      "webrtc/ - WebRtcService for video/audio",
+      "message/ - MessageService for text messaging",
+      "events/ - Event bus system",
+      "config/ - NetworkConfig",
+      "lifecycle/ - Startup/shutdown/recovery"
+    ],
+    "total_rust_files": "100+ files",
+    "dependencies": ["libp2p", "tokio", "serde"]
+  },
+  "related_adapters": {
+    "pyo3_adapters_found": [
+      "one integration at a time/888/director/adapter.py - Director adapter for OODA loop",
+      "one integration at a time/888/professor/adapter.py - Professor agent adapter",
+      "one integration at a time/888/integr8/adapter.py - Zed code editor adapter",
+      "one integration at a time/888/innov8/adapter.py - Jupyter experimental platform",
+      "one integration at a time/888/communic8/adapter.py - Thunderbird email",
+      "one integration at a time/888/cre8/adapter.py - GIMP creative editor",
+      "one integration at a time/888/actu8/adapter.py - LibreOffice productivity",
+      "one integration at a time/888/calendar/adapter.py - Calendar system"
+    ]
+  },
+  "integration_notes": {
+    "error_handling": "All functions return {'success': bool, ...} format with error messages",
+    "timestamp_format": "Unix milliseconds (int(time.time() * 1000))",
+    "optional_parameters": "All use Python Optional with defaults",
+    "no_p2p_function_definitions_found": "No 'def p2p' patterns in codebase",
+    "no_p2p_standalone_files": "No p2p_*.py files found",
+    "pyo3_binding_status": "PyO3 integration documented but Rust bindings not yet compiled"
+  }
+}

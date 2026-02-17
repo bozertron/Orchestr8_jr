@@ -1,0 +1,589 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": "1",
+        "title": "Implement temporal state persistence interface",
+        "description": "Extend temporal_state service with persistence contracts and adapters.",
+        "details": "MVP roadmap task for a_codex_plan: Extend temporal_state service with persistence contracts and adapters.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "1.1",
+            "title": "Plan implement temporal state persistence interface",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "1"
+          },
+          {
+            "id": "1.2",
+            "title": "Implement implement temporal state persistence interface",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "1"
+          },
+          {
+            "id": "1.3",
+            "title": "Verify implement temporal state persistence interface",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "1"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "2",
+        "title": "Integrate temporal state with tour/conversation",
+        "description": "Hook timeline events into tour service and conversation service flows.",
+        "details": "MVP roadmap task for a_codex_plan: Hook timeline events into tour service and conversation service flows.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "1"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "2.1",
+            "title": "Plan integrate temporal state with tour/conversation",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "2"
+          },
+          {
+            "id": "2.2",
+            "title": "Implement integrate temporal state with tour/conversation",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "2"
+          },
+          {
+            "id": "2.3",
+            "title": "Verify integrate temporal state with tour/conversation",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "2"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "3",
+        "title": "Add temporal state regression tests",
+        "description": "Add test cases for edge conditions and state transitions.",
+        "details": "MVP roadmap task for a_codex_plan: Add test cases for edge conditions and state transitions.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "2"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "3.1",
+            "title": "Plan add temporal state regression tests",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "3"
+          },
+          {
+            "id": "3.2",
+            "title": "Implement add temporal state regression tests",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "3"
+          },
+          {
+            "id": "3.3",
+            "title": "Verify add temporal state regression tests",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "3"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "4",
+        "title": "Integrate C5 extraction concept 1",
+        "description": "Implement first approved C5 concept behind clean contract boundaries.",
+        "details": "MVP roadmap task for a_codex_plan: Implement first approved C5 concept behind clean contract boundaries.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "3"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "4.1",
+            "title": "Plan integrate c5 extraction concept 1",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "4"
+          },
+          {
+            "id": "4.2",
+            "title": "Implement integrate c5 extraction concept 1",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "4"
+          },
+          {
+            "id": "4.3",
+            "title": "Verify integrate c5 extraction concept 1",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "4"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "5",
+        "title": "Integrate C5 extraction concept 2",
+        "description": "Implement second approved C5 concept behind clean contract boundaries.",
+        "details": "MVP roadmap task for a_codex_plan: Implement second approved C5 concept behind clean contract boundaries.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "4"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "5.1",
+            "title": "Plan integrate c5 extraction concept 2",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "5"
+          },
+          {
+            "id": "5.2",
+            "title": "Implement integrate c5 extraction concept 2",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "5"
+          },
+          {
+            "id": "5.3",
+            "title": "Verify integrate c5 extraction concept 2",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "5"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "6",
+        "title": "Wire settlement test hooks",
+        "description": "Implement MSL-04 hooks as executable checks in integration tests.",
+        "details": "MVP roadmap task for a_codex_plan: Implement MSL-04 hooks as executable checks in integration tests.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "5"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "6.1",
+            "title": "Plan wire settlement test hooks",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "6"
+          },
+          {
+            "id": "6.2",
+            "title": "Implement wire settlement test hooks",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "6"
+          },
+          {
+            "id": "6.3",
+            "title": "Verify wire settlement test hooks",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "6"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "7",
+        "title": "Wire settlement acceptance matrix assertions",
+        "description": "Add acceptance criteria checks into smoke/regression suite.",
+        "details": "MVP roadmap task for a_codex_plan: Add acceptance criteria checks into smoke/regression suite.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "6"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "7.1",
+            "title": "Plan wire settlement acceptance matrix assertions",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "7"
+          },
+          {
+            "id": "7.2",
+            "title": "Implement wire settlement acceptance matrix assertions",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "7"
+          },
+          {
+            "id": "7.3",
+            "title": "Verify wire settlement acceptance matrix assertions",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "7"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "8",
+        "title": "Refine city automation and power flows",
+        "description": "Harden existing B3 modules under extended scenarios.",
+        "details": "MVP roadmap task for a_codex_plan: Harden existing B3 modules under extended scenarios.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "7"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "8.1",
+            "title": "Plan refine city automation and power flows",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "8"
+          },
+          {
+            "id": "8.2",
+            "title": "Implement refine city automation and power flows",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "8"
+          },
+          {
+            "id": "8.3",
+            "title": "Verify refine city automation and power flows",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "8"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "9",
+        "title": "Refine topology and heatmap interoperability",
+        "description": "Ensure graph services cooperate with temporal and automation data.",
+        "details": "MVP roadmap task for a_codex_plan: Ensure graph services cooperate with temporal and automation data.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "8"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "9.1",
+            "title": "Plan refine topology and heatmap interoperability",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "9"
+          },
+          {
+            "id": "9.2",
+            "title": "Implement refine topology and heatmap interoperability",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "9"
+          },
+          {
+            "id": "9.3",
+            "title": "Verify refine topology and heatmap interoperability",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "9"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "10",
+        "title": "Add integration smoke orchestration script",
+        "description": "Create repeatable script for packet replay in lane environment.",
+        "details": "MVP roadmap task for a_codex_plan: Create repeatable script for packet replay in lane environment.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "9"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "10.1",
+            "title": "Plan add integration smoke orchestration script",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "10"
+          },
+          {
+            "id": "10.2",
+            "title": "Implement add integration smoke orchestration script",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "10"
+          },
+          {
+            "id": "10.3",
+            "title": "Verify add integration smoke orchestration script",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "10"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "11",
+        "title": "Generate B5 smoke report",
+        "description": "Produce canonical report with commands, pass counts, and evidence.",
+        "details": "MVP roadmap task for a_codex_plan: Produce canonical report with commands, pass counts, and evidence.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "10"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "11.1",
+            "title": "Plan generate b5 smoke report",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "11"
+          },
+          {
+            "id": "11.2",
+            "title": "Implement generate b5 smoke report",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "11"
+          },
+          {
+            "id": "11.3",
+            "title": "Verify generate b5 smoke report",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "11"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      },
+      {
+        "id": "12",
+        "title": "Prepare B6 proposal stub",
+        "description": "Draft next packet proposal based on completed integrations and remaining gaps.",
+        "details": "MVP roadmap task for a_codex_plan: Draft next packet proposal based on completed integrations and remaining gaps.",
+        "testStrategy": "Run task-level tests and document pass/fail evidence in packet report.",
+        "priority": "high",
+        "dependencies": [
+          "11"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "12.1",
+            "title": "Plan prepare b6 proposal stub",
+            "description": "Define concrete steps, file targets, and risks for this task.",
+            "dependencies": [],
+            "details": "Use packet boundary and hard requirements as constraints.",
+            "status": "pending",
+            "testStrategy": "Checklist reviewed and approved internally.",
+            "parentId": "12"
+          },
+          {
+            "id": "12.2",
+            "title": "Implement prepare b6 proposal stub",
+            "description": "Execute changes required by this task scope.",
+            "dependencies": [],
+            "details": "Commit evidence artifacts and file updates.",
+            "status": "pending",
+            "testStrategy": "Core behavior verified in lane environment.",
+            "parentId": "12"
+          },
+          {
+            "id": "12.3",
+            "title": "Verify prepare b6 proposal stub",
+            "description": "Run tests/checks and document exact outputs.",
+            "dependencies": [],
+            "details": "Capture command outputs, pass counts, and residual risks.",
+            "status": "pending",
+            "testStrategy": "Evidence recorded in report/check-ins.",
+            "parentId": "12"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 3,
+        "expansionPrompt": "Task queue pre-expanded from MVP PRD for long-run execution",
+        "updatedAt": "2026-02-16T04:12:58Z"
+      }
+    ],
+    "metadata": {
+      "version": "1.0.0",
+      "lastModified": "2026-02-16T04:12:58Z",
+      "taskCount": 12,
+      "completedCount": 0,
+      "tags": [
+        "master"
+      ]
+    }
+  }
+}

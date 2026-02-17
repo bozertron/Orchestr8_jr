@@ -1,0 +1,66 @@
+{
+  "source": "IP/static/woven_maps_template.html",
+  "total_lines": 4910,
+  "sha256": "98fb4667c416b63c3cd65efbbd41a313d3db20df4872543cb4a0bb0330c34b84",
+  "role": "Code City iframe runtime template",
+  "risks": [
+    "Large inline JS/CSS runtime has high edit blast radius",
+    "Bridge event names must match Python runtime handlers exactly",
+    "Canvas interaction and patchbay panel logic are tightly coupled"
+  ],
+  "anchors": [
+    {
+      "line": 1657,
+      "text": "loadConnectionActionHistory()"
+    },
+    {
+      "line": 1684,
+      "text": "pushConnectionActionHistory(entry)"
+    },
+    {
+      "line": 1912,
+      "text": "captureThreeCameraState()"
+    },
+    {
+      "line": 1936,
+      "text": "applyThreeCameraState(camera3d)"
+    },
+    {
+      "line": 2484,
+      "text": "setViewMode(...) with deferred 3D camera apply"
+    },
+    {
+      "line": 2800,
+      "text": "startRewireDrag(event)"
+    },
+    {
+      "line": 2831,
+      "text": "handleRewireDrop(event)"
+    },
+    {
+      "line": 4774,
+      "text": "WOVEN_MAPS_CONNECTION_RESULT listener"
+    }
+  ],
+  "integration_gaps": [
+    {
+      "gap": "Interactive multi-browser style artifact coverage (Taskmaster #24)",
+      "status": "pending",
+      "notes": "Static checks pass, but viewport/browser screenshot evidence is still pending."
+    }
+  ],
+  "resolved_gaps": [
+    {
+      "gap": "Patchbay action history persistence",
+      "status": "complete"
+    },
+    {
+      "gap": "Drag-to-set rewire target gesture",
+      "status": "complete"
+    },
+    {
+      "gap": "2D/3D keyframe parity bridge",
+      "status": "complete"
+    }
+  ]
+}

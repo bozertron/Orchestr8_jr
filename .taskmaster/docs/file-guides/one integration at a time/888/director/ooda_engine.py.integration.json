@@ -1,0 +1,34 @@
+{
+  "source": "one integration at a time/888/director/ooda_engine.py",
+  "total_lines": 506,
+  "sha256": "f2a5c8e8a397f4bd1f473be8d7ff0f4c46326b95e56af2ec48271b30ca589303",
+  "chunk_count": 5,
+  "observation_ids": [
+    222,
+    223,
+    224,
+    225,
+    226
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [
+    {
+      "line": 135,
+      "text": "Best suggestion object if one should be made, None otherwise"
+    },
+    {
+      "line": 137,
+      "text": "if not context.should_show_suggestion():"
+    },
+    {
+      "line": 388,
+      "text": "if len(recent_zones) == 1 and context.current_zone == 'orchestr8':"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "source": ".planning/ROADMAP.md",
+  "total_lines": 200,
+  "sha256": "706701cf5559fbec6f28dcddc71b931be6392b29a43e3fdf9031bf315d047d1d",
+  "chunk_count": 2,
+  "observation_ids": [
+    1079,
+    1080
+  ],
+  "risks": [
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 5,
+      "text": "v2.0 Vision Audit + Full Wiring. Systematically audit every file, plugin, and feature against the ∅明nos vision. Complete v1.0 wiring work. Connect Settlement System to Code City. Validate the full pipeline end-to-end."
+    },
+    {
+      "line": 15,
+      "text": "- [x] **Phase 1: Branding** - Replace stereOS references with orchestr8"
+    },
+    {
+      "line": 17,
+      "text": "- [ ] **Phase 3: Health Integration** - Instantiate HealthChecker and update Code City colors"
+    },
+    {
+      "line": 28,
+      "text": "**Goal**: Application consistently displays \"orchestr8\" branding"
+    },
+    {
+      "line": 32,
+      "text": "- [x] 01-01-PLAN.md — Replace stereOS branding with orchestr8"
+    },
+    {
+      "line": 42,
+      "text": "1. Top row shows exactly: [orchestr8] [collabor8] [JFDI] [gener8]"
+    },
+    {
+      "line": 43,
+      "text": "2. JFDI opens TicketPanel component"
+    },
+    {
+      "line": 52,
+      "text": "**Goal**: HealthChecker updates Code City node colors based on actual file health"
+    },
+    {
+      "line": 59,
+      "text": "1. Code City nodes display Gold/Teal/Purple based on file health"
+    },
+    {
+      "line": 61,
+      "text": "3. HealthChecker instantiates without errors on render"
+    },
+    {
+      "line": 78,
+      "text": "4. Purple Code City nodes match real combat state"
+    },
+    {
+      "line": 95,
+      "text": "4. `marimo run orchestr8.py` produces no warnings"
+    },
+    {
+      "line": 111,
+      "text": "3. health_checker.py maps to Gold/Teal/Purple color system"
+    },
+    {
+      "line": 112,
+      "text": "4. combat_tracker.py integrates with Code City Purple"
+    },
+    {
+      "line": 114,
+      "text": "6. ticket_manager.py linked to JFDI panel"
+    },
+    {
+      "line": 132,
+      "text": "2. 06_maestro.py implements full stereOS layout per SOT.md"
+    },
+    {
+      "line": 134,
+      "text": "4. Plugin loading order correct in orchestr8.py"
+    },
+    {
+      "line": 152,
+      "text": "4. Purple color reflects Settlement agent activity"
+    },
+    {
+      "line": 159,
+      "text": "**Goal**: End-to-end pipeline works; dead code and stale references removed"
+    },
+    {
+      "line": 166,
+      "text": "1. orchestr8.py loads all plugins without error"
+    },
+    {
+      "line": 168,
+      "text": "3. 06_maestro.py renders full stereOS layout"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

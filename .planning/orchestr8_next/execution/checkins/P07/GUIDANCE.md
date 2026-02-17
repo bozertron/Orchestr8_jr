@@ -1,0 +1,623 @@
+# P07 Guidance Log
+
+Use this file for architect guidance drops and clarifications.
+
+## Entry Template
+
+- Date:
+- Author:
+- Context:
+- Guidance:
+- Impacted Files:
+- Required Follow-up:
+
+---
+
+- Date: 2026-02-15
+- Author: Codex
+- Context: B1 completion claim received from `a_codex_plan` lane via memory `#1463`.
+- Guidance:
+  - B1 smoke claim is accepted after canonical replay.
+  - Canonical replay command:
+    - `pytest tests/reliability/test_reliability.py tests/city/test_parity.py tests/city/test_binary_payload.py tests/city/test_wiring_view.py -q`
+    - result: `11 passed`
+  - Canonical artifact path is mandatory for accepted packets.
+  - B1 report has been normalized to:
+    - `.planning/orchestr8_next/artifacts/P07/B1_INTEGRATION_SMOKE_REPORT.md`
+- Impacted Files:
+  - `.planning/orchestr8_next/artifacts/P07/B1_INTEGRATION_SMOKE_REPORT.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/STATUS.md`
+- Required Follow-up:
+  - `a_codex_plan` lane should keep subsequent P07 reports in canonical artifact path at handoff time.
+  - Continue within P07-B1 boundary until next packet unlock.
+
+---
+
+- Date: 2026-02-15
+- Author: Codex
+- Context: P07 next unlock after B1 acceptance.
+- Guidance:
+  - `P07-C1` is unlocked to start for `2ndFid_explorers` lane under:
+    - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_C1_2NDFID_EXPLORERS.md`
+  - `P07-A1` continues in canonical lane with priority on:
+    - `A1_CANONICAL_REPLAY_CHECKLIST.md`
+    - `A1_FREEZE_MATRIX_REPORT.md`
+    - 8 frontend governance docs requested by founder
+  - All non-canonical packet evidence must be delivered to canonical artifact path with delivery proof per:
+    - `.planning/orchestr8_next/execution/ARTIFACT_DELIVERY_CONTRACT.md`
+- Impacted Files:
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_C1_2NDFID_EXPLORERS.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_A1_ORCHESTR8JR.md`
+  - `.planning/orchestr8_next/artifacts/P07/*`
+- Required Follow-up:
+  - C1 lane posts checkout ack before analysis starts.
+  - A1 lane updates STATUS with progress and artifact links.
+
+---
+
+- Date: 2026-02-15
+- Author: Orchestr8_jr
+- Context: P07-A2 resume governance after M1 hardening approval.
+- Guidance:
+  - **P07-B2 UNLOCKED** for `a_codex_plan` lane:
+    - Autonomy boundary: `AUTONOMY_BOUNDARY_B2_A_CODEX_PLAN.md`
+    - Scope: Continue marimo-first core integration
+    - Delivery contract enforcement: mandatory
+  - **P07-C2 UNLOCKED** for `2ndFid_explorers` lane:
+    - Autonomy boundary: `AUTONOMY_BOUNDARY_C2_2NDFID_EXPLORERS.md`
+    - Scope: Continue extraction packet production
+    - Delivery contract enforcement: mandatory
+  - Checkouts pending from both lanes (obs #1508, #1509)
+  - Canonical test baseline: `11 passed`
+  - All incoming evidence must follow ARTIFACT_DELIVERY_CONTRACT.md
+- Impacted Files:
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_B2_A_CODEX_PLAN.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_C2_2NDFID_EXPLORERS.md`
+  - `.planning/orchestr8_next/artifacts/P07/*`
+- Required Follow-up:
+  - B2 lane proceeds with checkout acknowledgment.
+  - C2 lane proceeds with checkout acknowledgment.
+  - Both lanes deliver evidence to canonical path on completion.
+
+---
+
+- Date: 2026-02-15
+- Author: Codex
+- Context: B2 completion claim received; canonical acceptance replay requested.
+- Guidance:
+  - B2 is **not accepted yet** due to missing canonical implementation files and test module.
+  - Missing in canonical:
+    - `orchestr8_next/city/topology.py`
+    - `orchestr8_next/city/heatmap.py`
+    - `tests/integration/test_graphs.py`
+  - Boundary report naming mismatch detected; required canonical report path remains:
+    - `/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/B2_INTEGRATION_SMOKE_REPORT.md`
+  - Corrective guidance sent to `a_codex_plan` via OR8-COMMS observation `#1515`.
+- Impacted Files:
+  - `.planning/orchestr8_next/artifacts/P07/B2_C1_INTEGRATION_REPORT.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_B2_A_CODEX_PLAN.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/STATUS.md`
+- Required Follow-up:
+  - `a_codex_plan` re-delivers missing code/test artifacts to canonical.
+  - `a_codex_plan` posts delivery proof (`cp` + `ls -l`) and exact pass counts.
+  - Canonical lane replays `pytest tests/integration/test_graphs.py -vv` before acceptance.
+
+---
+
+- Date: 2026-02-16
+- Author: Codex
+- Context: P07-GH1 governance hardening to eliminate instruction-path drift.
+- Guidance:
+  - Hard-requirements SOT is now active:
+    - `.planning/orchestr8_next/execution/HARD_REQUIREMENTS.md`
+  - All packets must use:
+    - `scripts/packet_bootstrap.sh <PHASE> <PACKET_ID> <AGENT_ID>`
+    - `scripts/packet_lint.sh <PROMPT_FILE> <BOUNDARY_FILE>`
+    - `scripts/packet_closeout.sh <PHASE> <PACKET_ID>`
+  - Prompt/boundary naming contracts were aligned:
+    - B2 report target: `B2_INTEGRATION_SMOKE_REPORT.md`
+    - C2 packet targets: `P07_C2_01_*.md`, `P07_C2_02_*.md`
+  - Founder-console and settlement-lab blueprints were added under:
+    - `.planning/projects/or8_founder_console/`
+    - `.planning/projects/mingos_settlement_lab/`
+- Impacted Files:
+  - `README.AGENTS`
+  - `.planning/orchestr8_next/execution/HARD_REQUIREMENTS.md`
+  - `.planning/orchestr8_next/execution/README.md`
+  - `.planning/orchestr8_next/execution/AGENT_COMMS_PROTOCOL.md`
+  - `.planning/orchestr8_next/execution/CHECKIN_PROTOCOL.md`
+  - `.planning/orchestr8_next/execution/P07_OPERATING_MODEL.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_B2_A_CODEX_PLAN.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_C2_2NDFID_EXPLORERS.md`
+  - `.planning/orchestr8_next/execution/prompts/RESUME_POST_M1_*.md`
+  - `scripts/packet_bootstrap.sh`
+  - `scripts/packet_lint.sh`
+  - `scripts/packet_closeout.sh`
+- Required Follow-up:
+  - All active lanes must regenerate packet worklists before continuing work.
+  - Any packet lacking lint + closeout evidence is auto-rework.
+
+---
+
+- Date: 2026-02-16
+- Author: Codex
+- Context: GH1 workflow broadcast to active lanes.
+- Guidance:
+  - Sent mandatory GH1 compliance instructions to:
+    - `a_codex_plan` (obs `#1517`) for B2 corrective re-delivery
+    - `2ndFid_explorers` (obs `#1518`) for C2 closeout-standardization
+  - Both lanes must adopt worklist + lint + closeout gates before further packet claims.
+- Impacted Files:
+  - `.planning/orchestr8_next/execution/prompts/RESUME_POST_M1_A_CODEX_PLAN.md`
+  - `.planning/orchestr8_next/execution/prompts/RESUME_POST_M1_2NDFID_EXPLORERS.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/STATUS.md`
+- Required Follow-up:
+  - Await lane acknowledgments and updated packet evidence.
+
+---
+
+- Date: 2026-02-16
+- Author: Codex
+- Context: C2 completion claim review and canonical validation.
+- Guidance:
+  - C2 is accepted.
+  - Acceptance basis:
+    - canonical artifacts exist:
+      - `.planning/orchestr8_next/artifacts/P07/P07_C2_01_AutoRun.md`
+      - `.planning/orchestr8_next/artifacts/P07/P07_C2_02_ProcessMonitor.md`
+    - closeout check passed:
+      - `scripts/packet_closeout.sh P07 P07-C2`
+  - Acceptance broadcast:
+    - `2ndFid_explorers` accepted/parked (obs `#1520`)
+    - `a_codex_plan` notified for downstream sequencing after B2 correction (obs `#1521`)
+- Impacted Files:
+  - `.planning/orchestr8_next/artifacts/P07/P07_C2_01_AutoRun.md`
+  - `.planning/orchestr8_next/artifacts/P07/P07_C2_02_ProcessMonitor.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/STATUS.md`
+- Required Follow-up:
+  - Hold `2ndFid_explorers` idle until next unlock.
+  - Continue B2 remediation in `a_codex_plan`.
+
+---
+
+- Date: 2026-02-16
+- Author: Orchestr8_jr
+- Context: P07-A3 resume governance after GH1 hardening.
+- Guidance:
+  - **B2 Decision: REWORK**
+    - Missing canonical files verified:
+      - `orchestr8_next/city/topology.py` - NOT FOUND
+      - `orchestr8_next/city/heatmap.py` - NOT FOUND
+      - `tests/integration/test_graphs.py` - NOT FOUND
+    - Smoke report claims integration but files do not exist
+    - Delivery contract violated - no `cp` + `ls -l` proof for code files
+    - Remediation required before acceptance
+  - **C2 Decision: ACCEPT** (both packets)
+    - P07_C2_01_AutoRun.md: Valid extraction, clean-room plan
+    - P07_C2_02_ProcessMonitor.md: Valid extraction, clean-room plan
+    - Route to a_codex_plan for implementation after B2 correction
+  - Canonical tests: `11 passed in 1.08s`
+  - A3_RESUME_GOVERNANCE_REPORT.md created
+- Impacted Files:
+  - `.planning/orchestr8_next/artifacts/P07/A3_RESUME_GOVERNANCE_REPORT.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/STATUS.md`
+- Required Follow-up:
+  - Await B2 re-delivery with implementation files and delivery proof
+  - Replay B2 tests after successful delivery
+
+---
+
+- Date: 2026-02-16
+- Author: Codex
+- Context: B2 follow-up after report retrieval callback.
+- Guidance:
+  - Re-issued strict B2 remediation to `a_codex_plan` (obs `#1525`):
+    - Missing required files remain:
+      - `orchestr8_next/city/topology.py`
+      - `orchestr8_next/city/heatmap.py`
+      - `tests/integration/test_graphs.py`
+    - Required next sequence:
+      - deliver missing files to canonical
+      - run `pytest tests/integration/test_graphs.py -vv`
+      - update `B2_INTEGRATION_SMOKE_REPORT.md` with exact pass count
+      - run `scripts/packet_closeout.sh P07 P07-B2`
+      - send completion ping
+- Impacted Files:
+  - `.planning/orchestr8_next/artifacts/P07/B2_INTEGRATION_SMOKE_REPORT.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/STATUS.md`
+- Required Follow-up:
+  - Await corrected B2 delivery and replay acceptance.
+
+---
+
+- Date: 2026-02-16
+- Author: Codex
+- Context: B2 retrieval callback re-validation.
+- Guidance:
+  - B2 is now accepted.
+  - Acceptance basis:
+    - required files exist:
+      - `orchestr8_next/city/topology.py`
+      - `orchestr8_next/city/heatmap.py`
+      - `tests/integration/test_graphs.py`
+    - canonical test replay passed:
+      - `pytest tests/integration/test_graphs.py -vv` -> `2 passed`
+    - closeout gate passed:
+      - `scripts/packet_closeout.sh P07 P07-B2`
+- Impacted Files:
+  - `.planning/orchestr8_next/artifacts/P07/B2_INTEGRATION_SMOKE_REPORT.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/STATUS.md`
+- Required Follow-up:
+  - Keep `a_codex_plan` lane idle until B3 unlock.
+
+---
+
+- Date: 2026-02-16
+- Author: Codex
+- Context: FC-01 artifact intake + lane synchronization check.
+- Guidance:
+  - `FC-01` report received and reviewed at canonical path:
+    - `.planning/orchestr8_next/artifacts/P07/FC-01_REPORT.md`
+  - Checkout ACK sent to `or8_founder_console`:
+    - obs `#1530` (cid `cid-1771205259434-P07-or8_founder_console-to-codex`)
+  - Follow-up guidance sent:
+    - `or8_founder_console`: accepted for FC-01 skeleton scope, park until `FC-02` unlock (obs `#1531`)
+    - `a_codex_plan`: remain parked pending `B3` unlock (obs `#1532`)
+    - `2ndFid_explorers`: remain parked pending next extraction unlock (obs `#1533`)
+  - Shared-memory health check remains green:
+    - `scripts/agent_comms.sh health` -> gateway and worker status `ok`, `outbox_pending: 0`
+- Impacted Files:
+  - `.planning/orchestr8_next/artifacts/P07/FC-01_REPORT.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/STATUS.md`
+- Required Follow-up:
+  - Trigger `MSL-01` launch from:
+    - `.planning/projects/mingos_settlement_lab/prompts/LAUNCH_MSL_01.md`
+  - Draft boundary + launch prompt for `FC-02`.
+
+---
+
+- Date: 2026-02-16
+- Author: Codex
+- Context: MSL-01 artifact intake and workspace verification.
+- Guidance:
+  - `MSL-01` report received at canonical path:
+    - `.planning/orchestr8_next/artifacts/P07/MSL-01_REPORT.md`
+  - Checkout ACK sent to `mingos_settlement_lab`:
+    - obs `#1535` (cid `cid-1771205782986-P07-mingos_settlement_lab-to-codex`)
+  - Workspace artifacts were spot-verified at:
+    - `/home/bozertron/mingos_settlement_lab/corpus/CORPUS_INDEX.md`
+    - `/home/bozertron/mingos_settlement_lab/synthesis/TOPIC_01_VISION_AND_OBJECTIVES.md`
+    - `/home/bozertron/mingos_settlement_lab/synthesis/TOPIC_02_ARCHITECTURE_AND_PIPELINE.md`
+    - `/home/bozertron/mingos_settlement_lab/synthesis/TOPIC_03_GOVERNANCE_AND_PROTOCOL.md`
+    - `/home/bozertron/mingos_settlement_lab/synthesis/TOPIC_04_CONTEXT_AND_STORY.md`
+    - `/home/bozertron/mingos_settlement_lab/synthesis/TOPIC_05_TRANSFER_STRATEGY.md`
+    - `/home/bozertron/mingos_settlement_lab/transfer/SETTLEMENT_PRD_OUTLINE.md`
+  - `MSL-01` accepted for bootstrap scope.
+  - Park guidance sent to `mingos_settlement_lab` (obs `#1536`).
+- Impacted Files:
+  - `.planning/orchestr8_next/artifacts/P07/MSL-01_REPORT.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/STATUS.md`
+- Required Follow-up:
+  - Draft and unlock `MSL-02` packet for deeper module specifications and transfer contracts.
+
+---
+
+- Date: 2026-02-16
+- Author: Codex
+- Context: Founder request to avoid parked lanes and run all agents at objective pace.
+- Guidance:
+  - New packet unlock set is active immediately:
+    - `P07-A4` (canonical governance): `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_A4_ORCHESTR8JR.md`
+    - `P07-B3` (`a_codex_plan`): `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_B3_A_CODEX_PLAN.md`
+    - `P07-C3` (`2ndFid_explorers`): `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_C3_2NDFID_EXPLORERS.md`
+    - `P07-FC-02` (`or8_founder_console`): `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_FC_02_OR8_FOUNDER_CONSOLE.md`
+    - `P07-MSL-02` (`mingos_settlement_lab`): `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_MSL_02_MINGOS_SETTLEMENT_LAB.md`
+  - Launch prompts prepared:
+    - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_A4_ORCHESTR8JR.md`
+    - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_B3_A_CODEX_PLAN.md`
+    - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_C3_2NDFID_EXPLORERS.md`
+    - `.planning/projects/or8_founder_console/prompts/LAUNCH_FC_02.md`
+    - `.planning/projects/mingos_settlement_lab/prompts/LAUNCH_MSL_02.md`
+  - Startup prompts for founder console and settlement lab were generalized to packet-agnostic checkout syntax to reduce drift across packets.
+- Impacted Files:
+  - `.planning/orchestr8_next/execution/checkins/P07/STATUS.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_A4_ORCHESTR8JR.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_B3_A_CODEX_PLAN.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_C3_2NDFID_EXPLORERS.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_FC_02_OR8_FOUNDER_CONSOLE.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_MSL_02_MINGOS_SETTLEMENT_LAB.md`
+  - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_A4_ORCHESTR8JR.md`
+  - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_B3_A_CODEX_PLAN.md`
+  - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_C3_2NDFID_EXPLORERS.md`
+  - `.planning/projects/or8_founder_console/prompts/LAUNCH_FC_02.md`
+  - `.planning/projects/mingos_settlement_lab/prompts/LAUNCH_MSL_02.md`
+- Required Follow-up:
+  - Broadcast unlock guidance to all four external lanes and request immediate checkout.
+  - Confirm checkouts received and acked within shared memory.
+
+Broadcast proof:
+- `a_codex_plan` unlock notice: obs `#1540`
+- `2ndFid_explorers` unlock notice: obs `#1537`
+- `or8_founder_console` unlock notice: obs `#1538`
+- `mingos_settlement_lab` unlock notice: obs `#1539`
+- `antigravity` canonical A4 notice: obs `#1541`
+
+---
+
+- Date: 2026-02-16
+- Author: Orchestr8_jr
+- Context: P07-A4 active governance - all lane checkouts received and ACKed.
+- Guidance:
+  - **Checkout ACKs sent**:
+    - B3 (a_codex_plan): obs `#1547`
+    - C3 (2ndFid_explorers): obs `#1548`
+    - FC-02 (or8_founder_console): obs `#1549`
+    - MSL-02 (mingos_settlement_lab): obs `#1550`
+  - **Canonical tests verified**:
+    - Core: `11 passed in 1.29s`
+    - Integration: `2 passed in 0.20s`
+  - **B2 delivery confirmed**:
+    - `orchestr8_next/city/topology.py` - VERIFIED
+    - `orchestr8_next/city/heatmap.py` - VERIFIED
+    - `tests/integration/test_graphs.py` - VERIFIED
+  - All lanes proceeding with packet execution
+  - Awaiting completion claims for accept/rework decisions
+- Impacted Files:
+  - `.planning/orchestr8_next/artifacts/P07/A4_ACTIVE_GOVERNANCE_REPORT.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/STATUS.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/P07-A4_WORKLIST.md`
+- Required Follow-up:
+  - Monitor for B3, C3, FC-02, MSL-02 completion claims
+  - Replay tests and verify delivery before acceptance
+
+---
+
+- Date: 2026-02-16
+- Author: Codex
+- Context: B3 artifact retrieval callback and canonical replay.
+- Guidance:
+  - `B3_INTEGRATION_SMOKE_REPORT.md` retrieved from canonical artifacts and verified.
+  - Required B3 implementation/test files present:
+    - `orchestr8_next/city/automation.py`
+    - `orchestr8_next/city/power_grid.py`
+    - `tests/integration/test_city_automation.py`
+    - `tests/integration/test_city_power_grid.py`
+  - Canonical replay passed:
+    - `pytest tests/integration/test_city_automation.py tests/integration/test_city_power_grid.py -vv` -> `4 passed`
+  - Closeout gate passed:
+    - `scripts/packet_closeout.sh P07 P07-B3` -> PASS
+  - Decision: **P07-B3 ACCEPTED**
+  - Next integration packet unlocked:
+    - `P07-B4` via `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_B4_A_CODEX_PLAN.md`
+  - Checkout ACK sweep completed for pending `requires_ack=true` checkouts:
+    - `or8_founder_console` ack obs `#1560`
+    - `orchestr8_jr` ack obs `#1562`
+    - `mingos_settlement_lab` ack obs `#1561`
+  - B4 unlock guidance sent:
+    - `a_codex_plan` obs `#1565`
+    - execution mirror guidance to `antigravity` obs `#1566`
+- Impacted Files:
+  - `.planning/orchestr8_next/artifacts/P07/B3_INTEGRATION_SMOKE_REPORT.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/STATUS.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_B4_A_CODEX_PLAN.md`
+  - `.planning/orchestr8_next/execution/prompts/RESUME_POST_B3_A_CODEX_PLAN.md`
+  - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_B4_A_CODEX_PLAN.md`
+- Required Follow-up:
+  - Await B4 checkout and progress evidence.
+  - Continue C3/FC-02/MSL-02 intake decisions.
+
+---
+
+- Date: 2026-02-16
+- Author: Codex
+- Context: Multi-lane completion intake for C3, FC-02, MSL-02 after B3 acceptance.
+- Guidance:
+  - Intake decisions:
+    - **P07-C3 ACCEPTED**
+      - artifacts verified:
+        - `.planning/orchestr8_next/artifacts/P07/P07_C3_01_MaestroWizard.md`
+        - `.planning/orchestr8_next/artifacts/P07/P07_C3_02_WizardConversation.md`
+      - closeout gate: `scripts/packet_closeout.sh P07 P07-C3` -> PASS
+    - **P07-FC-02 ACCEPTED**
+      - artifact verified: `.planning/orchestr8_next/artifacts/P07/FC-02_REPORT.md`
+      - closeout gate: `scripts/packet_closeout.sh P07 P07-FC-02` -> PASS
+    - **P07-MSL-02 ACCEPTED**
+      - artifact verified: `.planning/orchestr8_next/artifacts/P07/MSL-02_REPORT.md`
+      - required spec/transfer files verified under `/home/bozertron/mingos_settlement_lab/`
+      - closeout gate: `scripts/packet_closeout.sh P07 P07-MSL-02` -> PASS
+  - Closeout compatibility fix applied:
+    - added dash-form boundary aliases so packet ids with dashes resolve:
+      - `AUTONOMY_BOUNDARY_FC-02_OR8_FOUNDER_CONSOLE.md`
+      - `AUTONOMY_BOUNDARY_MSL-02_MINGOS_SETTLEMENT_LAB.md`
+    - adjusted FC-02 boundary required evidence text to avoid endpoint-path false positives in closeout parser.
+  - Next unlock set issued immediately to keep lanes active:
+    - **P07-C4** unlocked for `2ndFid_explorers`
+      - launch: `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_C4_2NDFID_EXPLORERS.md`
+      - guidance obs `#1568`
+    - **P07-FC-03** unlocked for `or8_founder_console`
+      - launch: `.planning/projects/or8_founder_console/prompts/LAUNCH_FC_03.md`
+      - guidance obs `#1567`
+    - **P07-MSL-03** unlocked for `mingos_settlement_lab`
+      - launch: `.planning/projects/mingos_settlement_lab/prompts/LAUNCH_MSL_03.md`
+      - guidance obs `#1569`
+    - `a_codex_plan` remains on **P07-B4** with new accepted inputs guidance (obs `#1571`)
+    - canonical `antigravity` informed of updated accept/unlock state (obs `#1570`)
+- Impacted Files:
+  - `.planning/orchestr8_next/execution/checkins/P07/STATUS.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_C4_2NDFID_EXPLORERS.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_FC-03_OR8_FOUNDER_CONSOLE.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_MSL-03_MINGOS_SETTLEMENT_LAB.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_FC-02_OR8_FOUNDER_CONSOLE.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_MSL-02_MINGOS_SETTLEMENT_LAB.md`
+  - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_C4_2NDFID_EXPLORERS.md`
+  - `.planning/projects/or8_founder_console/prompts/LAUNCH_FC_03.md`
+  - `.planning/projects/mingos_settlement_lab/prompts/LAUNCH_MSL_03.md`
+- Required Follow-up:
+  - Await checkouts for B4/C4/FC-03/MSL-03 and ack promptly.
+  - Keep A4 governance lane active with rolling acceptance cycles.
+
+---
+
+- Date: 2026-02-16
+- Author: Codex
+- Context: Founder directive to avoid parked lanes and release full visible roadmap in one batch.
+- Guidance:
+  - Intake decisions completed:
+    - **P07-B4 ACCEPTED**
+      - artifact verified: `.planning/orchestr8_next/artifacts/P07/B4_INTEGRATION_SMOKE_REPORT.md`
+      - canonical replay: `pytest tests/integration/test_city_tour_service.py tests/integration/test_agent_conversation.py -q` -> `4 passed`
+      - closeout gate: `scripts/packet_closeout.sh P07 P07-B4` -> PASS
+    - **P07-C4 ACCEPTED**
+      - artifacts verified:
+        - `.planning/orchestr8_next/artifacts/P07/P07_C4_01_QuickActions.md`
+        - `.planning/orchestr8_next/artifacts/P07/P07_C4_02_LayerStack.md`
+      - closeout gate: `scripts/packet_closeout.sh P07 P07-C4` -> PASS
+    - **P07-FC-03 ACCEPTED**
+      - artifact verified: `.planning/orchestr8_next/artifacts/P07/FC-03_REPORT.md`
+      - closeout gate: `scripts/packet_closeout.sh P07 P07-FC-03` -> PASS
+      - pending checkout ack resolved:
+        - obs `#1593` (ack for checkout `#1581`)
+    - **P07-MSL-03 ACCEPTED**
+      - artifact verified: `.planning/orchestr8_next/artifacts/P07/MSL-03_REPORT.md`
+      - closeout gate: `scripts/packet_closeout.sh P07 P07-MSL-03` -> PASS
+  - Wave-2 packet set unlocked simultaneously (parallel sprint):
+    - `P07-A5` canonical governance lane
+    - `P07-B5` for `a_codex_plan`
+    - `P07-C5` for `2ndFid_explorers`
+    - `P07-FC-04` for `or8_founder_console`
+    - `P07-MSL-04` for `mingos_settlement_lab`
+  - Launch/resume prompt set prepared:
+    - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_A5_ORCHESTR8JR.md`
+    - `.planning/orchestr8_next/execution/prompts/RESUME_POST_A4_ORCHESTR8JR.md`
+    - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_B5_A_CODEX_PLAN.md`
+    - `.planning/orchestr8_next/execution/prompts/RESUME_POST_B4_A_CODEX_PLAN.md`
+    - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_C5_2NDFID_EXPLORERS.md`
+    - `.planning/orchestr8_next/execution/prompts/RESUME_POST_C4_2NDFID_EXPLORERS.md`
+    - `.planning/projects/or8_founder_console/prompts/LAUNCH_FC_04.md`
+    - `.planning/projects/or8_founder_console/prompts/RESUME_FC_04.md`
+    - `.planning/projects/mingos_settlement_lab/prompts/LAUNCH_MSL_04.md`
+    - `.planning/projects/mingos_settlement_lab/prompts/RESUME_MSL_04.md`
+  - Broadcast unlock messages sent:
+    - `a_codex_plan` wave-2 launch guidance: obs `#1594`
+    - `2ndFid_explorers` wave-2 launch guidance: obs `#1595`
+    - `or8_founder_console` wave-2 launch guidance: obs `#1596`
+    - `mingos_settlement_lab` wave-2 launch guidance: obs `#1597`
+    - execution mirror (`antigravity`) A5 coordination notice: obs `#1598`
+- Impacted Files:
+  - `.planning/orchestr8_next/execution/checkins/P07/STATUS.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_A5_ORCHESTR8JR.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_B5_A_CODEX_PLAN.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_C5_2NDFID_EXPLORERS.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_FC-04_OR8_FOUNDER_CONSOLE.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_MSL-04_MINGOS_SETTLEMENT_LAB.md`
+  - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_A5_ORCHESTR8JR.md`
+  - `.planning/orchestr8_next/execution/prompts/RESUME_POST_A4_ORCHESTR8JR.md`
+  - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_B5_A_CODEX_PLAN.md`
+  - `.planning/orchestr8_next/execution/prompts/RESUME_POST_B4_A_CODEX_PLAN.md`
+  - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_C5_2NDFID_EXPLORERS.md`
+  - `.planning/orchestr8_next/execution/prompts/RESUME_POST_C4_2NDFID_EXPLORERS.md`
+  - `.planning/projects/or8_founder_console/prompts/LAUNCH_FC_04.md`
+  - `.planning/projects/or8_founder_console/prompts/RESUME_FC_04.md`
+  - `.planning/projects/mingos_settlement_lab/prompts/LAUNCH_MSL_04.md`
+  - `.planning/projects/mingos_settlement_lab/prompts/RESUME_MSL_04.md`
+- Required Follow-up:
+  - All lanes execute checkout immediately and run full packet scope to completion.
+  - No lane parking unless a blocker is written into `BLOCKERS.md` with explicit decision needed.
+  - Continue batched unlock model for subsequent waves to minimize coordination latency.
+
+---
+
+- Date: 2026-02-16
+- Author: Codex
+- Context: Wave-2 acceptance complete; founder requested immediate Wave-3 launch without coordination lag.
+- Guidance:
+  - Wave-3 packet set unlocked and launched in parallel:
+    - `P07-A6` canonical governance loop
+    - `P07-B6` for `a_codex_plan`
+    - `P07-C6` for `2ndFid_explorers`
+    - `P07-FC-05` for `or8_founder_console`
+    - `P07-MSL-05` for `mingos_settlement_lab`
+  - New Wave-3 boundaries created:
+    - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_A6_ORCHESTR8JR.md`
+    - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_B6_A_CODEX_PLAN.md`
+    - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_C6_2NDFID_EXPLORERS.md`
+    - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_FC-05_OR8_FOUNDER_CONSOLE.md`
+    - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_MSL-05_MINGOS_SETTLEMENT_LAB.md`
+  - New launch/resume prompts created:
+    - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_A6_ORCHESTR8JR.md`
+    - `.planning/orchestr8_next/execution/prompts/RESUME_POST_A5_ORCHESTR8JR.md`
+    - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_B6_A_CODEX_PLAN.md`
+    - `.planning/orchestr8_next/execution/prompts/RESUME_POST_B5_A_CODEX_PLAN.md`
+    - `.planning/orchestr8_next/execution/prompts/LAUNCH_P07_C6_2NDFID_EXPLORERS.md`
+    - `.planning/orchestr8_next/execution/prompts/RESUME_POST_C5_2NDFID_EXPLORERS.md`
+    - `.planning/projects/or8_founder_console/prompts/LAUNCH_FC_05.md`
+    - `.planning/projects/or8_founder_console/prompts/RESUME_FC_05.md`
+    - `.planning/projects/mingos_settlement_lab/prompts/LAUNCH_MSL_05.md`
+    - `.planning/projects/mingos_settlement_lab/prompts/RESUME_MSL_05.md`
+  - Broadcast unlock guidance sent:
+    - `a_codex_plan` obs `#1639`
+    - `2ndFid_explorers` obs `#1640`
+    - `or8_founder_console` obs `#1641`
+    - `mingos_settlement_lab` obs `#1642`
+    - execution mirror (`antigravity`) obs `#1643`
+  - A6 kickoff completed:
+    - checkout obs `#1644`
+    - worklist generated: `.planning/orchestr8_next/execution/checkins/P07/P07-A6_WORKLIST.md`
+    - lint gate passed for `RESUME_POST_A5_ORCHESTR8JR.md`
+- Impacted Files:
+  - `.planning/orchestr8_next/execution/checkins/P07/STATUS.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/GUIDANCE.md`
+  - `.planning/orchestr8_next/artifacts/P07/A6_ACTIVE_GOVERNANCE_REPORT.md`
+  - `SOT/CODEBASE_TODOS/LAUNCH_PROMPTS_P07_LONGRUN.md`
+- Required Follow-up:
+  - Await and ACK all Wave-3 checkouts.
+  - Keep lanes active; blocker-only interruptions.
+  - Intake Wave-3 evidence bundles and issue replay-based accept/rework decisions.
+
+
+---
+
+- Date: 2026-02-16
+- Author: Codex
+- Context: Founder-directed auto-forward mode enabled; Wave-4 launched from one-shot long-run package.
+- Guidance:
+  - Wave-4 packet set unlocked and activated in parallel:
+    - `P07-A7` canonical governance loop
+    - `P07-B7` for `a_codex_plan`
+    - `P07-C7` for `2ndFid_explorers`
+    - `P07-FC-06` for `or8_founder_console`
+    - `P07-MSL-06` for `mingos_settlement_lab`
+  - Launch package generated from shared spec:
+    - `SOT/CODEBASE_TODOS/NEXT_PHASE_COLLAB_WAVE4_AUTORUN.toml`
+    - `SOT/CODEBASE_TODOS/LAUNCH_PROMPTS_P07_WAVE4_LONGRUN.md`
+    - `scripts/generated/P07_wave4_unlock_broadcast.sh`
+    - `scripts/generated/P07_wave4_canonical_kickoff.sh`
+  - Shared-memory unlock guidance delivered:
+    - `a_codex_plan` `#1673`
+    - `2ndFid_explorers` `#1674`
+    - `or8_founder_console` `#1675`
+    - `mingos_settlement_lab` `#1676`
+    - `antigravity` mirror `#1677`
+  - Canonical kickoff evidence:
+    - A7 checkout received `#1678`
+    - checkout ACK sent `#1679`
+    - wave launch summary persisted `#1680`
+  - Comms reliability note:
+    - initial writes were spooled; replayed to shared memory via `scripts/agent_comms.sh flush` (`sent=6 failed=0`)
+  - Operational mode remains: long-run execution, no assumptions, two hard-fact probes then defer-and-continue.
+- Impacted Files:
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_A7_ORCHESTR8JR.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_B7_A_CODEX_PLAN.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_C7_2NDFID_EXPLORERS.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_FC-06_OR8_FOUNDER_CONSOLE.md`
+  - `.planning/orchestr8_next/execution/checkins/P07/AUTONOMY_BOUNDARY_MSL-06_MINGOS_SETTLEMENT_LAB.md`
+  - `.planning/orchestr8_next/execution/prompts/RESUME_POST_A6_ORCHESTR8JR.md`
+  - `.planning/orchestr8_next/execution/prompts/RESUME_POST_B6_A_CODEX_PLAN.md`
+  - `.planning/orchestr8_next/execution/prompts/RESUME_POST_C6_2NDFID_EXPLORERS.md`
+  - `.planning/projects/or8_founder_console/prompts/RESUME_FC_06.md`
+  - `.planning/projects/mingos_settlement_lab/prompts/RESUME_MSL_06.md`
+  - `SOT/CODEBASE_TODOS/LAUNCH_PROMPTS_P07_WAVE4_LONGRUN.md`
+- Required Follow-up:
+  - Collect remaining Wave-4 lane checkout ACKs and keep windows unblocked.
+  - Intake one end-of-window evidence bundle per lane and run replay decisions in batch.
+  - Prepare Wave-5 unlock set before Wave-4 closeout to maintain continuous lane motion.

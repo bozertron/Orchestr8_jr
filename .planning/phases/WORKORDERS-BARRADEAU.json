@@ -1,0 +1,476 @@
+{
+  "work_order_batch": "BARRADEAU-001",
+  "generated": "2026-02-12",
+  "source": "ARCHITECT-BARRADEAU.md",
+  "status": "PENDING_FOUNDER_APPROVAL",
+  "total_work_orders": 18,
+  "phases": [
+    {
+      "phase_id": "BARRADEAU-P1",
+      "phase_name": "Extract Core Patterns",
+      "estimated_agents": 3,
+      "work_orders": [
+        {
+          "wo_id": "WO-BARRADEAU-001",
+          "title": "Create IP/barradeau_builder.py module scaffold",
+          "type": "CREATE",
+          "priority": "HIGH",
+          "file_path": "IP/barradeau_builder.py",
+          "dependencies": [],
+          "locked_requirements": [
+            "Port BarradeauBuilding class logic from void-phase0-buildings.html lines 827-1031",
+            "Port Delaunay.triangulate() from lines 727-803",
+            "Output BuildingData dataclass with particles and edges"
+          ],
+          "constraints": [
+            "NO wholesale copy — extract patterns only",
+            "Color MUST use 0xD4AF37 (canonical gold), NOT 0xC9A962"
+          ],
+          "acceptance_criteria": [
+            "File exists at IP/barradeau_builder.py",
+            "BarradeauBuilding class defined",
+            "Delaunay triangulation method works",
+            "BuildingData dataclass with particles, edges fields"
+          ],
+          "estimated_tokens": 2500
+        },
+        {
+          "wo_id": "WO-BARRADEAU-002",
+          "title": "Create IP/static/woven_maps_3d.js Three.js scaffold",
+          "type": "CREATE",
+          "priority": "HIGH",
+          "file_path": "IP/static/woven_maps_3d.js",
+          "dependencies": ["WO-BARRADEAU-001"],
+          "locked_requirements": [
+            "Three.js scene setup with black background (#0A0A0B)",
+            "OrbitControls from reference",
+            "UnrealBloomPass post-processing"
+          ],
+          "constraints": [
+            "NO breathing/pulsing animations",
+            "Background MUST be #0A0A0B (The Void)"
+          ],
+          "acceptance_criteria": [
+            "File exists at IP/static/woven_maps_3d.js",
+            "Three.js scene initializes",
+            "OrbitControls functional",
+            "Bloom post-processing active"
+          ],
+          "estimated_tokens": 2000
+        },
+        {
+          "wo_id": "WO-BARRADEAU-003",
+          "title": "Port CONFIG object with canonical colors",
+          "type": "IMPLEMENT",
+          "priority": "HIGH",
+          "file_path": "IP/barradeau_builder.py",
+          "dependencies": ["WO-BARRADEAU-001"],
+          "locked_requirements": [
+            "BASE_FOOTPRINT: 2",
+            "FOOTPRINT_SCALE: 0.008",
+            "MIN_HEIGHT: 3",
+            "HEIGHT_PER_EXPORT: 0.8",
+            "PARTICLES_PER_UNIT: 1.2",
+            "LAYER_COUNT: 15",
+            "TAPER: 0.015",
+            "COLOR: 0xD4AF37 (NOT 0xC9A962)"
+          ],
+          "constraints": [
+            "Height formula is LOCKED: 3 + (exports × 0.8)",
+            "Footprint formula is LOCKED: 2 + (lines × 0.008)"
+          ],
+          "acceptance_criteria": [
+            "CONFIG object exists with all 8 parameters",
+            "COLOR uses 0xD4AF37",
+            "Formulas match locked values exactly"
+          ],
+          "estimated_tokens": 1000
+        }
+      ]
+    },
+    {
+      "phase_id": "BARRADEAU-P2",
+      "phase_name": "Implement Building Generator",
+      "estimated_agents": 6,
+      "work_orders": [
+        {
+          "wo_id": "WO-BARRADEAU-004",
+          "title": "Port footprint generation from file metrics",
+          "type": "IMPLEMENT",
+          "priority": "HIGH",
+          "file_path": "IP/barradeau_builder.py",
+          "dependencies": ["WO-BARRADEAU-003"],
+          "locked_requirements": [
+            "Footprint radius = 2 + (lines × 0.008)",
+            "Generate points using Delaunay triangulation",
+            "Complexity based on LOC"
+          ],
+          "constraints": [
+            "Use Delaunay triangulation from WO-BARRADEAU-001"
+          ],
+          "acceptance_criteria": [
+            "generate_footprint() method exists",
+            "Returns list of 2D points",
+            "Radius scales with lines of code"
+          ],
+          "estimated_tokens": 2500
+        },
+        {
+          "wo_id": "WO-BARRADEAU-005",
+          "title": "Implement layer-based particle placement",
+          "type": "IMPLEMENT",
+          "priority": "HIGH",
+          "file_path": "IP/barradeau_builder.py",
+          "dependencies": ["WO-BARRADEAU-004"],
+          "locked_requirements": [
+            "15 layers (LAYER_COUNT from CONFIG)",
+            "Taper per layer: 0.015",
+            "Height per layer: total_height / 15",
+            "Particle density formula: density = 1 + (1 - edge.length/max) * 2"
+          ],
+          "constraints": [
+            "NO breathing after emergence",
+            "Particles must COALESCE, not animate"
+          ],
+          "acceptance_criteria": [
+            "place_particles() method exists",
+            "Particles distributed across 15 layers",
+            "Taper reduces footprint at higher layers"
+          ],
+          "estimated_tokens": 3000
+        },
+        {
+          "wo_id": "WO-BARRADEAU-006",
+          "title": "Implement edge length filtering per layer",
+          "type": "IMPLEMENT",
+          "priority": "HIGH",
+          "file_path": "IP/barradeau_builder.py",
+          "dependencies": ["WO-BARRADEAU-005"],
+          "locked_requirements": [
+            "Filter edges by length at each layer",
+            "Longer edges filtered at higher layers",
+            "Creates ethereal fade effect"
+          ],
+          "constraints": [
+            "Reference void-phase0-buildings.html lines 929-940"
+          ],
+          "acceptance_criteria": [
+            "filter_edges_by_layer() method exists",
+            "Longer edges excluded from higher layers",
+            "Visual fade effect achieved"
+          ],
+          "estimated_tokens": 2000
+        },
+        {
+          "wo_id": "WO-BARRADEAU-007",
+          "title": "Create vertex shader for size/opacity",
+          "type": "CREATE",
+          "priority": "MEDIUM",
+          "file_path": "IP/static/shaders/barradeau.vert",
+          "dependencies": ["WO-BARRADEAU-002"],
+          "locked_requirements": [
+            "Size attenuation based on camera distance",
+            "Opacity from layer (higher = more transparent)",
+            "Position from BuildingData"
+          ],
+          "constraints": [
+            "NO sin/cos oscillation (no breathing)"
+          ],
+          "acceptance_criteria": [
+            "File exists at IP/static/shaders/barradeau.vert",
+            "Size varies with camera distance",
+            "Opacity decreases at higher layers"
+          ],
+          "estimated_tokens": 2000
+        },
+        {
+          "wo_id": "WO-BARRADEAU-008",
+          "title": "Create fragment shader for Barradeau glow",
+          "type": "CREATE",
+          "priority": "MEDIUM",
+          "file_path": "IP/static/shaders/barradeau.frag",
+          "dependencies": ["WO-BARRADEAU-007"],
+          "locked_requirements": [
+            "Soft glow falloff (Barradeau style)",
+            "Reference void-phase0-buildings.html lines 1077-1121"
+          ],
+          "constraints": [
+            "Must work with canonical colors"
+          ],
+          "acceptance_criteria": [
+            "File exists at IP/static/shaders/barradeau.frag",
+            "Soft particle glow achieved",
+            "No harsh edges"
+          ],
+          "estimated_tokens": 2000
+        },
+        {
+          "wo_id": "WO-BARRADEAU-009",
+          "title": "Wire shaders to Three.js material",
+          "type": "INTEGRATE",
+          "priority": "MEDIUM",
+          "file_path": "IP/static/woven_maps_3d.js",
+          "dependencies": ["WO-BARRADEAU-007", "WO-BARRADEAU-008"],
+          "locked_requirements": [
+            "ShaderMaterial using custom shaders",
+            "Uniforms for color state"
+          ],
+          "constraints": [
+            "Three states only: gold/teal/purple"
+          ],
+          "acceptance_criteria": [
+            "ShaderMaterial applied to building particles",
+            "Color uniform accepts state changes"
+          ],
+          "estimated_tokens": 1500
+        }
+      ]
+    },
+    {
+      "phase_id": "BARRADEAU-P3",
+      "phase_name": "Wire to GraphData",
+      "estimated_agents": 3,
+      "work_orders": [
+        {
+          "wo_id": "WO-BARRADEAU-010",
+          "title": "Connect barradeau_builder to build_from_connection_graph()",
+          "type": "INTEGRATE",
+          "priority": "HIGH",
+          "file_path": "IP/woven_maps.py",
+          "dependencies": ["WO-BARRADEAU-006"],
+          "locked_requirements": [
+            "Use export_count from edges for height",
+            "Use incoming/outgoing counts for additional sizing",
+            "Reference woven_maps.py lines 378-385"
+          ],
+          "constraints": [
+            "DO NOT break existing 2D canvas renderer",
+            "Keep existing components listed in architect plan"
+          ],
+          "acceptance_criteria": [
+            "BarradeauBuilder receives data from ConnectionGraph",
+            "Building heights match export counts",
+            "2D mode still works"
+          ],
+          "estimated_tokens": 2500
+        },
+        {
+          "wo_id": "WO-BARRADEAU-011",
+          "title": "Implement color state mapping for 3D buildings",
+          "type": "IMPLEMENT",
+          "priority": "HIGH",
+          "file_path": "IP/static/woven_maps_3d.js",
+          "dependencies": ["WO-BARRADEAU-010"],
+          "locked_requirements": [
+            "working → 0xD4AF37 (gold)",
+            "broken → 0x1fbdea (teal)",
+            "combat → 0x9D4EDD (purple)"
+          ],
+          "constraints": [
+            "THREE STATES ONLY",
+            "NO red for errors"
+          ],
+          "acceptance_criteria": [
+            "Buildings render in correct color by state",
+            "Color transitions on state change"
+          ],
+          "estimated_tokens": 1500
+        },
+        {
+          "wo_id": "WO-BARRADEAU-012",
+          "title": "Expose BuildingData to JavaScript renderer",
+          "type": "INTEGRATE",
+          "priority": "MEDIUM",
+          "file_path": "IP/woven_maps.py",
+          "dependencies": ["WO-BARRADEAU-010"],
+          "locked_requirements": [
+            "Serialize BuildingData to JSON",
+            "Pass to woven_maps_3d.js via Marimo"
+          ],
+          "constraints": [
+            "Must work with Marimo's reactive model"
+          ],
+          "acceptance_criteria": [
+            "BuildingData JSON accessible from JS",
+            "Data updates on graph changes"
+          ],
+          "estimated_tokens": 1500
+        }
+      ]
+    },
+    {
+      "phase_id": "BARRADEAU-P4",
+      "phase_name": "Add 3D Controls",
+      "estimated_agents": 3,
+      "work_orders": [
+        {
+          "wo_id": "WO-BARRADEAU-013",
+          "title": "Add 2D/3D mode toggle to control panel",
+          "type": "UI",
+          "priority": "MEDIUM",
+          "file_path": "IP/woven_maps.py",
+          "dependencies": ["WO-BARRADEAU-012"],
+          "locked_requirements": [
+            "Toggle button in existing control panel",
+            "2D canvas fallback preserved"
+          ],
+          "constraints": [
+            "Keep existing control panel CSS (lines 596-815)"
+          ],
+          "acceptance_criteria": [
+            "Toggle button visible in control panel",
+            "Switching modes works",
+            "2D mode still renders correctly"
+          ],
+          "estimated_tokens": 1500
+        },
+        {
+          "wo_id": "WO-BARRADEAU-014",
+          "title": "Add densit8 slider for particlesPerUnit",
+          "type": "UI",
+          "priority": "MEDIUM",
+          "file_path": "IP/woven_maps.py",
+          "dependencies": ["WO-BARRADEAU-013"],
+          "locked_requirements": [
+            "Slider labeled 'densit8'",
+            "Controls CONFIG.PARTICLES_PER_UNIT (default 1.2)",
+            "Range: 0.5 to 3.0"
+          ],
+          "constraints": [
+            "Must update building visualization in real-time"
+          ],
+          "acceptance_criteria": [
+            "densit8 slider exists",
+            "Adjusting slider changes particle density",
+            "Default value is 1.2"
+          ],
+          "estimated_tokens": 1500
+        },
+        {
+          "wo_id": "WO-BARRADEAU-015",
+          "title": "Add 3D camera keyframes",
+          "type": "IMPLEMENT",
+          "priority": "LOW",
+          "file_path": "IP/static/woven_maps_3d.js",
+          "dependencies": ["WO-BARRADEAU-002"],
+          "locked_requirements": [
+            "Extend existing keyframe system (woven_maps.py lines 862-974)",
+            "Support camera position/rotation keyframes"
+          ],
+          "constraints": [
+            "Keep existing 2D keyframe system intact"
+          ],
+          "acceptance_criteria": [
+            "Camera keyframes work in 3D mode",
+            "Existing 2D keyframes unaffected"
+          ],
+          "estimated_tokens": 2000
+        }
+      ]
+    },
+    {
+      "phase_id": "BARRADEAU-P5",
+      "phase_name": "Emergence Animation",
+      "estimated_agents": 3,
+      "work_orders": [
+        {
+          "wo_id": "WO-BARRADEAU-016",
+          "title": "Implement particle emergence animation",
+          "type": "IMPLEMENT",
+          "priority": "HIGH",
+          "file_path": "IP/static/woven_maps_3d.js",
+          "dependencies": ["WO-BARRADEAU-012"],
+          "locked_requirements": [
+            "Particles start scattered in Void",
+            "Coalesce to building positions on load",
+            "Single emergence event — NOT continuous"
+          ],
+          "constraints": [
+            "NO breathing/pulsing (FORBIDDEN)",
+            "NO sin/cos oscillation after emergence",
+            "Things EMERGE, not animate"
+          ],
+          "acceptance_criteria": [
+            "Particles emerge from scattered to organized",
+            "No oscillation after emergence complete",
+            "Motion feels like emergence from Void"
+          ],
+          "estimated_tokens": 2500
+        },
+        {
+          "wo_id": "WO-BARRADEAU-017",
+          "title": "Add emergence color transition",
+          "type": "IMPLEMENT",
+          "priority": "MEDIUM",
+          "file_path": "IP/static/woven_maps_3d.js",
+          "dependencies": ["WO-BARRADEAU-016"],
+          "locked_requirements": [
+            "Frame color: teal (#1fbdea) during emergence",
+            "Frame color: gold (#D4AF37) when complete"
+          ],
+          "constraints": [
+            "Only for working state buildings"
+          ],
+          "acceptance_criteria": [
+            "Buildings glow teal while emerging",
+            "Transition to gold when emergence complete"
+          ],
+          "estimated_tokens": 1500
+        },
+        {
+          "wo_id": "WO-BARRADEAU-018",
+          "title": "Verify dual-mode rendering works",
+          "type": "TEST",
+          "priority": "HIGH",
+          "file_path": "IP/woven_maps.py",
+          "dependencies": [
+            "WO-BARRADEAU-013",
+            "WO-BARRADEAU-014",
+            "WO-BARRADEAU-016"
+          ],
+          "locked_requirements": [
+            "2D canvas mode works",
+            "3D Three.js mode works",
+            "Toggle between modes works",
+            "All success criteria from ARCHITECT-BARRADEAU.md pass"
+          ],
+          "constraints": [
+            "DO NOT break existing functionality"
+          ],
+          "acceptance_criteria": [
+            "Buildings render with Barradeau particle clustering",
+            "Height formula: 3 + (exports × 0.8)",
+            "Footprint formula: 2 + (lines × 0.008)",
+            "Three-color system: #D4AF37, #1fbdea, #9D4EDD",
+            "Emergence animation (no breathing)",
+            "Density slider adjusts particle visibility",
+            "2D fallback mode still works"
+          ],
+          "estimated_tokens": 1500
+        }
+      ]
+    }
+  ],
+  "dependency_graph": {
+    "WO-BARRADEAU-001": [],
+    "WO-BARRADEAU-002": ["WO-BARRADEAU-001"],
+    "WO-BARRADEAU-003": ["WO-BARRADEAU-001"],
+    "WO-BARRADEAU-004": ["WO-BARRADEAU-003"],
+    "WO-BARRADEAU-005": ["WO-BARRADEAU-004"],
+    "WO-BARRADEAU-006": ["WO-BARRADEAU-005"],
+    "WO-BARRADEAU-007": ["WO-BARRADEAU-002"],
+    "WO-BARRADEAU-008": ["WO-BARRADEAU-007"],
+    "WO-BARRADEAU-009": ["WO-BARRADEAU-007", "WO-BARRADEAU-008"],
+    "WO-BARRADEAU-010": ["WO-BARRADEAU-006"],
+    "WO-BARRADEAU-011": ["WO-BARRADEAU-010"],
+    "WO-BARRADEAU-012": ["WO-BARRADEAU-010"],
+    "WO-BARRADEAU-013": ["WO-BARRADEAU-012"],
+    "WO-BARRADEAU-014": ["WO-BARRADEAU-013"],
+    "WO-BARRADEAU-015": ["WO-BARRADEAU-002"],
+    "WO-BARRADEAU-016": ["WO-BARRADEAU-012"],
+    "WO-BARRADEAU-017": ["WO-BARRADEAU-016"],
+    "WO-BARRADEAU-018": ["WO-BARRADEAU-013", "WO-BARRADEAU-014", "WO-BARRADEAU-016"]
+  },
+  "approval_required": true,
+  "approval_note": "Per INTEGRATION_QUEUE.md, requires Founder approval before execution"
+}

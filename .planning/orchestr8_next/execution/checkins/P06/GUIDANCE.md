@@ -1,0 +1,120 @@
+# Guidance Log
+
+Use this file for architect guidance drops and clarifications.
+
+## Entry Template
+- Date:
+- Author:
+- Context:
+- Guidance:
+- Impacted Files:
+- Required Follow-up:
+
+- Date: 2026-02-14 12:30:52
+- Author: Codex
+- Context: Cross-agent sync requested by founder
+- Guidance: Other agent please post STATUS/BLOCKERS acknowledgment for active packet and confirm current blockers + next three actions.
+- Impacted Files: .planning/orchestr8_next/execution/checkins/P06/STATUS.md, .planning/orchestr8_next/execution/checkins/P06/BLOCKERS.md
+- Required Follow-up: Reply in STATUS.md with timestamped ack and gate color.
+
+- Date: 2026-02-14 13:21:00
+- Author: Codex
+- Context: Founder requested robust cross-agent connectivity path.
+- Guidance:
+  - Adopt OR8-COMMS v1 over shared memory gateway immediately.
+  - Use `scripts/agent_comms.sh` for send/ack/inbox/thread operations.
+  - Follow handshake flow documented in:
+    - `.planning/orchestr8_next/execution/AGENT_COMMS_PROTOCOL.md`
+- Impacted Files:
+  - `scripts/agent_comms.sh`
+  - `.planning/orchestr8_next/execution/AGENT_COMMS_PROTOCOL.md`
+  - `.planning/orchestr8_next/execution/checkins/P06/STATUS.md`
+- Required Follow-up:
+  - Post one live handshake proof in active `STATUS.md`:
+    - sent message id
+    - ack message id
+    - cid thread output summary
+
+- Date: 2026-02-15 10:58:07
+- Author: Codex
+- Context: P05 completed and founder cleared startup of P06.
+- Guidance:
+  - Start `P06-WP01` only (regression + reliability harness).
+  - Execute under:
+    - `.planning/orchestr8_next/execution/checkins/P06/AUTONOMY_BOUNDARY_WP01.md`
+  - Focus lanes:
+    - startup reliability checks
+    - lower-fifth/core control regression checks
+    - adapter-failure isolation validation
+  - Produce first P06 reliability artifact in:
+    - `.planning/orchestr8_next/artifacts/P06/`
+- Impacted Files:
+  - `.planning/orchestr8_next/execution/checkins/P06/AUTONOMY_BOUNDARY_WP01.md`
+  - `.planning/orchestr8_next/execution/checkins/P06/STATUS.md`
+  - `.planning/orchestr8_next/execution/checkins/P06/BLOCKERS.md`
+  - `.planning/orchestr8_next/artifacts/P06/*`
+- Required Follow-up:
+  - Post WP01 kickoff acknowledgment in `P06/STATUS.md`.
+  - Include exact regression/reliability command set and pass/fail totals in next update.
+
+- Date: 2026-02-15 11:06:07
+- Author: Codex
+- Context: P06-WP01 artifacts transferred to canonical repo and verified.
+- Guidance:
+  - `P06-WP01` accepted in canonical repo after verification:
+    - `python3 -m py_compile orchestr8_next/shell/actions.py orchestr8_next/shell/contracts.py orchestr8_next/shell/reducer.py orchestr8_next/shell/store.py orchestr8_next/city/contracts.py orchestr8_next/city/bridge.py tests/reliability/test_reliability.py` => pass
+    - `pytest tests/reliability/test_reliability.py -vv` => 3 passed
+  - Boundary is now unlocked to `P06-WP02` only.
+  - Execute WP02 under:
+    - `.planning/orchestr8_next/execution/checkins/P06/AUTONOMY_BOUNDARY_WP02.md`
+  - Use `OR8_PHASE=P06` when sending progress pings.
+- Impacted Files:
+  - `.planning/orchestr8_next/execution/checkins/P06/AUTONOMY_BOUNDARY_WP02.md`
+  - `.planning/orchestr8_next/execution/checkins/P06/STATUS.md`
+  - `.planning/orchestr8_next/execution/checkins/P06/BLOCKERS.md`
+  - `.planning/orchestr8_next/artifacts/P06/*`
+- Required Follow-up:
+  - Post WP02 kickoff acknowledgment in `P06/STATUS.md`.
+  - Include exact cutover/rollback rehearsal command set and report paths in next update.
+
+- Date: 2026-02-15 11:13:35
+- Author: Codex
+- Context: P06-WP02 artifacts transferred to canonical repo and verified.
+- Guidance:
+  - `P06-WP02` accepted in canonical repo after verification:
+    - `ORCHESTR8_RENDER_MODE=WIDGET pytest tests/city/test_parity.py -vv` => 3 passed
+    - `ORCHESTR8_RENDER_MODE=IFRAME pytest tests/city/test_parity.py -vv` => 3 passed
+    - `bash scripts/verify_rehearsal.sh` => pass
+  - Boundary is now unlocked to `P06-WP03` only.
+  - Execute WP03 under:
+    - `.planning/orchestr8_next/execution/checkins/P06/AUTONOMY_BOUNDARY_WP03.md`
+  - Use `OR8_PHASE=P06` when sending progress pings.
+- Impacted Files:
+  - `.planning/orchestr8_next/execution/checkins/P06/AUTONOMY_BOUNDARY_WP03.md`
+  - `.planning/orchestr8_next/execution/checkins/P06/STATUS.md`
+  - `.planning/orchestr8_next/execution/checkins/P06/BLOCKERS.md`
+  - `.planning/orchestr8_next/artifacts/P06/*`
+- Required Follow-up:
+  - Post WP03 kickoff acknowledgment in `P06/STATUS.md`.
+  - Include final gate packet paths and promote/hold recommendation in next update.
+
+- Date: 2026-02-15 11:18:22
+- Author: Codex
+- Context: P06-WP03 artifacts transferred to canonical repo and verified.
+- Guidance:
+  - `P06-WP03` accepted in canonical repo after verification:
+    - `pytest tests/reliability/test_reliability.py tests/city/test_binary_payload.py tests/city/test_wiring_view.py tests/city/test_parity.py -vv` => 11 passed
+    - `bash scripts/verify_rehearsal.sh` => pass
+    - `python3 -m py_compile ...` (city + shell + reliability/parity tests) => pass
+  - Gate packet evidence is complete in `.planning/orchestr8_next/artifacts/P06/`.
+  - `G-P06` recommendation: **PROMOTE**.
+  - Hold lane for architect/founder final sign-off; no new scope until explicitly authorized.
+- Impacted Files:
+  - `.planning/orchestr8_next/execution/checkins/P06/STATUS.md`
+  - `.planning/orchestr8_next/execution/checkins/P06/BLOCKERS.md`
+  - `.planning/orchestr8_next/artifacts/P06/GATE_REVIEW.md`
+  - `.planning/orchestr8_next/artifacts/P06/RELIABILITY_REPORT.md`
+  - `.planning/orchestr8_next/artifacts/P06/CUTOVER_REPORT.md`
+  - `.planning/orchestr8_next/artifacts/P06/ROLLBACK_REPORT.md`
+- Required Follow-up:
+  - Await final promotion decision from architect/founder.

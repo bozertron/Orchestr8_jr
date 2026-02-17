@@ -1,0 +1,122 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 18,
+        "title": "Set up Founder Console API Project Structure",
+        "description": "Initialize the backend project structure with API framework, database connections, and authentication for packet-scoped access.",
+        "details": "Use FastAPI v0.115.0 (latest stable as of 2026) for REST API due to its async support, auto-generated OpenAPI docs, and type safety. Install: `pip install fastapi==0.115.0 uvicorn==0.30.6 sqlalchemy==2.0.32 asyncpg==0.29.0 pydantic==2.9.2`. Structure: `/app/core/` for config/auth, `/app/models/` for SQLAlchemy models, `/app/schemas/` for Pydantic schemas, `/app/routers/` for endpoints, `/app/services/` for business logic. Use PostgreSQL with connection pooling via asyncpg. Implement founder JWT auth using `python-jose[cryptography]==3.3.0` and `passlib[bcrypt]==1.7.4`. Define base Packet model with id, status, readiness_summary, created_at. Environment: Python 3.12, Docker for dev/prod parity.",
+        "testStrategy": "Run `pytest --cov=app` targeting 90% coverage. Test project startup: `uvicorn app.main:app --reload`, verify /docs endpoint loads, test invalid auth returns 401.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Implement Packet and Readiness API Endpoints",
+        "description": "Create GET endpoints to retrieve packet board summaries and individual packet readiness details.",
+        "details": "In `/app/routers/packets.py`: `@router.get('/packets/')` returns paginated list with {id, status, readiness_summary, artifacts_count, event_count}. `@router.get('/packets/{packet_id}/')` returns full packet details including readiness status. Use SQLAlchemy async session: `async with AsyncSession(engine) as session: result = await session.execute(select(Packet).offset(offset).limit(limit))`. Pydantic schemas: PacketSummaryBase, PacketDetailResponse. Query optimization: index on packet_id, status. Response format: JSON suitable for UI tables/cards, max 50 packets/page. Cache summaries with Redis (redis-py==5.1.0) TTL 5min.",
+        "testStrategy": "Unit tests for service layer with pytest-asyncio and pytest-mock. Integration tests with TestClient: create test packets via fixture, assert 200 OK with correct pagination/summaries. Mock DB with `pytest-asyncpg` adapter. Verify empty list returns [].",
+        "priority": "high",
+        "dependencies": [
+          18
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Develop Review Queue and Decision Endpoints",
+        "description": "Build endpoints for approve/rework decisions with founder directive capture.",
+        "details": "New endpoints: `@router.get('/review-queue/')` filters pending packets by founder_id/status='ready_for_review'. `@router.post('/packets/{packet_id}/decide/')` accepts {action: 'approve'|'rework', directive: str, annotations: list[str]}. Update packet.status accordingly, create Decision model (packet_id, founder_id, action, directive, timestamp). Use SQLAlchemy: `decision = Decision(**decision_data); session.add(decision); await session.commit()`. Enforce atomicity with transaction. Emit event to canonical check-in adapter via message queue (Celery==5.4.0 with Redis broker). Response: 200 with updated packet summary.",
+        "testStrategy": "Test decision workflow: POST invalid action -> 422, valid approve -> status='approved', directive persisted. Verify audit trail: query Decision model matches request. Race condition test: concurrent POSTs fail second due to status lock.",
+        "priority": "high",
+        "dependencies": [
+          18,
+          19
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 21,
+        "title": "Implement Timeline and Annotation Endpoints",
+        "description": "Create endpoints for packet event history, annotations, and decision context.",
+        "details": "Models: TimelineEvent (packet_id, type, timestamp, data, actor_id), Annotation (packet_id, founder_id, content, timestamp). Endpoints: `@router.get('/packets/{packet_id}/timeline/')` returns ordered events (decisions, status changes, artifacts). `@router.get('/packets/{packet_id}/annotations/')`, `@router.post('/packets/{packet_id}/annotations/')`. Use `order_by(TimelineEvent.timestamp.desc())`. Pagination with cursor-based (after_id). Response includes traceability: packet_id in every event. Integrate with existing canonical check-in via read replica or event replay adapter.",
+        "testStrategy": "Fixture with sample timeline (10 events). Test chronological ordering, filtering by type, annotation CRUD (create/read/update/delete with auth). Verify traceability: all events contain packet_id. Performance: <100ms for 100 events.",
+        "priority": "medium",
+        "dependencies": [
+          18,
+          19,
+          20
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 22,
+        "title": "Add Comprehensive API Testing Suite",
+        "description": "Write deterministic integration tests covering all endpoints and workflows.",
+        "details": "Use pytest==8.3.2, pytest-asyncio==0.24.0, httpx==0.27.0. Test files: `test_packets.py`, `test_decisions.py`, `test_timeline.py`. Coverage: 95%+ for routers/services. Fixtures: TestDB with pytest-asyncpg, founder_user fixture. Scenarios: happy path (packet->review->decide->annotate), edge cases (non-existent packet_id -> 404, unauthorized -> 401), error states (DB constraint violation -> 400). Mock external canonical adapter. Run: `pytest --cov-report=html`.",
+        "testStrategy": "CI/CD validation: tests must pass with 0 failures. Generate coverage report, fail build <90%. Manual verification: run tests locally, inspect HTML report. Include load test with locust==2.31.0: 100 concurrent users on review-queue.",
+        "priority": "high",
+        "dependencies": [
+          19,
+          20,
+          21
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 23,
+        "title": "Implement Data Traceability and Audit Mechanisms",
+        "description": "Ensure all decisions link back to packet IDs with full auditability.",
+        "details": "Add foreign keys: Decision.packet_id -> Packet.id (ON DELETE CASCADE), TimelineEvent.packet_id -> Packet.id. Middleware logs all founder actions to AuditLog model. Endpoint: `@router.get('/audit/{packet_id}/')`. Use SQLAlchemy events for auto-timestamping. Replay check cron job (APScheduler==3.10.4): `compare_packet_state_vs_canonical(packet_id)`. Adapter contract: read-only from canonical check-ins, no writes.",
+        "testStrategy": "Test traceability: create packet+decision, query audit endpoint returns complete chain. Replay check: mock canonical data drift -> alert logged. Verify no mutations to canonical source.",
+        "priority": "medium",
+        "dependencies": [
+          20,
+          21
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "Generate Endpoint Manifest and Canonical Report",
+        "description": "Create automated report with endpoint list, test results, and artifact proofs.",
+        "details": "Script `generate_report.py`: extract OpenAPI spec from FastAPI (/openapi.json), pytest coverage XML, list DB schemas. Output Markdown/PDF with sections: Endpoints, Test Coverage (pass/fail counts), Schema Proofs. Include artifact copies (packet samples anonymized). GitHub Action workflow: run on PR merge. Use `pdoc3==0.10.0` for API docs, `coveragepy==7.6.1` for reports.",
+        "testStrategy": "Validate report generation: script produces file with >20 endpoints listed, test pass counts match pytest output. Manual review: stakeholder acceptance of canonical report format/content.",
+        "priority": "medium",
+        "dependencies": [
+          22
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "Add API Governance and Documentation",
+        "description": "Document endpoints with OpenAPI and implement packet-bounded feature gating.",
+        "details": "FastAPI auto-generates /docs /redoc. Add tags: 'packets', 'decisions', 'timeline'. Rate limiting with slowapi==0.1.9 (10 req/min per founder). Feature flags via `python-dotenv` and config. Governance: all new endpoints require test coverage + review.",
+        "testStrategy": "Verify docs: curl /openapi.json validates against schema. Test rate limit: 11th request -> 429. Flag toggle: disable endpoint -> 404.",
+        "priority": "low",
+        "dependencies": [
+          19,
+          20,
+          21,
+          22
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2026-02-16T06:09:20.881Z",
+      "updated": "2026-02-16T06:13:56.855Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

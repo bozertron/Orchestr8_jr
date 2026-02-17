@@ -1,0 +1,38 @@
+{
+  "source": ".planning/phases/ARCHITECT-BARRADEAU.md",
+  "total_lines": 252,
+  "sha256": "9c696f8d84bbd89ef648fdfb3c028d82409fe1d1a617bf506edce5dc774d86b2",
+  "chunk_count": 4,
+  "observation_ids": [
+    58,
+    59,
+    60,
+    61
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 100,
+      "text": "### Color Alignment (LOCKED)"
+    },
+    {
+      "line": 110,
+      "text": "### Building Formula (LOCKED - already correct)"
+    },
+    {
+      "line": 227,
+      "text": "### Emergence Pattern (LOCKED - no breathing)"
+    },
+    {
+      "line": 244,
+      "text": "- [ ] Emergence animation (no breathing)"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/key_lines_with_files.tsv"
+  }
+}

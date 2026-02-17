@@ -1,0 +1,55 @@
+{
+  "source": ".planning/codebase/CONVENTIONS.md",
+  "total_lines": 214,
+  "sha256": "7e710affd1728e03d2cd87c9412d7dcb17498d91cf408224efa50f02527b4257",
+  "chunk_count": 2,
+  "observation_ids": [
+    1011,
+    1012
+  ],
+  "risks": [
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 8,
+      "text": "- Main entry point: `orchestr8.py` (root level)"
+    },
+    {
+      "line": 12,
+      "text": "- Config files: `pyproject_orchestr8_settings.toml`"
+    },
+    {
+      "line": 17,
+      "text": "- Plugin interface function: Always named `render(STATE_MANAGERS)` - mandatory for plugin protocol"
+    },
+    {
+      "line": 31,
+      "text": "- Custom types for protocols: Plugin protocol expects `(STATE_MANAGERS)` parameter returning UI element"
+    },
+    {
+      "line": 101,
+      "text": "- Module-level docstrings: Always use triple-quoted docstrings for file headers (see `orchestr8.py`, `00_welcome.py`)"
+    },
+    {
+      "line": 129,
+      "text": "- Use TYPE_MANAGERS pattern for passing state to plugins: `render(STATE_MANAGERS: dict)`"
+    },
+    {
+      "line": 165,
+      "text": "def render(STATE_MANAGERS):"
+    },
+    {
+      "line": 180,
+      "text": "- State getters/setters bundled in tuples and passed through STATE_MANAGERS dict"
+    },
+    {
+      "line": 181,
+      "text": "- Plugin render functions are pure functions taking STATE_MANAGERS"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "source": "one integration at a time/orchestr8-zed/Cargo.toml",
+  "total_lines": 12,
+  "sha256": "24471e83e05ef272596e63e31498e16fc1b067cb12a53499bc0424ce8c17f991",
+  "chunk_count": 1,
+  "observation_ids": [
+    671
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 2,
+      "text": "name = \"orchestr8\""
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,27 @@
+id = "orchestr8"
+name = "Orchestr8"
+version = "0.1.0"
+schema_version = 1
+authors = ["Electronic Pixel Orchestra Inc. <ben@epoinc.com>"]
+description = "Code visualization, AI orchestration, and delightful developer experience. The soul over Zed's engine."
+repository = "https://github.com/bozertron/orchestr8-zed"
+
+# MCP Server - provides tools to Zed's Agent Panel
+[context_servers.orchestr8]
+
+# Slash Commands for quick actions in Assistant
+[slash_commands.codemap]
+description = "Generate a Code Map (Mermaid diagram) for a directory"
+requires_argument = false
+
+[slash_commands.scan]
+description = "Scan and analyze project structure"
+requires_argument = false
+
+[slash_commands.analyze]
+description = "Analyze import dependencies in the codebase"
+requires_argument = false
+
+[slash_commands.fileinfo]
+description = "Get detailed information about a specific file"
+requires_argument = true

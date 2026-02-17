@@ -1,0 +1,25 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/backendDetails.md",
+  "total_lines": 459,
+  "sha256": "adc9a9fcc183c1ddfaff247e8dade58fa760a3e59c8605b389e790d9492ba4aa",
+  "chunk_count": 4,
+  "observation_ids": [
+    689,
+    690,
+    691,
+    692
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [
+    {
+      "line": 123,
+      "text": "* **Out:** Defines the message contracts for WebSocket communication."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

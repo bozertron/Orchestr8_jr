@@ -1,0 +1,20 @@
+{
+  "source": "one integration at a time/star-vector/README.md",
+  "total_lines": 410,
+  "sha256": "81efb4e0312c5664de13f6c0af3e87049afa68bc4951fdbb42b734adce0846a1",
+  "chunk_count": 4,
+  "observation_ids": [
+    873,
+    874,
+    875,
+    876
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

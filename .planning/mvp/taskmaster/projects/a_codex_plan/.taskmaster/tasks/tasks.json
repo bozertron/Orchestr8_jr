@@ -1,0 +1,100 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 23,
+        "title": "Set up orchestr8_next core service modules structure",
+        "description": "Create the foundational directory structure and module boundaries for orchestr8_next following marimo-first runtime expectations with clear contract compliance.",
+        "details": "Initialize project structure using marimo 0.28.0 (latest stable as of 2026) with `marimo init orchestr8_next`. Create subdirectories: `src/orchestr8_next/core/`, `src/orchestr8_next/packets/`, `tests/integration/`. Add pyproject.toml with dependencies: marimo==0.28.0, pytest==8.3.2, ruff==0.6.8. Configure ruff for linting with [tool.ruff] line-length=88, target-version = 'py311'. Add .gitignore excluding __pycache__, .venv, node_modules. Ensure no deprecated paths by excluding legacy imports.",
+        "testStrategy": "Run `marimo install` and `ruff check .` to verify clean setup. Execute `pytest --collect-only` to confirm test discovery works. Validate structure with `tree src/orchestr8_next -I __pycache__` matching expected layout.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "Implement C-lane extraction packet consumption interface",
+        "description": "Create deterministic interface to consume approved C-lane extraction packets exactly as bounded by settlement specs.",
+        "details": "In `src/orchestr8_next/packets/clane_extraction.py`, implement PacketConsumer class using typing.TypedDict for packet schemas. Use pydantic 2.9.2 for validation: `from pydantic import BaseModel, validator`. Define ExtractionPacket(BaseModel) with fields from settlement matrix (infer standard: id: str, data: dict, timestamp: datetime). Add load_packet(path: str) -> ExtractionPacket with JSON deserialization and validation. Ensure marimo runtime compatibility with async def process_packet(self, packet: ExtractionPacket). No direct file system deps - use pathlib.Path from stdlib.",
+        "testStrategy": "Create tests/integration/test_clane_extraction.py with pytest parametrize for valid/invalid packets. Assert validation raises ValidationError for malformed data. Test roundtrip serialization. Run `pytest tests/integration/test_clane_extraction.py -v --tb=short` expecting 100% pass.",
+        "priority": "high",
+        "dependencies": [
+          23
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "Develop core packet settlement integration",
+        "description": "Integrate packet settlement transfer specs with acceptance matrix alignment while preserving existing functionality.",
+        "details": "In `src/orchestr8_next/core/settlement.py`, create SettlementEngine class consuming ExtractionPacket. Implement settle_packet(packet: ExtractionPacket) -> SettlementResult using dataclass: @dataclass class SettlementResult: accepted: bool, evidence: dict. Add acceptance_matrix: dict[str, Callable] mapping packet types to validators. Use functools.lru_cache for deterministic behavior. Align with marimo-first by exposing marimo.ui for evidence reporting but no UI coupling. Follow contract: input ExtractionPacket -> output SettlementResult.",
+        "testStrategy": "tests/integration/test_settlement.py: Test happy path with mock ExtractionPacket, assert accepted=True. Test rejection cases per matrix. Verify cache determinism with identical inputs. `pytest ... -k settlement --cov=orchestr8_next/core` targeting 95% coverage.",
+        "priority": "high",
+        "dependencies": [
+          24
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "Add packet-level integration test suites",
+        "description": "Implement comprehensive integration tests for each packet slice ensuring deterministic behavior and regression protection.",
+        "details": "Create `tests/integration/` suite using pytest 8.3.2 with pytest-mock 3.14.0. Add conftest.py with marimo test fixtures: @pytest.fixture def mock_marimo_runtime(): return Mock(). Add test modules: test_packet_pipeline.py covering end-to-end C-lane -> settlement flow. Use pytest parametrize for replay scenarios. Add smoke tests in tests/smoke/ with minimal assertions. Configure pytest.ini: addopts='-v --tb=short --strict-markers'. Ensure 100% deterministic seeds with pytest-randomly 1.3.1 if needed.",
+        "testStrategy": "Run full suite: `pytest tests/integration/ tests/smoke/ -v --junitxml=reports/integration.xml`. Assert all tests pass with exact pass counts. Generate coverage report: `pytest --cov=orchestr8_next/ --cov-report=html`. Verify no regressions from baseline.",
+        "priority": "medium",
+        "dependencies": [
+          25
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 27,
+        "title": "Configure linting, gates, and CI validation pipeline",
+        "description": "Set up ruff linting, closeout gates, and smoke reporting for packet-required files.",
+        "details": "Extend pyproject.toml with [tool.ruff.lint.pylint] enable=[\"all\"], ignore=[\"WPS237\"]. Add pre-commit hooks: pre-commit install with .pre-commit-config.yaml including ruff, mypy 1.12.0. Create Makefile targets: lint: ruff check ., test: pytest ..., smoke: pytest tests/smoke/. Add GitHub Actions workflow .github/workflows/ci.yml with jobs: lint, test, coverage using matrix python: 3.11,3.12. Ensure gates pass before merge.",
+        "testStrategy": "Run `make lint && make test` locally. Trigger CI: `git push` and verify green pipeline. Check artifacts: junit.xml, coverage.html. Assert ruff check passes with no violations.",
+        "priority": "medium",
+        "dependencies": [
+          26
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 28,
+        "title": "Deliver artifacts to canonical destination with proof",
+        "description": "Package and deliver all outputs to canonical artifact location with command evidence and ls -l proof.",
+        "details": "Create `scripts/deliver_artifacts.sh`: tar -czf orchestr8_next-mvp.tar.gz src/ tests/ pyproject.toml. Copy to $CANONICAL_ARTIFACT_PATH (env var). Generate evidence: pytest tests/integration/ --junitxml=evidence.xml, ruff check . > lint_evidence.txt. Run `ls -l $CANONICAL_ARTIFACT_PATH/orchestr8_next-mvp.tar.gz evidence.xml lint_evidence.txt`. Add README.md with exact commands and marimo runtime instructions: marimo run src/orchestr8_next/core/__init__.py.",
+        "testStrategy": "Execute `bash scripts/deliver_artifacts.sh` and verify files exist with correct permissions. Check tar contents: `tar -tzf orchestr8_next-mvp.tar.gz`. Validate evidence files parse: xmllint --noout evidence.xml. Assert canonical lane marks ACCEPTED via grep.",
+        "priority": "medium",
+        "dependencies": [
+          27
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 29,
+        "title": "Generate completion evidence and canonical replay validation",
+        "description": "Produce final implementation file list, test outputs, and validate canonical lane replay acceptance.",
+        "details": "Create `evidence/report.md`: ```bash find src tests -name '*.py' | sort ```, ```bash pytest --collect-only | wc -l ``` tests, attach junit.xml. Run canonical replay: assuming CANONICAL_REPLAY_CMD env, `$CANONICAL_REPLAY_CMD orchestr8_next`. Verify marks ACCEPTED in lane status. Add marimo notebook evidence/marimo_replay.py visualizing test results with marimo.ui.table(test_results).",
+        "testStrategy": "Validate report.md renders correctly. Run replay command and assert exit code 0. Grep lane status for ACCEPTED. Check marimo notebook: `marimo edit evidence/marimo_replay.py` renders without errors.",
+        "priority": "low",
+        "dependencies": [
+          28
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2026-02-16T06:09:08.220Z",
+      "updated": "2026-02-16T06:12:52.351Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

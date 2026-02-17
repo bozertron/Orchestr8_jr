@@ -1,0 +1,38 @@
+{
+  "source": "one integration at a time/Staging/Connection - Files/explorerViewPlanning.md",
+  "total_lines": 1514,
+  "sha256": "2ab61d41090e1f76bce46b8b50890267b2654c1be329e0ff00367261dd4b8204",
+  "chunk_count": 13,
+  "observation_ids": [
+    732,
+    733,
+    734,
+    735,
+    736,
+    737,
+    738,
+    739,
+    740,
+    741,
+    742,
+    743,
+    744
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions."
+  ],
+  "anchors": [
+    {
+      "line": 200,
+      "text": "3. CI/CD pipeline status"
+    },
+    {
+      "line": 1312,
+      "text": "3. Create CI/CD pipeline integration"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "source": ".planning/phases/WORKORDERS-HEALTHCHECKER.json",
+  "total_lines": 403,
+  "sha256": "c91a217bb8ef4bace9315f8b2b618d054e5c709d2ddba4f587cacfccc33e31a5",
+  "chunk_count": 4,
+  "observation_ids": [
+    1069,
+    1070,
+    1071,
+    1072
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 10,
+      "text": "\"wave_description\": \"Add health state to STATE_MANAGERS in 06_maestro.py\""
+    },
+    {
+      "line": 14,
+      "text": "\"wave_name\": \"HealthWatcher Module\","
+    },
+    {
+      "line": 20,
+      "text": "\"wave_description\": \"Bridge HealthChecker results to CodeNode status in woven_maps.py\""
+    },
+    {
+      "line": 25,
+      "text": "\"wave_description\": \"Wire HealthWatcher to reactive state in 06_maestro.py\""
+    },
+    {
+      "line": 38,
+      "text": "\"file\": \"IP/plugins/06_maestro.py\","
+    },
+    {
+      "line": 43,
+      "text": "\"summary\": \"Add health state getter/setter to STATE_MANAGERS\","
+    },
+    {
+      "line": 45,
+      "text": "\"After line 356 (get_logs, set_logs = STATE_MANAGERS[\\\"logs\\\"]), add new health state pair\","
+    },
+    {
+      "line": 46,
+      "text": "\"Use pattern: get_health, set_health = STATE_MANAGERS.get(\\\"health\\\", mo.state({}))\","
+    },
+    {
+      "line": 51,
+      "text": "\"constraints\": {"
+    },
+    {
+      "line": 54,
+      "text": "\"STATE_MANAGERS dict structure passed from orchestr8.py\""
+    },
+    {
+      "line": 60,
+      "text": "\"No syntax errors when running marimo edit orchestr8.py\","
+    },
+    {
+      "line": 74,
+      "text": "\"file\": \"IP/plugins/06_maestro.py\","
+    },
+    {
+      "line": 79,
+      "text": "\"summary\": \"Create refresh_health() function to run HealthChecker on project root\","
+    },
+    {
+      "line": 83,
+      "text": "\"Inside: get HealthChecker instance, call check_fiefdom on get_root()\","
+    },
+    {
+      "line": 88,
+      "text": "\"constraints\": {"
+    },
+    {
+      "line": 91,
+      "text": "\"HealthChecker core logic in IP/health_checker.py\""
+    },
+    {
+      "line": 97,
+      "text": "\"Function uses HealthChecker imported at line 77\","
+    },
+    {
+      "line": 116,
+      "text": "\"summary\": \"Create HealthWatcher class with watchdog integration and 100ms debounce\","
+    },
+    {
+      "line": 120,
+      "text": "\"Import HealthChecker from IP.health_checker\","
+    },
+    {
+      "line": 121,
+      "text": "\"Class HealthWatcher with __init__(self, project_root: str, callback: Callable)\","
+    },
+    {
+      "line": 125,
+      "text": "\"In _debounced_check(): call HealthChecker.check_fiefdom on changed file, invoke callback with result\""
+    },
+    {
+      "line": 128,
+      "text": "\"constraints\": {"
+    },
+    {
+      "line": 137,
+      "text": "\"HealthWatcher class has start_watching() and stop_watching() methods\","
+    },
+    {
+      "line": 166,
+      "text": "\"constraints\": {"
+    },
+    {
+      "line": 194,
+      "text": "\"summary\": \"Add build_from_health_results() function to merge HealthChecker output into nodes\","
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

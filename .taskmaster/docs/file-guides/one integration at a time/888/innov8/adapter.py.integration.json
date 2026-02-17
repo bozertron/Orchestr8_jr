@@ -1,0 +1,20 @@
+{
+  "source": "one integration at a time/888/innov8/adapter.py",
+  "total_lines": 388,
+  "sha256": "941632c73aaa362b288da5ad39636b640682c10c669ffc3cb3a86747c78563a6",
+  "chunk_count": 4,
+  "observation_ids": [
+    254,
+    255,
+    256,
+    257
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

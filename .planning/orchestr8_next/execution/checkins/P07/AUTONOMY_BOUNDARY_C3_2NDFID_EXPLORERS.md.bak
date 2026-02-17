@@ -1,0 +1,39 @@
+# Autonomy Boundary: P07-C3 (2ndFid_explorers)
+
+## Objective
+
+Deliver the next extraction/conversion packet pair focused on orchestration UX and execution observability patterns that strengthen Orchestr8 + Code City.
+
+## Allowed Work
+
+- Perform line-by-line 2ndFid analysis for two high-value components.
+- Produce clean-room extraction packets with provenance and contract targets.
+- Flag licensing concerns and request orchestr8-native redesign guidance when needed.
+- Deliver canonical packet artifacts with proof.
+
+## Must Not Do
+
+- Copy or port licensed implementation code directly into Orchestr8 outputs.
+- Skip canonical artifact delivery proof.
+- Advance to implementation lane decisions (belongs to codex + a_codex_plan).
+
+## Required Evidence
+
+- `/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/P07_C3_01_<Name>.md`
+- `/home/bozertron/Orchestr8_jr/.planning/orchestr8_next/artifacts/P07/P07_C3_02_<Name>.md`
+- For each packet: provenance path, value statement, clean-room conversion plan, target contracts, risk class, licensing flag.
+- Canonical delivery proof (`cp` + `ls -l`).
+
+## Licensing Escalation Rule
+
+If any licensing concern appears:
+
+1. Stop direct-lift proposal for that item.
+2. Send `LICENSING_ESCALATION` note to codex.
+3. Send redesign request to `a_codex_plan` for orchestr8-native alternative.
+4. Wait for ack/guidance before continuing that packet.
+
+## Unlock Authority
+
+- Unlocked by: Codex (P07 orchestration)
+- Effective: 2026-02-16

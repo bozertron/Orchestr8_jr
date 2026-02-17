@@ -1,0 +1,28 @@
+{
+  "source": "IP/contracts/camera_state.py",
+  "total_lines": 44,
+  "sha256": "37753c3c24ae0cb9dc16aae5be8158021073776240a0bd11910a64645f546b73",
+  "role": "Camera State Schema — Code City camera position, mode, and animation state",
+  "risks": [
+    "Camera modes must match JS expectations in woven_maps.py template",
+    "Position bounds must be validated before sending to renderer",
+    "Return stack navigation state must be preserved across mode transitions"
+  ],
+  "anchors": [
+    {"line": 4, "text": "CameraMode = Literal['overview', 'dive', 'focus', 'room', 'sitting_room']"},
+    {"line": 7, "text": "@dataclass class CameraState — State dataclass"},
+    {"line": 9, "text": "Core fields: mode, position, target, zoom"},
+    {"line": 13, "text": "Default fields: return_stack, transition_ms, easing"},
+    {"line": 17, "text": "def clamp_zoom() — Zoom bounds utility (0.1-10.0)"},
+    {"line": 22, "text": "def normalize_position() — Position bounds utility"},
+    {"line": 31, "text": "def get_default_camera_state() — Factory function"}
+  ],
+  "integration_gaps": [],
+  "resolved_gaps": [
+    {
+      "gap": "Camera state schema for Code City",
+      "resolved_in": "Blind Integration PRD task 3",
+      "details": "CameraState dataclass with 5 modes and utility methods for bounds validation"
+    }
+  ]
+}

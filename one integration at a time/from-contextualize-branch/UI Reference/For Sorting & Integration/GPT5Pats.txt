@@ -1,0 +1,127 @@
+You’re *really* close already — your HTML has the exact two-container split you need (`#viewport` + `#control-deck` in a flex layout). The missing pieces are:
+
+1. make the **control deck removable from the flex flow** (so the viewport can go full-width),
+2. add **drag + resize + persist state**,
+3. add an **asset/material “loader” path** so you can evolve visuals without rewriting the engine.
+
+I took your current `Particle_Studio1.html` structure and produced a drop-in upgraded version that does all three.
+
+[Download Particle_Studio1_detachable_v1_1.html](sandbox:/mnt/data/Particle_Studio1_detachable_v1_1.html)
+
+---
+
+## What the updated file adds
+
+### 1) Detachable controls (Dock / Undock / Hide)
+
+* **UNDOCK** turns the deck into a **floating panel** (`position:absolute`) so it no longer consumes layout width.
+* Floating deck is **draggable** by grabbing the header.
+* Floating deck is **resizable** (native CSS `resize: both`).
+* It **remembers docked/undocked position + size** using `localStorage`.
+* **HIDE** removes the deck and shows a small **RIG** button on the viewport to bring it back.
+
+This directly solves “separate the screen” + “detachable controls”.
+
+### 2) Correct resizing even when the layout changes
+
+Your engine resize logic is good (it reads `container.clientWidth/Height`), but it only listens to `window.resize`. When you dock/undock, the window size doesn’t change — the container size does.
+
+So the updated file adds a `ResizeObserver` watching `#viewport`, and calls `engine.resize()` whenever it changes.
+
+### 3) Load “materials” + assets as you go
+
+New module **Assets & Materials**:
+
+* Load an **image** and apply it as:
+
+  * a `MeshStandardMaterial` on **nodes** (adds lighting so textures actually look good)
+  * a sprite `PointsMaterial` on **agents**
+* Drag & drop an image onto the viewport for quick skinning.
+* Drag & drop a `.glb/.gltf` to **add a model into the scene** (uses `GLTFLoader` if available).
+
+---
+
+## Two important fixes included (you were probably feeling these as “getting stuck”)
+
+### Fix A: `generateEdges()` was stacking meshes
+
+In your current file, `generateEdges()` creates a new `LineSegments` each time gravity changes, but never removes/disposes the old one — so you get duplicates + memory leaks over time.
+
+In v1.1, `generateEdges()` does:
+
+* remove old edge mesh
+* dispose geometry/material
+* rebuild cleanly
+
+### Fix B: edges were basically invisible
+
+Your colors buffer was initialized to zeros, so with additive blending you’re effectively drawing “nothing”.
+v1.1 gives edges a visible base color at creation time.
+
+---
+
+## If you’re doing this inside a VS Code extension: “detachable” as a second Webview
+
+Your `Particle_Studio2.ts` + `Particle_Studio3.js` strongly suggests you’re heading toward a VS Code Webview setup (you already do `panel.webview.postMessage({ command: 'injectDNA' ... })`).
+
+If you want *true* detachment (viewport in one panel, controls in another panel), here’s the clean pattern:
+
+### Extension host (routes messages between panels)
+
+```ts
+let viewportPanel: vscode.WebviewPanel | undefined;
+let rigPanel: vscode.WebviewPanel | undefined;
+
+function wire(panel: vscode.WebviewPanel, name: 'viewport' | 'rig') {
+  panel.webview.onDidReceiveMessage((msg) => {
+    // forward to the other panel
+    if (name === 'rig') viewportPanel?.webview.postMessage(msg);
+    else rigPanel?.webview.postMessage(msg);
+  });
+}
+
+// Create two panels (viewport + rig)
+viewportPanel = vscode.window.createWebviewPanel('maestroViewport', 'Maestro Viewport', vscode.ViewColumn.One, { enableScripts: true });
+rigPanel = vscode.window.createWebviewPanel('maestroRig', 'Maestro Rig', vscode.ViewColumn.Two, { enableScripts: true });
+
+wire(viewportPanel, 'viewport');
+wire(rigPanel, 'rig');
+```
+
+### Rig webview: send changes to extension host
+
+In the v1.1 HTML I added a guarded `acquireVsCodeApi()` path and `postHost(...)` calls, so sliders / inject can report outward when running inside VS Code.
+
+Then your viewport webview just listens:
+
+```js
+window.addEventListener('message', (event) => {
+  const msg = event.data || {};
+  if (msg.command === 'setParam') engine.params[msg.key] = msg.value;
+  if (msg.command === 'injectDNA') engine.seed(msg.text);
+});
+```
+
+That gives you a legit two-panel “detachable controls” workflow.
+
+**Note:** VS Code webviews usually block remote scripts via CSP. Your current file pulls Three.js from a CDN, so either:
+
+* you already loosened CSP, or
+* you’ll want to bundle Three.js + loaders locally and load via `webview.asWebviewUri(...)`.
+
+---
+
+## A few enhancement ideas that fit your “visual coding tool” direction
+
+If you want next steps that make this feel like a real *engine + instrument panel*:
+
+1. **Event bus**: engine emits `telemetry`, `seeded`, `assetLoaded`, etc. UI subscribes. This makes LLM-driven modifications safer because everything becomes message-based.
+2. **Material registry**: `engine.registerMaterial("plasma", mat)` and apply by name. Then “load materials as we go” becomes additive, not destructive.
+3. **InstancedMesh for nodes**: huge FPS win once you scale node counts.
+4. **Adjacency-based agent motion** (I included a basic adjacency list): now “gravity” actually changes movement topology, not just visuals.
+
+---
+
+If you want, I can also refactor this into **two HTML files** (viewport-only + rig-only) with the exact message contract between them — that tends to be the cleanest foundation for VS Code panel detachment.
+
+

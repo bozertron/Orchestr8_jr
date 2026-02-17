@@ -1,0 +1,31 @@
+{
+  "source": "SOT/MARIMO_API_REFERENCE.md",
+  "total_lines": 238,
+  "sha256": "08985aebdc22b104c23d042f4ab1f1823196f5e22cca6274c3eeca6c66466dbc",
+  "chunk_count": 2,
+  "observation_ids": [
+    137,
+    138
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 180,
+      "text": "| `05_universal_bridge.py` | 475, 483 | `mo.ui.accordion()` wrong namespace | Change to `mo.accordion()` |"
+    },
+    {
+      "line": 203,
+      "text": "### Fix 3: 05_universal_bridge.py"
+    },
+    {
+      "line": 238,
+      "text": "- **Working Reference:** `one integration at a time/orchestr8_standalone.py` (uses correct patterns)"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "source": "one integration at a time/frontend/tools/package.json",
+  "total_lines": 30,
+  "sha256": "90251635e25b9cef91bc42663f7fd21d329b13b2b2c64edfb7ae43d744a95e10",
+  "chunk_count": 1,
+  "observation_ids": [
+    624
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 2,
+      "text": "\"name\": \"orchestr8-scaffold-cli\","
+    },
+    {
+      "line": 13,
+      "text": "\"orchestr8\","
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

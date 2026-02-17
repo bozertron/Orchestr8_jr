@@ -1,0 +1,423 @@
+# PRD: Orchestr8 v3.0 - The Fortress Factory
+# Taskmaster AI Parsing Document
+# Version: 3.0.0
+# Date: 2026-01-26
+
+## Project Overview
+
+Orchestr8 v3.0 ("The Fortress Factory") is a modular, reactive Command Center that orchestrates Python logic and TypeScript CLI tools through a unified Plugin Architecture. The system enables zero-code GUI extension for new TypeScript parsers via the Scaffold Bridge protocol.
+
+**Core Stack:**
+- Marimo (UI/State) - Python reactive notebook
+- Python (Glue Logic) - Core modules and plugins
+- TypeScript (Analysis) - CLI tools and parsers
+- SQLite (Data) - Database operations via Connie
+
+**Philosophy:** "The Mainframe" - A universal GUI that automatically discovers and orchestrates TypeScript CLI tools.
+
+---
+
+## Phase 1: Directory Structure Setup
+
+### Task 1.1: Create IP Protocol Directory Structure
+**Priority:** high
+**Dependencies:** none
+
+Create the complete IP Protocol directory structure:
+- Create `IP/__init__.py` (empty file to make IP importable)
+- Create `IP/plugins/` directory for Python UI plugins
+- Verify existing files: `louis_core.py`, `carl_core.py`, `connie.py`, `orchestr8_app.py`
+
+**Test Strategy:** Verify all paths exist using pathlib.Path.exists() checks.
+
+### Task 1.2: Create Frontend Tools Directory
+**Priority:** high
+**Dependencies:** 1.1
+
+Create the frontend TypeScript tools directory structure:
+- Create `frontend/tools/` directory
+- Create `frontend/tools/parsers/` directory for TypeScript parser plugins
+- Move `IP/unified-context-system.ts` to `frontend/tools/unified-context-system.ts`
+
+**Test Strategy:** Verify directories exist and unified-context-system.ts is in correct location.
+
+### Task 1.3: Create Louis Control Directory
+**Priority:** high
+**Dependencies:** 1.1
+
+Create the Louis configuration storage directory:
+- Create `.louis-control/` directory at project root
+- Create `.louis-control/louis-config.json` with default content:
+```json
+{
+  "protected_paths": ["src/core/", "config/"],
+  "protected_folders": [],
+  "ignore_patterns": ["node_modules", ".git", "__pycache__", "dist"]
+}
+```
+
+**Test Strategy:** Verify directory exists and JSON file is valid.
+
+---
+
+## Phase 2: Core Module Migrations
+
+### Task 2.1: Extract Headless Connie ConversionEngine
+**Priority:** high
+**Dependencies:** 1.1
+
+Migrate Connie from PyQt6 GUI to headless operation:
+- Rename existing `IP/connie.py` to `IP/connie_gui.py` (preserve original)
+- Create new `IP/connie.py` with headless ConversionEngine class only
+- ConversionEngine must support: `list_tables()`, `export_to_json()`, `export_to_csv()`, `export_to_markdown()`, `export_sql_dump()`
+- Use context manager pattern with `__enter__`/`__exit__` for auto-close
+- No PyQt6 or GUI dependencies allowed
+
+**Test Strategy:** Create test SQLite DB, verify all export methods work without GUI imports.
+
+### Task 2.2: Update Carl Core Path References
+**Priority:** medium
+**Dependencies:** 1.2
+
+Update Carl Core to reference correct TypeScript tool location:
+- Modify `IP/carl_core.py` to use path `frontend/tools/unified-context-system.ts`
+- Update subprocess call to: `subprocess.run(["npx", "tsx", "frontend/tools/unified-context-system.ts"])`
+- Ensure `get_file_context()` and `run_deep_scan()` methods work with new paths
+
+**Test Strategy:** Mock subprocess.run, verify correct path is called.
+
+---
+
+## Phase 3: Scaffold CLI Protocol Implementation
+
+### Task 3.1: Create ScaffoldPlugin Interface and Types
+**Priority:** high
+**Dependencies:** 1.2
+
+Create the TypeScript scaffold-cli.ts protocol file at `frontend/tools/scaffold-cli.ts`:
+
+Define interfaces:
+```typescript
+interface ParserOptions {
+  comparePath?: string;
+  filter?: string;
+  uiPattern?: string;
+  indices?: string;
+  paths?: string;
+  [key: string]: any;
+}
+
+interface ScaffoldPlugin {
+  commandType: string;
+  description: string;
+  parserFunction: (targetPath: string, options: ParserOptions) => Promise<string | any>;
+  supportsCompare: boolean;
+  specificOptions?: { [key: string]: { alias?: string; type: string; description: string; default?: any; } };
+}
+```
+
+**Test Strategy:** TypeScript compiles without errors.
+
+### Task 3.2: Implement list-plugins Command
+**Priority:** high
+**Dependencies:** 3.1
+
+Add `list-plugins` command to scaffold-cli.ts:
+- Scan `frontend/tools/parsers/` directory for `.js` files
+- Validate each module against ScaffoldPlugin interface
+- Return JSON array of plugin metadata: `{ commandType, description, supportsCompare, specificOptions }`
+- Handle errors gracefully for invalid plugins
+
+**Test Strategy:** Create mock plugin files, verify JSON output contains correct metadata.
+
+### Task 3.3: Implement Plugin Execution Command
+**Priority:** high
+**Dependencies:** 3.2
+
+Add plugin execution capability to scaffold-cli.ts:
+- Accept command: `scaffold-cli.ts [commandType] --target [path]`
+- Load plugin matching commandType from parsers directory
+- Execute plugin's parserFunction with provided options
+- Return JSON result or formatted text
+
+**Test Strategy:** Create test parser, verify execution returns expected output.
+
+### Task 3.4: Create Overview Parser Plugin
+**Priority:** medium
+**Dependencies:** 3.1
+
+Create `frontend/tools/parsers/overview.js` implementing ScaffoldPlugin:
+- commandType: 'overview'
+- description: 'Generates comprehensive project overview with file index'
+- parserFunction: Scans project, generates numbered file index, config summary, entry points, dependencies
+- supportsCompare: false
+
+Reference implementation from `Staging/orchstr8_type_overview.txt`.
+
+**Test Strategy:** Run against test project, verify output matches expected format.
+
+---
+
+## Phase 4: Host Application Refactor
+
+### Task 4.1: Refactor orchestr8_app.py to Marimo Cell Format
+**Priority:** high
+**Dependencies:** 1.1
+
+Convert `IP/orchestr8_app.py` to proper Marimo notebook format:
+- Add marimo import and `app = marimo.App()` initialization
+- Wrap each logical section in `@app.cell` decorator
+- Cells must return their defined variables as tuples
+- Add `if __name__ == "__main__": app.run()` footer
+
+Sections to convert:
+1. Imports cell
+2. State management cell (STATE_MANAGERS)
+3. Plugin loader cell
+4. Main render cell
+
+**Test Strategy:** Run `marimo edit IP/orchestr8_app.py` without errors, verify reactive behavior.
+
+### Task 4.2: Implement STATE_MANAGERS Contract
+**Priority:** high
+**Dependencies:** 4.1
+
+Ensure STATE_MANAGERS dictionary is correctly implemented:
+- `root`: Project root path (get_root, set_root)
+- `files`: DataFrame of project files (get_files, set_files)
+- `selected`: Currently selected file path (get_selected, set_selected)
+- `logs`: System event list (get_logs, set_logs)
+
+Each entry must be a tuple of (getter, setter) functions from mo.state().
+
+**Test Strategy:** Verify all 4 keys exist, each has callable get/set functions.
+
+### Task 4.3: Implement Dynamic Plugin Loader
+**Priority:** high
+**Dependencies:** 4.2
+
+Implement plugin discovery and loading in orchestr8_app.py:
+- Scan `IP/plugins/*.py` files sorted by filename prefix (01_, 02_, etc.)
+- Use `importlib.util.spec_from_file_location()` for dynamic import
+- Extract `PLUGIN_NAME` and `PLUGIN_ORDER` metadata from each module
+- Call `module.render(STATE_MANAGERS)` to get UI content
+- Build `mo.ui.tabs()` dictionary from loaded plugins
+- Handle missing metadata gracefully with defaults
+
+**Test Strategy:** Create test plugin files, verify loader discovers and sorts correctly.
+
+---
+
+## Phase 5: Python UI Plugins
+
+### Task 5.1: Create Generator Plugin (01_generator.py)
+**Priority:** high
+**Dependencies:** 4.3
+
+Create `IP/plugins/01_generator.py` implementing 7-Phase Build Spec Wizard:
+- PLUGIN_ORDER = 1
+- PLUGIN_NAME = "🏗️ Generator"
+- Implement `render(STATE_MANAGERS)` function returning mo.ui elements
+
+7 Phases:
+1. Primary Entity (what are you building?)
+2. Targets (Web, Desktop, Mobile)
+3. Workflows (core user flows)
+4. Fields (data structure)
+5. Integrations (external services)
+6. Roles (user types)
+7. Confirm & Lock
+
+Features:
+- mo.ui.progress() showing current phase (1/7 through 7/7)
+- mo.ui.text_area() for phase input
+- "Lock Phase" button to advance
+- Review panel showing all locked data at phase 7
+- "Export BUILD_SPEC.json" button writing to project root
+
+**Test Strategy:** Navigate through all 7 phases, verify BUILD_SPEC.json is created with correct structure.
+
+### Task 5.2: Create Explorer Plugin (02_explorer.py)
+**Priority:** high
+**Dependencies:** 4.3, 2.2
+
+Create `IP/plugins/02_explorer.py` for file tree and context viewing:
+- PLUGIN_ORDER = 2
+- PLUGIN_NAME = "📁 Explorer"
+- Implement `render(STATE_MANAGERS)` function
+
+Features:
+- Project root display from STATE_MANAGERS['root']
+- "Scan" button triggering Carl context analysis
+- mo.ui.table() displaying files DataFrame with selection='single'
+- Row selection updates STATE_MANAGERS['selected']
+- Context panel showing file details from carl_core.get_file_context()
+
+Integration:
+- Import and use `carl_core.CarlContextualizer`
+- Store scan results in STATE_MANAGERS['files']
+
+**Test Strategy:** Scan test project, verify table populates, selection updates global state.
+
+### Task 5.3: Create Gatekeeper Plugin (03_gatekeeper.py)
+**Priority:** high
+**Dependencies:** 4.3
+
+Create `IP/plugins/03_gatekeeper.py` for Louis file protection dashboard:
+- PLUGIN_ORDER = 3
+- PLUGIN_NAME = "🛡️ Gatekeeper"
+- Implement `render(STATE_MANAGERS)` function
+
+Features:
+- Status indicator (SECURE/VULNERABLE badge)
+- Protection statistics from louis_core.scan_and_protect()
+- "Lock All Protected" button
+- "Unlock All" button
+- "Install Git Hook" button calling louis_core.install_git_hook()
+- Per-file toggle for STATE_MANAGERS['selected'] file
+- Action logging to STATE_MANAGERS['logs']
+
+Integration:
+- Import and use `louis_core.LouisWarden` and `LouisConfig`
+
+**Test Strategy:** Verify batch lock/unlock changes permissions, git hook installs correctly.
+
+### Task 5.4: Create Connie UI Plugin (04_connie_ui.py)
+**Priority:** medium
+**Dependencies:** 4.3, 2.1
+
+Create `IP/plugins/04_connie_ui.py` for database conversion tools:
+- PLUGIN_ORDER = 4
+- PLUGIN_NAME = "🎨 Connie"
+- Implement `render(STATE_MANAGERS)` function
+
+Features:
+- Database file picker scanning for *.db and *.sqlite files
+- Table dropdown populated from ConversionEngine.list_tables()
+- Format radio buttons (JSON, CSV, Markdown, SQL)
+- "Convert" button triggering appropriate export method
+- Preview panel showing pd.head(10).to_markdown()
+- Success/error status display
+
+Integration:
+- Import and use headless `connie.ConversionEngine`
+
+**Test Strategy:** Select test DB, verify all export formats create correct files.
+
+### Task 5.5: Create CLI Bridge Plugin (05_cli_bridge.py)
+**Priority:** high
+**Dependencies:** 4.3, 3.2
+
+Create `IP/plugins/05_cli_bridge.py` implementing the Scaffold Bridge protocol:
+- PLUGIN_ORDER = 5
+- PLUGIN_NAME = "🔌 Scaffold Bridge"
+- Implement `render(STATE_MANAGERS)` function
+
+Features:
+- Discovery: Execute `npx tsx frontend/tools/scaffold-cli.ts list-plugins`
+- Parse JSON response to get available TypeScript plugins
+- For each discovered plugin:
+  - Create accordion section with plugin description
+  - "Run Analysis" button
+  - Execution: `npx tsx frontend/tools/scaffold-cli.ts [commandType] --target [root]`
+  - Results display as JSON or formatted text
+- Handle subprocess timeout (30 seconds)
+- Error handling for missing tools or failed execution
+
+Dynamic UI Generation:
+- UI sections created dynamically based on discovered plugins
+- No hardcoded plugin list - fully dynamic discovery
+
+**Test Strategy:** Mock list-plugins response, verify dynamic UI generation, test command execution with timeout.
+
+---
+
+## Phase 6: Integration Testing
+
+### Task 6.1: End-to-End Workflow Test
+**Priority:** high
+**Dependencies:** 5.1, 5.2, 5.3, 5.4, 5.5
+
+Verify complete integrated workflow:
+1. Launch Orchestr8 with `marimo edit IP/orchestr8_app.py`
+2. Enter project path and click scan
+3. Verify Explorer tab shows file table
+4. Select file, verify Gatekeeper shows lock status
+5. Test Generator 7-phase wizard
+6. Test Connie database conversion
+7. Test Scaffold Bridge plugin discovery
+
+**Test Strategy:** Manual E2E test following all steps, document any failures.
+
+### Task 6.2: Plugin Hot-Reload Test
+**Priority:** medium
+**Dependencies:** 6.1
+
+Verify plugin system supports adding new plugins:
+1. Add new test plugin file to IP/plugins/
+2. Restart Orchestr8
+3. Verify new plugin appears in tabs
+
+**Test Strategy:** Create dummy plugin, verify it loads without code changes to host.
+
+---
+
+## Acceptance Criteria
+
+1. Directory structure matches IP Protocol exactly
+2. All 5 Python plugins load and render without errors
+3. STATE_MANAGERS provides reactive state across all plugins
+4. Scaffold Bridge discovers TypeScript plugins via list-plugins command
+5. Connie operates headless without PyQt6 dependencies
+6. Louis file protection works with git hook installation
+7. Carl context analysis executes TypeScript tool correctly
+8. Generator produces valid BUILD_SPEC.json
+9. No hardcoded plugin lists - fully dynamic discovery
+
+---
+
+## Technical Constraints
+
+- Python 3.12+ required
+- Marimo 0.19+ required
+- Node.js 22+ with npx tsx available
+- Unix chmod for file permissions (Louis)
+- SQLite 3.41+ for Connie operations
+- All TypeScript tools must be executable via `npx tsx`
+
+---
+
+## File Manifest
+
+### Files to Create
+- `IP/__init__.py`
+- `IP/plugins/01_generator.py`
+- `IP/plugins/02_explorer.py`
+- `IP/plugins/03_gatekeeper.py`
+- `IP/plugins/04_connie_ui.py`
+- `IP/plugins/05_cli_bridge.py`
+- `frontend/tools/scaffold-cli.ts`
+- `frontend/tools/parsers/overview.js`
+- `.louis-control/louis-config.json`
+
+### Files to Modify
+- `IP/orchestr8_app.py` (Marimo cell format)
+- `IP/carl_core.py` (path update)
+
+### Files to Rename/Move
+- `IP/connie.py` → `IP/connie_gui.py`
+- `IP/unified-context-system.ts` → `frontend/tools/unified-context-system.ts`
+
+### Files to Create (New)
+- `IP/connie.py` (headless version)
+
+---
+
+## Notes for Taskmaster AI
+
+- Tasks should be executed in dependency order
+- Phase 1 must complete before Phase 2
+- Phases 3, 4, 5 can partially parallelize after Phase 2
+- Phase 6 requires all previous phases complete
+- Each task should include subtasks for implementation details
+- Preserve existing working code - no deletions without explicit backup

@@ -1,0 +1,19 @@
+{
+  "source": "one integration at a time/import marimo as mo import.txt",
+  "total_lines": 288,
+  "sha256": "b50fbbea67bb13cfc015a543f5fe13dbef34449da82c7db968d068981683e1a2",
+  "chunk_count": 3,
+  "observation_ids": [
+    646,
+    647,
+    648
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

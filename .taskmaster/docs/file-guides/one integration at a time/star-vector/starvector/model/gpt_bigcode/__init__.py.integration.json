@@ -1,0 +1,17 @@
+{
+  "source": "one integration at a time/star-vector/starvector/model/gpt_bigcode/__init__.py",
+  "total_lines": 65,
+  "sha256": "97148410617f8f4ef69c684f41ad43277f1dad8fe32bd7f6603b7a5d96e8f9af",
+  "chunk_count": 1,
+  "observation_ids": [
+    917
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

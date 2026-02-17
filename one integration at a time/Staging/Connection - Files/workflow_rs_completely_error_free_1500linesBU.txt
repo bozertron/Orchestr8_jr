@@ -1,0 +1,1533 @@
+// src-tauri/src/maestro_modules/workflow_engine.rs
+
+use crate::error::{CommandError, CommandResult};
+use crate::state::AppState;
+use tauri::{AppHandle, State};
+use log::{info, warn};
+
+// Define the WorkflowTrigger enum to handle different types of triggers
+#[derive(Debug, Clone)]
+pub enum WorkflowTrigger {
+    // Workflow triggered when Change Request status is updated
+    ChangeRequestStatusUpdated {
+        change_request_id: i64,
+        new_status: String,
+    },
+    // Add other trigger types as needed
+}
+
+// Function to trigger a workflow based on a workflow trigger
+pub async fn trigger_workflow<R: tauri::Runtime>(
+    app_handle: AppHandle<R>, 
+    state: State<'_, AppState>,
+    trigger: WorkflowTrigger
+) -> CommandResult<()> {
+    match trigger {
+        WorkflowTrigger::ChangeRequestStatusUpdated { 
+            change_request_id, 
+            new_status 
+        } => {
+            info!("Workflow triggered for CR ID {} with new status: {}", change_request_id, new_status);
+            
+            // For now, this is just a stub implementation
+            // In the future, this would contain business logic for handling change request status updates
+            // like triggering automated processing, notifications, etc.
+            
+            warn!("Workflow engine is implemented as a stub. No actual workflow will be executed.");
+            Ok(())
+        }
+        // Handle other trigger types here
+    }
+}
+
+// Function to get the current workflow status for an entity
+pub async fn get_workflow_status<R: tauri::Runtime>(
+    _app_handle: &AppHandle<R>,
+    _state: &State<'_, AppState>,
+    _entity_type: &str,
+    _entity_id: i64
+) -> CommandResult<String> {
+    // Stub implementation
+    warn!("Workflow engine get_workflow_status is a stub. Returning placeholder status.");
+    Ok("PendingProcessing".to_string())
+}
+#[derive(Debug, Clone)]
+pub struct StepExecutionContext {
+    pub app_handle: AppHandle,
+    pub state: AppState, // Owned AppState for async tasks
+    pub workflow_instance_id: i64,
+    pub trigger_event_id: Option<String>, // Keep track of trigger for context
+    pub current_context_data: Option<JsonValue>, // Instance context at start of step
+    pub step_instance_id: i64,
+    pub step_definition: WorkflowStep, // Definition for this step
+}
+
+// Payload for Human Task event (IS20)
+#[derive(Clone, Serialize, Debug)]
+struct HumanTaskPayload {
+    step_instance_id: i64,
+    workflow_instance_id: i64,
+    step_id: String,
+    step_name: String,
+    step_description: Option<String>,
+    assigned_role: Option<String>,
+    context_data: Option<JsonValue>, // Pass relevant context
+    input_spec: Option<String>, // Help UI render form
+}
+
+// --- Core Engine Functions ---
+
+// Main execution logic dispatcher (takes owned context)
+async fn run_step_execution_logic(context: StepExecutionContext) -> CommandResult<()> {
+    info!("Running execution logic for step instance {} (Step ID: {})",
+          context.step_instance_id, context.step_definition.step_id);
+
+    // Use the owned state within the context
+    let step_def = &context.step_definition;
+    let state = &context.state; // Access the owned AppState
+    let app_handle = &context.app_handle;
+    let step_instance_id = context.step_instance_id;
+
+    // Load step config
+    let step_config: Option<JsonValue> = step_def.config_json.clone();
+    debug!("Step config: {:?}", step_config);
+
+    // Dispatch based on type
+    // We pass the whole context now, which includes the owned state
+    let step_result: CommandResult<Option<JsonValue>>;
+
+    match step_def.step_type.as_str() {
+        "LLM" => {
+             // Specific handling for known LLM steps
+             if step_def.step_id == "assess_cr_impact" {
+                 info!("Dispatching to LLM step handler for CR Assessment...");
+                 // Pass context by reference to handler
+                 step_result = run_llm_step(&context, step_config).await;
+             } else if step_def.step_id == "process_assessment_results" {
+                 info!("Dispatching to handler for process_assessment_results...");
+                 // Implement logic to update CR table based on assessment
+                 // Assessment data should be available in context.current_context_data
+                 // or fetched via get_dependency_outputs if needed.
+                 let assessment_output = context.current_context_data.as_ref()
+                     .and_then(|ctx| ctx.get("dependency_outputs")) // Assuming it was merged
+                     .and_then(|deps| deps.get("assess_cr_impact")); // Previous step ID
+                 debug!("Assessment data from previous step: {:?}", assessment_output);
+
+                 // Example: Extract data and update CR (pseudo-code)
+                 // if let Some(assessment) = assessment_output.and_then(|v| v.as_object()) {
+                 //     let cost: Option<f64> = assessment.get("cost_impact_usd").and_then(|v| v.as_f64());
+                 //     let time: Option<f64> = assessment.get("time_impact_days").and_then(|v| v.as_f64());
+                 //     // ... get other fields
+                 //     if let Some(trigger_id_str) = context.trigger_event_id.as_ref() {
+                 //          if let Ok(cr_id) = trigger_id_str.parse::<i64>() {
+                 //              // Call command to update CR table using state
+                 //              // maestro_change_requests::update_cr_assessment_internal(&state, cr_id, cost, time, ...).await?;
+                 //          }
+                 //     }
+                 // } else {
+                 //     warn!("Could not find or parse assessment output for process_assessment_results");
+                 // }
+
+                 let output = Some(json!({"status": "processed_assessment_results"})); // Indicate step completion
+                 // Mark step as completed HERE before returning output
+                 update_step_instance_status(state, context.step_instance_id, "Completed", output.clone(), None).await?;
+                 step_result = Ok(output);
+
+             } else {
+                 info!("Dispatching to generic LLM step handler...");
+                 step_result = run_llm_step(&context, step_config).await;
+             }
+        }
+        "Human" | "Decision" => {
+             info!("Dispatching to Human/Decision step handler (triggering UI)...");
+             step_result = trigger_human_step(&context, step_config).await;
+        }
+        "NoirVerification" => {
+             info!("Dispatching to NoirVerification step handler...");
+             step_result = run_noir_step(&context, step_config).await;
+        }
+        "MCPTool" => {
+             info!("Dispatching to MCPTool step handler...");
+             step_result = run_mcp_tool_step(&context, step_config).await;
+        }
+        "Webhook" => {
+             info!("Dispatching to Webhook step handler (STUB)...");
+             // TODO: Implement Webhook logic
+             update_step_instance_status(state, context.step_instance_id, "Completed", None, None).await?;
+             step_result = Ok(None); // Stub success
+        }
+        "Start" | "End" | "Branch" | "Merge" => {
+             info!("Handling structural step type: {}", step_def.step_type);
+             // Structural steps complete immediately, mark as completed
+             update_step_instance_status(state, context.step_instance_id, "Completed", None, None).await?;
+             step_result = Ok(None);
+        }
+        _ => {
+             let err_msg = format!("Unknown step type encountered: {}", step_def.step_type);
+             error!("{}", err_msg);
+             // Ensure status is Failed before returning Err
+             update_step_instance_status(state, context.step_instance_id, "Failed", None, Some(err_msg.clone())).await?;
+             step_result = Err(CommandError::Configuration(err_msg));
+        }
+    }
+
+    // Handle Execution/Triggering Result (Status should be set by handlers now)
+    match step_result {
+        Ok(_output_data) => { // We don't need output_data here anymore, status is key
+            let current_status = get_step_instance_status(state, step_instance_id).await?;
+
+            if current_status == "Completed" {
+                 info!("Step instance {} completed successfully by handler.", step_instance_id);
+                 // Handler marked it completed, process next steps
+                 process_next_steps(app_handle, state, context.workflow_instance_id, &step_def.step_id, &step_def.definition_id).await?;
+            } else if current_status == "Waiting" {
+                 info!("Step instance {} is now Waiting for external input.", step_instance_id);
+                 // Do NOT process next steps yet.
+            } else {
+                 // This case should ideally not happen if handlers correctly set status.
+                 // If a handler returns Ok but status isn't Completed or Waiting, it's an issue.
+                 warn!("Warning: Step instance {} handler returned Ok but status is '{}'. This might indicate an issue.", step_instance_id, current_status);
+                 // We could force complete here, but it's better if handlers are explicit.
+                 // For safety, let's assume it should have completed if Ok was returned.
+                 update_step_instance_status(state, context.step_instance_id, "Completed", None, Some("Status corrected post-handler".to_string())).await?;
+                 process_next_steps(app_handle, state, context.workflow_instance_id, &step_def.step_id, &step_def.definition_id).await?;
+            }
+        }
+        Err(e) => {
+            // Error already logged by handler or dispatcher. Status should be Failed already.
+            error!("Step instance {} execution failed: {:?}", step_instance_id, e);
+            // Ensure overall workflow instance status is updated to Failed
+            let fail_msg = format!("Step '{}' failed: {}", step_def.step_id, e);
+            update_instance_status(state, context.workflow_instance_id, "Failed", Some(fail_msg)).await?;
+        }
+    }
+    Ok(())
+}
+
+
+// --- Helper Functions (Take &AppState) ---
+
+// Creates a new workflow instance record in the DB
+async fn create_workflow_instance(
+    state: &AppState, // Use &AppState
+    definition_id: &str,
+    trigger_type: Option<String>,
+    trigger_id: Option<String>,
+    initial_context: Option<JsonValue>,
+    project_id: Option<i64>,
+) -> CommandResult<i64> {
+    info!("Creating workflow instance for definition {}", definition_id);
+    let conn_guard = state.db_conn.lock().await;
+    let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+
+    let context_json_str = match initial_context {
+        Some(ctx) => Some(serde_json::to_string(&ctx).map_err(|e| CommandError::Json(e.to_string()))?),
+        None => None,
+    };
+
+    conn.execute(
+        "INSERT INTO Workflow_Instances (definition_id, project_id, trigger_event_type, trigger_event_id, status, context_data, start_timestamp)
+         VALUES (?1, ?2, ?3, ?4, 'Running', ?5, strftime('%s', 'now'))",
+        params![definition_id, project_id, trigger_type, trigger_id, context_json_str],
+    ).map_err(CommandError::Rusqlite)?; // Map execute error
+
+    let instance_id = conn.last_insert_rowid();
+    debug!("Created workflow instance ID: {}", instance_id);
+    Ok(instance_id)
+}
+
+// Finds starting steps for a given definition ID
+async fn find_start_steps(state: &AppState, definition_id: &str) -> CommandResult<Vec<WorkflowStep>> {
+    info!("Finding start steps for definition {}", definition_id);
+    let conn_guard = state.db_conn.lock().await;
+    let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+
+    let mut stmt = conn.prepare(
+         "SELECT step_id, definition_id, block_name, step_order, step_name, description,
+                 step_type, assigned_entity_role, assigned_user_type, input_spec, output_spec,
+                 completion_criteria, completion_condition, dependency_step_ids, next_step_ids,
+                 parallel_execution, config_json, created_timestamp, updated_timestamp
+          FROM Workflow_Steps
+          WHERE definition_id = ?1
+            AND (step_type = 'Start' OR dependency_step_ids IS NULL OR dependency_step_ids = '[]')
+          ORDER BY step_order ASC",
+     )?;
+
+    let steps_iter = stmt.query_map(params![definition_id], |row| {
+         Ok(WorkflowStep {
+             step_id: row.get(0)?, definition_id: row.get(1)?, block_name: row.get(2)?,
+             step_order: row.get(3)?, step_name: row.get(4)?, description: row.get(5)?,
+             step_type: row.get(6)?, assigned_entity_role: row.get(7)?,
+             assigned_user_type: row.get(8)?, input_spec: row.get(9)?,
+             output_spec: row.get(10)?, completion_criteria: row.get(11)?,
+             completion_condition: row.get(12)?,
+             dependency_step_ids: row.get(13)?,
+             next_step_ids: row.get(14)?,
+             parallel_execution: row.get(15)?,
+             config_json: {
+                 let raw_json_str: Option<String> = row.get(16)?;
+                 parse_optional_json(raw_json_str, "config_json", 0) // 0 for context_id as it's definition level
+                     .map_err(|e| RusqliteError::FromSqlConversionFailure(16, RusqliteType::Text, Box::new(e)))?
+             },
+             created_timestamp: row.get(17)?, updated_timestamp: row.get(18)?,
+         })
+    })?;
+
+    let steps = steps_iter.collect::<std::result::Result<Vec<_>, _>>()
+                         .map_err(CommandError::Rusqlite)?; // Map collect error
+
+    // Prefer explicit 'Start' steps if they exist
+    let explicit_start_steps: Vec<_> = steps.iter().filter(|s| s.step_type == "Start").cloned().collect();
+
+    if !explicit_start_steps.is_empty() {
+        debug!("Found {} explicit start steps.", explicit_start_steps.len());
+        Ok(explicit_start_steps)
+    } else {
+        debug!("No explicit start steps found, using {} steps with no dependencies.", steps.len());
+        Ok(steps) // Otherwise, return all steps found (those with no dependencies)
+    }
+}
+
+// Creates a new step instance record with 'Pending' status
+async fn queue_step_execution(
+    state: &AppState, // Use &AppState
+    instance_id: i64,
+    step_id: &str,
+    definition_id: &str
+) -> CommandResult<i64> {
+    info!("Queuing step {} for instance {}", step_id, instance_id);
+    let conn_guard = state.db_conn.lock().await;
+    let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+
+    conn.execute(
+        "INSERT INTO Workflow_Step_Instances
+         (workflow_instance_id, step_id, definition_id, status)
+         VALUES (?1, ?2, ?3, 'Pending')",
+        params![instance_id, step_id, definition_id],
+    ).map_err(CommandError::Rusqlite)?; // Map execute error
+
+    let step_instance_id = conn.last_insert_rowid();
+    debug!("Queued step instance ID: {}", step_instance_id);
+    Ok(step_instance_id)
+}
+
+// Finds running instances associated with a CR ID
+async fn find_running_workflow_instances_for_cr(state: &AppState, cr_id: i64) -> CommandResult<Vec<i64>> {
+    info!("Finding running workflow instances for CR ID: {}", cr_id);
+    let conn_guard = state.db_conn.lock().await;
+    let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+
+    let mut stmt = conn.prepare(
+        "SELECT instance_id FROM Workflow_Instances
+         WHERE trigger_event_type = 'ChangeRequestCreated'
+           AND trigger_event_id = ?1
+           AND status = 'Running'"
+    )?;
+
+    let ids_iter = stmt.query_map(params![cr_id.to_string()], |row| row.get(0))?;
+    let ids = ids_iter.collect::<std::result::Result<Vec<i64>, _>>()
+                    .map_err(CommandError::Rusqlite)?; // Map collect error
+
+    debug!("Found {} running instances for CR ID {}", ids.len(), cr_id);
+    Ok(ids)
+}
+
+ // Updates the status and optionally end_timestamp of a workflow instance
+ async fn update_instance_status(state: &AppState, instance_id: i64, status: &str, error_details: Option<String>) -> CommandResult<()> {
+     info!("Updating workflow instance {} status to {}", instance_id, status);
+     let conn_guard = state.db_conn.lock().await;
+     let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+
+     let end_timestamp = if ["Completed", "Failed", "Cancelled"].contains(&status) {
+        Some(Utc::now().timestamp())
+     } else {
+        None
+     };
+
+     // Only update error details if provided (don't overwrite existing details with None)
+     if let Some(details) = error_details {
+         conn.execute(
+             "UPDATE Workflow_Instances SET status = ?1, end_timestamp = ?2, last_error = ?3 WHERE instance_id = ?4",
+             params![status, end_timestamp, details, instance_id],
+         ).map_err(CommandError::Rusqlite)?;
+     } else {
+         conn.execute(
+             "UPDATE Workflow_Instances SET status = ?1, end_timestamp = ?2 WHERE instance_id = ?3",
+             params![status, end_timestamp, instance_id],
+         ).map_err(CommandError::Rusqlite)?;
+     }
+
+     info!("Successfully updated instance {} status to {}", instance_id, status);
+     Ok(())
+ }
+
+ // Updates the overall context data for a workflow instance
+ async fn update_instance_context(state: &AppState, instance_id: i64, context: JsonValue) -> CommandResult<()> {
+     info!("Updating context for workflow instance {}", instance_id);
+     let conn_guard = state.db_conn.lock().await;
+     let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+
+     let context_json_str = serde_json::to_string(&context)
+         .map_err(|e| CommandError::Json(format!("Failed to serialize instance context: {}", e)))?;
+
+     conn.execute(
+         "UPDATE Workflow_Instances SET context_data = ?1 WHERE instance_id = ?2",
+         params![context_json_str, instance_id],
+     ).map_err(CommandError::Rusqlite)?;
+
+     debug!("Successfully updated context for instance {}", instance_id);
+     Ok(())
+ }
+
+ // Updates the status, start/end times, output of a specific step instance
+ pub async fn update_step_instance_status(
+     state: &AppState, // Use &AppState
+     step_instance_id: i64,
+     new_status: &str,
+     output_data: Option<JsonValue>,
+     error_details: Option<String>,
+ ) -> CommandResult<()> {
+     info!("Updating step instance {} status to '{}'", step_instance_id, new_status);
+     let conn_guard = state.db_conn.lock().await;
+     let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+
+     let now = Utc::now().timestamp();
+     let set_start_time = if new_status == "Running" { Some(now) } else { None };
+     let set_end_time = if ["Completed", "Failed", "Cancelled", "Skipped"].contains(&new_status) { Some(now) } else { None };
+
+     let output_json_str = match output_data {
+          Some(data) => Some(serde_json::to_string(&data).map_err(|e| CommandError::Json(e.to_string()))?),
+          None => None,
+     };
+
+     // Build the SQL query dynamically to handle optional fields
+     let mut sql = "UPDATE Workflow_Step_Instances SET status = ?1".to_string();
+     let mut params_list: Vec<Box<dyn ToSql>> = vec![Box::new(new_status.to_string())];
+     let mut param_index = 2;
+
+     // Set start time only if it's not already set (using COALESCE)
+     if let Some(start) = set_start_time {
+         sql += &format!(", start_timestamp = COALESCE(start_timestamp, ?{})", param_index);
+         params_list.push(Box::new(start));
+         param_index += 1;
+     }
+
+     if let Some(end) = set_end_time {
+          sql += &format!(", end_timestamp = ?{}", param_index);
+          params_list.push(Box::new(end));
+          param_index += 1;
+     }
+
+     // Update output_data only if provided
+      if output_json_str.is_some() {
+          sql += &format!(", output_data = ?{}", param_index);
+          params_list.push(Box::new(output_json_str)); // Already an Option<String>
+          param_index += 1;
+      }
+
+      // Update error_details only if provided
+      if error_details.is_some() {
+         sql += &format!(", error_details = ?{}", param_index);
+         // We need to box the Option<String> itself if we want rusqlite to handle None correctly
+         params_list.push(Box::new(error_details));
+          param_index += 1;
+      }
+
+     sql += &format!(" WHERE step_instance_id = ?{}", param_index);
+     params_list.push(Box::new(step_instance_id));
+
+     debug!("Updating step instance {}: SQL = [{}], Params Count = {}", step_instance_id, sql, params_list.len());
+     conn.execute(&sql, params_from_iter(params_list.iter().map(|p| p.as_ref())))
+         .map_err(CommandError::Rusqlite)?;
+
+     debug!("Successfully updated step instance {}", step_instance_id);
+     Ok(())
+ }
+
+ // Finds next steps based on the completed step's definition and queues them
+ pub async fn process_next_steps(
+     app_handle: &AppHandle, // Keep AppHandle for potential future use (e.g., emitting events)
+     state: &AppState, // Use &AppState
+     instance_id: i64,
+     completed_step_id: &str,
+     definition_id: &str,
+ ) -> CommandResult<()> {
+     info!("Processing next steps for instance {} after step {} (def {}) completion.", instance_id, completed_step_id, definition_id);
+
+     // Get the definition of the step that just completed
+     let completed_step_def = get_step_definition(state, definition_id, completed_step_id).await?;
+
+     // Parse the next step IDs JSON
+     let next_step_ids: Vec<String> = match &completed_step_def.next_step_ids {
+         Some(json_str) if !json_str.trim().is_empty() => {
+              serde_json::from_str(json_str).map_err(|e| {
+                 let msg = format!("Failed to parse next_step_ids JSON for step {}: {}", completed_step_id, e);
+                 error!("{}", msg);
+                 CommandError::Json(msg)
+              })?
+         },
+         _ => Vec::new(), // No next steps defined or JSON is empty/null
+     };
+
+     if next_step_ids.is_empty() {
+         debug!("No next steps defined for step {}. Checking if workflow complete.", completed_step_id);
+         // Check if all other non-End steps in the instance are completed/skipped/cancelled
+         if check_if_workflow_complete(state, instance_id).await? {
+             info!("Workflow instance {} appears to be complete. Updating status.", instance_id);
+             update_instance_status(state, instance_id, "Completed", None).await?;
+             info!("Workflow instance {} marked as Completed.", instance_id);
+             // Optionally emit a workflow completion event here
+             let _ = app_handle.emit("workflow://instance_completed", json!({ "instance_id": instance_id }));
+         } else {
+             debug!("Workflow instance {} not yet complete, other branches may be running.", instance_id);
+         }
+         return Ok(());
+     }
+
+     debug!("Queuing next steps for instance {}: {:?}", instance_id, next_step_ids);
+     for next_step_id in next_step_ids {
+         // Queue each next step for execution
+         // TODO: Add logic here to handle branching/merging conditions if necessary based on step_def or context
+         match queue_step_execution(state, instance_id, &next_step_id, definition_id).await {
+             Ok(queued_id) => debug!("Successfully queued next step {} (Instance ID: {})", next_step_id, queued_id),
+             Err(e) => {
+                 // Log the error but continue trying to queue other next steps if possible
+                 error!("Failed to queue next step {}: {:?}. Workflow may be stalled.", next_step_id, e);
+                 // Consider updating instance status to Failed if queuing is critical
+                 // update_instance_status(state, instance_id, "Failed", Some(format!("Failed to queue step {}", next_step_id))).await?;
+                 // return Err(e); // Or maybe just log and continue? Depends on desired behavior.
+             }
+         }
+     }
+     Ok(())
+ }
+
+ // Main engine loop (Takes State wrapper)
+ pub async fn run_engine_loop(app_handle: AppHandle, state: State<'_, AppState>) {
+      info!("Workflow Engine Loop starting...");
+      loop {
+          // Pass the State wrapper to find_and_process_pending_step
+          match find_and_process_pending_step(&app_handle, &state).await {
+              Ok(Some(processed_step_id)) => {
+                  debug!("Engine Loop: Initiated processing for step instance {}", processed_step_id);
+                  // Short sleep after successfully finding and starting a step
+                  tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+              }
+              Ok(None) => {
+                  // No pending steps found that met dependencies, sleep longer
+                  // debug!("Engine Loop: No processable steps found.");
+                  tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+              }
+              Err(e) => {
+                  // Log error and sleep longer before retrying
+                  error!("Engine Loop Error finding/processing step: {:?}. Sleeping before retry...", e);
+                  tokio::time::sleep(tokio::time::Duration::from_secs(15)).await;
+              }
+          }
+      }
+  }
+
+ // Finds ONE processable step and tries to execute it (Takes State wrapper)
+async fn find_and_process_pending_step(
+    app_handle: &AppHandle,
+    state: &State<'_, AppState>, // Takes State wrapper
+) -> CommandResult<Option<i64>> { // Returns ID of step *initiated*, or None
+     // --- Find a candidate step ---
+     let candidate_step_instance: Option<WorkflowStepInstance>;
+     { // Scope for the first DB connection lock
+         let conn_guard = state.db_conn.lock().await;
+         let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+         candidate_step_instance = conn.query_row(
+              "SELECT si.step_instance_id, si.workflow_instance_id, si.step_id, si.definition_id,
+                      si.status, si.start_timestamp, si.end_timestamp, si.assigned_to_user_id,
+                      si.output_data, si.error_details, si.retry_count
+               FROM Workflow_Step_Instances si
+               JOIN Workflow_Instances wi ON si.workflow_instance_id = wi.instance_id
+               WHERE si.status = 'Pending' AND wi.status = 'Running'
+               ORDER BY wi.start_timestamp ASC, si.step_instance_id ASC LIMIT 1",
+              [],
+              |row| {
+                  Ok(WorkflowStepInstance {
+                      step_instance_id: row.get(0)?, workflow_instance_id: row.get(1)?,
+                      step_id: row.get(2)?, definition_id: row.get(3)?, status: row.get(4)?,
+                      start_timestamp: row.get(5)?, end_timestamp: row.get(6)?,
+                      assigned_to_user_id: row.get(7)?,
+                      output_data: {
+                          let raw_json_str: Option<String> = row.get(8)?;
+                          let step_instance_id_for_parse: i64 = row.get(0)?; // Get ID again for context
+                          parse_optional_json(raw_json_str, "output_data", step_instance_id_for_parse)
+                              .map_err(|e| RusqliteError::FromSqlConversionFailure(8, RusqliteType::Text, Box::new(e)))?
+                      },
+                      error_details: row.get(9)?, retry_count: row.get(10)?,
+                  })
+              }
+          ).optional().map_err(CommandError::Rusqlite)?;
+     } // Release DB lock here
+
+     if let Some(step_instance) = candidate_step_instance {
+          debug!("Found candidate pending step instance: {}", step_instance.step_instance_id);
+
+          // --- Check Dependencies (using state.inner() for helpers) ---
+          // Use state.inner() to get &AppState reference for helpers
+          let state_ref = state.inner();
+          let step_def = get_step_definition(state_ref, &step_instance.definition_id, &step_instance.step_id).await?;
+          let dependencies_met = check_dependencies(state_ref, step_instance.workflow_instance_id, &step_def).await?;
+
+          if !dependencies_met {
+               // Don't update status, let the next loop iteration re-evaluate
+               debug!("Dependencies not met for step instance {}, skipping for now.", step_instance.step_instance_id);
+               return Ok(None); // Indicate no step was processed this time
+          }
+          debug!("Dependencies met for step instance {}.", step_instance.step_instance_id);
+
+          // --- Atomically update status to Running ---
+          let updated_rows;
+          { // Scope for the second DB lock
+              let conn_guard_update = state.db_conn.lock().await;
+              let conn_update = conn_guard_update.as_ref().ok_or(CommandError::DbNotInitialized)?;
+              updated_rows = conn_update.execute(
+                   "UPDATE Workflow_Step_Instances SET status = 'Running', start_timestamp = strftime('%s', 'now')
+                    WHERE step_instance_id = ?1 AND status = 'Pending'",
+                     params![step_instance.step_instance_id]
+              ).map_err(CommandError::Rusqlite)?;
+          } // Release DB lock
+
+          if updated_rows == 0 {
+               debug!("Step instance {} was likely picked up or status changed by another process. Skipping.", step_instance.step_instance_id);
+               return Ok(None); // Indicate no step was processed this time
+          }
+          info!("Atomically set step instance {} to Running.", step_instance.step_instance_id);
+
+          // --- Prepare data for background task ---
+          // Clone necessary data BEFORE the move into the async block
+          let app_handle_clone = app_handle.clone();
+          // Clone the AppState itself from the state wrapper - THIS IS KEY FOR OWNERSHIP
+          let app_state_clone = state.inner().clone();
+          let step_id_for_task = step_instance.step_instance_id;
+          let workflow_id_for_task = step_instance.workflow_instance_id;
+          let step_def_clone = step_def.clone(); // step_def was fetched earlier
+
+          // Fetch instance context *now* before spawning task
+          // Use state.inner() again for the helper
+          let instance_context_clone = get_instance_context(state.inner(), workflow_id_for_task).await?;
+
+          // Fetch trigger event ID from instance data if needed for context
+          let trigger_event_id_clone: Option<String>;
+          {
+                let conn_guard_trigger = state.db_conn.lock().await;
+                let conn_trigger = conn_guard_trigger.as_ref().ok_or(CommandError::DbNotInitialized)?;
+                trigger_event_id_clone = conn_trigger.query_row(
+                    "SELECT trigger_event_id FROM Workflow_Instances WHERE instance_id = ?1",
+                    params![workflow_id_for_task],
+                    |row| row.get(0)
+                ).optional().map_err(CommandError::Rusqlite)?;
+          }
+
+
+          // --- Spawn the execution task ---
+          tokio::task::spawn(async move {
+              debug!("Background task started for step instance {}", step_id_for_task);
+              // Create the execution context with OWNED data
+              let exec_context = StepExecutionContext {
+                  app_handle: app_handle_clone,
+                  state: app_state_clone, // Use the cloned, owned AppState
+                  workflow_instance_id: workflow_id_for_task,
+                  trigger_event_id: trigger_event_id_clone, // Pass cloned trigger ID
+                  current_context_data: instance_context_clone, // Pass cloned context
+                  step_instance_id: step_id_for_task,
+                  step_definition: step_def_clone, // Pass cloned definition
+              };
+
+              // Execute the logic
+              if let Err(e) = run_step_execution_logic(exec_context).await {
+                  // Error handling is done inside run_step_execution_logic now (updates status etc)
+                  error!("Background execution task for step instance {} encountered an error: {:?}", step_id_for_task, e);
+                  // Potentially add retry logic here if needed, based on step_instance.retry_count
+              } else {
+                  debug!("Background task finished for step instance {}", step_id_for_task);
+              }
+          });
+
+          // Return the ID of the step we *initiated* processing for
+          Ok(Some(step_instance.step_instance_id))
+
+     } else {
+          // No pending steps found in the database
+          Ok(None)
+     }
+ }
+
+  // Fetches step definition (Takes &AppState)
+  async fn get_step_definition(state: &AppState, def_id: &str, step_id: &str) -> CommandResult<WorkflowStep> {
+       debug!("Fetching step definition for {} / {}", def_id, step_id);
+       let conn_guard = state.db_conn.lock().await;
+       let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+
+       let result = conn.query_row(
+            "SELECT step_id, definition_id, block_name, step_order, step_name, description,
+                    step_type, assigned_entity_role, assigned_user_type, input_spec, output_spec,
+                    completion_criteria, completion_condition, dependency_step_ids, next_step_ids,
+                    parallel_execution, config_json, created_timestamp, updated_timestamp
+             FROM Workflow_Steps WHERE definition_id = ?1 AND step_id = ?2",
+            params![def_id, step_id],
+            |row| {
+                Ok(WorkflowStep {
+                    step_id: row.get(0)?, definition_id: row.get(1)?, block_name: row.get(2)?,
+                    step_order: row.get(3)?, step_name: row.get(4)?, description: row.get(5)?,
+                    step_type: row.get(6)?, assigned_entity_role: row.get(7)?,
+                    assigned_user_type: row.get(8)?, input_spec: row.get(9)?,
+                    output_spec: row.get(10)?, completion_criteria: row.get(11)?,
+                    completion_condition: row.get(12)?,
+                    dependency_step_ids: row.get(13)?,
+                    next_step_ids: row.get(14)?,
+                    parallel_execution: row.get(15)?,
+                    config_json: {
+                        let raw_json_str: Option<String> = row.get(16)?;
+                        parse_optional_json(raw_json_str, "config_json", 0) // 0 context_id for definition
+                            .map_err(|e| RusqliteError::FromSqlConversionFailure(16, RusqliteType::Text, Box::new(e)))?
+                    },
+                    created_timestamp: row.get(17)?, updated_timestamp: row.get(18)?,
+                })
+            }
+       );
+
+       // Map rusqlite error to specific CommandError variants
+       result.map_err(|e| match e {
+           RusqliteError::QueryReturnedNoRows => {
+               let msg = format!("Step definition not found for def_id={}, step_id={}", def_id, step_id);
+               warn!("{}", msg);
+               CommandError::NotFound(msg)
+           },
+           _ => {
+               let msg = format!("DB error fetching step definition for {}/{}: {}", def_id, step_id, e);
+               error!("{}", msg);
+               CommandError::Application(msg)
+           },
+       })
+   }
+
+  // Fetches instance context (Takes &AppState)
+  async fn get_instance_context(state: &AppState, instance_id: i64) -> CommandResult<Option<JsonValue>> {
+       debug!("Fetching context for instance {}", instance_id);
+       let conn_guard = state.db_conn.lock().await;
+       let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+
+       let raw_json_str: Option<String> = conn.query_row(
+           "SELECT context_data FROM Workflow_Instances WHERE instance_id = ?1",
+           params![instance_id],
+           |row| row.get(0)
+       ).optional().map_err(|e| {
+           let msg = format!("DB error fetching instance context for {}: {}", instance_id, e);
+           error!("{}", msg);
+           CommandError::Application(msg)
+       })?;
+
+       // Use the helper to parse the optional JSON string
+       parse_optional_json(raw_json_str, "context_data", instance_id)
+  }
+
+  // Checks dependencies (Takes &AppState)
+  async fn check_dependencies(state: &AppState, instance_id: i64, step_def: &WorkflowStep) -> CommandResult<bool> {
+      debug!("Checking dependencies for step '{}' in instance {}", step_def.step_id, instance_id);
+
+      // Parse dependency IDs from the step definition
+      let dependency_ids: Vec<String> = match &step_def.dependency_step_ids {
+          Some(json_str) if !json_str.trim().is_empty() => {
+              serde_json::from_str(json_str).map_err(|e| {
+                  let msg = format!("Invalid dependency_step_ids JSON for step {}: {}", step_def.step_id, e);
+                  error!("{}", msg);
+                  CommandError::Json(msg)
+              })?
+          }
+          _ => Vec::new(), // No dependencies
+      };
+
+      if dependency_ids.is_empty() {
+          debug!("Step '{}' has no dependencies.", step_def.step_id);
+          return Ok(true);
+      }
+      debug!("Required dependencies for step '{}': {:?}", step_def.step_id, dependency_ids);
+
+      // Query the statuses of the dependency step instances within the same workflow instance
+      let mut completed_dependencies: HashSet<String> = HashSet::new();
+      // Initialize found_statuses outside the DB lock scope so it's available for logging later
+      let mut found_statuses: HashMap<String, String> = HashMap::new(); // For better logging
+      
+      { // Scope for DB lock
+            let conn_guard = state.db_conn.lock().await;
+            let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+
+            let placeholders = std::iter::repeat("?").take(dependency_ids.len()).collect::<Vec<_>>().join(",");
+            let sql = format!(
+                "SELECT step_id, status FROM Workflow_Step_Instances
+                 WHERE workflow_instance_id = ?1 AND step_id IN ({})", placeholders
+            );
+
+            // Prepare parameters: instance_id followed by all dependency_ids
+            let mut params_vec: Vec<&dyn ToSql> = Vec::with_capacity(1 + dependency_ids.len());
+            params_vec.push(&instance_id);
+            for dep_id in &dependency_ids { params_vec.push(dep_id); }
+
+
+            let mut stmt = conn.prepare(&sql).map_err(CommandError::Rusqlite)?;
+            let dep_status_iter = stmt.query_map(params_from_iter(params_vec), |row| {
+                Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?)) // (step_id, status)
+            }).map_err(CommandError::Rusqlite)?;
+
+            let mut completed_deps: HashSet<String> = HashSet::new();
+
+            for row_result in dep_status_iter {
+                let (dep_step_id, status) = row_result.map_err(CommandError::Rusqlite)?;
+                found_statuses.insert(dep_step_id.clone(), status.clone()); // Log found status
+
+                // If any dependency failed or was cancelled, the current step cannot run
+                if status == "Failed" || status == "Cancelled" {
+                    warn!("Dependency '{}' for step '{}' has status '{}'. Dependencies not met.", dep_step_id, step_def.step_id, status);
+                    return Ok(false); // Fail fast
+                }
+
+                if status == "Completed" {
+                    completed_dependencies.insert(dep_step_id);
+                }
+            }
+      } // Release DB lock
+
+      // Check if ALL required dependencies are in the set of completed ones
+      let all_deps_completed = dependency_ids.iter().all(|req_dep_id| completed_dependencies.contains(req_dep_id));
+
+      if !all_deps_completed {
+          // Log which dependencies are still missing or not completed
+          let missing: Vec<_> = dependency_ids.iter()
+              .filter(|id| !completed_dependencies.contains(*id))
+              .map(|id| format!("{} (Status: {})", id, found_statuses.get(id).cloned().unwrap_or_else(|| "Not Found".to_string())))
+              .collect();
+          debug!("Dependencies NOT met for step '{}'. Waiting for: {:?}", step_def.step_id, missing);
+      } else {
+           debug!("All dependencies met for step '{}'.", step_def.step_id);
+      }
+
+      Ok(all_deps_completed)
+   }
+
+   // Checks if workflow is complete (Takes &AppState)
+   async fn check_if_workflow_complete(state: &AppState, instance_id: i64) -> CommandResult<bool> {
+         debug!("Checking if workflow instance {} is complete.", instance_id);
+         let conn_guard = state.db_conn.lock().await;
+         let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+
+         // Count steps that are NOT in a final state (Completed, Skipped, Cancelled)
+         // AND are not of type 'End' (End steps don't block completion)
+         let remaining_count: i64 = conn.query_row(
+             "SELECT COUNT(*) FROM Workflow_Step_Instances si
+              LEFT JOIN Workflow_Steps s ON si.definition_id = s.definition_id AND si.step_id = s.step_id
+              WHERE si.workflow_instance_id = ?1
+                AND si.status NOT IN ('Completed', 'Skipped', 'Cancelled')
+                AND (s.step_type IS NULL OR s.step_type != 'End')", // Handle case where step def might be missing temporarily? Safer check.
+             params![instance_id], |row| row.get(0)
+         ).map_err(CommandError::Rusqlite)?; // Map query_row error
+
+         let is_complete = remaining_count == 0;
+         debug!("Workflow instance {} completion check: {} steps remaining. Complete = {}", instance_id, remaining_count, is_complete);
+         Ok(is_complete)
+    }
+
+   // Helper to parse optional JSON (no state needed)
+   fn parse_optional_json(json_str: Option<String>, field_name: &str, context_id: i64) -> CommandResult<Option<JsonValue>> {
+       match json_str {
+           Some(s) if !s.trim().is_empty() => { // Ensure string is not just whitespace
+                serde_json::from_str(&s).map(Some).map_err(|e| {
+                   error!("Failed to parse JSON for {} (Context ID {}): {}. JSON: '{}'", field_name, context_id, e, s);
+                   CommandError::Json(format!("Invalid JSON in field '{}' for ID {}: {}", field_name, context_id, e))
+                })
+           }
+           Some(_) => { // String is empty or whitespace
+               debug!("Empty JSON string encountered for {} (Context ID {}), treating as None.", field_name, context_id);
+               Ok(None)
+           }
+           None => Ok(None), // No string present
+       }
+   }
+
+   // --- Step Handler Implementations (Take &StepExecutionContext) ---
+
+   // LLM Step Handler
+   async fn run_llm_step(context: &StepExecutionContext, config: Option<JsonValue>) -> CommandResult<Option<JsonValue>> {
+        info!("Running LLM Step Instance {} (Step ID: {})", context.step_instance_id, context.step_definition.step_id);
+        let step_def = &context.step_definition;
+        let state = &context.state; // Get &AppState from context
+
+        // --- Identify Target LLM ---
+        let role_name = step_def.assigned_entity_role.as_ref().ok_or_else(|| {
+            CommandError::Configuration(format!("LLM step '{}' missing 'assigned_entity_role'.", step_def.step_id))
+        })?;
+        let workflow_instance_project_id : Option<i64> = { // Fetch project ID associated with the workflow instance
+            let conn_guard = state.db_conn.lock().await;
+            let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+            conn.query_row(
+                "SELECT project_id FROM Workflow_Instances WHERE instance_id = ?1",
+                params![context.workflow_instance_id],
+                |row| row.get(0) // project_id is Option<i64>
+            ).optional() // Make it Option<Option<i64>>
+            .map_err(CommandError::Rusqlite)?
+            .flatten() // Flatten to Option<i64>
+        };
+        let target_entity_id = find_llm_entity_id_by_role(state, workflow_instance_project_id, role_name).await?;
+        debug!("Target LLM Entity ID: {} for role '{}' (Project: {:?})", target_entity_id, role_name, workflow_instance_project_id);
+
+        // --- Gather Context ---
+        let instance_context_data = context.current_context_data.as_ref(); // Borrow from context
+        // Use state from context to get dependency outputs
+        let dependency_outputs = get_dependency_outputs(state, context.workflow_instance_id, &step_def.dependency_step_ids).await?;
+
+        let mut gathered_context = json!({});
+        // Use insert for cleaner merging, handles None gracefully if needed later
+        if let Some(ctx) = instance_context_data {
+            gathered_context["workflow_instance_context"] = ctx.clone();
+        }
+        if !dependency_outputs.is_empty() {
+            gathered_context["dependency_outputs"] = json!(dependency_outputs);
+        }
+        if let Some(cfg) = config.as_ref() {
+             gathered_context["step_config"] = cfg.clone();
+        }
+
+        // --- Add Specific Context (Example: CR Assessment) ---
+        if step_def.step_id == "assess_cr_impact" {
+            debug!("Gathering specific context for CR Assessment step...");
+            // Use trigger_event_id from context
+            if let Some(trigger_id_str) = context.trigger_event_id.as_ref() {
+                 if let Ok(cr_id) = trigger_id_str.parse::<i64>() {
+                    // Call internal command using the state from the context
+                    match maestro_change_requests::get_change_request_details_internal(state, cr_id).await {
+                        Ok(cr) => {
+                            gathered_context["change_request"] = serde_json::to_value(&cr).map_err(|e| CommandError::Json(e.to_string()))?;
+                            match prd_commands::get_prd_version_by_id_internal(state, cr.target_prd_version_id).await {
+                                Ok(target_prd) => { gathered_context["target_prd_version"] = serde_json::to_value(target_prd).map_err(|e| CommandError::Json(e.to_string()))?; }
+                                Err(e) => warn!("Could not fetch target PRD version {}: {}", cr.target_prd_version_id, e),
+                            }
+                            // Note: base_prd_version_id field doesn't exist on ChangeRequest struct,
+                            // removing the attempt to fetch and add base_prd_version to context
+                        }
+                        Err(e) => warn!("Could not fetch CR details for {}: {}", cr_id, e),
+                    }
+                 } else { warn!("Could not parse trigger_event_id '{}' as i64 for CR Assessment.", trigger_id_str); }
+            } else { warn!("Trigger event ID missing in context for CR Assessment step."); }
+        }
+
+        // --- Construct Prompt ---
+        let task_instruction = step_def.description.as_deref().unwrap_or("Perform the required task based on the provided context.");
+        let prompt_context_json = serde_json::to_string_pretty(&gathered_context)
+                                    .map_err(|e| CommandError::Json(format!("Failed to serialize context for prompt: {}", e)))?;
+        let prompt = format!(
+             "Workflow Task: {}\n\nTask Instruction: {}\n\nContext:\n{}\n\nPlease perform your task based on the instruction and context provided.{}",
+             step_def.step_name,
+             task_instruction,
+             prompt_context_json,
+             // Add specific formatting instructions if needed
+             if step_def.step_id == "assess_cr_impact" {
+                 "\n\nIMPORTANT: Format your final output strictly as JSON containing the fields: 'cost_impact_usd' (number), 'time_impact_days' (number), 'feasibility_score' (number 0-1), 'risks' (array of strings)."
+             } else {
+                 ""
+             }
+         );
+         debug!("Constructed LLM Prompt (Context JSON {} chars, Total {} chars)", prompt_context_json.len(), prompt.len());
+         // Consider logging the full prompt only if very verbose debugging is enabled
+
+        // --- Call LLM Service ---
+        let topic = format!("workflow_instance_{}_step_instance_{}", context.workflow_instance_id, context.step_instance_id);
+        info!("Calling send_message_to_entity for entity {}...", target_entity_id);
+
+        // Call the llm_chat_commands function - use the state from context directly
+        let interaction_result = llm_chat_commands::send_message_to_entity(
+            context.app_handle.state::<AppState>(), // Get tauri::State<'_, AppState> from app_handle
+            &context.app_handle, // Pass reference to app_handle
+            target_entity_id, // Entity ID
+            prompt, // The constructed prompt
+            Some(topic), // Topic for tracking/correlation
+            "WorkflowEngine".to_string() // Caller identifier
+        ).await;
+
+        // --- Process Result ---
+        match interaction_result {
+            Ok(record) => {
+                 info!("LLM call successful for step instance {}. Response length: {}", context.step_instance_id, record.llm_response.len());
+                 let output_json: JsonValue;
+                 // Attempt to parse response as JSON, especially for specific steps
+                 if context.step_definition.step_id == "assess_cr_impact" {
+                     match serde_json::from_str::<JsonValue>(&record.llm_response) {
+                         Ok(parsed_json @ JsonValue::Object(_)) => {
+                             // Basic validation for expected fields
+                             let is_valid = parsed_json.get("cost_impact_usd").is_some()
+                                         && parsed_json.get("time_impact_days").is_some()
+                                         && parsed_json.get("feasibility_score").is_some()
+                                         && parsed_json.get("risks").is_some();
+                              if is_valid {
+                                   debug!("Parsed valid assessment JSON from LLM response.");
+                                   output_json = parsed_json;
+                              } else {
+                                   warn!("LLM response for assessment step was JSON but missing required fields. Storing raw.");
+                                   output_json = json!({ "raw_assessment_response": record.llm_response });
+                              }
+                          }
+                         Ok(_) => { // Valid JSON but not an object
+                            warn!("LLM response for assessment step was valid JSON but not an object. Storing raw.");
+                            output_json = json!({ "raw_assessment_response": record.llm_response });
+                         }
+                         Err(e) => { // Parse error
+                              warn!("Failed to parse LLM response for assessment step as JSON: {}. Storing raw.", e);
+                              output_json = json!({ "raw_assessment_response": record.llm_response });
+                         }
+                     }
+                 } else {
+                     // For other LLM steps, attempt to parse, otherwise store raw
+                     output_json = serde_json::from_str(&record.llm_response)
+                                     .unwrap_or_else(|_| json!({ "raw_response": record.llm_response }));
+                     debug!("Parsed/Stored LLM response for generic step.");
+                 }
+
+                 // Mark step as completed *before* returning output
+                 update_step_instance_status(state, context.step_instance_id, "Completed", Some(output_json.clone()), None).await?;
+                 Ok(Some(output_json)) // Return the processed/raw output
+            }
+            Err(e) => {
+                error!("LLM interaction failed for step instance {}: {:?}", context.step_instance_id, e);
+                // Mark step as Failed *before* returning error
+                update_step_instance_status(state, context.step_instance_id, "Failed", None, Some(e.to_string())).await?;
+                Err(e) // Propagate the original CommandError
+            }
+        }
+    }
+
+   // Human Step Trigger
+   async fn trigger_human_step(context: &StepExecutionContext, _config: Option<JsonValue>) -> CommandResult<Option<JsonValue>> {
+        info!("Triggering Human Step Instance {}", context.step_instance_id);
+        let state = &context.state; // Get &AppState from context
+
+        // 1. Set status to Waiting
+        update_step_instance_status(state, context.step_instance_id, "Waiting", None, None).await?;
+        debug!("Set Step Instance {} status to Waiting", context.step_instance_id);
+
+        // 2. Prepare payload for the UI event
+        // Consider fetching dependency outputs to include in context_data if needed by the human
+        let dependency_outputs = get_dependency_outputs(state, context.workflow_instance_id, &context.step_definition.dependency_step_ids).await?;
+        let mut context_for_human = context.current_context_data.clone().unwrap_or_else(|| json!({}));
+        if !dependency_outputs.is_empty() {
+            // Merge dependency outputs into the context sent to the human
+            if let Some(obj) = context_for_human.as_object_mut() {
+                 obj.insert("dependency_outputs".to_string(), json!(dependency_outputs));
+            } else {
+                 // If context wasn't an object, wrap it maybe? Or just send deps separately.
+                 context_for_human = json!({
+                     "original_context": context_for_human,
+                     "dependency_outputs": dependency_outputs
+                 });
+            }
+        }
+
+        let payload = HumanTaskPayload {
+            step_instance_id: context.step_instance_id,
+            workflow_instance_id: context.workflow_instance_id,
+            step_id: context.step_definition.step_id.clone(),
+            step_name: context.step_definition.step_name.clone(),
+            step_description: context.step_definition.description.clone(),
+            assigned_role: context.step_definition.assigned_entity_role.clone(),
+            context_data: Some(context_for_human), // Send merged context
+            input_spec: context.step_definition.input_spec.clone(), // UI uses this to build form
+        };
+        debug!("Emitting 'workflow://human_task_required' event for Step Instance {}: Payload: {:?}", context.step_instance_id, payload);
+
+        // 3. Emit the event via Tauri AppHandle
+        if let Err(e) = context.app_handle.emit("workflow://human_task_required", payload) {
+            let err_msg = format!("Failed to emit human_task_required event for step instance {}: {}", context.step_instance_id, e);
+            error!("{}", err_msg);
+            // Attempt to set status back to Failed if emit fails
+            update_step_instance_status(state, context.step_instance_id, "Failed", None, Some(err_msg.clone())).await?;
+            return Err(CommandError::TauriError(e)); // Return specific Tauri error
+        }
+
+        info!("Successfully emitted event for Step Instance {}", context.step_instance_id);
+        // Step is now waiting, return Ok(None) as there's no immediate output
+        Ok(None)
+    }
+
+    // Noir Step Handler
+    async fn run_noir_step(context: &StepExecutionContext, config: Option<JsonValue>) -> CommandResult<Option<JsonValue>> {
+         info!("Running Noir Verification Step Instance {}", context.step_instance_id);
+         let step_def = &context.step_definition;
+         let state = &context.state; // Get &AppState from context
+
+         // --- Validate Config ---
+         let config_map = config.as_ref().and_then(|c| c.as_object()).ok_or_else(|| {
+             CommandError::Configuration(format!("Missing or invalid object config_json for Noir step {}", step_def.step_id))
+         })?;
+         let relative_circuit_path = config_map.get("circuit_path").and_then(|v| v.as_str()).ok_or_else(|| {
+             CommandError::Configuration(format!("Missing 'circuit_path' string in config for Noir step {}", step_def.step_id))
+         })?;
+         let input_map_config = config_map.get("input_map").and_then(|v| v.as_object()).ok_or_else(|| {
+             CommandError::Configuration(format!("Missing 'input_map' object in config for Noir step {}", step_def.step_id))
+         })?;
+
+         // --- Resolve Circuit Path ---
+         let base_path = context.app_handle.path().resource_dir()
+             .map_err(|e| CommandError::TauriError(e))? // Map Tauri path error
+             .join("circuits"); // Standard base directory for circuits
+         let circuit_dir = base_path.join(relative_circuit_path);
+         if !circuit_dir.exists() || !circuit_dir.is_dir() {
+             let err_msg = format!("Noir circuit directory not found or invalid: {:?}", circuit_dir);
+             error!("{}", err_msg);
+             return Err(CommandError::Configuration(err_msg));
+         }
+         let circuit_name = circuit_dir.file_name().and_then(|n| n.to_str()).unwrap_or("circuit"); // Default name
+         debug!("Using Noir circuit directory: {:?}, circuit name: {}", circuit_dir, circuit_name);
+
+         // --- Gather Inputs Dynamically ---
+         let mut prover_inputs = Map::new(); // For Prover.toml
+         let mut verifier_inputs = Map::new(); // For Verifier.toml (public inputs)
+
+         // Combine workflow instance context and dependency outputs into a single source map
+         let mut available_data = Map::new();
+         if let Some(JsonValue::Object(ctx)) = &context.current_context_data {
+             available_data.extend(ctx.clone()); // Add instance context first
+         }
+         // Fetch and merge dependency outputs using state from context
+         match get_dependency_outputs(state, context.workflow_instance_id, &step_def.dependency_step_ids).await {
+            Ok(dep_outputs) if !dep_outputs.is_empty() => {
+                available_data.insert("dependency_outputs".to_string(), json!(dep_outputs));
+            }
+            Ok(_) => { /* No dependency outputs */ }
+            Err(e) => {
+                warn!("Failed to get dependency outputs for Noir step {}: {}. Proceeding without them.", step_def.step_id, e);
+                // Depending on requirements, you might want to return Err(e) here instead.
+            }
+         }
+
+         let data_source_json = JsonValue::Object(available_data); // Root object for path traversal
+         debug!("Data source for Noir input mapping: {}", serde_json::to_string(&data_source_json).unwrap_or_default());
+
+         for (noir_input_name, source_spec_val) in input_map_config {
+             let source_spec = source_spec_val.as_object().ok_or_else(|| CommandError::Configuration(format!("Input spec for '{}' is not an object", noir_input_name)))?;
+             let source_path = source_spec.get("source_path").and_then(|v| v.as_str()).ok_or_else(|| CommandError::Configuration(format!("Missing 'source_path' string for input '{}'", noir_input_name)))?;
+             let is_public = source_spec.get("is_public").and_then(|v| v.as_bool()).unwrap_or(false); // Default to private
+
+             // Use json_pointer to navigate the combined context/dependency data
+             let value_found = data_source_json.pointer(&format!("/{}", source_path.replace('.', "/")));
+
+             if let Some(value) = value_found {
+                 debug!("Mapping Noir input '{}' from path '{}': Found value: {:?}", noir_input_name, source_path, value);
+                 // Convert JSON numbers to strings for Noir if necessary, or handle types appropriately.
+                 // For simplicity here, we clone directly. Ensure Noir types match JSON types.
+                 prover_inputs.insert(noir_input_name.clone(), value.clone());
+                 if is_public {
+                     verifier_inputs.insert(noir_input_name.clone(), value.clone());
+                 }
+             } else {
+                 let err_msg = format!("Failed to find data at source_path '{}' for Noir input '{}' in available context.", source_path, noir_input_name);
+                 error!("{}", err_msg);
+                 // Mark step Failed before returning error
+                 update_step_instance_status(state, context.step_instance_id, "Failed", None, Some(err_msg.clone())).await?;
+                 return Err(CommandError::Configuration(err_msg));
+             }
+         }
+
+         // --- Compile Circuit (Optional - usually done beforehand) ---
+         // If compilation is needed dynamically:
+         // match noir_verifier::compile_circuit(&circuit_dir).await { // Assuming compile is async now
+         //     Ok(_) => info!("Compiled Noir circuit at {:?}", circuit_dir),
+         //     Err(e) => {
+         //         let err_msg = format!("Noir compilation failed: {}", e);
+         //         error!("{}", err_msg);
+         //         update_step_instance_status(state, context.step_instance_id, "Failed", None, Some(err_msg.clone())).await?;
+         //         return Err(CommandError::NoirError(err_msg));
+         //     }
+         // }
+
+         // --- Generate Proof ---
+         debug!("Generating Noir proof for '{}' with prover inputs: {:?}", circuit_name, prover_inputs);
+         let proof_path = match noir_verifier::generate_proof(&circuit_dir, circuit_name, &JsonValue::Object(prover_inputs)).await {
+             Ok(path) => {
+                 info!("Generated Noir proof: {:?}", path);
+                 path
+             }
+             Err(e) => {
+                 let err_msg = format!("Noir proof generation failed: {}", e);
+                 error!("{}", err_msg);
+                 update_step_instance_status(state, context.step_instance_id, "Failed", None, Some(err_msg.clone())).await?;
+                 return Err(CommandError::NoirError(err_msg));
+             }
+         };
+
+         // --- Verify Proof ---
+         debug!("Verifying Noir proof with verifier (public) inputs: {:?}", verifier_inputs);
+         let verification_passed = match noir_verifier::verify_proof(&circuit_dir, &proof_path, &JsonValue::Object(verifier_inputs)).await {
+              Ok(passed) => {
+                  info!("Noir proof verification result: {}", passed);
+                  passed
+              }
+              Err(e) => {
+                  let err_msg = format!("Noir proof verification failed: {}", e);
+                  error!("{}", err_msg);
+                  // Even if verification itself errors, mark the step as failed
+                  update_step_instance_status(state, context.step_instance_id, "Failed", None, Some(err_msg.clone())).await?;
+                  return Err(CommandError::NoirError(err_msg));
+              }
+          };
+
+         // --- Finalize ---
+         let output = Some(json!({ "verification_passed": verification_passed }));
+         if verification_passed {
+            // Mark step completed successfully
+            update_step_instance_status(state, context.step_instance_id, "Completed", output.clone(), None).await?;
+            Ok(output)
+         } else {
+            // Verification explicitly failed
+            let fail_msg = "Noir proof verification returned false".to_string();
+            warn!("{}", fail_msg);
+            update_step_instance_status(state, context.step_instance_id, "Failed", output.clone(), Some(fail_msg)).await?;
+            // Return Ok because the *step execution* didn't error, but the *result* is a failure.
+            // The status is set to Failed, so workflow won't proceed down success path.
+            // Alternatively, could return Err(CommandError::Application("Verification failed".into()))
+            Ok(output) // Let run_step_execution_logic handle the Failed status
+         }
+     }
+
+     // MCP Tool Step Handler
+     async fn run_mcp_tool_step(context: &StepExecutionContext, config: Option<JsonValue>) -> CommandResult<Option<JsonValue>> {
+         info!("Running MCP Tool Step Instance {}", context.step_instance_id);
+         let step_def = &context.step_definition;
+         let state = &context.state; // Get &AppState from context
+
+         // --- Validate Config ---
+         let config_map = config.as_ref().and_then(|c| c.as_object()).ok_or_else(|| {
+             CommandError::Configuration(format!("Missing or invalid object config_json for MCP step {}", step_def.step_id))
+         })?;
+         let mcp_server_url = config_map.get("server_url").and_then(|v| v.as_str()).ok_or_else(|| {
+             CommandError::Configuration(format!("Missing 'server_url' string in config for MCP step {}", step_def.step_id))
+         })?;
+         let tool_name = config_map.get("tool_name").and_then(|v| v.as_str()).ok_or_else(|| {
+             CommandError::Configuration(format!("Missing 'tool_name' string in config for MCP step {}", step_def.step_id))
+         })?;
+         // Parameters can be any JSON value, default to empty object if missing
+         let parameters = config_map.get("parameters").cloned().unwrap_or(json!({}));
+         debug!("MCP Tool: URL='{}', Tool='{}', Parameters='{}'", mcp_server_url, tool_name, parameters);
+
+         // --- Handle Auth Token (Optional) ---
+         let auth_token: Option<String> = config_map.get("auth_token_env_var")
+             .and_then(|v| v.as_str())
+             .and_then(|env_var_name| {
+                 debug!("Attempting to read MCP auth token from env var: {}", env_var_name);
+                 match std::env::var(env_var_name) {
+                     Ok(token) => Some(token),
+                     Err(_) => {
+                         warn!("Env var '{}' for MCP auth token not found or not set.", env_var_name);
+                         None
+                     }
+                 }
+             });
+         if auth_token.is_some() {
+             debug!("Using auth token found in env var.");
+         }
+
+         // --- Call MCP Tool ---
+         // Use the static HTTP_CLIENT
+         let result_value = match mcp_client::call_mcp_tool(
+             &HTTP_CLIENT, // Use static client
+             mcp_server_url,
+             tool_name,
+             &parameters, // Correct the parameter name and add reference symbol
+             auth_token.as_deref() // Pass token as &str if present
+         ).await {
+             Ok(result) => {
+                 info!("MCP tool '{}' executed successfully.", tool_name);
+                 result // Result is JsonValue
+             }
+             Err(e) => {
+                 let err_msg = format!("MCP tool call failed for '{}': {}", tool_name, e);
+                 error!("{}", err_msg);
+                 // Mark step Failed before returning error
+                 update_step_instance_status(state, context.step_instance_id, "Failed", None, Some(err_msg.clone())).await?;
+                 return Err(CommandError::McpError(err_msg)); // Use specific McpError variant
+             }
+         };
+
+         // --- Finalize ---
+         // Mark step completed successfully
+         update_step_instance_status(state, context.step_instance_id, "Completed", Some(result_value.clone()), None).await?;
+         Ok(Some(result_value)) // Return the JSON result from the tool
+     }
+
+     // Helper to find LLM entity ID by role (Takes &AppState)
+     async fn find_llm_entity_id_by_role(state: &AppState, project_id: Option<i64>, role_name: &str) -> CommandResult<String> {
+         debug!("Searching for LLM entity with role: '{}', project_id: {:?}", role_name, project_id);
+         let conn_guard = state.db_conn.lock().await;
+         let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+
+         // Build query based on whether project_id is present
+         let sql = if project_id.is_some() {
+             "SELECT id FROM LlmEntities WHERE role_name = ?1 AND project_id = ?2 LIMIT 1"
+         } else {
+             // Search for global roles (project_id IS NULL)
+             "SELECT id FROM LlmEntities WHERE role_name = ?1 AND project_id IS NULL LIMIT 1"
+         };
+
+         // Let rusqlite handle the Option<i64> correctly for the query parameters
+         let params_tuple = (role_name, project_id);
+
+         let result: Result<String, RusqliteError> = conn.query_row(sql, params_tuple, |row| row.get(0));
+
+         result.map_err(|e| match e {
+             RusqliteError::QueryReturnedNoRows => {
+                 let msg = format!("No LLM entity found with role '{}' for project {:?}.", role_name, project_id);
+                 warn!("{}", msg);
+                 CommandError::NotFound(msg)
+             },
+             _ => {
+                 let msg = format!("DB error finding LLM entity role '{}' for project {:?}: {}", role_name, project_id, e);
+                 error!("{}", msg);
+                 CommandError::Application(msg)
+             },
+         })
+     }
+
+     // Helper to get dependency outputs (Takes &AppState)
+     async fn get_dependency_outputs(state: &AppState, instance_id: i64, dependency_ids_json: &Option<String>) -> CommandResult<Map<String, JsonValue>> {
+         let mut outputs = Map::new(); // Use serde_json::Map
+
+         // Parse dependency IDs JSON string
+         let dep_ids: Vec<String> = match dependency_ids_json {
+             Some(json_str) if !json_str.trim().is_empty() => {
+                 serde_json::from_str(json_str).map_err(|e| {
+                     CommandError::Json(format!("Invalid dependency_ids JSON for instance {}: {}", instance_id, e))
+                 })?
+             }
+             _ => Vec::new(), // No dependencies specified
+         };
+
+         if dep_ids.is_empty() {
+             return Ok(outputs); // Return empty map if no dependencies
+         }
+
+         debug!("Fetching outputs for dependency steps: {:?}", dep_ids);
+         let conn_guard = state.db_conn.lock().await;
+         let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+
+         let placeholders = std::iter::repeat("?").take(dep_ids.len()).collect::<Vec<_>>().join(",");
+         let sql = format!(
+             "SELECT step_id, output_data FROM Workflow_Step_Instances
+              WHERE workflow_instance_id = ?1 AND status = 'Completed' AND step_id IN ({})", placeholders
+         );
+
+         // Prepare parameters
+         let mut params_vec: Vec<&dyn ToSql> = Vec::with_capacity(1 + dep_ids.len());
+         params_vec.push(&instance_id);
+         for dep_id in &dep_ids { params_vec.push(dep_id); }
+
+         let mut stmt = conn.prepare(&sql).map_err(CommandError::Rusqlite)?;
+         let rows = stmt.query_map(params_from_iter(params_vec), |row| {
+             // Fetch step_id and optional output_data string
+             Ok((row.get::<_, String>(0)?, row.get::<_, Option<String>>(1)?))
+         }).map_err(CommandError::Rusqlite)?;
+
+         for row_result in rows {
+             match row_result {
+                 Ok((step_id, maybe_json_str)) => {
+                     // Use helper to parse the optional JSON string
+                     match parse_optional_json(maybe_json_str, "dependency_output", instance_id) {
+                         Ok(Some(json_value)) => {
+                             outputs.insert(step_id, json_value); // Insert parsed JSON
+                         }
+                         Ok(None) => {
+                             outputs.insert(step_id, JsonValue::Null); // Insert JSON null if no output
+                         }
+                         Err(e) => {
+                             // Log error but potentially continue, inserting an error marker or Null?
+                             error!("Error parsing dependency output for step {} in instance {}: {}", step_id, instance_id, e);
+                             outputs.insert(step_id, json!({ "error": format!("Failed to parse output: {}", e) }));
+                         }
+                     }
+                 }
+                 Err(e) => {
+                     // Log error fetching row, but continue if possible
+                     error!("Error fetching dependency output row for instance {}: {}", instance_id, e);
+                 }
+             }
+         }
+
+         debug!("Fetched dependency outputs for instance {}: {:?}", instance_id, outputs.keys().collect::<Vec<_>>());
+         Ok(outputs)
+     }
+
+     // Helper to get current step status (Takes &AppState)
+     async fn get_step_instance_status(state: &AppState, step_instance_id: i64) -> CommandResult<String> {
+          debug!("Getting status for step instance {}", step_instance_id);
+          let conn_guard = state.db_conn.lock().await;
+          let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+          conn.query_row(
+              "SELECT status FROM Workflow_Step_Instances WHERE step_instance_id = ?1",
+              params![step_instance_id],
+              |row| row.get(0) // status is expected to be non-null string
+          ).map_err(|e| {
+              let msg = format!("Failed to get status for step instance {}: {}", step_instance_id, e);
+              error!("{}", msg);
+              // Determine if it's NotFound or other Application error
+              if matches!(e, RusqliteError::QueryReturnedNoRows) {
+                  CommandError::NotFound(msg)
+              } else {
+                  CommandError::Application(msg)
+              }
+          })
+     }
+
+// Helper to check if a workflow definition exists (Takes &AppState)
+async fn check_definition_exists(state: &AppState, definition_id: &str) -> CommandResult<()> {
+    debug!("Checking definition existence for: {}", definition_id);
+    let conn_guard = state.db_conn.lock().await;
+    let conn = conn_guard.as_ref().ok_or(CommandError::DbNotInitialized)?;
+
+    // Using COUNT(*) approach for more robust existence checking
+    let count: i64 = conn.query_row(
+        "SELECT COUNT(*) FROM Workflow_Definitions WHERE definition_id = ?1",
+        params![definition_id],
+        |row| row.get(0)
+    ).map_err(|e| {
+        let msg = format!("DB error checking definition existence for '{}': {}", definition_id, e);
+        error!("{}", msg);
+        CommandError::Application(msg)
+    })?;
+
+    if count > 0 {
+        debug!("Definition '{}' found.", definition_id);
+        Ok(()) // Found it!
+    } else {
+        let msg = format!("Workflow definition '{}' not found.", definition_id);
+        warn!("{}", msg);
+        Err(CommandError::NotFound(msg))
+    }
+}
+
+
+// --- Public Trigger Function (Takes State Wrapper) ---
+pub async fn trigger_workflow(
+    app_handle: AppHandle,
+    state: State<'_, AppState>, // Takes State wrapper
+    trigger: WorkflowTrigger,
+) -> CommandResult<()> {
+    info!("Workflow triggered by: {:?}", trigger);
+    // Use state.inner() to get &AppState for helper functions
+    let state_ref = state.inner();
+
+    match trigger {
+        WorkflowTrigger::ChangeRequestCreated { change_request_id } => {
+            // 1. Fetch Change Request Details
+            let cr = match maestro_change_requests::get_change_request_details_internal(state_ref, change_request_id).await {
+                 Ok(cr) => cr,
+                 Err(e) => {
+                     error!("Failed to get CR details for trigger {}: {}", change_request_id, e);
+                     return Err(e); // Propagate error
+                 }
+            };
+            // 2. Determine Workflow Definition (Hardcoded for now, could be dynamic)
+            let definition_id = "prd_change_approval_v1".to_string(); // TODO: Make this dynamic based on CR type or project settings
+            info!("Using definition '{}' for CR {}", definition_id, change_request_id);
+
+            // 3. Check if definition exists
+            check_definition_exists(state_ref, &definition_id).await?;
+
+            // 4. Create Workflow Instance
+            let instance_id = create_workflow_instance(
+                state_ref,
+                &definition_id,
+                Some("ChangeRequestCreated".to_string()),
+                Some(change_request_id.to_string()),
+                Some(json!({"change_request": cr.clone()})), // Initial context
+                Some(cr.project_id) // Associate with project
+            ).await?;
+            info!("Created Workflow Instance ID: {} for CR {}", instance_id, change_request_id);
+
+            // 5. Find and Queue Start Steps
+            let start_steps = find_start_steps(state_ref, &definition_id).await?;
+            if start_steps.is_empty() {
+                 let err_msg = format!("Workflow definition '{}' has no start steps defined!", definition_id);
+                 error!("{}", err_msg);
+                 // Update instance status to Failed before returning error
+                 update_instance_status(state_ref, instance_id, "Failed", Some(err_msg.clone())).await?;
+                 return Err(CommandError::Configuration(err_msg));
+            }
+            debug!("Found {} start steps for definition '{}'", start_steps.len(), definition_id);
+            for step in start_steps {
+                queue_step_execution(state_ref, instance_id, &step.step_id, &definition_id).await?;
+            }
+            debug!("Queued initial steps for instance {}", instance_id);
+            // Emit an event indicating workflow start?
+            let _ = app_handle.emit("workflow://instance_started", json!({ "instance_id": instance_id, "definition_id": definition_id }));
+        }
+
+         WorkflowTrigger::ChangeRequestStatusUpdated { change_request_id, new_status } => {
+             info!("Handling ChangeRequestStatusUpdated trigger for CR ID: {} to Status: {}", change_request_id, new_status);
+             // Find potentially running workflow instances associated with this CR
+             let instance_ids = find_running_workflow_instances_for_cr(state_ref, change_request_id).await?;
+
+             if instance_ids.is_empty() {
+                 info!("No running workflow instances found for CR {}", change_request_id);
+                 return Ok(());
+             }
+
+             for instance_id in instance_ids {
+                  info!("Processing status update '{}' for workflow instance {}", new_status, instance_id);
+                  // If CR is rejected or cancelled, attempt to cancel the workflow instance
+                  if new_status == "Rejected" || new_status == "Cancelled" {
+                       info!("Attempting to cancel workflow instance {} due to CR status update", instance_id);
+                       // TODO: Implement more robust cancellation (e.g., cancel running steps)
+                       update_instance_status(state_ref, instance_id, "Cancelled", Some(format!("Triggered by CR status change to {}", new_status))).await?;
+                       // Emit cancellation event?
+                       let _ = app_handle.emit("workflow://instance_cancelled", json!({ "instance_id": instance_id, "reason": "CR Status Update" }));
+                  } else {
+                       // For other status updates, we might just log or potentially trigger re-evaluation
+                       // The engine loop should naturally pick up any steps that become unblocked.
+                       info!("CR status updated to '{}'. Workflow instance {} continues running. Engine loop will re-evaluate.", new_status, instance_id);
+                       // Potentially merge new CR status into instance context?
+                       // let current_context = get_instance_context(state_ref, instance_id).await?;
+                       // ... merge logic ...
+                       // update_instance_context(state_ref, instance_id, updated_context).await?;
+                  }
+             }
+         }
+
+         WorkflowTrigger::ManualStart { definition_id, context } => {
+             info!("Handling ManualStart trigger for definition ID: {}", definition_id);
+             let project_id = None; // Manual starts might not have a project context initially
+
+             // 1. Check if definition exists
+             check_definition_exists(state_ref, &definition_id).await?;
+
+             // 2. Create Workflow Instance
+             let instance_id = create_workflow_instance(
+                 state_ref,
+                 &definition_id,
+                 Some("ManualStart".to_string()),
+                 None, // No specific trigger event ID like a CR ID
+                 context, // Use context provided in the trigger
+                 project_id
+             ).await?;
+             info!("Created Workflow Instance ID: {} via ManualStart", instance_id);
+
+             // 3. Find and Queue Start Steps
+             let start_steps = find_start_steps(state_ref, &definition_id).await?;
+             if start_steps.is_empty() {
+                  let err_msg = format!("Workflow definition '{}' has no start steps defined!", definition_id);
+                  error!("{}", err_msg);
+                  update_instance_status(state_ref, instance_id, "Failed", Some(err_msg.clone())).await?;
+                  return Err(CommandError::Configuration(err_msg));
+             }
+             debug!("Found {} start steps for definition '{}'", start_steps.len(), definition_id);
+             for step in start_steps {
+                 queue_step_execution(state_ref, instance_id, &step.step_id, &definition_id).await?;
+             }
+             debug!("Queued initial steps for manually started instance {}", instance_id);
+             // Emit an event indicating workflow start?
+             let _ = app_handle.emit("workflow://instance_started", json!({ "instance_id": instance_id, "definition_id": definition_id }));
+         }
+    }
+    Ok(())
+}
+
+// --- End of workflow_engine.rs ---

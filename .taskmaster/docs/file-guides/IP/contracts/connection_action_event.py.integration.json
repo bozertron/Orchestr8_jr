@@ -1,0 +1,35 @@
+{
+  "source": "IP/contracts/connection_action_event.py",
+  "total_lines": 107,
+  "sha256": "31646c63c7bed448ad44559a3cffb2d98477152bb52c385997bbbf57b570df77",
+  "role": "Edge action bridge schema",
+  "risks": [
+    "Action enum drift can break bridge compatibility",
+    "Role metadata parsing drift can invalidate permission decisions"
+  ],
+  "anchors": [
+    {
+      "line": 6,
+      "text": "Action enum includes apply_rewire"
+    },
+    {
+      "line": 30,
+      "text": "actorRole field"
+    },
+    {
+      "line": 73,
+      "text": "actorRole normalization"
+    },
+    {
+      "line": 101,
+      "text": "Example payload actorRole"
+    }
+  ],
+  "integration_gaps": [],
+  "resolved_gaps": [
+    {
+      "gap": "Role metadata support in connection action schema",
+      "status": "complete"
+    }
+  ]
+}

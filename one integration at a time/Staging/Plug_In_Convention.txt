@@ -1,0 +1,112 @@
+// Define in a types file or directly in cli.ts if simple enough
+
+// Interface for the common options object passed to parserFunction
+interface ParserOptions {
+    comparePath?: string;
+    filter?: string;
+    uiPattern?: string;
+    indices?: string; // Passed for context from argv
+    paths?: string;   // Passed for context from argv (comma-separated string)
+    // Allow arbitrary other options defined in specificOptions
+    // These will be populated from argv based on the keys in specificOptions
+    [key: string]: any;
+}
+
+// Interface defining the expected exports from a parser plugin file (e.g., overview.js)
+interface ScaffoldPlugin {
+    // --- Core Properties ---
+    commandType: string; // The unique identifier (e.g., 'overview', 'stores'). MUST match file name convention if possible.
+    description: string; // Short description for the CLI help text.
+
+    // --- Functionality ---
+    // The main analysis function. Should ideally return a string for the report OR structured data.
+    // For Phase 1 (txt files), we expect it to return the report string.
+    // Returns Promise<string> for Phase 1, Promise<any> for Phase 2 (JSON)
+    parserFunction: (targetPath: string, options: ParserOptions) => Promise<string | any>;
+
+    // --- Configuration / Options ---
+    supportsCompare: boolean; // Does this parser accept/use the --compare-path option?
+
+    // Definition of options specific *only* to this plugin type (e.g., 'filter' for types, 'uiPattern' for ui).
+    // These are options BEYOND the common ones (--target-path, --output-dir, --compare-path, --indices, --paths).
+    // Maps the yargs option key (e.g., 'filter') to its yargs configuration object.
+    specificOptions?: {
+        [key: string]: {
+            alias?: string;
+            type: 'string' | 'boolean' | 'number'; // Keep simple for now
+            description: string;
+            default?: any;
+            // No conflicts/implies here - keep simple. Handle complex validation in main .check()
+        }
+    };
+}
+
+// --- Type guard to check if an object conforms to ScaffoldPlugin ---
+// (Useful for validating required modules)
+function isScaffoldPlugin(obj: any): obj is ScaffoldPlugin {
+    return obj &&
+        typeof obj.commandType === 'string' &&
+        typeof obj.description === 'string' &&
+        typeof obj.parserFunction === 'function' &&
+        typeof obj.supportsCompare === 'boolean';
+        // Note: specificOptions is optional
+}
+
+    // --- 'list-plugins' command (NEW) ---
+    .command(
+        'list-plugins',
+        'List available scaffold plugins found in the parsers directory.',
+        (yargs) => { /* No specific options needed for listing */ },
+        async (argv) => {
+            console.log(`🔌 Listing available scaffold plugins from: ${PARSERS_DIR}`);
+            try {
+                const availableFiles = await fs.readdir(PARSERS_DIR);
+                const pluginFiles = availableFiles.filter((f) => f.endsWith('.js')); // Assuming compiled JS files
+                console.log(`   Found ${pluginFiles.length} potential plugin files: ${pluginFiles.join(', ')}`);
+
+                const loadedPluginsInfo = [];
+
+                for (const file of pluginFiles) {
+                    const filePath = path.join(PARSERS_DIR, file);
+                    try {
+                        // Use require for synchronous loading in CJS
+                        const pluginModule = require(filePath);
+
+                        // Validate the loaded module
+                        // Using a basic check for now, enhance with isScaffoldPlugin if needed
+                        if (pluginModule && typeof pluginModule.commandType === 'string' &&
+                            typeof pluginModule.description === 'string' &&
+                            typeof pluginModule.parserFunction === 'function' &&
+                            typeof pluginModule.supportsCompare === 'boolean' /* && add more checks */ )
+                        {
+                            // Extract only the info needed for the UI
+                            loadedPluginsInfo.push({
+                                commandType: pluginModule.commandType,
+                                description: pluginModule.description,
+                                supportsCompare: pluginModule.supportsCompare,
+                                // List keys of specific options, default to empty array
+                                specificOptions: pluginModule.specificOptions ? Object.keys(pluginModule.specificOptions) : [],
+                                // Add requiredOptions later if needed
+                            });
+                         } else {
+                            console.warn(`   ⚠️ File ${file} does not appear to be a valid scaffold plugin (missing exports?), skipping.`);
+                        }
+                    } catch (loadError) {
+                        console.error(`   ❌ Error loading or validating plugin file ${file}:`, loadError);
+                    }
+                } // End loop
+
+                if (loadedPluginsInfo.length > 0) {
+                    console.log(`✅ Successfully loaded ${loadedPluginsInfo.length} plugins.`);
+                    // Output JSON for programmatic use (e.g., by Tauri backend calling this command)
+                    console.log(JSON.stringify(loadedPluginsInfo, null, 2));
+                } else {
+                    console.error("   ❌ No valid scaffold plugins were loaded.")
+                }
+
+            } catch (readDirError) {
+                console.error(`❌ Error reading parsers directory ${PARSERS_DIR}:`, readDirError);
+                process.exitCode = 1;
+            }
+        }
+    ) // End list-plugins command

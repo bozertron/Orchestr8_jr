@@ -1,0 +1,53 @@
+{
+  "source": "one integration at a time/style/MAESTROVIEW_REFERENCE.md",
+  "total_lines": 281,
+  "sha256": "d1fbe33e772fe524844b96869239d850f597a6ffe2c106a0a3fc297dab3b408a",
+  "chunk_count": 3,
+  "observation_ids": [
+    1004,
+    1005,
+    1006
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 23,
+      "text": "| **Working** | Gold | `#D4AF37` | All imports resolve, typecheck passes |"
+    },
+    {
+      "line": 25,
+      "text": "| **Combat** | Purple | `#9D4EDD` | General currently deployed and active |"
+    },
+    {
+      "line": 58,
+      "text": "│ [stereOS]        [Collabor8] [JFDI] [Gener8]        │"
+    },
+    {
+      "line": 72,
+      "text": "│ Center: [maestro]                                   │"
+    },
+    {
+      "line": 224,
+      "text": "| Gold accent | `1px solid rgba(184, 134, 11, 0.3)` |"
+    },
+    {
+      "line": 246,
+      "text": "- `TasksPanel.vue` - JFDI task management"
+    },
+    {
+      "line": 260,
+      "text": "| `Cmd/Ctrl + T` | Toggle Tasks (JFDI) |"
+    },
+    {
+      "line": 273,
+      "text": "The terminal component for general deployment is called **actu8**. It must be imported from stereOS/Orchestr8_sr."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "source": "SOT/WIRING_PLAN.md",
+  "total_lines": 294,
+  "sha256": "8334c0cc0c45bfda2c3428cabd6b3fcdd34825ccab8a41d8660402b2d0b85638",
+  "chunk_count": 4,
+  "observation_ids": [
+    85,
+    86,
+    87,
+    88
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 10,
+      "text": "This document outlines the fixes needed to wire up the existing components in 06_maestro.py. The components EXIST - they just need to be connected properly."
+    },
+    {
+      "line": 16,
+      "text": "Replace all legacy brand references with \"orchestr8\" in the codebase."
+    },
+    {
+      "line": 22,
+      "text": "| `IP/plugins/06_maestro.py` | 7, 873-876 | Brand text updated to \"orchestr8\" |"
+    },
+    {
+      "line": 23,
+      "text": "| `IP/plugins/06_maestro.py` | 189-200 | CSS classes updated to `.orchestr8-*` |"
+    },
+    {
+      "line": 24,
+      "text": "| `IP/plugins/06_maestro.py` | 5, 11, 31 | Docstring references |"
+    },
+    {
+      "line": 32,
+      "text": "### Issue 1.1: JFDI Button Opens Wrong Panel"
+    },
+    {
+      "line": 40,
+      "text": "# In build_panels(), replace JFDI placeholder with:"
+    },
+    {
+      "line": 67,
+      "text": "### Issue 2.1: HealthChecker Never Instantiated"
+    },
+    {
+      "line": 76,
+      "text": "health_checker = HealthChecker(project_root_path)"
+    },
+    {
+      "line": 133,
+      "text": "**Expected:** Creating ticket should be linked to combat deployment"
+    },
+    {
+      "line": 196,
+      "text": "**Expected:** UI should react to background changes"
+    },
+    {
+      "line": 201,
+      "text": "2. Use file-based signaling (.orchestr8/state.json)"
+    },
+    {
+      "line": 207,
+      "text": "**Current:** `cleanup_stale_deployments()` must be called manually"
+    },
+    {
+      "line": 251,
+      "text": "**Fix:** Make configurable via orchestr8_settings.toml"
+    },
+    {
+      "line": 261,
+      "text": "| A | P0 | Brand replacement (legacy -> orchestr8) | 30 min |"
+    },
+    {
+      "line": 263,
+      "text": "| C | P2 | HealthChecker instantiation | 2 hrs |"
+    },
+    {
+      "line": 278,
+      "text": "- [ ] Brand shows \"orchestr8\" with no legacy naming"
+    },
+    {
+      "line": 279,
+      "text": "- [ ] CSS classes are `.orchestr8-*`"
+    },
+    {
+      "line": 280,
+      "text": "- [ ] Top row: [orchestr8] [collabor8] [JFDI] [gener8]"
+    },
+    {
+      "line": 281,
+      "text": "- [ ] JFDI button opens TicketPanel"
+    },
+    {
+      "line": 284,
+      "text": "- [ ] HealthChecker is instantiated"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_013910_code-city-full-corpus/key_lines_with_files.tsv"
+  }
+}

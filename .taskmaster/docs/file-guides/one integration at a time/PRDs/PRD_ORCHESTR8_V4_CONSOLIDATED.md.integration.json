@@ -1,0 +1,126 @@
+{
+  "source": "one integration at a time/PRDs/PRD_ORCHESTR8_V4_CONSOLIDATED.md",
+  "total_lines": 765,
+  "sha256": "4736e41abfd6d3e7d8f5a446c118bd5769447774554202523dc2796762a7a974",
+  "chunk_count": 7,
+  "observation_ids": [
+    675,
+    676,
+    677,
+    678,
+    679,
+    680,
+    681
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions.",
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 51,
+      "text": "| **Working** | Gold | `#D4AF37` | All imports resolve, typecheck passes |"
+    },
+    {
+      "line": 53,
+      "text": "| **Combat** | Purple | `#9D4EDD` | General currently deployed and active |"
+    },
+    {
+      "line": 122,
+      "text": "| Connie | Python | Database/schema conversion to LLM-friendly format |"
+    },
+    {
+      "line": 132,
+      "text": "**The Emperor MUST see the subagent choreography.**"
+    },
+    {
+      "line": 165,
+      "text": "│  │  └──────────┘    └───────────┘            │  │  🟣 src/maestro       │ │"
+    },
+    {
+      "line": 167,
+      "text": "│  │  🟡 = Working (Gold)                      │  │     General: Active   │ │"
+    },
+    {
+      "line": 169,
+      "text": "│  │  🟣 = Combat (Purple)                     │  │                        │ │"
+    },
+    {
+      "line": 176,
+      "text": "│ │ [Files] [Matrix] [Graph] ══════ [maestro] ══════ [Search] [Deploy] [⏎]  │ │"
+    },
+    {
+      "line": 210,
+      "text": "**actu8** is the terminal component that enables general deployment. It must be imported from stereOS/Orchestr8_sr."
+    },
+    {
+      "line": 259,
+      "text": "> **Q6:** What is the ticket data structure/schema?"
+    },
+    {
+      "line": 269,
+      "text": "│ PENDING  │────►│ IN_PROGRESS │────►│ RESOLVED │     │ BLOCKED  │"
+    },
+    {
+      "line": 281,
+      "text": ".orchestr8/"
+    },
+    {
+      "line": 355,
+      "text": "4. If BLOCKED: Report what's blocking, suggest escalation"
+    },
+    {
+      "line": 413,
+      "text": "- `src/modules/maestro/` imports from generator - may need similar fix"
+    },
+    {
+      "line": 441,
+      "text": "- Export schemas as JSON, Markdown, or CSV"
+    },
+    {
+      "line": 513,
+      "text": "> **Q10:** Which files from stereOS should be migrated to Orchestr8_jr for ChangeChecker?"
+    },
+    {
+      "line": 534,
+      "text": "| `IP/plugins/05_universal_bridge.py` | EXISTS | Registry-based tool discovery COMPLETE |"
+    },
+    {
+      "line": 535,
+      "text": "| `IP/plugins/06_maestro.py` | EXISTS | THE VOID - primary interface |"
+    },
+    {
+      "line": 537,
+      "text": "| `IP/plugins/05_cli_bridge.py.deprecated` | DEPRECATED | Replaced by universal_bridge |"
+    },
+    {
+      "line": 549,
+      "text": ".orchestr8/"
+    },
+    {
+      "line": 567,
+      "text": "| Update `06_maestro.py` with Mermaid as primary | P0 | 2-3 hours |"
+    },
+    {
+      "line": 621,
+      "text": "**Goal:** Match MaestroView.vue aesthetic within Marimo constraints"
+    },
+    {
+      "line": 653,
+      "text": "├── orchestr8.py                      # Original Marimo app"
+    },
+    {
+      "line": 656,
+      "text": "│   ├── orchestr8_app.py             # Main Marimo application"
+    },
+    {
+      "line": 667,
+      "text": "│       ├── 05_universal_bridge.py"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

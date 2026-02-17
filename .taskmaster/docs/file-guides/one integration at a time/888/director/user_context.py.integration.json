@@ -1,0 +1,36 @@
+{
+  "source": "one integration at a time/888/director/user_context.py",
+  "total_lines": 266,
+  "sha256": "871b2be909318660085995f693059267c2ef7daf9603b7b8cb351887282735aa",
+  "chunk_count": 3,
+  "observation_ids": [
+    247,
+    248,
+    249
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 5,
+      "text": "across all wrapped applications (orchestr8, integr8, etc.) for behavioral analysis."
+    },
+    {
+      "line": 23,
+      "text": "current_zone: str = \"orchestr8\"  # Current active application zone"
+    },
+    {
+      "line": 245,
+      "text": "def should_show_suggestion(self) -> bool:"
+    },
+    {
+      "line": 250,
+      "text": "True if a suggestion should be shown, False otherwise"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "source": "one integration at a time/star-vector/starvector/train/util.py",
+  "total_lines": 285,
+  "sha256": "1462e31b99e3b45b3869467a52c4ada13e70557877bfea77d54cdef26fad3ca1",
+  "chunk_count": 3,
+  "observation_ids": [
+    982,
+    983,
+    984
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 77,
+      "text": "model.tie_weights()  # This method should tie the weights internally"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

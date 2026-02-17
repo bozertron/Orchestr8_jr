@@ -1,0 +1,99 @@
+{
+  "source": ".planning/codebase/INTEGRATIONS.md",
+  "total_lines": 238,
+  "sha256": "4515307a2e7adccc501521c7b2f1da7789f036b5ca8c3a4dbb79552c3fadbce8",
+  "chunk_count": 2,
+  "observation_ids": [
+    1016,
+    1017
+  ],
+  "risks": [
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 9,
+      "text": "- SDK/Client: `anthropic` (imported in `IP/plugins/06_maestro.py`)"
+    },
+    {
+      "line": 47,
+      "text": "- Connection: `.orchestr8/public_services.db`"
+    },
+    {
+      "line": 50,
+      "text": "- Example: `.orchestr8/combat_state.json` for LLM deployment tracking"
+    },
+    {
+      "line": 56,
+      "text": "- Auto-backup: Enabled via `pyproject_orchestr8_settings.toml`"
+    },
+    {
+      "line": 69,
+      "text": "- `.orchestr8/combat_state.json` - LLM deployment tracking"
+    },
+    {
+      "line": 70,
+      "text": "- `.orchestr8/state/` - General state directory"
+    },
+    {
+      "line": 71,
+      "text": "- `.orchestr8/tickets/` - Ticket system data"
+    },
+    {
+      "line": 72,
+      "text": "- `.orchestr8/logs/system.log` - Application logs"
+    },
+    {
+      "line": 73,
+      "text": "- `.orchestr8/backups/` - Local backups"
+    },
+    {
+      "line": 74,
+      "text": "- `.orchestr8/public_services.db` - SQLite database"
+    },
+    {
+      "line": 103,
+      "text": "- Path: `.orchestr8/logs/system.log`"
+    },
+    {
+      "line": 113,
+      "text": "- Results feed into Woven Maps visualization (Blue=broken, Gold=working)"
+    },
+    {
+      "line": 136,
+      "text": "- Template directory: `~/.orchestr8/templates/onlyoffice`"
+    },
+    {
+      "line": 150,
+      "text": "- Project directory: `~/.orchestr8/projects/audio`"
+    },
+    {
+      "line": 156,
+      "text": "- Plugin directory: `~/.orchestr8/plugins/gimp`"
+    },
+    {
+      "line": 162,
+      "text": "- Project directory: `~/.orchestr8/projects/3d`"
+    },
+    {
+      "line": 163,
+      "text": "- Python scripts path: `~/.orchestr8/scripts/blender`"
+    },
+    {
+      "line": 194,
+      "text": "- Settings file: `pyproject_orchestr8_settings.toml` (contains placeholders for secrets)"
+    },
+    {
+      "line": 232,
+      "text": "- Primary: `~/.orchestr8/backups/`"
+    },
+    {
+      "line": 233,
+      "text": "- Secondary: `[external_drive_path]/orchestr8_backups/` (optional)"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

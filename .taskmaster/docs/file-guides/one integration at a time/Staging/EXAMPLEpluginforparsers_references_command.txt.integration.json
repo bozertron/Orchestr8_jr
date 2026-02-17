@@ -1,0 +1,23 @@
+{
+  "source": "one integration at a time/Staging/EXAMPLEpluginforparsers_references_command.txt",
+  "total_lines": 170,
+  "sha256": "560a731014aca77b5df4656e54379d6af38ee66f4c70c789bae0adff00cee66b",
+  "chunk_count": 2,
+  "observation_ids": [
+    830,
+    831
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 1,
+      "text": "// C:\\orchestr8\\scripts\\prd src\\commandParser.ts"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

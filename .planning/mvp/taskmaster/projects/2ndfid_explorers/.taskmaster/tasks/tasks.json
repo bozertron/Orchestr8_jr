@@ -1,0 +1,150 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 19,
+        "title": "Set up project structure and canonical artifacts directory",
+        "description": "Create standardized directory structure for extraction packets and supporting tools following clean-room extraction best practices.",
+        "details": "Create root directory `2ndFid_explorers/extraction_lane/` with subdirectories: `packets/`, `provenance/`, `analysis/`, `canonical_artifacts/`. Use Python 3.12+ with `pathlib` for cross-platform path handling. Initialize git repository with `.gitignore` excluding sensitive data. Create `packet_template.yaml` with schema: source_path, concept_summary, orch_value_statement, target_contracts, risk_class, licensing_flag, integration_recs. Use `PyYAML==6.0.1` for consistent YAML serialization. Implement `validate_packet_schema()` using `jsonschema==4.21.1` with JSON Schema draft-07 for packet validation.",
+        "testStrategy": "Verify directory structure exists with correct permissions. Validate template against schema using `jsonschema.validate()`. Test serialization/deserialization roundtrip with sample data. Run `pytest` with 100% pass rate.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Develop source code line-by-line analysis tool",
+        "description": "Build tool to parse 2ndFid source files and generate line-level provenance data with concept extraction.",
+        "details": "Use `tree-sitter==0.22.2` with language grammars for 2ndFid source analysis (infer languages from context). Implement `SourceAnalyzer` class with methods: `parse_file(path)`, `extract_concepts(lines)`, `generate_provenance()`. Capture line numbers, function signatures, data flows using AST traversal. Output JSONL format: `{line_num, code_snippet, ast_nodes, dependencies}`. Use `libcst==1.3.0` for Python-specific analysis if applicable. Rate-limit analysis to 1000 lines/sec to avoid overwhelming source.",
+        "testStrategy": "Unit test parser on synthetic 2ndFid-like code samples. Integration test full pipeline on 10 sample files. Verify provenance captures 95%+ of function definitions and data flows. Measure analysis accuracy against manual review.",
+        "priority": "high",
+        "dependencies": [
+          19
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 21,
+        "title": "Create extraction packet authoring system",
+        "description": "Generate standardized packet pairs per active wave with all required functional elements.",
+        "details": "Implement `PacketAuthor` class consuming `SourceAnalyzer` output. Generate packet YAML with: `wave_id: C*`, `source_path`, `concept_summary` (max 200 words), `orch_value_statement`, `target_contracts: []`, `risk_class: low|med|high`, `licensing_flag: clean|review|blocked`, `integration_recs`. Use LLM-assisted summarization via `openai==1.40.0` (gpt-4o-mini) with structured prompts for concept extraction. Template: 'Extract Orchestr8-relevant patterns from: {code_context}'. Batch process 50 packets/wave.",
+        "testStrategy": "Validate 100% packets conform to schema. Manual review 10% sample for concept accuracy. Verify all required fields populated. Test batch generation completes under 5min/wave.",
+        "priority": "high",
+        "dependencies": [
+          19,
+          20
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 22,
+        "title": "Implement risk classification and licensing analysis",
+        "description": "Automate risk_class assignment and licensing flag detection per packet.",
+        "details": "Create `RiskClassifier` using rule-based + ML approach. Rules: direct IP matches (blocked), complex algorithms (high), simple patterns (low). Licensing scan with `fossology==4.4.0` API or `licensecheck` patterns. ML: fine-tune `microsoft/CodeT5-base` on proprietary vs open patterns. Output: `risk_class`, `licensing_flag`, `escalation_notes`. Escalate `risk_class: high` to review queue. Track false positives <5%.",
+        "testStrategy": "Test against 100 labeled samples (ROC-AUC >0.9). Verify licensing flags match manual FOSSology scan. Audit trail for all classifications. Unit test all rule combinations.",
+        "priority": "high",
+        "dependencies": [
+          20,
+          21
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 23,
+        "title": "Develop Orchestr8 contract mapping and value assessment",
+        "description": "Map extracted concepts to Orchestr8 target contracts with value statements.",
+        "details": "Load Orchestr8 contract registry as `contracts.json` (interface signatures, requirements). Implement `ContractMapper` using semantic similarity: `sentence-transformers/all-MiniLM-L6-v2` embeddings. Score: concept vs contract similarity >0.75 = match. Generate `orch_value_statement`: 'Accelerates {contract} by {benefit_pct}% via {pattern}'. Auto-populate `target_contracts: [{contract_id, confidence_score}]`. Manual override for scores 0.6-0.75.",
+        "testStrategy": "Validate mappings against 50 hand-labeled examples (precision >85%). Verify value statements contain quantifiable benefits. Test embedding model latency <100ms/packet.",
+        "priority": "medium",
+        "dependencies": [
+          21
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "Generate clean-room conversion plans and integration recommendations",
+        "description": "Produce actionable implementation guidance for each packet avoiding direct lifts.",
+        "details": "Template conversion plan: `algorithm_signature`, `data_structures`, `core_logic_pseudocode`, `orch8_integration_points`. Use `guidance==0.1.0` library with gpt-4o for structured generation. Pseudo-code format: Mermaid diagrams + Python stubs. Integration recs: 'Replace {2ndFid_call} with {Orchestr8_contract}.inject()'. Ensure zero direct code copy (diff similarity <10%). Output to `packets/{wave}/{packet_id}/conversion.md`.",
+        "testStrategy": "Manual review 20% samples for actionability. Verify zero direct code lifts (string similarity <10%). Validate Mermaid renders correctly. Check all recs reference Orchestr8 contracts.",
+        "priority": "medium",
+        "dependencies": [
+          21,
+          23
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "Build packet validation and closeout gate system",
+        "description": "Implement automated gates ensuring packets meet acceptance criteria before canonical delivery.",
+        "details": "Create `CloseoutGate` pipeline: 1) Schema validation, 2) Completeness check (all required fields), 3) Risk review (high-risk auto-escalate), 4) Contract mapping coverage (>80%), 5) Conversion plan quality score. Use `great-expectations==0.1.19` for data validation. Generate `gate_report.json` with pass/fail status. CLI: `python gate.py --wave C1 --packet 001`.",
+        "testStrategy": "Test gate passes valid packets, fails invalid ones (edge cases: missing fields, high risk, incomplete mapping). Verify escalation workflow. 100% test coverage on gate logic.",
+        "priority": "high",
+        "dependencies": [
+          19,
+          21,
+          22,
+          23,
+          24
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "Implement canonical artifact delivery pipeline",
+        "description": "Automate delivery of ACCEPTED packets to canonical artifacts path with proof.",
+        "details": "On gate pass: copy `packets/{wave}/{packet_id}/` → `canonical_artifacts/{wave}_ACCEPTED/{packet_id}/`. Generate `delivery_proof.yaml`: `{packet_id, wave, gate_passed_at, sha256_packet, copy_proof_cmd}`. Use `click==8.1.7` CLI: `deliver --wave C1 --packet 001`. Atomic delivery with `shutil.move()` + file locks. Shared memory ping via `redis==5.0.1`: `redis-cli SET completed:{wave}:{packet_id} 1 EX 86400`.",
+        "testStrategy": "End-to-end test: generate → gate → deliver → verify canonical path. Validate proof.yaml integrity. Test redis ping delivery. Simulate concurrent deliveries (no corruption).",
+        "priority": "high",
+        "dependencies": [
+          25
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 27,
+        "title": "Create wave orchestration and batch processing system",
+        "description": "Coordinate continuous extraction across active waves (C*) with high signal-to-noise selection.",
+        "details": "Implement `WaveOrchestrator` with priority queue: high-value files first (ML scorer: contract_similarity * complexity_score). Config: `waves.yaml` with `C1, C2, ...`. Process 100 packets/wave, throttle to 10 packets/min. Use `celery==5.3.6` + `redis` for distributed task queue. Dashboard: `streamlit==1.32.0` showing wave progress, packet stats, gate pass rate.",
+        "testStrategy": "Test wave completion end-to-end. Verify high-signal files prioritized (top 20% yield 80% value). Scale test: 5 concurrent waves. Monitor queue backlogs under load.",
+        "priority": "medium",
+        "dependencies": [
+          20,
+          21,
+          22,
+          25,
+          26
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 28,
+        "title": "Develop monitoring, logging, and audit trail",
+        "description": "Comprehensive observability for extraction lane with full auditability.",
+        "details": "Use `structlog==24.1.0` + `clickhouse-driver==0.2.9` for structured logging. Metrics: packets/hour, gate pass rate, risk distribution (`prometheus-client==0.20.0`). Audit trail: every packet action logged with `packet_id, actor, timestamp, diff_before/after`. Alerts: gate pass rate <90%, high-risk backlog >10. Dashboard auto-refreshes every 30s.",
+        "testStrategy": "Verify all actions logged and queryable. Test alert triggers. Validate metrics accuracy against ground truth. Audit reconstruction: replay logs → match final state.",
+        "priority": "medium",
+        "dependencies": [
+          27
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2026-02-16T06:09:16.211Z",
+      "updated": "2026-02-16T06:14:05.057Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

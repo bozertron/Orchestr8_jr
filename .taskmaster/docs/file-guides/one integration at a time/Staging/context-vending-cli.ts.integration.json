@@ -1,0 +1,23 @@
+{
+  "source": "one integration at a time/Staging/context-vending-cli.ts",
+  "total_lines": 786,
+  "sha256": "019b9c11e46623f9574acc097f1a0addc35d5a48e476ebca257a1ca986f5f353",
+  "chunk_count": 7,
+  "observation_ids": [
+    823,
+    824,
+    825,
+    826,
+    827,
+    828,
+    829
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

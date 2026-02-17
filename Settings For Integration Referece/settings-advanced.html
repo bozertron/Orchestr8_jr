@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Settings - JFDI</title>
+  <link rel="stylesheet" href="../styles/variables.css">
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <style>
+    body { background: var(--n0); color: var(--t1); padding: 20px; }
+    .settings-container { max-width: 900px; margin: 0 auto; }
+    .settings-header { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--bd); }
+    .settings-header h1 { font-size: 24px; margin: 0 0 8px 0; color: var(--t1); }
+    .settings-header .subtitle { font-size: 13px; color: var(--t3); }
+    .back-link { display: inline-block; margin-bottom: 16px; color: var(--cyan); text-decoration: none; font-size: 13px; }
+    .back-link:hover { text-decoration: underline; }
+    
+    .section { background: var(--n1); border: 1px solid var(--bd); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .section-title { font-size: 16px; font-weight: 700; color: var(--cyan); margin: 0 0 16px 0; }
+    .subsection-title { font-size: 14px; font-weight: 600; color: var(--vio); margin: 16px 0 12px 0; }
+    
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; color: var(--t2); margin-bottom: 6px; }
+    .form-group input[type="text"], .form-group input[type="number"], .form-group select {
+      width: 100%; background: var(--n2); color: var(--t1); border: 1px solid var(--bd); border-radius: 8px;
+      padding: 10px 12px; font-size: 14px; font-family: inherit;
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline: none; border-color: var(--cyan); background: #0b1118;
+    }
+    
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .toggle-group { display: flex; align-items: center; gap: 10px; }
+    .toggle { position: relative; width: 44px; height: 24px; background: var(--n2); border: 1px solid var(--bd);
+      border-radius: 12px; cursor: pointer; transition: all 0.2s;
+    }
+    .toggle.active { background: var(--vio); border-color: var(--vio); }
+    .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px;
+      background: var(--t1); border-radius: 50%; transition: transform 0.2s;
+    }
+    .toggle.active::after { transform: translateX(20px); }
+    
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+    .btn { padding: 10px 16px; border-radius: 8px; border: 1px solid var(--bd); background: transparent;
+      color: var(--t1); cursor: pointer; font-size: 14px; font-family: inherit; transition: all 0.2s;
+    }
+    .btn:hover { background: var(--n2); border-color: var(--vio); }
+    .btn-primary { background: var(--vio); border-color: var(--vio); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.1); }
+    .btn-danger { border-color: var(--mag); color: var(--mag); }
+    .btn-danger:hover { background: rgba(255, 0, 153, 0.1); }
+    
+    .message { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; display: none; }
+    .message.success { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--grn); color: var(--grn); }
+    .message.error { background: rgba(255, 0, 153, 0.1); border: 1px solid var(--mag); color: var(--mag); }
+    .message.show { display: block; }
+    
+    .help-text { font-size: 11px; color: var(--t3); margin-top: 4px; }
+    .warning-box { background: rgba(255, 165, 0, 0.1); border: 1px solid #ffa500; border-radius: 8px; 
+      padding: 12px; margin-bottom: 16px; font-size: 12px; color: #ffa500;
+    }
+  </style>
+</head>
+<body>
+  <div class="settings-container">
+    <a href="settings.html" class="back-link">← Back to Basic Settings</a>
+    
+    <div class="settings-header">
+      <h1>Advanced Settings</h1>
+      <div class="subtitle">Configure message protocol, chat, database, and development options</div>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <div class="warning-box">
+      ⚠️ Advanced settings can significantly impact application performance and behavior. Modify with caution.
+    </div>
+
+    <!-- Message Protocol Settings -->
+    <div class="section">
+      <h2 class="section-title">Message Protocol</h2>
+      
+      <h3 class="subsection-title">Routing</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="mp-max-retries">Max Retries (0-10)</label>
+          <input type="number" id="mp-max-retries" min="0" max="10" value="3" data-field="message_protocol.routing.max_retries">
+        </div>
+        <div class="form-group">
+          <label for="mp-retry-backoff">Retry Backoff (ms)</label>
+          <input type="number" id="mp-retry-backoff" min="100" max="10000" value="1000" data-field="message_protocol.routing.retry_backoff_ms">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="mp-delivery-timeout">Delivery Timeout (seconds)</label>
+          <input type="number" id="mp-delivery-timeout" min="5" max="300" value="30" data-field="message_protocol.routing.delivery_timeout_secs">
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="mp-prefer-direct" data-field="message_protocol.routing.prefer_direct_connection"></div>
+            <label>Prefer Direct Connection</label>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Persistence</h3>
+      <div class="form-group">
+        <div class="toggle-group">
+          <div class="toggle active" id="mp-persistence-enabled" data-field="message_protocol.persistence.enabled"></div>
+          <label>Enable Message Persistence</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="mp-retention-days">Retention Days (1-3650)</label>
+          <input type="number" id="mp-retention-days" min="1" max="3650" value="90" data-field="message_protocol.persistence.retention_days">
+        </div>
+        <div class="form-group">
+          <label for="mp-max-storage">Max Storage (MB)</label>
+          <input type="number" id="mp-max-storage" min="100" max="100000" value="1000" data-field="message_protocol.persistence.max_storage_mb">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="mp-auto-cleanup" data-field="message_protocol.persistence.auto_cleanup"></div>
+            <label>Auto Cleanup Old Messages</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="mp-compress-old" data-field="message_protocol.persistence.compress_old_messages"></div>
+            <label>Compress Old Messages</label>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Delivery</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="mp-require-ack" data-field="message_protocol.delivery.require_acknowledgment"></div>
+            <label>Require Acknowledgment</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="mp-offline-queue" data-field="message_protocol.delivery.offline_queue_enabled"></div>
+            <label>Enable Offline Queue</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="mp-max-queue-size">Max Queue Size</label>
+          <input type="number" id="mp-max-queue-size" min="10" max="10000" value="1000" data-field="message_protocol.delivery.max_queue_size">
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="mp-resend-reconnect" data-field="message_protocol.delivery.resend_on_reconnect"></div>
+            <label>Resend on Reconnect</label>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Events</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="mp-event-logging" data-field="message_protocol.events.event_logging_enabled"></div>
+            <label>Enable Event Logging</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="mp-event-retention">Event Retention (days)</label>
+          <input type="number" id="mp-event-retention" min="1" max="365" value="30" data-field="message_protocol.events.event_retention_days">
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Settings -->
+    <div class="section">
+      <h2 class="section-title">Chat Configuration</h2>
+      
+      <h3 class="subsection-title">Messages</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="chat-max-length">Max Message Length (1-100000)</label>
+          <input type="number" id="chat-max-length" min="1" max="100000" value="10000" data-field="chat.messages.max_message_length">
+        </div>
+        <div class="form-group">
+          <label for="chat-history-retention">History Retention (days)</label>
+          <input type="number" id="chat-history-retention" min="1" max="3650" value="90" data-field="chat.messages.history_retention_days">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="chat-enable-editing" data-field="chat.messages.enable_editing"></div>
+            <label>Enable Message Editing</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="chat-edit-time-limit">Edit Time Limit (minutes)</label>
+          <input type="number" id="chat-edit-time-limit" min="1" max="1440" value="15" data-field="chat.messages.edit_time_limit_mins">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="toggle-group">
+          <div class="toggle active" id="chat-enable-deletion" data-field="chat.messages.enable_deletion"></div>
+          <label>Enable Message Deletion</label>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Storage</h3>
+      <div class="form-group">
+        <label for="chat-database-path">Database Path</label>
+        <input type="text" id="chat-database-path" value="{app_data}/chat.db" data-field="chat.storage.database_path">
+        <div class="help-text">Use {app_data} for application data directory</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="chat-fts-enabled" data-field="chat.storage.fts_enabled"></div>
+            <label>Enable Full-Text Search</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="chat-auto-archive">Auto Archive (days)</label>
+          <input type="number" id="chat-auto-archive" min="30" max="3650" value="180" data-field="chat.storage.auto_archive_days">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="chat-search-history">Search History (days)</label>
+        <input type="number" id="chat-search-history" min="30" max="3650" value="365" data-field="chat.storage.search_history_days">
+      </div>
+
+      <h3 class="subsection-title">Maestro AI</h3>
+      <div class="form-group">
+        <div class="toggle-group">
+          <div class="toggle active" id="maestro-enabled" data-field="chat.maestro.enabled"></div>
+          <label>Enable Maestro AI Assistant</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="maestro-mode">Default Mode</label>
+          <select id="maestro-mode" data-field="chat.maestro.default_mode">
+            <option value="Assistant">Assistant</option>
+            <option value="Analyst">Analyst</option>
+            <option value="Creative">Creative</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="maestro-model">Ollama Model</label>
+          <input type="text" id="maestro-model" value="llama3.2:3b" data-field="chat.maestro.ollama_model">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="maestro-temperature">Temperature (0.0-2.0)</label>
+          <input type="number" id="maestro-temperature" min="0" max="2" step="0.1" value="0.7" data-field="chat.maestro.temperature">
+        </div>
+        <div class="form-group">
+          <label for="maestro-max-tokens">Max Tokens</label>
+          <input type="number" id="maestro-max-tokens" min="256" max="8192" value="2048" data-field="chat.maestro.max_tokens">
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Features</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="chat-typing-indicators" data-field="chat.features.typing_indicators"></div>
+            <label>Typing Indicators</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="chat-read-receipts" data-field="chat.features.read_receipts"></div>
+            <label>Read Receipts</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="chat-reactions" data-field="chat.features.reactions_enabled"></div>
+            <label>Message Reactions</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="chat-threads" data-field="chat.features.threads_enabled"></div>
+            <label>Message Threads</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Database Settings -->
+    <div class="section">
+      <h2 class="section-title">Database Configuration</h2>
+      
+      <h3 class="subsection-title">SQLite</h3>
+      <div class="form-group">
+        <label for="db-path">Database Path</label>
+        <input type="text" id="db-path" value="{app_data}/jfdi.db" data-field="database.sqlite.database_path">
+        <div class="help-text">Use {app_data} for application data directory</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="db-journal-mode">Journal Mode</label>
+          <select id="db-journal-mode" data-field="database.sqlite.journal_mode">
+            <option value="WAL">WAL (Write-Ahead Logging)</option>
+            <option value="DELETE">DELETE</option>
+            <option value="TRUNCATE">TRUNCATE</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="db-synchronous">Synchronous Mode</label>
+          <select id="db-synchronous" data-field="database.sqlite.synchronous">
+            <option value="FULL">FULL (Safest)</option>
+            <option value="NORMAL">NORMAL (Balanced)</option>
+            <option value="OFF">OFF (Fastest, Risky)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="db-cache-size">Cache Size (KB)</label>
+          <input type="number" id="db-cache-size" min="1024" max="102400" value="10240" data-field="database.sqlite.cache_size_kb">
+        </div>
+        <div class="form-group">
+          <label for="db-page-size">Page Size (bytes)</label>
+          <input type="number" id="db-page-size" min="512" max="65536" value="4096" data-field="database.sqlite.page_size">
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Full-Text Search</h3>
+      <div class="form-group">
+        <div class="toggle-group">
+          <div class="toggle active" id="db-fts-enabled" data-field="database.fts.enabled"></div>
+          <label>Enable Full-Text Search</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="db-fts-tokenizer">Tokenizer</label>
+          <input type="text" id="db-fts-tokenizer" value="porter" data-field="database.fts.tokenizer">
+        </div>
+        <div class="form-group">
+          <label for="db-fts-rank">Rank Function</label>
+          <input type="text" id="db-fts-rank" value="bm25" data-field="database.fts.fts_rank_function">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="toggle-group">
+          <div class="toggle" id="db-fts-rebuild" data-field="database.fts.rebuild_on_startup"></div>
+          <label>Rebuild FTS Index on Startup</label>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Connection Pool</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="db-max-connections">Max Connections (1-100)</label>
+          <input type="number" id="db-max-connections" min="1" max="100" value="10" data-field="database.connection_pool.max_connections">
+        </div>
+        <div class="form-group">
+          <label for="db-min-connections">Min Connections (1-50)</label>
+          <input type="number" id="db-min-connections" min="1" max="50" value="2" data-field="database.connection_pool.min_connections">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="db-connection-timeout">Connection Timeout (seconds)</label>
+          <input type="number" id="db-connection-timeout" min="5" max="300" value="30" data-field="database.connection_pool.connection_timeout_secs">
+        </div>
+        <div class="form-group">
+          <label for="db-idle-timeout">Idle Timeout (seconds)</label>
+          <input type="number" id="db-idle-timeout" min="60" max="3600" value="600" data-field="database.connection_pool.idle_timeout_secs">
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Maintenance</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="db-auto-vacuum" data-field="database.maintenance.auto_vacuum"></div>
+            <label>Auto Vacuum</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="db-vacuum-interval">Vacuum Interval (days)</label>
+          <input type="number" id="db-vacuum-interval" min="1" max="365" value="7" data-field="database.maintenance.vacuum_interval_days">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle" id="db-analyze-startup" data-field="database.maintenance.analyze_on_startup"></div>
+            <label>Analyze on Startup</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle" id="db-optimize-startup" data-field="database.maintenance.optimize_on_startup"></div>
+            <label>Optimize on Startup</label>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Backups</h3>
+      <div class="form-group">
+        <div class="toggle-group">
+          <div class="toggle active" id="db-backup-enabled" data-field="database.backups.enabled"></div>
+          <label>Enable Automatic Backups</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="db-backup-interval">Backup Interval (hours)</label>
+          <input type="number" id="db-backup-interval" min="1" max="168" value="24" data-field="database.backups.interval_hours">
+        </div>
+        <div class="form-group">
+          <label for="db-max-backups">Max Backups to Keep</label>
+          <input type="number" id="db-max-backups" min="1" max="100" value="7" data-field="database.backups.max_backups">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="db-backup-path">Backup Path</label>
+        <input type="text" id="db-backup-path" value="{app_data}/backups/" data-field="database.backups.backup_path">
+      </div>
+      <div class="form-group">
+        <div class="toggle-group">
+          <div class="toggle active" id="db-compress-backups" data-field="database.backups.compress_backups"></div>
+          <label>Compress Backups</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Development Settings -->
+    <div class="section">
+      <h2 class="section-title">Development Configuration</h2>
+
+      <h3 class="subsection-title">Logging</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dev-log-level">Log Level</label>
+          <select id="dev-log-level" data-field="development.logging.level">
+            <option value="Debug">Debug</option>
+            <option value="Info">Info</option>
+            <option value="Warn">Warn</option>
+            <option value="Error">Error</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="dev-log-to-file" data-field="development.logging.log_to_file"></div>
+            <label>Log to File</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="dev-log-path">Log Path</label>
+        <input type="text" id="dev-log-path" value="{app_data}/logs/" data-field="development.logging.log_path">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dev-max-log-size">Max Log Size (MB)</label>
+          <input type="number" id="dev-max-log-size" min="10" max="1000" value="100" data-field="development.logging.max_log_size_mb">
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="dev-log-rotation" data-field="development.logging.log_rotation_enabled"></div>
+            <label>Enable Log Rotation</label>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Relay Server</h3>
+      <div class="form-group">
+        <div class="toggle-group">
+          <div class="toggle active" id="dev-relay-enabled" data-field="development.relay_server.enabled"></div>
+          <label>Enable Relay Server</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="dev-relay-url">Relay Server URL</label>
+        <input type="text" id="dev-relay-url" value="ws://localhost:8080" data-field="development.relay_server.url">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="dev-relay-auto-start" data-field="development.relay_server.auto_start"></div>
+            <label>Auto Start Relay</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="dev-relay-reconnect" data-field="development.relay_server.reconnect_on_failure"></div>
+            <label>Reconnect on Failure</label>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">MCP Server</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle active" id="dev-mcp-enabled" data-field="development.mcp_server.enabled"></div>
+            <label>Enable MCP Server</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="dev-mcp-port">MCP Server Port</label>
+          <input type="number" id="dev-mcp-port" min="1024" max="65535" value="9000" data-field="development.mcp_server.port">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="toggle-group">
+          <div class="toggle active" id="dev-mcp-auto-start" data-field="development.mcp_server.auto_start"></div>
+          <label>Auto Start MCP Server</label>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Debug Options</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle" id="dev-verbose-logging" data-field="development.debug.verbose_logging"></div>
+            <label>Verbose Logging</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle" id="dev-performance-profiling" data-field="development.debug.performance_profiling"></div>
+            <label>Performance Profiling</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle" id="dev-mock-p2p" data-field="development.debug.mock_p2p"></div>
+            <label>Mock P2P (Testing)</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="toggle-group">
+            <div class="toggle" id="dev-mode-enabled" data-field="development.debug.dev_mode_enabled"></div>
+            <label>Development Mode</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn btn-primary" id="save-btn">Save Changes</button>
+      <button class="btn" id="reset-btn">Reset to Defaults</button>
+      <button class="btn btn-danger" id="restore-btn">Restore from Backup</button>
+    </div>
+  </div>
+
+  <script src="../scripts/settings_advanced_helpers.js"></script>
+  <script src="../scripts/settings_advanced_helpers_config.js"></script>
+  <script src="../scripts/settings-advanced.js"></script>
+</body>
+</html>
+

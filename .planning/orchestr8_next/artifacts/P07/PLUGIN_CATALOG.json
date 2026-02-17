@@ -1,0 +1,603 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "generated": "2026-02-16",
+    "source": "/home/bozertron/Orchestr8_jr/IP/plugins/",
+    "total_plugins": 9
+  },
+  "plugins": [
+    {
+      "file": "00_welcome.py",
+      "plugin_name": "Welcome",
+      "plugin_order": 0,
+      "function_signature": "def render(STATE_MANAGERS: dict) -> Any",
+      "state_management": {
+        "pattern": "STATE_MANAGERS dict access",
+        "mo_state_usage": [],
+        "accessed_managers": ["root", "logs"]
+      },
+      "event_handlers": [
+        {
+          "name": "log_visit",
+          "type": "function",
+          "purpose": "Logs welcome tab visit to system logs"
+        }
+      ],
+      "ui_components": ["mo.md", "mo.vstack"],
+      "dependencies": ["marimo as mo"],
+      "integration_patterns": [],
+      "complexity": "simple",
+      "description": "Simple welcome plugin displaying getting started guide"
+    },
+    {
+      "file": "01_generator.py",
+      "plugin_name": "Generator",
+      "plugin_order": 1,
+      "function_signature": "def render(STATE_MANAGERS: dict) -> Any",
+      "state_management": {
+        "pattern": "mo.state for local UI state",
+        "mo_state_usage": [
+          {"name": "get_phase, set_phase", "initial": 1},
+          {"name": "get_spec, set_spec", "initial": "dict with 7 phase sections"},
+          {"name": "get_locked, set_locked", "initial": "[]"}
+        ],
+        "accessed_managers": ["root", "logs"]
+      },
+      "event_handlers": [
+        {"name": "go_prev", "type": "function", "purpose": "Navigate to previous phase"},
+        {"name": "go_next", "type": "function", "purpose": "Navigate to next phase"},
+        {"name": "lock_phase", "type": "function", "purpose": "Lock current phase"},
+        {"name": "export_spec", "type": "function", "purpose": "Export BUILD_SPEC.json"},
+        {"name": "update_spec", "type": "function", "purpose": "Update spec field value"},
+        {"name": "build_phase_content", "type": "function", "purpose": "Render current phase UI"}
+      ],
+      "ui_components": [
+        "mo.ui.text",
+        "mo.ui.text_area",
+        "mo.ui.dropdown",
+        "mo.ui.button",
+        "mo.md",
+        "mo.vstack",
+        "mo.hstack",
+        "mo.Html (progress bar)"
+      ],
+      "dependencies": ["marimo as mo", "json", "pathlib.Path", "datetime"],
+      "integration_patterns": [],
+      "complexity": "medium",
+      "description": "7-phase project wizard for generating BUILD_SPEC.json"
+    },
+    {
+      "file": "02_explorer.py",
+      "plugin_name": "Explorer",
+      "plugin_order": 2,
+      "function_signature": "def render(STATE_MANAGERS: dict) -> Any",
+      "state_management": {
+        "pattern": "mo.state for local scan state",
+        "mo_state_usage": [
+          {"name": "get_scan_result, set_scan_result", "initial": "None"},
+          {"name": "get_is_scanning, set_is_scanning", "initial": "False"}
+        ],
+        "accessed_managers": ["root", "files", "selected", "logs"]
+      },
+      "event_handlers": [
+        {"name": "do_scan", "type": "function", "purpose": "Scan project directory and run Carl deep scan"},
+        {"name": "handle_selection", "type": "function", "purpose": "Handle file selection from table"}
+      ],
+      "ui_components": [
+        "mo.ui.button",
+        "mo.ui.table (selection=single)",
+        "mo.md",
+        "mo.vstack",
+        "mo.hstack"
+      ],
+      "dependencies": [
+        "marimo as mo",
+        "os",
+        "subprocess",
+        "json",
+        "pathlib.Path",
+        "datetime",
+        "carl_core.CarlContextualizer"
+      ],
+      "integration_patterns": [
+        "CarlContextualizer.run_deep_scan() integration"
+      ],
+      "complexity": "medium",
+      "description": "File explorer with Carl integration for deep context scanning"
+    },
+    {
+      "file": "03_gatekeeper.py",
+      "plugin_name": "Gatekeeper",
+      "plugin_order": 3,
+      "function_signature": "def render(STATE_MANAGERS: dict) -> Any",
+      "state_management": {
+        "pattern": "mo.state for UI state and file selection",
+        "mo_state_usage": [
+          {"name": "get_new_path, set_new_path", "initial": "\"\""},
+          {"name": "get_refresh_trigger, set_refresh_trigger", "initial": 0},
+          {"name": "get_selected_files, set_selected_files", "initial": "set()"}
+        ],
+        "accessed_managers": ["root", "logs"]
+      },
+      "event_handlers": [
+        {"name": "lock_all_protected", "type": "function", "purpose": "Lock all protected files (0o444)"},
+        {"name": "unlock_all_protected", "type": "function", "purpose": "Unlock all protected files (0o644)"},
+        {"name": "lock_selected", "type": "function", "purpose": "Lock selected files only"},
+        {"name": "unlock_selected", "type": "function", "purpose": "Unlock selected files only"},
+        {"name": "add_protected_folder", "type": "function", "purpose": "Add folder to protection list"},
+        {"name": "remove_folder", "type": "function", "purpose": "Remove folder from protection"},
+        {"name": "rescan_files", "type": "function", "purpose": "Rescan protected folders"},
+        {"name": "install_hook", "type": "function", "purpose": "Install git pre-commit hook"},
+        {"name": "toggle_file_selection", "type": "function", "purpose": "Toggle file checkbox selection"},
+        {"name": "build_file_checkboxes", "type": "function", "purpose": "Render file checkbox list"},
+        {"name": "log_message", "type": "function", "purpose": "Log message to system"},
+        {"name": "trigger_refresh", "type": "function", "purpose": "Force UI refresh"}
+      ],
+      "ui_components": [
+        "mo.ui.text",
+        "mo.ui.button",
+        "mo.ui.checkbox",
+        "mo.md",
+        "mo.vstack",
+        "mo.hstack"
+      ],
+      "dependencies": [
+        "marimo as mo",
+        "pathlib.Path",
+        "typing.Any",
+        "IP.louis_core (LouisWarden, LouisConfig)"
+      ],
+      "integration_patterns": [
+        "LouisWarden for file protection",
+        "LouisConfig for configuration management",
+        "Git hook installation"
+      ],
+      "complexity": "medium",
+      "description": "UI for Louis file protection system with lock/unlock controls"
+    },
+    {
+      "file": "04_connie_ui.py",
+      "plugin_name": "Connie",
+      "plugin_order": 4,
+      "function_signature": "def render(STATE_MANAGERS: dict) -> Any",
+      "state_management": {
+        "pattern": "mo.state for database UI state",
+        "mo_state_usage": [
+          {"name": "get_selected_db, set_selected_db", "initial": "\"\""},
+          {"name": "get_selected_table, set_selected_table", "initial": "\"\""},
+          {"name": "get_export_format, set_export_format", "initial": "\"csv\""},
+          {"name": "get_tables, set_tables", "initial": "[]"},
+          {"name": "get_preview, set_preview", "initial": "None"},
+          {"name": "get_export_result, set_export_result", "initial": "\"\""}
+        ],
+        "accessed_managers": ["root", "logs"]
+      },
+      "event_handlers": [
+        {"name": "handle_db_select", "type": "function", "purpose": "Handle database selection and load tables"},
+        {"name": "handle_table_select", "type": "function", "purpose": "Handle table selection and load preview"},
+        {"name": "do_export", "type": "function", "purpose": "Export selected table to chosen format"},
+        {"name": "do_export_all", "type": "function", "purpose": "Export all tables from database"},
+        {"name": "find_db_files", "type": "function", "purpose": "Find SQLite databases in project"}
+      ],
+      "ui_components": [
+        "mo.ui.dropdown",
+        "mo.ui.radio",
+        "mo.ui.button",
+        "mo.md",
+        "mo.vstack",
+        "mo.hstack"
+      ],
+      "dependencies": [
+        "marimo as mo",
+        "os",
+        "json",
+        "pathlib.Path",
+        "datetime",
+        "sqlite3",
+        "pandas",
+        "IP.connie.ConversionEngine"
+      ],
+      "integration_patterns": [
+        "ConversionEngine for database conversion",
+        "Fallback to direct sqlite3 access"
+      ],
+      "complexity": "medium",
+      "description": "Database conversion UI for SQLite export to CSV/JSON/Markdown/SQL"
+    },
+    {
+      "file": "05_universal_bridge.py",
+      "plugin_name": "Universal Bridge",
+      "plugin_order": 5,
+      "function_signature": "def render(STATE_MANAGERS: dict) -> Any",
+      "state_management": {
+        "pattern": "mo.state for tool registry and execution state",
+        "mo_state_usage": [
+          {"name": "get_tool_states, set_tool_states", "initial": "{}"},
+          {"name": "get_scan_errors, set_scan_errors", "initial": "[]"},
+          {"name": "get_is_scanning, set_is_scanning", "initial": "False"},
+          {"name": "get_selected_target, set_selected_target", "initial": "\"\""}
+        ],
+        "accessed_managers": ["root", "logs"]
+      },
+      "event_handlers": [
+        {"name": "do_discovery", "type": "function", "purpose": "Run discovery command for tool"},
+        {"name": "run_command", "type": "function", "purpose": "Execute tool command"},
+        {"name": "build_tool_accordion", "type": "function", "purpose": "Render tool accordion content"},
+        {"name": "log_message", "type": "function", "purpose": "Log message to system"},
+        {"name": "scan_registry", "type": "function", "purpose": "Scan registry for tool manifests"},
+        {"name": "validate_command", "type": "function", "purpose": "Validate base command executable"},
+        {"name": "run_discovery", "type": "function", "purpose": "Execute discovery command"},
+        {"name": "execute_command", "type": "function", "purpose": "Execute tool command with subprocess"}
+      ],
+      "ui_components": [
+        "mo.ui.text",
+        "mo.ui.button",
+        "mo.accordion",
+        "mo.md",
+        "mo.vstack",
+        "mo.hstack"
+      ],
+      "dependencies": [
+        "marimo as mo",
+        "json",
+        "shutil",
+        "subprocess",
+        "datetime",
+        "pathlib.Path",
+        "typing",
+        "IP.plugins.output_renderer.detect_and_render_output"
+      ],
+      "integration_patterns": [
+        "Dynamic registry scanning (frontend/tools/registry/*.json)",
+        "Manifest validation",
+        "Discovery command execution",
+        "Smart output rendering"
+      ],
+      "complexity": "high",
+      "description": "Dynamic registry-based tool bridge for executing TypeScript parsers"
+    },
+    {
+      "file": "06_maestro.py",
+      "plugin_name": "Maestro",
+      "plugin_order": 6,
+      "function_signature": "def render(STATE_MANAGERS: dict) -> Any",
+      "state_management": {
+        "pattern": "Extensive mo.state for complex UI state machine",
+        "mo_state_usage": [
+          {"name": "get_show_agents, set_show_agents", "initial": "False"},
+          {"name": "get_show_terminal, set_show_terminal", "initial": "False"},
+          {"name": "get_show_summon, set_show_summon", "initial": "False"},
+          {"name": "get_show_settings, set_show_settings", "initial": "False"},
+          {"name": "get_messages, set_messages", "initial": "[]"},
+          {"name": "get_user_input, set_user_input", "initial": "\"\""},
+          {"name": "get_attached_files, set_attached_files", "initial": "[]"},
+          {"name": "get_view_mode, set_view_mode", "initial": "\"city\""},
+          {"name": "get_maestro_state, set_maestro_state", "initial": "\"ON\""},
+          {"name": "get_phreak_sfx_tick, set_phreak_sfx_tick", "initial": 0},
+          {"name": "get_selected_model, set_selected_model", "initial": "default_model"},
+          {"name": "get_show_tickets, set_show_tickets", "initial": "False"},
+          {"name": "get_show_calendar, set_show_calendar", "initial": "False"},
+          {"name": "get_show_comms, set_show_comms", "initial": "False"},
+          {"name": "get_show_file_explorer, set_show_file_explorer", "initial": "False"},
+          {"name": "get_show_deploy, set_show_deploy", "initial": "False"},
+          {"name": "get_clicked_node, set_clicked_node", "initial": "None"},
+          {"name": "get_is_recording, set_is_recording", "initial": "False"},
+          {"name": "get_audio_data, set_audio_data", "initial": "None"},
+          {"name": "get_summon_query, set_summon_query", "initial": "\"\""},
+          {"name": "get_summon_results, set_summon_results", "initial": "[]"},
+          {"name": "get_summon_loading, set_summon_loading", "initial": "False"},
+          {"name": "get_node_click_payload, set_node_click_payload", "initial": "\"\""},
+          {"name": "get_connection_action_payload, set_connection_action_payload", "initial": "\"\""},
+          {"name": "get_camera_nav_payload, set_camera_nav_payload", "initial": "\"\""},
+          {"name": "get_connection_action_result_payload, set_connection_action_result_payload", "initial": "\"\""},
+          {"name": "get_code_city_context, set_code_city_context", "initial": "{}"},
+          {"name": "get_agent_group, set_agent_group", "initial": "\"Explore\""},
+          {"name": "get_agent_id, set_agent_id", "initial": "\"surveyor\""}
+        ],
+        "accessed_managers": ["root", "selected", "logs", "health"]
+      },
+      "event_handlers": [
+        {"name": "log_action", "type": "function", "purpose": "Log action to system with timestamp"},
+        {"name": "cycle_maestro_state", "type": "function", "purpose": "Cycle ON -> OFF -> OBSERVE -> ON"},
+        {"name": "toggle_tickets", "type": "function", "purpose": "Toggle ticket panel"},
+        {"name": "toggle_calendar", "type": "function", "purpose": "Toggle calendar panel"},
+        {"name": "toggle_comms", "type": "function", "purpose": "Toggle comms panel"},
+        {"name": "toggle_file_explorer", "type": "function", "purpose": "Toggle file explorer panel"},
+        {"name": "process_node_click", "type": "function", "purpose": "Bridge node click events with contract validation"},
+        {"name": "process_connection_action", "type": "function", "purpose": "Bridge edge panel actions"},
+        {"name": "handle_node_click", "type": "function", "purpose": "Handle Code City building click"},
+        {"name": "handle_deploy", "type": "function", "purpose": "Deploy general to fix broken code"},
+        {"name": "close_deploy_panel", "type": "function", "purpose": "Close deploy panel"},
+        {"name": "toggle_collabor8", "type": "function", "purpose": "Toggle Collabor8 panel"},
+        {"name": "handle_jfdi", "type": "function", "purpose": "Toggle ticket panel JFDI"},
+        {"name": "toggle_settings_panel", "type": "function", "purpose": "Toggle settings overlay"},
+        {"name": "set_collabor8_group", "type": "function", "purpose": "Update agent group selection"},
+        {"name": "deploy_selected_agent", "type": "function", "purpose": "Deploy settlement agent"},
+        {"name": "handle_terminal", "type": "function", "purpose": "Toggle/spawn terminal"},
+        {"name": "handle_home_click", "type": "function", "purpose": "Reset to home state"},
+        {"name": "toggle_recording", "type": "function", "purpose": "Toggle audio recording"},
+        {"name": "handle_playback", "type": "function", "purpose": "Play recorded audio"},
+        {"name": "has_audio_recording", "type": "function", "purpose": "Check for audio data"},
+        {"name": "handle_apps", "type": "function", "purpose": "Show App Matrix"},
+        {"name": "handle_matrix", "type": "function", "purpose": "Open code Collabor8"},
+        {"name": "handle_files", " editor +type": "function", "purpose": "Open file explorer"},
+        {"name": "handle_send", "type": "function", "purpose": "Send message to void/chat"},
+        {"name": "handle_attach", "type": "function", "purpose": "Attach selected file"},
+        {"name": "remove_attachment", "type": "function", "purpose": "Remove file from attachments"},
+        {"name": "handle_summon", "type": "function", "purpose": "Toggle summon overlay"},
+        {"name": "trigger_carl_search", "type": "function", "purpose": "Carl context search"},
+        {"name": "on_node_click_bridge_change", "type": "function", "purpose": "JS->Python bridge for node clicks"},
+        {"name": "on_connection_action_bridge_change", "type": "function", "purpose": "JS->Python bridge for connection actions"},
+        {"name": "process_camera_navigation", "type": "function", "purpose": "Handle camera nav events"},
+        {"name": "on_camera_nav_bridge_change", "type": "function", "purpose": "JS->Python bridge for camera nav"},
+        {"name": "refresh_health", "type": "function", "purpose": "Run health checker"}
+      ],
+      "ui_components": [
+        "mo.ui.button",
+        "mo.ui.text",
+        "mo.md",
+        "mo.vstack",
+        "mo.hstack",
+        "mo.Html",
+        "Custom build_* functions (top_row, code_city, summon_results, void_messages, app_matrix, sitting_room, panels, attachment_bar, control_surface)"
+      ],
+      "dependencies": [
+        "marimo as mo",
+        "sys",
+        "pathlib.Path",
+        "datetime",
+        "uuid",
+        "os",
+        "json",
+        "toml",
+        "anthropic (optional)",
+        "IP.mermaid_generator",
+        "IP.terminal_spawner",
+        "IP.health_checker",
+        "IP.health_watcher",
+        "IP.briefing_generator",
+        "IP.combat_tracker",
+        "IP.plugins.components.ticket_panel",
+        "IP.plugins.components.calendar_panel",
+        "IP.plugins.components.comms_panel",
+        "IP.plugins.components.file_explorer_panel",
+        "IP.plugins.components.deploy_panel",
+        "IP.carl_core",
+        "IP.woven_maps",
+        "IP.contracts.code_city_node_event",
+        "IP.contracts.connection_action_event",
+        "IP.contracts.marimo_bridge",
+        "IP.connection_verifier",
+        "IP.features.maestro"
+      ],
+      "integration_patterns": [
+        "Code City 3D visualization via iframe",
+        "JavaScript bridge for iframe->Python communication (postMessage)",
+        "Contract validation for node click payloads",
+        "HealthWatcher for live file monitoring",
+        "CombatTracker for deployment tracking",
+        "TerminalSpawner for terminal management",
+        "CarlContextualizer for context gathering",
+        "Font profile injection from IP.styles.font_profiles",
+        "CSS injection via load_orchestr8_css()"
+      ],
+      "complexity": "very_high",
+      "description": "Central command interface - THE VOID with Code City visualization, chat, panels"
+    },
+    {
+      "file": "07_settings.py",
+      "plugin_name": "Settings",
+      "plugin_order": 7,
+      "function_signature": "def render(STATE_MANAGERS: dict) -> Any",
+      "state_management": {
+        "pattern": "mo.state for tab navigation and modification tracking",
+        "mo_state_usage": [
+          {"name": "get_active_tab, set_active_tab", "initial": "\"agents\""},
+          {"name": "get_modified, set_modified", "initial": "False"}
+        ],
+        "accessed_managers": ["root"]
+      },
+      "event_handlers": [
+        {"name": "update_setting", "type": "function", "purpose": "Update setting via dotted path"},
+        {"name": "save_settings", "type": "function", "purpose": "Save settings to TOML file"},
+        {"name": "render_agents_tab", "type": "function", "purpose": "Render agents configuration UI"},
+        {"name": "render_tools_tab", "type": "function", "purpose": "Render tools configuration UI"},
+        {"name": "render_ui_tab", "type": "function", "purpose": "Render UI configuration UI"},
+        {"name": "render_content", "type": "function", "purpose": "Render content based on active tab"},
+        {"name": "tab_button", "type": "function", "purpose": "Create tab button"},
+        {"name": "get_available_models", "type": "function", "purpose": "Get available models from settings"},
+        {"name": "resolve_model_option", "type": "function", "purpose": "Normalize model value to valid option"}
+      ],
+      "ui_components": [
+        "mo.ui.checkbox",
+        "mo.ui.text",
+        "mo.ui.dropdown",
+        "mo.ui.button",
+        "mo.md",
+        "mo.vstack",
+        "mo.hstack",
+        "mo.Html (inline CSS)"
+      ],
+      "dependencies": [
+        "marimo as mo",
+        "typing",
+        "toml",
+        "os",
+        "pathlib.Path",
+        "IP.styles.font_profiles"
+      ],
+      "integration_patterns": [
+        "SettingsManager class for TOML read/write",
+        "Font profile resolution from IP.styles.font_profiles",
+        "pyproject_orchestr8_settings.toml integration"
+      ],
+      "complexity": "medium",
+      "description": "Settings panel for configuring agents, tools, and UI preferences"
+    },
+    {
+      "file": "08_director.py",
+      "plugin_name": "Director",
+      "plugin_order": 8,
+      "function_signature": "def render(STATE_MANAGERS: dict) -> Any",
+      "state_management": {
+        "pattern": "mo.state for monitoring controls",
+        "mo_state_usage": [
+          {"name": "get_monitoring, set_monitoring", "initial": "False"},
+          {"name": "get_show_alerts, set_show_alerts", "initial": "False"}
+        ],
+        "accessed_managers": ["root"]
+      },
+      "event_handlers": [
+        {"name": "start_director", "type": "function", "purpose": "Start Director monitoring thread"},
+        {"name": "stop_director", "type": "function", "purpose": "Stop Director monitoring"},
+        {"name": "render_general_card", "type": "function", "purpose": "Render card for single general"},
+        {"name": "render_alerts", "type": "function", "purpose": "Render recent alerts list"},
+        {"name": "render_content", "type": "function", "purpose": "Render main content based on state"}
+      ],
+      "ui_components": [
+        "mo.ui.button",
+        "mo.md",
+        "mo.vstack",
+        "mo.hstack",
+        "mo.Html (inline CSS)"
+      ],
+      "dependencies": [
+        "marimo as mo",
+        "typing",
+        "threading",
+        "time",
+        "json",
+        "os",
+        "sys",
+        "pathlib.Path",
+        "datetime",
+        "IP.ticket_manager"
+      ],
+      "integration_patterns": [
+        "DirectorIntegration class for 888/director.adapter integration",
+        "Dynamic 888 path discovery",
+        "Background monitoring thread",
+        "Ticket escalation to Doctor",
+        "Compatibility shims for old/new adapter API"
+      ],
+      "complexity": "high",
+      "description": "Director agent integration for monitoring deployed LLMs"
+    }
+  ],
+  "marimo_best_practices": {
+    "state_management": {
+      "recommendation": "Avoid mo.state when possible - prefer UI element built-in value property",
+      "when_to_use_state": [
+        "Maintain historical state that cannot be computed from UI element value",
+        "Synchronize two different UI elements",
+        "Introduce cycles across cells (rare)"
+      ],
+      "pitfalls": [
+        "mo.state can introduce hard-to-find bugs",
+        "Do NOT store UIElement in state - causes unpredictable behavior",
+        "Never mutate state directly - use setter functions only",
+        "Default behavior: setter cell doesn't re-run (use allow_self_loops=True if needed)"
+      ],
+      "orchestr8_usage": "06_maestro uses extensive mo.state for complex UI state machine - consider refactoring"
+    },
+    "reactive_execution": {
+      "recommendation": "Prefer reactive execution over on_change handlers",
+      "patterns": [
+        "UI elements automatically trigger dependent cells when value changes",
+        "Button clicks can be handled by reading their value in another cell",
+        "on_change handlers are for side-effects, not primary reactivity"
+      ],
+      "orchestr8_usage": "Most plugins use on_change callbacks - could leverage reactive execution more"
+    },
+    "cell_design": {
+      "best_practices": [
+        "Minimize global variables - encapsulate in functions or prefix with underscore",
+        "Use descriptive variable names",
+        "Use functions to avoid namespace pollution",
+        "Use mo.stop to control expensive cell execution",
+        "Write idempotent cells - same inputs produce same outputs",
+        "Minimize mutations - declare and mutate in same cell or create new objects"
+      ],
+      "common_errors": [
+        "Multiple definitions of same variable across cells",
+        "Import star usage (*)",
+        "Cycle dependencies between cells",
+        "Hidden state from out-of-order cell execution"
+      ]
+    },
+    "ui_components": {
+      "button_callbacks": {
+        "recommendation": "Use on_click instead of on_change for buttons",
+        "rationale": "on_change on buttons can fail to trigger expected actions in some marimo versions",
+        "orchestr8_fixes_applied": "06_maestro.py changed buttons from on_change to on_click"
+      },
+      "layout_components": [
+        "mo.vstack - vertical stack",
+        "mo.hstack - horizontal stack",
+        "mo.accordion - collapsible sections",
+        "mo.tabs - tabbed interface",
+        "mo.sidebar - sidebar layout"
+      ]
+    },
+    "plugin_architecture": {
+      "orchestr8_pattern": {
+        "required_exports": [
+          "PLUGIN_NAME: str - Display name for tab",
+          "PLUGIN_ORDER: int - Sort order (lower = first)",
+          "render(STATE_MANAGERS) -> Returns mo.UIElement"
+        ],
+        "state_managers_dict": {
+          "structure": "Dictionary with getter/setter tuples",
+          "standard_keys": ["root", "files", "selected", "logs", "health"],
+          "access_pattern": "get_xxx, set_xxx = STATE_MANAGERS['key']"
+        }
+      }
+    },
+    "performance": {
+      "payload_guards": {
+        "description": "Large outputs can exceed marimo limits",
+        "orchestr8_solution": "06_maestro.py implements payload size checking for Code City",
+        "environment_variables": [
+          "ORCHESTR8_CODE_CITY_MAX_BYTES (default: 9_000_000)",
+          "ORCHESTR8_CODE_CITY_STREAM_BPS (default: 5_000_000)"
+        ]
+      }
+    },
+    "javascript_bridges": {
+      "pattern": "Use hidden mo.ui.text elements as bridge channels",
+      "implementation": [
+        "Python: Create mo.ui.text with on_change handler",
+        "JavaScript: Write JSON payload to input element via DOM",
+        "Python: on_change parses JSON and triggers handler"
+      ],
+      "orchestr8_example": "06_maestro.py uses node_click_bridge, connection_action_bridge, camera_nav_bridge"
+    },
+    "css_injection": {
+      "recommendation": "Inject CSS via mo.Html with <style> tags",
+      "orchestr8_pattern": "load_orchestr8_css() from IP.features.maestro",
+      "note": "Font profiles injected before main CSS in 06_maestro.py"
+    }
+  },
+  "common_pitfalls": {
+    "hierarchy_imports": [
+      "IP package must be in sys.path for plugins to import it",
+      "06_maestro.py adds project root to sys.path at module level",
+      "Use Path resolution: _PROJECT_ROOT = _THIS_FILE.parent.parent.parent"
+    ],
+    "duplicate_variables": [
+      "Marimo cell namespace is global - duplicate names break runtime",
+      "Common issue: multiple cells defining 'ip_root' or similar",
+      "Solution: Use unique names or prefix with underscore"
+    ],
+    "websocket_errors": [
+      "Often secondary to compile/runtime failures",
+      "Check for duplicate marimo instances on different ports",
+      "Verify no notebook compile violations first"
+    ],
+    "callback_semantics": [
+      "on_change vs on_click behavior differs across marimo versions",
+      "Current recommendation: use on_click for interactive buttons",
+      "06_maestro.py demonstrates correct pattern"
+    ]
+  }
+}

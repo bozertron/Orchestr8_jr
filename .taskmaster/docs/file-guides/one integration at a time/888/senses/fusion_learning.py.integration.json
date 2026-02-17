@@ -1,0 +1,50 @@
+{
+  "source": "one integration at a time/888/senses/fusion_learning.py",
+  "total_lines": 1062,
+  "sha256": "219a566a05a693bd7d2beace5595b6c8d9eaeeba40679e9cc73e7576cb33bc77",
+  "chunk_count": 9,
+  "observation_ids": [
+    305,
+    306,
+    307,
+    308,
+    309,
+    310,
+    311,
+    312,
+    313
+  ],
+  "risks": [
+    "Large surface area: high chance of hidden coupling and missed assumptions."
+  ],
+  "anchors": [
+    {
+      "line": 90,
+      "text": "'current_panel': 'orchestr8',"
+    },
+    {
+      "line": 103,
+      "text": "current_panel = context.get('current_panel', 'orchestr8')"
+    },
+    {
+      "line": 939,
+      "text": "current_panel = context.get('current_panel', 'orchestr8')"
+    },
+    {
+      "line": 942,
+      "text": "if current_panel == 'orchestr8':"
+    },
+    {
+      "line": 978,
+      "text": "current_panel = context.get('current_panel', 'orchestr8')"
+    },
+    {
+      "line": 982,
+      "text": "'orchestr8': ['library_navigation', 'conversation_start', 'ai_assistance'],"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

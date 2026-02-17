@@ -1,0 +1,154 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 17,
+        "title": "Set up project workspace and documentation structure",
+        "description": "Create standardized folder structure and templates for transfer packets, master settlement PRD, traceability tables, and canonical reports following current best practices.",
+        "details": "Use Markdown files with standardized templates inspired by Atlassian and monday.com PRD structures (2024 standards)[4][3]. Create directories: `/transfer-packets/`, `/master-prd/`, `/traceability/`, `/acceptance-matrices/`, `/reports/`. Implement template with sections: purpose, objectives, functional/non-functional reqs, test hooks, acceptance criteria using YAML frontmatter for metadata. Use VS Code with Markdownlint (v0.47.0) and Prettier (v3.3.3) for consistency. Git init repo with .gitignore for docs only.",
+        "testStrategy": "Validate folder structure exists at required paths, templates render correctly in Markdown previewers, no linting errors, git commit passes.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Synthesize source topics and manage contradictions",
+        "description": "Analyze strategic concept corpus, synthesize key topics, identify and resolve contradictions to create clean input for transfer artifacts.",
+        "details": "Use Notion AI (2026) or Obsidian with Dataview plugin (v0.5.66) for topic synthesis. Create contradiction log table: columns [Topic, Source, Contradiction, Resolution, Provenance]. Apply PMI PRD methodology: map to business needs first[2]. Output JSON/YAML summary: `{topics: [{id, summary, sources[], contradictions:[]}]}`. Ensure provenance as `source: {url, date, excerpt}`.",
+        "testStrategy": "Review synthesis covers all sources, contradictions logged and resolved, JSON validates against schema, no unresolved conflicts.",
+        "priority": "high",
+        "dependencies": [
+          17
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Refine master settlement PRD with module-level requirements",
+        "description": "Develop implementation-oriented master PRD with precise module hooks based on synthesized topics.",
+        "details": "Follow Jama Software structure: Purpose, Features (module hooks), User Tasks, Acceptance Criteria[1]. Define modules explicitly (infer from context: settlement-core, integration-lanes, packet-governance). Use MoSCoW prioritization (2024 best practice)[5]. Template: `## Module: [name]\n### Hooks: [API/endpoint specs]\n### Req: [detailed, traceable]` with explicit traceability links `-> topic-[id]`. Output Markdown at `/master-prd/settlement-mprd.md`.",
+        "testStrategy": "PRD contains all modules with hooks, traceable to topics, passes checklist: purpose/features/reqs/acceptance present.",
+        "priority": "high",
+        "dependencies": [
+          18
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Define test hooks for each critical module area",
+        "description": "Create specific, actionable test hooks mapped to each module for integration lanes.",
+        "details": "For each module from task 19, define hooks as: `Test Hook [module]-[id]: {endpoint, method, expected_response, pass_criteria}`. Use table format: | Module | Hook ID | Type | Spec |. Types: unit/integration/e2e. Follow FRD best practices for designer-ready specs[2]. Store as `/test-hooks/module-hooks.yaml`. Example: `integration_lane_ping: {path: '/health/settlement', status: 200}`.",
+        "testStrategy": "Every module has ≥1 hook, specs executable (curl-able), coverage 100% of critical areas.",
+        "priority": "medium",
+        "dependencies": [
+          19
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 21,
+        "title": "Build acceptance matrix mapping modules to pass/fail evidence",
+        "description": "Develop comprehensive matrix linking modules, test hooks, and pass/fail criteria.",
+        "details": "Create Markdown table or CSV: | Module | Test Hook | Pass Criteria | Fail Evidence | Traceability |. Use Productboard clarity standards[6]. Pass criteria: quantitative (e.g., response<500ms) + qualitative. Export to `/acceptance-matrices/settlement-matrix.md/csv`. Ensure auditable: each cell links to PRD section and topic ID.",
+        "testStrategy": "Matrix complete (no empty cells), all links resolve, covers 100% modules/hooks, stakeholders confirm readability.",
+        "priority": "medium",
+        "dependencies": [
+          19,
+          20
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 22,
+        "title": "Implement explicit traceability tables from source to requirements",
+        "description": "Create auditable traceability artifacts mapping source topics → modules → test hooks → acceptance.",
+        "details": "Build bi-directional traceability matrix using Excel/Google Sheets or Mermaid diagrams (v10.9.1): `graph TD; Topic1 --> ModuleA --> Hook1 --> Criteria1`. JSON format: `{trace: [{source_id, module_id, hook_id, criteria_id}]}` at `/traceability/full-trace.json`. Comply with PMI standards[2], validate no orphans.",
+        "testStrategy": "Traceability 100% (every req traces to source and test), graph renders correctly, JSON schema valid.",
+        "priority": "medium",
+        "dependencies": [
+          18,
+          19,
+          20,
+          21
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 23,
+        "title": "Package transfer artifacts into module-level transfer packets",
+        "description": "Assemble consumable transfer packets bundling PRD sections, hooks, matrices for each module.",
+        "details": "For each module, create ZIP/tar packet: `[module]/prd.md, hooks.yaml, matrix.csv, trace.json`. Naming: `transfer-packet-[module]-v1.0.tar.gz`. Follow work packet assembly from PMI[2]. Ensure no interpretation needed: self-contained with README.md linking all components.",
+        "testStrategy": "Packets exist at `/transfer-packets/`, extract cleanly, contain all 4 artifacts, README accurate.",
+        "priority": "medium",
+        "dependencies": [
+          19,
+          20,
+          21,
+          22
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "Generate canonical reports for each transfer packet",
+        "description": "Emit standardized reports summarizing each packet with evidence requirements.",
+        "details": "Use Pandoc (v3.5) or Python ReportLab (v4.2.2) to generate PDF/HTML: sections - Summary, Traceability, Test Hooks, Acceptance Matrix. Include paths: `Packet: /transfer-packets/[module]`. Metrics: coverage %, risks. Output to `/reports/packet-[module]-report.pdf`. Template from modern PRD guide[7].",
+        "testStrategy": "Reports generate without errors, contain all sections, paths resolve, PDF opens correctly.",
+        "priority": "medium",
+        "dependencies": [
+          23
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "Implement shared memory completion ping mechanism",
+        "description": "Set up simple signaling mechanism to indicate completion for canonical lanes.",
+        "details": "Use file-based ping: `/shared-memory/settlement-lab-complete.json` with `{status: 'complete', timestamp, packet_count, sha256_hash}`. Or Redis (v7.4) pub/sub if infra available: `PUBLISH settlement:complete {...}`. Atomic write with fsync. Best practice: simple file for doc-only scope.",
+        "testStrategy": "Ping file created post-task24, content valid JSON, hash matches packets, readable by other processes.",
+        "priority": "low",
+        "dependencies": [
+          24
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "Conduct final validation and rolling update setup",
+        "description": "Validate all artifacts against acceptance criteria and establish rolling packet update process.",
+        "details": "Checklist script (bash/Python): verify paths, traceability, coverage. Version packets with semver, git tag releases. Mitigation for stale specs: CI/CD webhook trigger on main merge. Doc update process in `/process/rolling-updates.md`.",
+        "testStrategy": "All acceptance criteria pass, checklist 100%, lanes confirm direct usability, no stale refs.",
+        "priority": "low",
+        "dependencies": [
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2026-02-16T06:09:53.542Z",
+      "updated": "2026-02-16T06:14:01.258Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

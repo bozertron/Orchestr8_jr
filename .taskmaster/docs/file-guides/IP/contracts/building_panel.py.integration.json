@@ -1,0 +1,112 @@
+{
+  "source": "IP/contracts/building_panel.py",
+  "total_lines": 134,
+  "sha256": "6a4bd9ea1d9f9c00676df3ee075f4a9e8252859c803ac6dfb1b8dae64bc4ea40",
+  "role": "Building inspection panel data contract",
+  "risks": [
+    "Contract-to-UI wiring gap: schema exists but no runtime generation path yet",
+    "Lock state integration requires Louis system wiring",
+    "Room parsing complexity requires AST scanning implementation"
+  ],
+  "anchors": [
+    {
+      "line": 10,
+      "text": "BuildingStatus type definition"
+    },
+    {
+      "line": 14,
+      "text": "class BuildingRoom — function/class room representation"
+    },
+    {
+      "line": 18,
+      "text": "line_start, line_end — room boundaries"
+    },
+    {
+      "line": 20,
+      "text": "room_type: function/class/method"
+    },
+    {
+      "line": 29,
+      "text": "class BuildingPanel — main contract"
+    },
+    {
+      "line": 36,
+      "text": "path: str — file identifier"
+    },
+    {
+      "line": 37,
+      "text": "status: BuildingStatus"
+    },
+    {
+      "line": 39,
+      "text": "export_count, building_height, footprint"
+    },
+    {
+      "line": 42,
+      "text": "imports: List[str]"
+    },
+    {
+      "line": 43,
+      "text": "exports: List[str]"
+    },
+    {
+      "line": 44,
+      "text": "rooms: List[BuildingRoom]"
+    },
+    {
+      "line": 45,
+      "text": "connections_in, connections_out"
+    },
+    {
+      "line": 47,
+      "text": "lock_state, locked fields"
+    },
+    {
+      "line": 60,
+      "text": "validate_building_panel(payload) validation function"
+    },
+    {
+      "line": 101,
+      "text": "EXAMPLE_BUILDING_PANEL canonical example"
+    }
+  ],
+  "integration_gaps": [
+    {
+      "gap": "No runtime path to generate BuildingPanel from CodeNode click",
+      "status": "pending",
+      "notes": "Click handler needs to construct and validate panel payload"
+    },
+    {
+      "gap": "Room extraction (AST parsing) not implemented",
+      "status": "pending",
+      "notes": "Requires scanning Python/JS/TS files for functions and classes"
+    },
+    {
+      "gap": "Louis lock state integration",
+      "status": "pending",
+      "notes": "lock_state and locked fields need Louis system wiring"
+    },
+    {
+      "gap": "ConnectionVerifier integration for directionality",
+      "status": "pending",
+      "notes": "connections_in/out need ConnectionVerifier source"
+    }
+  ],
+  "resolved_gaps": [
+    {
+      "gap": "BuildingPanel schema definition",
+      "status": "complete",
+      "details": "All required fields defined with type safety"
+    },
+    {
+      "gap": "Validation function",
+      "status": "complete",
+      "details": "validate_building_panel() provides error handling"
+    },
+    {
+      "gap": "Geometry field alignment",
+      "status": "complete",
+      "details": "building_height/footprint match locked formulas"
+    }
+  ]
+}

@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orchestr8 AI Code City Preview</title>
+    <style>
+      :root {
+        --gold: #d4af37;
+        --teal: #1fbdea;
+        --purple: #9d4edd;
+        --bg-0: #05070c;
+        --bg-1: #0c1320;
+        --bg-2: #121b2b;
+        --ink: #e9edf5;
+        --muted: #9cb2c9;
+        --ok: #39d98a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: "JetBrains Mono", "IBM Plex Sans", "Segoe UI", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 15% 20%, #1a2740 0%, transparent 38%),
+          radial-gradient(circle at 85% 80%, #211538 0%, transparent 42%),
+          linear-gradient(145deg, var(--bg-0), var(--bg-1) 42%, var(--bg-2));
+      }
+
+      #stage3d,
+      #particles-layer {
+        position: fixed;
+        inset: 0;
+      }
+
+      #stage3d {
+        z-index: 1;
+        opacity: 1;
+        transition: opacity 1.2s ease;
+      }
+
+      #stage3d.fade-out {
+        opacity: 0;
+      }
+
+      #particles-layer {
+        z-index: 2;
+        opacity: 0;
+        transition: opacity 1.1s ease;
+        pointer-events: none;
+      }
+
+      #phase-badge {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 4;
+        border: 1px solid rgba(31, 189, 234, 0.45);
+        background: rgba(5, 9, 17, 0.72);
+        color: var(--teal);
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        backdrop-filter: blur(6px);
+      }
+
+      #ui-layer {
+        position: fixed;
+        inset: 0;
+        z-index: 3;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 1.1s ease 0.25s;
+        padding: 18px;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 14px;
+      }
+
+      #ui-layer.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .title {
+        font-size: clamp(16px, 2.2vw, 28px);
+        letter-spacing: 0.04em;
+        font-weight: 700;
+      }
+
+      .title .accent {
+        color: var(--gold);
+      }
+
+      .chip-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .chip {
+        border-radius: 999px;
+        border: 1px solid rgba(212, 175, 55, 0.42);
+        padding: 6px 10px;
+        font-size: 11px;
+        background: rgba(10, 14, 23, 0.66);
+        color: var(--gold);
+      }
+
+      .dashboard {
+        display: grid;
+        grid-template-columns: 1.7fr 1fr;
+        gap: 14px;
+        min-height: 0;
+      }
+
+      .panel {
+        border: 1px solid rgba(156, 178, 201, 0.22);
+        border-radius: 14px;
+        background: rgba(7, 11, 18, 0.66);
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.32);
+        backdrop-filter: blur(8px);
+        padding: 14px;
+      }
+
+      .panel h2 {
+        margin: 0 0 10px;
+        font-size: 13px;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--teal);
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .metric {
+        border-radius: 10px;
+        border: 1px solid rgba(31, 189, 234, 0.25);
+        background: rgba(13, 22, 36, 0.72);
+        padding: 10px;
+      }
+
+      .metric .label {
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .metric .value {
+        margin-top: 5px;
+        font-size: clamp(18px, 2.2vw, 26px);
+        font-weight: 700;
+      }
+
+      .metric .value.gold {
+        color: var(--gold);
+      }
+
+      .metric .value.teal {
+        color: var(--teal);
+      }
+
+      .metric .value.purple {
+        color: var(--purple);
+      }
+
+      .feed {
+        height: calc(100% - 112px);
+        overflow: auto;
+        border-radius: 10px;
+        border: 1px solid rgba(156, 178, 201, 0.16);
+        background: rgba(8, 13, 21, 0.65);
+        padding: 10px;
+      }
+
+      .event {
+        border-left: 3px solid var(--teal);
+        margin: 8px 0;
+        padding: 8px 10px;
+        border-radius: 6px;
+        background: rgba(31, 189, 234, 0.08);
+      }
+
+      .event .time {
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .event .text {
+        margin-top: 4px;
+        font-size: 13px;
+      }
+
+      .list {
+        display: grid;
+        gap: 8px;
+        align-content: start;
+      }
+
+      .agent {
+        border: 1px solid rgba(157, 78, 221, 0.24);
+        background: rgba(157, 78, 221, 0.11);
+        border-radius: 10px;
+        padding: 9px 10px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+      }
+
+      .agent .state {
+        color: var(--ok);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .note {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .btn {
+        border: 1px solid rgba(212, 175, 55, 0.45);
+        background: rgba(12, 19, 30, 0.82);
+        color: var(--gold);
+        border-radius: 10px;
+        padding: 8px 11px;
+        font: inherit;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      .btn:hover {
+        background: rgba(22, 34, 52, 0.9);
+      }
+
+      @media (max-width: 980px) {
+        .dashboard {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage3d"></div>
+    <div id="particles-layer"></div>
+    <div id="phase-badge">Phase: Emergence 3D</div>
+
+    <section id="ui-layer" aria-hidden="true">
+      <header class="topbar">
+        <div class="title">Orchestr8 <span class="accent">Code City</span> Surface</div>
+        <div class="chip-row">
+          <span class="chip">mode: flagship</span>
+          <span class="chip">renderer: three.js + particles.js</span>
+          <span class="chip">state: observe</span>
+        </div>
+      </header>
+
+      <main class="dashboard">
+        <article class="panel">
+          <h2>City Telemetry</h2>
+          <div class="metrics">
+            <div class="metric">
+              <div class="label">Buildings</div>
+              <div class="value gold" id="buildingsCount">58</div>
+            </div>
+            <div class="metric">
+              <div class="label">Active Agents</div>
+              <div class="value teal" id="agentsCount">12</div>
+            </div>
+            <div class="metric">
+              <div class="label">Edge Health</div>
+              <div class="value purple" id="healthScore">94%</div>
+            </div>
+          </div>
+          <div class="feed" id="eventFeed"></div>
+        </article>
+
+        <aside class="panel">
+          <h2>Settlement Presence</h2>
+          <div class="list">
+            <div class="agent"><span>Surveyor</span><span class="state">online</span></div>
+            <div class="agent"><span>Cartographer</span><span class="state">online</span></div>
+            <div class="agent"><span>Sentinel</span><span class="state">watching</span></div>
+            <div class="agent"><span>Integration Synthesizer</span><span class="state">standby</span></div>
+            <div class="agent"><span>Vision Walker</span><span class="state">locked</span></div>
+          </div>
+        </aside>
+      </main>
+
+      <footer class="footer">
+        <div class="note">Prototype generated from your notebook prompt and rebuilt as a standalone artifact.</div>
+        <div class="actions">
+          <button class="btn" id="replayBtn">Replay Sequence</button>
+          <button class="btn" id="pulseBtn">Pulse Metrics</button>
+        </div>
+      </footer>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as THREE from "three";
+      import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+
+      const stage = document.getElementById("stage3d");
+      const uiLayer = document.getElementById("ui-layer");
+      const particlesLayer = document.getElementById("particles-layer");
+      const badge = document.getElementById("phase-badge");
+      const eventFeed = document.getElementById("eventFeed");
+
+      const scene = new THREE.Scene();
+      scene.fog = new THREE.Fog(0x05070c, 25, 110);
+
+      const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 500);
+      camera.position.set(18, 20, 34);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x000000, 0);
+      stage.appendChild(renderer.domElement);
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.04;
+      controls.maxPolarAngle = Math.PI * 0.47;
+      controls.minDistance = 10;
+      controls.maxDistance = 80;
+
+      scene.add(new THREE.AmbientLight(0x7a8db8, 0.4));
+      const sun = new THREE.DirectionalLight(0xd4af37, 1.05);
+      sun.position.set(14, 32, 8);
+      scene.add(sun);
+
+      const ground = new THREE.Mesh(
+        new THREE.PlaneGeometry(120, 120),
+        new THREE.MeshPhongMaterial({ color: 0x0a1120, shininess: 14, specular: 0x132641 })
+      );
+      ground.rotation.x = -Math.PI / 2;
+      scene.add(ground);
+
+      const grid = new THREE.GridHelper(120, 50, 0x1fbdea, 0x14243d);
+      grid.material.opacity = 0.24;
+      grid.material.transparent = true;
+      scene.add(grid);
+
+      const cityGroup = new THREE.Group();
+      scene.add(cityGroup);
+
+      const buildingData = [];
+      const spacing = 3.3;
+      const cityWidth = 9;
+
+      for (let i = 0; i < 58; i += 1) {
+        const row = Math.floor(i / cityWidth);
+        const col = i % cityWidth;
+        const x = (col - cityWidth / 2) * spacing + (Math.random() - 0.5) * 0.7;
+        const z = (row - 3) * spacing + (Math.random() - 0.5) * 0.7;
+        const h = 1.6 + Math.random() * 9.2;
+        const colorSeed = i % 3;
+        const color =
+          colorSeed === 0 ? 0xd4af37 : colorSeed === 1 ? 0x1fbdea : 0x9d4edd;
+
+        const mesh = new THREE.Mesh(
+          new THREE.BoxGeometry(1.35, h, 1.35),
+          new THREE.MeshStandardMaterial({
+            color,
+            metalness: 0.32,
+            roughness: 0.42,
+            emissive: new THREE.Color(color).multiplyScalar(0.09),
+          })
+        );
+        mesh.position.set(x, h * 0.5, z);
+        mesh.scale.y = 0.01;
+        mesh.userData = {
+          targetHeight: h,
+          delay: i * 65,
+          name: `fiefdom_${String(i + 1).padStart(2, "0")}`,
+          status: colorSeed === 1 ? "broken" : colorSeed === 2 ? "combat" : "working",
+        };
+        cityGroup.add(mesh);
+        buildingData.push(mesh.userData);
+      }
+
+      const particleCount = 5200;
+      const pGeom = new THREE.BufferGeometry();
+      const pPositions = new Float32Array(particleCount * 3);
+      for (let i = 0; i < particleCount; i += 1) {
+        const radius = 6 + Math.random() * 44;
+        const theta = Math.random() * Math.PI * 2;
+        const y = (Math.random() - 0.5) * 18;
+        pPositions[i * 3] = Math.cos(theta) * radius;
+        pPositions[i * 3 + 1] = y;
+        pPositions[i * 3 + 2] = Math.sin(theta) * radius;
+      }
+      pGeom.setAttribute("position", new THREE.BufferAttribute(pPositions, 3));
+      const pMat = new THREE.PointsMaterial({
+        color: 0x1fbdea,
+        size: 0.09,
+        transparent: true,
+        opacity: 0.86,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      });
+      const points = new THREE.Points(pGeom, pMat);
+      scene.add(points);
+
+      const state = {
+        start: performance.now(),
+        morphAtMs: 9300,
+        morphed: false,
+      };
+
+      function addEvent(text, accent = "#1fbdea") {
+        const row = document.createElement("div");
+        row.className = "event";
+        row.style.borderLeftColor = accent;
+        row.innerHTML = `<div class="time">${new Date().toLocaleTimeString()}</div><div class="text">${text}</div>`;
+        eventFeed.prepend(row);
+        while (eventFeed.children.length > 9) {
+          eventFeed.removeChild(eventFeed.lastChild);
+        }
+      }
+
+      function initFeed() {
+        addEvent("Code City ingest initialized.", "#d4af37");
+        addEvent("Neighborhood geometry solved for 58 nodes.");
+        addEvent("Bridge online. Awaiting flagship instructions.", "#9d4edd");
+      }
+
+      function initParticlesBg() {
+        if (!window.particlesJS) return;
+        window.particlesJS("particles-layer", {
+          particles: {
+            number: { value: 96, density: { enable: true, value_area: 900 } },
+            color: { value: ["#1fbdea", "#d4af37", "#9d4edd"] },
+            shape: { type: "circle" },
+            opacity: { value: 0.42, random: true },
+            size: { value: 3.2, random: true },
+            line_linked: {
+              enable: true,
+              distance: 132,
+              color: "#1fbdea",
+              opacity: 0.24,
+              width: 1,
+            },
+            move: {
+              enable: true,
+              speed: 1.8,
+              direction: "none",
+              random: true,
+              out_mode: "out",
+            },
+          },
+          interactivity: {
+            detect_on: "canvas",
+            events: {
+              onhover: { enable: true, mode: "grab" },
+              onclick: { enable: true, mode: "push" },
+            },
+            modes: {
+              grab: { distance: 140, line_linked: { opacity: 0.42 } },
+              push: { particles_nb: 3 },
+            },
+          },
+          retina_detect: true,
+        });
+      }
+
+      function morphTo2D() {
+        if (state.morphed) return;
+        state.morphed = true;
+        stage.classList.add("fade-out");
+        particlesLayer.style.opacity = "1";
+        uiLayer.classList.add("active");
+        uiLayer.setAttribute("aria-hidden", "false");
+        badge.textContent = "Phase: Strategic Surface 2D";
+        badge.style.color = "#d4af37";
+        badge.style.borderColor = "rgba(212, 175, 55, 0.45)";
+        addEvent("3D emergence complete. Switching to command surface.", "#d4af37");
+        initParticlesBg();
+      }
+
+      function animate() {
+        const elapsed = performance.now() - state.start;
+        const wave = elapsed * 0.001;
+
+        cityGroup.children.forEach((mesh) => {
+          const delay = mesh.userData.delay;
+          const progress = THREE.MathUtils.clamp((elapsed - delay) / 1300, 0, 1);
+          mesh.scale.y = 0.02 + progress * 0.98;
+          mesh.position.y = (mesh.userData.targetHeight * mesh.scale.y) / 2;
+          mesh.rotation.y = Math.sin(wave * 0.7 + delay * 0.0008) * 0.02;
+        });
+
+        points.rotation.y += 0.0009;
+        points.rotation.x = Math.sin(wave * 0.23) * 0.08;
+        camera.position.x = 26 * Math.cos(wave * 0.12);
+        camera.position.z = 26 * Math.sin(wave * 0.12);
+        camera.lookAt(0, 4, 0);
+
+        controls.update();
+        renderer.render(scene, camera);
+
+        if (elapsed > state.morphAtMs) {
+          morphTo2D();
+        }
+        requestAnimationFrame(animate);
+      }
+
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      const buildingsCount = document.getElementById("buildingsCount");
+      const agentsCount = document.getElementById("agentsCount");
+      const healthScore = document.getElementById("healthScore");
+
+      setInterval(() => {
+        const b = 58 + Math.floor(Math.random() * 3);
+        const a = 11 + Math.floor(Math.random() * 4);
+        const h = 92 + Math.floor(Math.random() * 7);
+        buildingsCount.textContent = String(b);
+        agentsCount.textContent = String(a);
+        healthScore.textContent = `${h}%`;
+      }, 2400);
+
+      document.getElementById("replayBtn").addEventListener("click", () => {
+        window.location.reload();
+      });
+
+      document.getElementById("pulseBtn").addEventListener("click", () => {
+        addEvent("Manual pulse issued to telemetry bus.", "#9d4edd");
+      });
+
+      initFeed();
+      animate();
+    </script>
+  </body>
+</html>

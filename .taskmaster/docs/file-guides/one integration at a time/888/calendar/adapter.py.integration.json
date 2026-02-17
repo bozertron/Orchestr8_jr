@@ -1,0 +1,21 @@
+{
+  "source": "one integration at a time/888/calendar/adapter.py",
+  "total_lines": 489,
+  "sha256": "208777127e2939aeb75e2e33296748a7b138adb97ab992bb7d049dc6a1862c32",
+  "chunk_count": 5,
+  "observation_ids": [
+    187,
+    188,
+    189,
+    190,
+    191
+  ],
+  "risks": [
+    "Medium-large surface area: requires strict scope control during integration."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

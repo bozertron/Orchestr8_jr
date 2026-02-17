@@ -1,0 +1,49 @@
+{
+  "source": "IP/features/code_city/graph_builder.py",
+  "total_lines": 371,
+  "sha256": "21440fc5c427d7c56e5a19f09121df9673f71d9428f387d78f16dbeae7d48dbb",
+  "role": "Code City graph assembly layer",
+  "risks": [
+    "Combines multiple signal sources with different payload conventions",
+    "Status merge correctness directly impacts visual truth",
+    "Dynamic imports increase silent fallback risk"
+  ],
+  "anchors": [
+    {
+      "line": 12,
+      "text": "compute_neighborhoods(...)"
+    },
+    {
+      "line": 169,
+      "text": "build_from_connection_graph(...)"
+    },
+    {
+      "line": 332,
+      "text": "build_from_health_results(...)"
+    },
+    {
+      "line": 334,
+      "text": "_status_of(result)"
+    },
+    {
+      "line": 346,
+      "text": "_to_error_dict(error)"
+    }
+  ],
+  "integration_gaps": [
+    {
+      "gap": "Performance baseline for large health merge payloads",
+      "status": "pending"
+    }
+  ],
+  "resolved_gaps": [
+    {
+      "gap": "Health merge compatibility for object + dict payloads",
+      "status": "complete"
+    },
+    {
+      "gap": "Combat precedence test coverage in graph merge path",
+      "status": "complete"
+    }
+  ]
+}

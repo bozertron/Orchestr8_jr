@@ -1,0 +1,320 @@
+{
+  "started_at_utc": "2026-02-13T09:45:51Z",
+  "finished_at_utc": "2026-02-13T09:45:52Z",
+  "worker_url": "http://127.0.0.1:37777",
+  "project": "orchestr8-code-city-corpus-guides",
+  "chunk_lines": 120,
+  "summary": {
+    "file_count": 16,
+    "total_lines": 576,
+    "total_chunks": 16,
+    "saved_chunks": 16,
+    "all_saved": true
+  },
+  "files": [
+    {
+      "source": ".taskmaster/docs/file-guides/.planning/VISION-ALIGNMENT.md.integration.md",
+      "total_lines": 42,
+      "sha256": "c195ce9d383be06c1a1a3724c4445e839c65c6457fc2050abbfc0c56b93b9057",
+      "chunk_size": 120,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/file-guides/.planning/VISION-ALIGNMENT.md.integration.md",
+          "start_line": 1,
+          "end_line": 42,
+          "observation_id": 118,
+          "title": "corpus::.taskmaster/docs/file-guides/.planning/VISION-ALIGNMENT.md.integration.md::L1-L42",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".taskmaster/docs/file-guides/.planning/phases/ARCHITECT-BARRADEAU.md.integration.md",
+      "total_lines": 24,
+      "sha256": "785acbfba4e59295016d377cb24bd0afd5d0ab9c301c1a7a9393b7f5acea05ed",
+      "chunk_size": 120,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/file-guides/.planning/phases/ARCHITECT-BARRADEAU.md.integration.md",
+          "start_line": 1,
+          "end_line": 24,
+          "observation_id": 119,
+          "title": "corpus::.taskmaster/docs/file-guides/.planning/phases/ARCHITECT-BARRADEAU.md.integration.md::L1-L24",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".taskmaster/docs/file-guides/.planning/phases/CONTEXT.md.integration.md",
+      "total_lines": 49,
+      "sha256": "366691f9a333b22d5f974f4326439ec8c9a3ff28164b485849891538ef3b2999",
+      "chunk_size": 120,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/file-guides/.planning/phases/CONTEXT.md.integration.md",
+          "start_line": 1,
+          "end_line": 49,
+          "observation_id": 120,
+          "title": "corpus::.taskmaster/docs/file-guides/.planning/phases/CONTEXT.md.integration.md::L1-L49",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".taskmaster/docs/file-guides/.planning/phases/WORKORDERS-BARRADEAU.json.integration.md",
+      "total_lines": 29,
+      "sha256": "f8a4219926732fd4f1875e8b06db8d8d7b2647003c9a1c945456c39d71bf4128",
+      "chunk_size": 120,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/file-guides/.planning/phases/WORKORDERS-BARRADEAU.json.integration.md",
+          "start_line": 1,
+          "end_line": 29,
+          "observation_id": 121,
+          "title": "corpus::.taskmaster/docs/file-guides/.planning/phases/WORKORDERS-BARRADEAU.json.integration.md::L1-L29",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".taskmaster/docs/file-guides/.taskmaster/docs/code_city_landscape_blind_integration_prd.txt.integration.md",
+      "total_lines": 48,
+      "sha256": "73fdce544ea3a1a29b648ac4ffda753cb2f05f921942aa4fed89f5cb9591db94",
+      "chunk_size": 120,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/file-guides/.taskmaster/docs/code_city_landscape_blind_integration_prd.txt.integration.md",
+          "start_line": 1,
+          "end_line": 48,
+          "observation_id": 122,
+          "title": "corpus::.taskmaster/docs/file-guides/.taskmaster/docs/code_city_landscape_blind_integration_prd.txt.integration.md::L1-L48",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".taskmaster/docs/file-guides/SOT/07-07-WOVEN-SYNTHESIS.md.integration.md",
+      "total_lines": 24,
+      "sha256": "e3c255d70102d1f3251227c708a80b88509ea00debfddfae34c4ec0920e397ce",
+      "chunk_size": 120,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/file-guides/SOT/07-07-WOVEN-SYNTHESIS.md.integration.md",
+          "start_line": 1,
+          "end_line": 24,
+          "observation_id": 123,
+          "title": "corpus::.taskmaster/docs/file-guides/SOT/07-07-WOVEN-SYNTHESIS.md.integration.md::L1-L24",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".taskmaster/docs/file-guides/SOT/BARRADEAU_INTEGRATION.md.integration.md",
+      "total_lines": 31,
+      "sha256": "756a07b95820bd65cc49a7143c2f31429e29f0c601a1ad76fa9a71c47212f504",
+      "chunk_size": 120,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/file-guides/SOT/BARRADEAU_INTEGRATION.md.integration.md",
+          "start_line": 1,
+          "end_line": 31,
+          "observation_id": 124,
+          "title": "corpus::.taskmaster/docs/file-guides/SOT/BARRADEAU_INTEGRATION.md.integration.md::L1-L31",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".taskmaster/docs/file-guides/SOT/CODE_CITY_LANDSCAPE.md.integration.md",
+      "total_lines": 35,
+      "sha256": "f740ea78ae3574f0053ad33aaec55cb2c0ead1e8eb82d6ab27d5e8a016ecfba1",
+      "chunk_size": 120,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/file-guides/SOT/CODE_CITY_LANDSCAPE.md.integration.md",
+          "start_line": 1,
+          "end_line": 35,
+          "observation_id": 125,
+          "title": "corpus::.taskmaster/docs/file-guides/SOT/CODE_CITY_LANDSCAPE.md.integration.md::L1-L35",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".taskmaster/docs/file-guides/SOT/UI_SPECIFICATION.md.integration.md",
+      "total_lines": 44,
+      "sha256": "2c716dc3a77da6d6b57e972efa12eb10f722d74d36a43c1bfb6b888f0a2971fd",
+      "chunk_size": 120,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/file-guides/SOT/UI_SPECIFICATION.md.integration.md",
+          "start_line": 1,
+          "end_line": 44,
+          "observation_id": 126,
+          "title": "corpus::.taskmaster/docs/file-guides/SOT/UI_SPECIFICATION.md.integration.md::L1-L44",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".taskmaster/docs/file-guides/SOT/WIRING_PLAN.md.integration.md",
+      "total_lines": 41,
+      "sha256": "3ec3cb15eb6b2f8adeb397ee265d7bd3326f5e1a17fe2729e2dd60544625b52f",
+      "chunk_size": 120,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/file-guides/SOT/WIRING_PLAN.md.integration.md",
+          "start_line": 1,
+          "end_line": 41,
+          "observation_id": 127,
+          "title": "corpus::.taskmaster/docs/file-guides/SOT/WIRING_PLAN.md.integration.md::L1-L41",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".taskmaster/docs/file-guides/one integration at a time/Big Pickle/REFERENCES.md.integration.md",
+      "total_lines": 23,
+      "sha256": "bc56c73bbbb050ba07cf5c33a25c6984106b8671a10a80338b8c236cb75fbd0c",
+      "chunk_size": 120,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/file-guides/one integration at a time/Big Pickle/REFERENCES.md.integration.md",
+          "start_line": 1,
+          "end_line": 23,
+          "observation_id": 128,
+          "title": "corpus::.taskmaster/docs/file-guides/one integration at a time/Big Pickle/REFERENCES.md.integration.md::L1-L23",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".taskmaster/docs/file-guides/one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md.integration.md",
+      "total_lines": 30,
+      "sha256": "21b7fff65300b3f336622d9d58b6a7f1932f4e5fec83507df70d4dcbee5ef4ef",
+      "chunk_size": 120,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/file-guides/one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md.integration.md",
+          "start_line": 1,
+          "end_line": 30,
+          "observation_id": 129,
+          "title": "corpus::.taskmaster/docs/file-guides/one integration at a time/Context King/# 👑 EMPEROR'S DECREE: The Orchestr8 Coo.md.integration.md::L1-L30",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".taskmaster/docs/file-guides/one integration at a time/PRD1.md.integration.md",
+      "total_lines": 24,
+      "sha256": "77c0d00a9b7c9c724b9ecf82fd426e7e2d9454ff25559ee8b7b8ac949260ad4f",
+      "chunk_size": 120,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/file-guides/one integration at a time/PRD1.md.integration.md",
+          "start_line": 1,
+          "end_line": 24,
+          "observation_id": 130,
+          "title": "corpus::.taskmaster/docs/file-guides/one integration at a time/PRD1.md.integration.md::L1-L24",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".taskmaster/docs/file-guides/one integration at a time/ROADMAP_ORCHESTR8_V4.md.integration.md",
+      "total_lines": 46,
+      "sha256": "58775efcb4df7223a08195e0e50ef4dca941c2f8c294fa65a1f64dea513d7ca7",
+      "chunk_size": 120,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/file-guides/one integration at a time/ROADMAP_ORCHESTR8_V4.md.integration.md",
+          "start_line": 1,
+          "end_line": 46,
+          "observation_id": 131,
+          "title": "corpus::.taskmaster/docs/file-guides/one integration at a time/ROADMAP_ORCHESTR8_V4.md.integration.md::L1-L46",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".taskmaster/docs/file-guides/one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md.integration.md",
+      "total_lines": 49,
+      "sha256": "450b167a60592bf215a91da5549be9c7c05041b7834e90eee2100fa6fd315561",
+      "chunk_size": 120,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/file-guides/one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md.integration.md",
+          "start_line": 1,
+          "end_line": 49,
+          "observation_id": 132,
+          "title": "corpus::.taskmaster/docs/file-guides/one integration at a time/docs/WOVEN_MAPS_EXECUTION_SPEC.md.integration.md::L1-L49",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "source": ".taskmaster/docs/file-guides/one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md.integration.md",
+      "total_lines": 37,
+      "sha256": "5eb889b0f646bcbeb5520c0fef10b46cb1179404352b0bed1bd9efcc2cd926f4",
+      "chunk_size": 120,
+      "chunk_count": 1,
+      "saved_count": 1,
+      "chunks": [
+        {
+          "source": ".taskmaster/docs/file-guides/one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md.integration.md",
+          "start_line": 1,
+          "end_line": 37,
+          "observation_id": 133,
+          "title": "corpus::.taskmaster/docs/file-guides/one integration at a time/from-contextualize-branch/SOT/VOID_SPEC_ROADMAP_v1.1.md.integration.md::L1-L37",
+          "ok": true,
+          "error": null
+        }
+      ]
+    }
+  ]
+}

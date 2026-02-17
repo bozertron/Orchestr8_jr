@@ -1,0 +1,52 @@
+{
+  "source": "IP/woven_maps.py",
+  "total_lines": 946,
+  "sha256": "e3c253a1ffe66972216fe487ac8acc46ac584d0a554803cdeee23e42f1abc82e",
+  "role": "Code City facade module",
+  "risks": [
+    "Legacy callers may assume monolithic renderer internals still live here",
+    "Wrapper/API drift risk between facade and feature modules",
+    "Cross-file runtime now depends on delegated template + graph builders"
+  ],
+  "anchors": [
+    {
+      "line": 69,
+      "text": "canonical JS_COLORS map"
+    },
+    {
+      "line": 212,
+      "text": "compute_building_geometry(lines, exports)"
+    },
+    {
+      "line": 720,
+      "text": "build_graph_data(...) wrapper"
+    },
+    {
+      "line": 795,
+      "text": "build_from_connection_graph(...) wrapper"
+    },
+    {
+      "line": 816,
+      "text": "build_from_health_results(...) wrapper"
+    },
+    {
+      "line": 911,
+      "text": "create_code_city(...) wrapper"
+    }
+  ],
+  "integration_gaps": [],
+  "resolved_gaps": [
+    {
+      "gap": "Patchbay drag-to-target gesture and persistent history",
+      "status": "complete"
+    },
+    {
+      "gap": "Connection action result relay into panel feedback",
+      "status": "complete"
+    },
+    {
+      "gap": "2D/3D keyframe parity bridge",
+      "status": "complete"
+    }
+  ]
+}

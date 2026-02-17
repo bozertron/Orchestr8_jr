@@ -1,0 +1,23 @@
+{
+  "source": "one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/suburbs.html",
+  "total_lines": 211,
+  "sha256": "62294427ac091f24b603aaa08b0e9cd3c53debf26b242b3107479c64488d2c4f",
+  "chunk_count": 2,
+  "observation_ids": [
+    505,
+    506
+  ],
+  "risks": [
+    "Visual canon risk: color/motion contract regressions are easy to introduce."
+  ],
+  "anchors": [
+    {
+      "line": 98,
+      "text": "vec3 shellColor = vec3(0.83, 0.68, 0.21); // Gold"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

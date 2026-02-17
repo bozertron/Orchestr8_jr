@@ -1,0 +1,17 @@
+{
+  "source": "one integration at a time/frontend/tools/tsconfig.json",
+  "total_lines": 19,
+  "sha256": "719a5223fd6006bd81e160d0fdf6f9f48e9eee83fef5fd5e0dc6d3e0e53d4fc8",
+  "chunk_count": 1,
+  "observation_ids": [
+    633
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

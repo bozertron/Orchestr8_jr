@@ -1,0 +1,56 @@
+{
+  "source": "one integration at a time/PRDs/PRD Orchestr8 v3.md",
+  "total_lines": 135,
+  "sha256": "44c518ab8b33787000574928a51bfb55b7628f23d29afe499140e09d3cbe303e",
+  "chunk_count": 2,
+  "observation_ids": [
+    673,
+    674
+  ],
+  "risks": [
+    "Constraint-heavy document: treat as canonical rules, not optional guidance.",
+    "State pipeline coupling: root state keys and health flow ordering must stay aligned."
+  ],
+  "anchors": [
+    {
+      "line": 6,
+      "text": "The system relies on a rigid directory layout. The Agent must verify this structure exists."
+    },
+    {
+      "line": 12,
+      "text": "│   ├── orchestr8_app.py    # (Host) The Main Marimo Application"
+    },
+    {
+      "line": 21,
+      "text": "│       └── 05_cli_bridge.py# (New) The TypeScript Scaffold Bridge"
+    },
+    {
+      "line": 31,
+      "text": "## 2. The Host Application (`orchestr8_app.py`)"
+    },
+    {
+      "line": 35,
+      "text": "The Host must initialize a `STATE_MANAGERS` dictionary passed to every plugin."
+    },
+    {
+      "line": 46,
+      "text": "4.  Execute `module.render(STATE_MANAGERS)`."
+    },
+    {
+      "line": 102,
+      "text": "## 5. The Scaffold Bridge (`05_cli_bridge.py`)"
+    },
+    {
+      "line": 128,
+      "text": "3.  **Host Creation:** Write `IP/orchestr8_app.py` with the dynamic loader."
+    },
+    {
+      "line": 130,
+      "text": "5.  **Bridge Implementation:** Ensure `05_cli_bridge.py` correctly calls the `list-plugins` command defined in `scaffold-cli.ts`."
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

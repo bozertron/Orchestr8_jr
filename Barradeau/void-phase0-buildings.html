@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>THE VOID - Phase 0: Building Generator</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #0A0A0B; 
+            overflow: hidden;
+            font-family: 'Futura', 'Avenir', sans-serif;
+        }
+        canvas { display: block; }
+        
+        #ui {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            color: rgba(201, 169, 98, 0.7);
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            pointer-events: none;
+        }
+        
+        #ui .title {
+            font-size: 14px;
+            color: #C9A962;
+            margin-bottom: 8px;
+        }
+        
+        #ui .subtitle {
+            opacity: 0.5;
+            margin-bottom: 16px;
+        }
+        
+        #building-info {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            display: flex;
+            gap: 24px;
+        }
+        
+        .building-card {
+            background: rgba(10, 10, 11, 0.8);
+            border: 1px solid rgba(201, 169, 98, 0.2);
+            padding: 16px;
+            min-width: 200px;
+        }
+        
+        .building-card h3 {
+            color: #C9A962;
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(201, 169, 98, 0.2);
+        }
+        
+        .building-card .stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 10px;
+        }
+        
+        .building-card .label {
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .building-card .value {
+            color: #1ABC9C;
+            font-family: 'Courier New', monospace;
+        }
+        
+        #controls {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        button {
+            background: transparent;
+            border: 1px solid rgba(201, 169, 98, 0.3);
+            color: #C9A962;
+            padding: 10px 20px;
+            font-family: 'Futura', 'Avenir', sans-serif;
+            font-size: 10px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: rgba(201, 169, 98, 0.1);
+            border-color: #C9A962;
+        }
+        
+        button.active {
+            background: rgba(201, 169, 98, 0.2);
+            border-color: #C9A962;
+        }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="ui">
+        <div class="title">THE VOID</div>
+        <div class="subtitle">Phase 0: Building Generator Test</div>
+        <div>Two buildings from two files</div>
+    </div>
+    
+    <div id="controls">
+        <button id="btn-both" class="active">BOTH BUILDINGS</button>
+        <button id="btn-small">SMALL FILE ONLY</button>
+        <button id="btn-large">LARGE FILE ONLY</button>
+        <button id="btn-rotate">TOGGLE ROTATION</button>
+    </div>
+    
+    <div id="building-info">
+        <div class="building-card" id="card-small">
+            <h3>Small Building</h3>
+            <div class="stat"><span class="label">File</span><span class="value">utils.ts</span></div>
+            <div class="stat"><span class="label">Lines</span><span class="value" id="small-lines">—</span></div>
+            <div class="stat"><span class="label">Exports</span><span class="value" id="small-exports">—</span></div>
+            <div class="stat"><span class="label">Footprint</span><span class="value" id="small-footprint">—</span></div>
+            <div class="stat"><span class="label">Height</span><span class="value" id="small-height">—</span></div>
+            <div class="stat"><span class="label">Particles</span><span class="value" id="small-particles">—</span></div>
+        </div>
+        <div class="building-card" id="card-large">
+            <h3>Large Building</h3>
+            <div class="stat"><span class="label">File</span><span class="value">ConnectionManager.ts</span></div>
+            <div class="stat"><span class="label">Lines</span><span class="value" id="large-lines">—</span></div>
+            <div class="stat"><span class="label">Exports</span><span class="value" id="large-exports">—</span></div>
+            <div class="stat"><span class="label">Footprint</span><span class="value" id="large-footprint">—</span></div>
+            <div class="stat"><span class="label">Height</span><span class="value" id="large-height">—</span></div>
+            <div class="stat"><span class="label">Particles</span><span class="value" id="large-particles">—</span></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+        // ═══════════════════════════════════════════════════════════
+        // MOCK FILE CONTENT
+        // ═══════════════════════════════════════════════════════════
+        
+        // Small file: ~52 lines, 2 exports
+        const SMALL_FILE = `
+// utils.ts - Utility functions for P2P messaging
+import { MessageType } from './types';
+
+interface FormatOptions {
+  uppercase?: boolean;
+  truncate?: number;
+}
+
+/**
+ * Formats a peer ID for display
+ */
+export function formatPeerId(id: string, options?: FormatOptions): string {
+  let result = id;
+  
+  if (options?.truncate && result.length > options.truncate) {
+    result = result.slice(0, options.truncate) + '...';
+  }
+  
+  if (options?.uppercase) {
+    result = result.toUpperCase();
+  }
+  
+  return result;
+}
+
+/**
+ * Validates a message payload
+ */
+export function validateMessage(payload: unknown): payload is MessageType {
+  if (!payload || typeof payload !== 'object') {
+    return false;
+  }
+  
+  const msg = payload as Record<string, unknown>;
+  
+  return (
+    typeof msg.id === 'string' &&
+    typeof msg.timestamp === 'number' &&
+    typeof msg.content === 'string'
+  );
+}
+
+// Internal helper - not exported
+function sanitize(input: string): string {
+  return input.replace(/[<>]/g, '');
+}
+
+// Constants used internally
+const MAX_MESSAGE_LENGTH = 4096;
+const PEER_ID_REGEX = /^[a-zA-Z0-9]{16,64}$/;
+`;
+
+        // Large file: ~487 lines, 15 exports
+        const LARGE_FILE = `
+// ConnectionManager.ts - Core P2P connection management system
+import { EventEmitter } from 'events';
+import { WebSocket } from 'ws';
+import { PeerInfo, ConnectionState, MessageType, HandshakePayload } from './types';
+import { formatPeerId, validateMessage } from './utils';
+import { CryptoProvider } from '../security/crypto';
+import { RateLimiter } from '../security/rateLimiter';
+import { Logger } from '../core/logger';
+
+// ─────────────────────────────────────────────────────────────────
+// TYPES & INTERFACES
+// ─────────────────────────────────────────────────────────────────
+
+export interface ConnectionConfig {
+  maxPeers: number;
+  heartbeatInterval: number;
+  reconnectAttempts: number;
+  reconnectDelay: number;
+  messageTimeout: number;
+  enableEncryption: boolean;
+}
+
+export interface PeerConnection {
+  id: string;
+  socket: WebSocket;
+  state: ConnectionState;
+  lastSeen: number;
+  latency: number;
+  messageQueue: MessageType[];
+  metadata: Record<string, unknown>;
+}
+
+export interface ConnectionStats {
+  totalConnections: number;
+  activeConnections: number;
+  messagesReceived: number;
+  messagesSent: number;
+  bytesReceived: number;
+  bytesSent: number;
+  averageLatency: number;
+}
+
+export type ConnectionEventType = 
+  | 'peer:connected'
+  | 'peer:disconnected'
+  | 'peer:error'
+  | 'message:received'
+  | 'message:sent'
+  | 'state:changed';
+
+export interface ConnectionEvent {
+  type: ConnectionEventType;
+  peerId?: string;
+  data?: unknown;
+  timestamp: number;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// CONSTANTS
+// ─────────────────────────────────────────────────────────────────
+
+const DEFAULT_CONFIG: ConnectionConfig = {
+  maxPeers: 50,
+  heartbeatInterval: 30000,
+  reconnectAttempts: 3,
+  reconnectDelay: 5000,
+  messageTimeout: 10000,
+  enableEncryption: true,
+};
+
+const HEARTBEAT_MESSAGE = { type: 'heartbeat', timestamp: 0 };
+const HANDSHAKE_TIMEOUT = 5000;
+const MAX_MESSAGE_SIZE = 1024 * 1024; // 1MB
+
+// ─────────────────────────────────────────────────────────────────
+// MAIN CLASS
+// ─────────────────────────────────────────────────────────────────
+
+export class ConnectionManager extends EventEmitter {
+  private config: ConnectionConfig;
+  private peers: Map<string, PeerConnection>;
+  private crypto: CryptoProvider;
+  private rateLimiter: RateLimiter;
+  private logger: Logger;
+  private heartbeatTimer: NodeJS.Timer | null;
+  private stats: ConnectionStats;
+  private isShuttingDown: boolean;
+
+  constructor(config: Partial<ConnectionConfig> = {}) {
+    super();
+    this.config = { ...DEFAULT_CONFIG, ...config };
+    this.peers = new Map();
+    this.crypto = new CryptoProvider();
+    this.rateLimiter = new RateLimiter();
+    this.logger = new Logger('ConnectionManager');
+    this.heartbeatTimer = null;
+    this.isShuttingDown = false;
+    
+    this.stats = {
+      totalConnections: 0,
+      activeConnections: 0,
+      messagesReceived: 0,
+      messagesSent: 0,
+      bytesReceived: 0,
+      bytesSent: 0,
+      averageLatency: 0,
+    };
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // PUBLIC API
+  // ─────────────────────────────────────────────────────────────
+
+  async connect(peerInfo: PeerInfo): Promise<PeerConnection> {
+    if (this.peers.size >= this.config.maxPeers) {
+      throw new Error('Maximum peer limit reached');
+    }
+
+    if (this.peers.has(peerInfo.id)) {
+      return this.peers.get(peerInfo.id)!;
+    }
+
+    this.logger.info(\`Connecting to peer: \${formatPeerId(peerInfo.id)}\`);
+
+    const socket = new WebSocket(peerInfo.address);
+    const connection: PeerConnection = {
+      id: peerInfo.id,
+      socket,
+      state: ConnectionState.Connecting,
+      lastSeen: Date.now(),
+      latency: 0,
+      messageQueue: [],
+      metadata: {},
+    };
+
+    this.peers.set(peerInfo.id, connection);
+    this.setupSocketHandlers(connection);
+
+    await this.performHandshake(connection);
+    
+    this.stats.totalConnections++;
+    this.stats.activeConnections++;
+    
+    this.emitEvent('peer:connected', peerInfo.id);
+    
+    return connection;
+  }
+
+  async disconnect(peerId: string): Promise<void> {
+    const peer = this.peers.get(peerId);
+    if (!peer) return;
+
+    this.logger.info(\`Disconnecting peer: \${formatPeerId(peerId)}\`);
+    
+    peer.state = ConnectionState.Disconnecting;
+    
+    try {
+      await this.flushMessageQueue(peer);
+      peer.socket.close(1000, 'Normal closure');
+    } catch (error) {
+      this.logger.error(\`Error during disconnect: \${error}\`);
+    }
+    
+    this.peers.delete(peerId);
+    this.stats.activeConnections--;
+    
+    this.emitEvent('peer:disconnected', peerId);
+  }
+
+  async send(peerId: string, message: MessageType): Promise<void> {
+    const peer = this.peers.get(peerId);
+    if (!peer || peer.state !== ConnectionState.Connected) {
+      throw new Error(\`Peer not connected: \${peerId}\`);
+    }
+
+    if (!validateMessage(message)) {
+      throw new Error('Invalid message format');
+    }
+
+    const payload = this.config.enableEncryption
+      ? await this.crypto.encrypt(JSON.stringify(message))
+      : JSON.stringify(message);
+
+    if (payload.length > MAX_MESSAGE_SIZE) {
+      throw new Error('Message exceeds maximum size');
+    }
+
+    peer.socket.send(payload);
+    
+    this.stats.messagesSent++;
+    this.stats.bytesSent += payload.length;
+    
+    this.emitEvent('message:sent', peerId, message);
+  }
+
+  async broadcast(message: MessageType, excludePeers: string[] = []): Promise<void> {
+    const promises = Array.from(this.peers.keys())
+      .filter(id => !excludePeers.includes(id))
+      .map(id => this.send(id, message).catch(err => {
+        this.logger.warn(\`Broadcast failed for \${id}: \${err}\`);
+      }));
+
+    await Promise.all(promises);
+  }
+
+  getStats(): ConnectionStats {
+    return { ...this.stats };
+  }
+
+  getPeer(peerId: string): PeerConnection | undefined {
+    return this.peers.get(peerId);
+  }
+
+  getAllPeers(): PeerConnection[] {
+    return Array.from(this.peers.values());
+  }
+
+  getActivePeerCount(): number {
+    return this.stats.activeConnections;
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // LIFECYCLE
+  // ─────────────────────────────────────────────────────────────
+
+  start(): void {
+    this.logger.info('Starting ConnectionManager');
+    this.startHeartbeat();
+    this.isShuttingDown = false;
+  }
+
+  async shutdown(): Promise<void> {
+    this.logger.info('Shutting down ConnectionManager');
+    this.isShuttingDown = true;
+    this.stopHeartbeat();
+
+    const disconnectPromises = Array.from(this.peers.keys())
+      .map(id => this.disconnect(id));
+
+    await Promise.all(disconnectPromises);
+    
+    this.removeAllListeners();
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // PRIVATE METHODS
+  // ─────────────────────────────────────────────────────────────
+
+  private setupSocketHandlers(connection: PeerConnection): void {
+    const { socket, id } = connection;
+
+    socket.on('open', () => {
+      this.logger.debug(\`Socket opened for \${formatPeerId(id)}\`);
+    });
+
+    socket.on('message', async (data: Buffer) => {
+      try {
+        await this.handleIncomingMessage(connection, data);
+      } catch (error) {
+        this.logger.error(\`Message handling error: \${error}\`);
+        this.emitEvent('peer:error', id, error);
+      }
+    });
+
+    socket.on('close', (code: number, reason: string) => {
+      this.handleDisconnect(connection, code, reason);
+    });
+
+    socket.on('error', (error: Error) => {
+      this.logger.error(\`Socket error for \${id}: \${error.message}\`);
+      this.emitEvent('peer:error', id, error);
+    });
+  }
+
+  private async handleIncomingMessage(
+    connection: PeerConnection,
+    data: Buffer
+  ): Promise<void> {
+    if (!this.rateLimiter.check(connection.id)) {
+      this.logger.warn(\`Rate limit exceeded for \${connection.id}\`);
+      return;
+    }
+
+    const payload = data.toString();
+    this.stats.bytesReceived += payload.length;
+
+    const decrypted = this.config.enableEncryption
+      ? await this.crypto.decrypt(payload)
+      : payload;
+
+    const message = JSON.parse(decrypted);
+
+    if (!validateMessage(message)) {
+      throw new Error('Invalid message received');
+    }
+
+    connection.lastSeen = Date.now();
+    this.stats.messagesReceived++;
+
+    if (message.type === 'heartbeat') {
+      this.handleHeartbeat(connection, message);
+      return;
+    }
+
+    this.emitEvent('message:received', connection.id, message);
+  }
+
+  private handleHeartbeat(connection: PeerConnection, message: any): void {
+    const now = Date.now();
+    connection.latency = now - message.timestamp;
+    
+    // Update average latency
+    const peers = this.getAllPeers();
+    const totalLatency = peers.reduce((sum, p) => sum + p.latency, 0);
+    this.stats.averageLatency = totalLatency / peers.length;
+  }
+
+  private handleDisconnect(
+    connection: PeerConnection,
+    code: number,
+    reason: string
+  ): void {
+    this.logger.info(
+      \`Peer disconnected: \${connection.id}, code: \${code}, reason: \${reason}\`
+    );
+
+    if (!this.isShuttingDown && code !== 1000) {
+      this.attemptReconnect(connection);
+    } else {
+      this.peers.delete(connection.id);
+      this.stats.activeConnections--;
+      this.emitEvent('peer:disconnected', connection.id);
+    }
+  }
+
+  private async attemptReconnect(connection: PeerConnection): Promise<void> {
+    let attempts = 0;
+
+    while (attempts < this.config.reconnectAttempts) {
+      attempts++;
+      this.logger.info(
+        \`Reconnect attempt \${attempts}/\${this.config.reconnectAttempts} for \${connection.id}\`
+      );
+
+      await this.delay(this.config.reconnectDelay);
+
+      try {
+        // Attempt to recreate connection
+        connection.socket = new WebSocket(connection.socket.url);
+        this.setupSocketHandlers(connection);
+        await this.performHandshake(connection);
+        
+        this.logger.info(\`Reconnected to \${connection.id}\`);
+        return;
+      } catch (error) {
+        this.logger.warn(\`Reconnect failed: \${error}\`);
+      }
+    }
+
+    this.logger.error(\`Failed to reconnect to \${connection.id} after \${attempts} attempts\`);
+    this.peers.delete(connection.id);
+    this.stats.activeConnections--;
+    this.emitEvent('peer:disconnected', connection.id);
+  }
+
+  private async performHandshake(connection: PeerConnection): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Handshake timeout'));
+      }, HANDSHAKE_TIMEOUT);
+
+      const handshake: HandshakePayload = {
+        version: '1.0.0',
+        capabilities: ['messaging', 'streaming'],
+        timestamp: Date.now(),
+      };
+
+      connection.socket.send(JSON.stringify({ type: 'handshake', ...handshake }));
+
+      const onMessage = (data: Buffer) => {
+        const response = JSON.parse(data.toString());
+        if (response.type === 'handshake_ack') {
+          clearTimeout(timeout);
+          connection.socket.off('message', onMessage);
+          connection.state = ConnectionState.Connected;
+          connection.metadata = response.metadata || {};
+          resolve();
+        }
+      };
+
+      connection.socket.on('message', onMessage);
+    });
+  }
+
+  private async flushMessageQueue(connection: PeerConnection): Promise<void> {
+    while (connection.messageQueue.length > 0) {
+      const message = connection.messageQueue.shift()!;
+      try {
+        await this.send(connection.id, message);
+      } catch (error) {
+        this.logger.warn(\`Failed to flush message: \${error}\`);
+      }
+    }
+  }
+
+  private startHeartbeat(): void {
+    this.heartbeatTimer = setInterval(() => {
+      const now = Date.now();
+      
+      this.peers.forEach((peer, id) => {
+        if (peer.state !== ConnectionState.Connected) return;
+
+        // Check for stale connections
+        if (now - peer.lastSeen > this.config.heartbeatInterval * 2) {
+          this.logger.warn(\`Stale connection detected: \${id}\`);
+          this.disconnect(id);
+          return;
+        }
+
+        // Send heartbeat
+        const heartbeat = { ...HEARTBEAT_MESSAGE, timestamp: now };
+        peer.socket.send(JSON.stringify(heartbeat));
+      });
+    }, this.config.heartbeatInterval);
+  }
+
+  private stopHeartbeat(): void {
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
+    }
+  }
+
+  private emitEvent(
+    type: ConnectionEventType,
+    peerId?: string,
+    data?: unknown
+  ): void {
+    const event: ConnectionEvent = {
+      type,
+      peerId,
+      data,
+      timestamp: Date.now(),
+    };
+
+    this.emit(type, event);
+    this.emitEvent('state:changed', peerId, { previousState: null, newState: type });
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// FACTORY FUNCTION
+// ─────────────────────────────────────────────────────────────────
+
+export function createConnectionManager(
+  config?: Partial<ConnectionConfig>
+): ConnectionManager {
+  return new ConnectionManager(config);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// RE-EXPORTS FOR CONVENIENCE
+// ─────────────────────────────────────────────────────────────────
+
+export { ConnectionState } from './types';
+export type { PeerInfo, MessageType } from './types';
+`;
+
+        // ═══════════════════════════════════════════════════════════
+        // FILE PARSER
+        // ═══════════════════════════════════════════════════════════
+        
+        function parseFile(content) {
+            const lines = content.split('\n');
+            const lineCount = lines.length;
+            
+            // Count exports (export function, export class, export interface, export type, export const, export {)
+            const exportMatches = content.match(/export\s+(function|class|interface|type|const|async|enum|\{)/g);
+            const exportCount = exportMatches ? exportMatches.length : 0;
+            
+            // Count imports for future use
+            const importMatches = content.match(/import\s+/g);
+            const importCount = importMatches ? importMatches.length : 0;
+            
+            // Count functions/methods for room count (future)
+            const functionMatches = content.match(/(function\s+\w+|=>\s*\{|\w+\s*\([^)]*\)\s*:\s*\w+\s*\{)/g);
+            const functionCount = functionMatches ? functionMatches.length : 0;
+            
+            return {
+                lineCount,
+                exportCount,
+                importCount,
+                functionCount
+            };
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // DELAUNAY TRIANGULATION
+        // ═══════════════════════════════════════════════════════════
+        
+        class Delaunay {
+            static triangulate(points) {
+                if (points.length < 3) return [];
+                
+                const minX = Math.min(...points.map(p => p.x));
+                const minY = Math.min(...points.map(p => p.y));
+                const maxX = Math.max(...points.map(p => p.x));
+                const maxY = Math.max(...points.map(p => p.y));
+                
+                const dx = maxX - minX;
+                const dy = maxY - minY;
+                const deltaMax = Math.max(dx, dy) * 2;
+                
+                const p1 = { x: minX - deltaMax, y: minY - deltaMax };
+                const p2 = { x: minX + deltaMax * 2, y: minY - deltaMax };
+                const p3 = { x: minX + dx / 2, y: maxY + deltaMax };
+                
+                let triangles = [{ p1, p2, p3 }];
+                
+                for (const point of points) {
+                    const badTriangles = [];
+                    
+                    for (const tri of triangles) {
+                        if (this.inCircumcircle(point, tri)) {
+                            badTriangles.push(tri);
+                        }
+                    }
+                    
+                    const polygon = [];
+                    for (const tri of badTriangles) {
+                        const edges = [[tri.p1, tri.p2], [tri.p2, tri.p3], [tri.p3, tri.p1]];
+                        
+                        for (const edge of edges) {
+                            let shared = false;
+                            for (const other of badTriangles) {
+                                if (other === tri) continue;
+                                if (this.hasEdge(edge, other)) {
+                                    shared = true;
+                                    break;
+                                }
+                            }
+                            if (!shared) polygon.push(edge);
+                        }
+                    }
+                    
+                    triangles = triangles.filter(t => !badTriangles.includes(t));
+                    
+                    for (const edge of polygon) {
+                        triangles.push({ p1: edge[0], p2: edge[1], p3: point });
+                    }
+                }
+                
+                return triangles.filter(tri => 
+                    tri.p1 !== p1 && tri.p1 !== p2 && tri.p1 !== p3 &&
+                    tri.p2 !== p1 && tri.p2 !== p2 && tri.p2 !== p3 &&
+                    tri.p3 !== p1 && tri.p3 !== p2 && tri.p3 !== p3
+                );
+            }
+            
+            static inCircumcircle(p, tri) {
+                const ax = tri.p1.x - p.x, ay = tri.p1.y - p.y;
+                const bx = tri.p2.x - p.x, by = tri.p2.y - p.y;
+                const cx = tri.p3.x - p.x, cy = tri.p3.y - p.y;
+                
+                return (ax*ax + ay*ay) * (bx*cy - cx*by) -
+                       (bx*bx + by*by) * (ax*cy - cx*ay) +
+                       (cx*cx + cy*cy) * (ax*by - bx*ay) > 0;
+            }
+            
+            static hasEdge(edge, tri) {
+                const edges = [[tri.p1, tri.p2], [tri.p2, tri.p3], [tri.p3, tri.p1]];
+                return edges.some(e => 
+                    (e[0] === edge[0] && e[1] === edge[1]) ||
+                    (e[0] === edge[1] && e[1] === edge[0])
+                );
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // BARRADEAU BUILDING GENERATOR
+        // ═══════════════════════════════════════════════════════════
+        
+        const CONFIG = {
+            // Scaling factors
+            BASE_FOOTPRINT: 2,           // Minimum building size
+            FOOTPRINT_SCALE: 0.008,      // Lines → footprint multiplier
+            MIN_HEIGHT: 3,               // Minimum building height
+            HEIGHT_PER_EXPORT: 0.8,      // Each export adds this much height
+            
+            // Particle density
+            PARTICLES_PER_UNIT: 1.2,     // Higher = more particles
+            
+            // Visual
+            LAYER_COUNT: 15,             // Vertical layers in extrusion
+            TAPER: 0.015,                // How much building narrows at top
+            
+            // Color (GOLD - healthy state)
+            COLOR: 0xC9A962
+        };
+
+        class BarradeauBuilding {
+            constructor(fileContent, position = { x: 0, z: 0 }) {
+                this.fileData = parseFile(fileContent);
+                this.position = position;
+                this.particles = [];
+                this.edges = [];
+                this.mesh = null;
+                this.lineMesh = null;
+                
+                this.calculateDimensions();
+                this.generateFootprint();
+                this.extrudeBuilding();
+            }
+            
+            calculateDimensions() {
+                const { lineCount, exportCount } = this.fileData;
+                
+                // Footprint radius based on file size
+                this.footprintRadius = CONFIG.BASE_FOOTPRINT + 
+                    (lineCount * CONFIG.FOOTPRINT_SCALE);
+                
+                // Height based on exports
+                this.height = CONFIG.MIN_HEIGHT + 
+                    (exportCount * CONFIG.HEIGHT_PER_EXPORT);
+                
+                // Store for display
+                this.dimensions = {
+                    footprint: this.footprintRadius.toFixed(2),
+                    height: this.height.toFixed(2)
+                };
+            }
+            
+            generateFootprint() {
+                // Create building footprint points
+                // More complex buildings (more lines) get more detailed footprints
+                const complexity = Math.min(12, 6 + Math.floor(this.fileData.lineCount / 100));
+                const points = [];
+                
+                // Main perimeter (slightly irregular for organic feel)
+                for (let i = 0; i < complexity; i++) {
+                    const angle = (i / complexity) * Math.PI * 2;
+                    const variance = 0.85 + Math.random() * 0.3;
+                    const r = this.footprintRadius * variance;
+                    points.push({
+                        x: Math.cos(angle) * r,
+                        y: Math.sin(angle) * r
+                    });
+                }
+                
+                // Inner structure points (creates more triangulation detail)
+                const innerRings = Math.floor(this.footprintRadius / 1.5);
+                for (let ring = 1; ring <= innerRings; ring++) {
+                    const ringRadius = (ring / (innerRings + 1)) * this.footprintRadius * 0.8;
+                    const ringPoints = Math.max(4, complexity - ring * 2);
+                    
+                    for (let i = 0; i < ringPoints; i++) {
+                        const angle = (i / ringPoints) * Math.PI * 2 + (ring * 0.3);
+                        points.push({
+                            x: Math.cos(angle) * ringRadius + (Math.random() - 0.5) * 0.3,
+                            y: Math.sin(angle) * ringRadius + (Math.random() - 0.5) * 0.3
+                        });
+                    }
+                }
+                
+                // Center point
+                points.push({ x: 0, y: 0 });
+                
+                this.footprintPoints = points;
+            }
+            
+            extrudeBuilding() {
+                // Triangulate footprint
+                const triangles = Delaunay.triangulate(this.footprintPoints);
+                
+                // Extract unique edges with lengths
+                const edgeMap = new Map();
+                for (const tri of triangles) {
+                    const triEdges = [[tri.p1, tri.p2], [tri.p2, tri.p3], [tri.p3, tri.p1]];
+                    
+                    for (const [a, b] of triEdges) {
+                        const key = a.x < b.x || (a.x === b.x && a.y < b.y)
+                            ? `${a.x.toFixed(4)},${a.y.toFixed(4)}-${b.x.toFixed(4)},${b.y.toFixed(4)}`
+                            : `${b.x.toFixed(4)},${b.y.toFixed(4)}-${a.x.toFixed(4)},${a.y.toFixed(4)}`;
+                        
+                        if (!edgeMap.has(key)) {
+                            edgeMap.set(key, { 
+                                a: { x: a.x, y: a.y }, 
+                                b: { x: b.x, y: b.y }, 
+                                length: Math.hypot(b.x - a.x, b.y - a.y) 
+                            });
+                        }
+                    }
+                }
+                
+                const edges2D = Array.from(edgeMap.values());
+                const maxEdgeLength = Math.max(...edges2D.map(e => e.length));
+                
+                this.particles = [];
+                this.edges = [];
+                
+                // For each layer, extrude and place particles
+                for (let layer = 0; layer < CONFIG.LAYER_COUNT; layer++) {
+                    const t = layer / CONFIG.LAYER_COUNT;
+                    const y = t * this.height;
+                    const scale = 1 - (layer * CONFIG.TAPER);
+                    const layerOpacity = 1 - t * 0.5;
+                    
+                    // Barradeau technique: filter edges by length at higher layers
+                    const lengthThreshold = maxEdgeLength * (1 - t * 0.5);
+                    
+                    for (const edge of edges2D) {
+                        // Skip longer edges at higher layers (creates the ethereal fade)
+                        if (edge.length > lengthThreshold) continue;
+                        
+                        // Transform 2D edge to 3D
+                        const a3D = {
+                            x: edge.a.x * scale + this.position.x,
+                            y: y,
+                            z: edge.a.y * scale + this.position.z
+                        };
+                        const b3D = {
+                            x: edge.b.x * scale + this.position.x,
+                            y: y,
+                            z: edge.b.y * scale + this.position.z
+                        };
+                        
+                        this.edges.push({ a: a3D, b: b3D });
+                        
+                        // Particle density inversely proportional to edge length
+                        const densityMultiplier = 1 + (1 - edge.length / maxEdgeLength) * 2;
+                        const numParticles = Math.max(2, Math.floor(
+                            edge.length * CONFIG.PARTICLES_PER_UNIT * densityMultiplier
+                        ));
+                        
+                        for (let i = 0; i <= numParticles; i++) {
+                            const pt = i / numParticles;
+                            this.particles.push({
+                                x: a3D.x + (b3D.x - a3D.x) * pt + (Math.random() - 0.5) * 0.08,
+                                y: a3D.y + (Math.random() - 0.5) * 0.08,
+                                z: a3D.z + (b3D.z - a3D.z) * pt + (Math.random() - 0.5) * 0.08,
+                                opacity: layerOpacity,
+                                size: 0.3 + layerOpacity * 0.4
+                            });
+                        }
+                    }
+                }
+            }
+            
+            createMesh(material) {
+                const positions = new Float32Array(this.particles.length * 3);
+                const colors = new Float32Array(this.particles.length * 3);
+                const sizes = new Float32Array(this.particles.length);
+                
+                const color = new THREE.Color(CONFIG.COLOR);
+                
+                for (let i = 0; i < this.particles.length; i++) {
+                    const p = this.particles[i];
+                    const i3 = i * 3;
+                    
+                    positions[i3] = p.x;
+                    positions[i3 + 1] = p.y;
+                    positions[i3 + 2] = p.z;
+                    
+                    // Slight color variation for depth
+                    const variation = 0.9 + Math.random() * 0.2;
+                    colors[i3] = color.r * variation;
+                    colors[i3 + 1] = color.g * variation;
+                    colors[i3 + 2] = color.b * variation;
+                    
+                    sizes[i] = p.size;
+                }
+                
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+                
+                this.mesh = new THREE.Points(geometry, material);
+                return this.mesh;
+            }
+            
+            createLineMesh(material) {
+                const positions = [];
+                
+                for (const edge of this.edges) {
+                    positions.push(edge.a.x, edge.a.y, edge.a.z);
+                    positions.push(edge.b.x, edge.b.y, edge.b.z);
+                }
+                
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+                
+                this.lineMesh = new THREE.LineSegments(geometry, material);
+                return this.lineMesh;
+            }
+            
+            getStats() {
+                return {
+                    ...this.fileData,
+                    ...this.dimensions,
+                    particleCount: this.particles.length,
+                    edgeCount: this.edges.length
+                };
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // THREE.JS SETUP
+        // ═══════════════════════════════════════════════════════════
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x0A0A0B);
+        document.body.appendChild(renderer.domElement);
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x0A0A0B, 0.025);
+
+        const camera = new THREE.PerspectiveCamera(
+            50, 
+            window.innerWidth / window.innerHeight, 
+            0.1, 
+            500
+        );
+        camera.position.set(20, 15, 20);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.3;
+        controls.target.set(0, 5, 0);
+
+        // Post-processing
+        const composer = new EffectComposer(renderer);
+        composer.addPass(new RenderPass(scene, camera));
+        
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            1.0,   // strength
+            0.4,   // radius
+            0.15   // threshold
+        );
+        composer.addPass(bloomPass);
+
+        // ═══════════════════════════════════════════════════════════
+        // MATERIALS
+        // ═══════════════════════════════════════════════════════════
+        
+        const particleMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                uTime: { value: 0 }
+            },
+            vertexShader: `
+                attribute float size;
+                attribute vec3 color;
+                varying vec3 vColor;
+                varying float vOpacity;
+                uniform float uTime;
+                
+                void main() {
+                    vColor = color;
+                    
+                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                    
+                    // Size attenuation
+                    gl_PointSize = size * (120.0 / -mvPosition.z);
+                    gl_Position = projectionMatrix * mvPosition;
+                    
+                    // Pass opacity based on distance for fog effect
+                    vOpacity = 1.0 - smoothstep(10.0, 40.0, -mvPosition.z);
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vColor;
+                varying float vOpacity;
+                
+                void main() {
+                    vec2 center = gl_PointCoord - 0.5;
+                    float dist = length(center);
+                    
+                    if (dist > 0.5) discard;
+                    
+                    // Soft glow falloff (Barradeau style)
+                    float alpha = 1.0 - smoothstep(0.0, 0.5, dist);
+                    alpha = pow(alpha, 1.5);
+                    
+                    gl_FragColor = vec4(vColor, alpha * 0.85 * vOpacity);
+                }
+            `,
+            transparent: true,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
+        });
+
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0xFFFFFF,
+            transparent: true,
+            opacity: 0.03,
+            blending: THREE.AdditiveBlending
+        });
+
+        // ═══════════════════════════════════════════════════════════
+        // GENERATE BUILDINGS
+        // ═══════════════════════════════════════════════════════════
+        
+        // Small building (left)
+        const smallBuilding = new BarradeauBuilding(SMALL_FILE, { x: -8, z: 0 });
+        const smallPoints = smallBuilding.createMesh(particleMaterial);
+        const smallLines = smallBuilding.createLineMesh(lineMaterial);
+        
+        // Large building (right)
+        const largeBuilding = new BarradeauBuilding(LARGE_FILE, { x: 8, z: 0 });
+        const largePoints = largeBuilding.createMesh(particleMaterial);
+        const largeLines = largeBuilding.createLineMesh(lineMaterial);
+        
+        // Add to scene
+        scene.add(smallPoints, smallLines, largePoints, largeLines);
+
+        // Update UI with stats
+        const smallStats = smallBuilding.getStats();
+        const largeStats = largeBuilding.getStats();
+        
+        document.getElementById('small-lines').textContent = smallStats.lineCount;
+        document.getElementById('small-exports').textContent = smallStats.exportCount;
+        document.getElementById('small-footprint').textContent = smallStats.footprint;
+        document.getElementById('small-height').textContent = smallStats.height;
+        document.getElementById('small-particles').textContent = smallStats.particleCount.toLocaleString();
+        
+        document.getElementById('large-lines').textContent = largeStats.lineCount;
+        document.getElementById('large-exports').textContent = largeStats.exportCount;
+        document.getElementById('large-footprint').textContent = largeStats.footprint;
+        document.getElementById('large-height').textContent = largeStats.height;
+        document.getElementById('large-particles').textContent = largeStats.particleCount.toLocaleString();
+
+        // ═══════════════════════════════════════════════════════════
+        // CONTROLS
+        // ═══════════════════════════════════════════════════════════
+        
+        let showSmall = true;
+        let showLarge = true;
+        
+        function updateVisibility() {
+            smallPoints.visible = showSmall;
+            smallLines.visible = showSmall;
+            largePoints.visible = showLarge;
+            largeLines.visible = showLarge;
+            
+            document.getElementById('card-small').style.opacity = showSmall ? 1 : 0.3;
+            document.getElementById('card-large').style.opacity = showLarge ? 1 : 0.3;
+            
+            // Update button states
+            document.getElementById('btn-both').classList.toggle('active', showSmall && showLarge);
+            document.getElementById('btn-small').classList.toggle('active', showSmall && !showLarge);
+            document.getElementById('btn-large').classList.toggle('active', !showSmall && showLarge);
+        }
+        
+        document.getElementById('btn-both').addEventListener('click', () => {
+            showSmall = true;
+            showLarge = true;
+            controls.target.set(0, 5, 0);
+            updateVisibility();
+        });
+        
+        document.getElementById('btn-small').addEventListener('click', () => {
+            showSmall = true;
+            showLarge = false;
+            controls.target.set(-8, smallBuilding.height / 2, 0);
+            updateVisibility();
+        });
+        
+        document.getElementById('btn-large').addEventListener('click', () => {
+            showSmall = false;
+            showLarge = true;
+            controls.target.set(8, largeBuilding.height / 2, 0);
+            updateVisibility();
+        });
+        
+        document.getElementById('btn-rotate').addEventListener('click', () => {
+            controls.autoRotate = !controls.autoRotate;
+            document.getElementById('btn-rotate').classList.toggle('active', controls.autoRotate);
+        });
+
+        // ═══════════════════════════════════════════════════════════
+        // ANIMATION LOOP
+        // ═══════════════════════════════════════════════════════════
+        
+        const clock = new THREE.Clock();
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const time = clock.getElapsedTime();
+            particleMaterial.uniforms.uTime.value = time;
+            
+            controls.update();
+            composer.render();
+        }
+        
+        animate();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // ═══════════════════════════════════════════════════════════
+        // CONSOLE OUTPUT
+        // ═══════════════════════════════════════════════════════════
+        
+        console.log(`
+╔════════════════════════════════════════════════════════════════╗
+║              THE VOID - Phase 0: Building Generator            ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║  SMALL BUILDING (utils.ts)                                     ║
+║  ├─ Lines: ${String(smallStats.lineCount).padEnd(6)} → Footprint: ${smallStats.footprint.padEnd(5)}                  ║
+║  ├─ Exports: ${String(smallStats.exportCount).padEnd(4)} → Height: ${smallStats.height.padEnd(5)}                     ║
+║  └─ Particles: ${String(smallStats.particleCount).padStart(6)}                                   ║
+║                                                                ║
+║  LARGE BUILDING (ConnectionManager.ts)                         ║
+║  ├─ Lines: ${String(largeStats.lineCount).padEnd(6)} → Footprint: ${largeStats.footprint.padEnd(5)}                  ║
+║  ├─ Exports: ${String(largeStats.exportCount).padEnd(4)} → Height: ${largeStats.height.padEnd(5)}                    ║
+║  └─ Particles: ${String(largeStats.particleCount).padStart(6)}                                   ║
+║                                                                ║
+║  FORMULA:                                                      ║
+║  footprint = 2 + (lines × 0.008)                              ║
+║  height = 3 + (exports × 0.8)                                 ║
+║                                                                ║
+╚════════════════════════════════════════════════════════════════╝
+        `);
+
+    </script>
+</body>
+</html>

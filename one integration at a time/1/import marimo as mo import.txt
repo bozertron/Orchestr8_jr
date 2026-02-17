@@ -1,0 +1,288 @@
+import marimo as mo
+import pandas as pd
+import networkx as nx
+from pyvis.network import Network
+import os
+import re
+import json
+import datetime
+from jinja2 import Template
+
+# ==========================================
+# 1. THE DATA CORE (State Management)
+# ==========================================
+
+# We use Marimo state to hold the "Project Soul"
+get_project_root, set_project_root = mo.state(".")
+get_files_df, set_files_df = mo.state(pd.DataFrame())
+get_edges_df, set_edges_df = mo.state(pd.DataFrame())
+get_selected_file, set_selected_file = mo.state(None)
+get_agent_logs, set_agent_logs = mo.state([])
+
+# ==========================================
+# 2. THE HARVESTERS (Logic & Analysis)
+# ==========================================
+
+def scan_project(root_path):
+    """
+    The ExplorerView Backend.
+    Scans the directory and builds the Files DataFrame.
+    """
+    file_list = []
+    
+    # Walk the directory
+    for root, dirs, files in os.walk(root_path):
+        if 'node_modules' in root or '.git' in root or '__pycache__' in root:
+            continue
+            
+        for file in files:
+            full_path = os.path.join(root, file)
+            rel_path = os.path.relpath(full_path, root_path)
+            ext = os.path.splitext(file)[1]
+            
+            # Simple heuristic for complexity (File Size)
+            size = os.path.getsize(full_path)
+            
+            file_list.append({
+                "path": rel_path,
+                "name": file,
+                "type": ext,
+                "size": size,
+                "status": "NORMAL", # Default
+                "issues": 0
+            })
+            
+    return pd.DataFrame(file_list)
+
+def verify_connections(root_path, files_df):
+    """
+    The ConnectionVerifier Backend.
+    Parses files for imports and checks validity.
+    Returns: Updated Files DF (with badges) and Edges DF.
+    """
+    edges = []
+    
+    # Regex for JS/Python imports (Simplified for MVP)
+    # Matches: import X from 'Y' OR from 'Y' import X
+    import_pattern = re.compile(r"(?:from|import)\s+['\"]([^'\"]+)['\"]")
+    
+    for index, row in files_df.iterrows():
+        full_path = os.path.join(root_path, row['path'])
+        
+        try:
+            with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+                
+                # HARVEST IMPORTS
+                matches = import_pattern.findall(content)
+                for target in matches:
+                    # Logic to resolve path (Naive for MVP)
+                    # In a real app, we'd handle alias resolution (@/components/...)
+                    edge = {
+                        "source": row['path'],
+                        "target": target, # This needs resolution logic
+                        "type": "import"
+                    }
+                    edges.append(edge)
+                    
+                # HEURISTIC CHECKS (The "Verifier")
+                issues = 0
+                if "TODO" in content:
+                    files_df.at[index, 'status'] = "WARNING"
+                    issues += 1
+                if len(matches) > 10: # High coupling
+                    files_df.at[index, 'status'] = "COMPLEX"
+                    
+                files_df.at[index, 'issues'] = issues
+                
+        except Exception:
+            pass # Skip binary files
+
+    return files_df, pd.DataFrame(edges)
+
+# ==========================================
+# 3. THE VISUALIZERS (UI Components)
+# ==========================================
+
+def render_badge(status):
+    colors = {
+        "NORMAL": "green",
+        "WARNING": "orange",
+        "COMPLEX": "purple",
+        "ERROR": "red"
+    }
+    color = colors.get(status, "gray")
+    return f"<span style='background-color:{color}; color:white; padding:2px 6px; border-radius:4px; font-size:0.8em'>{status}</span>"
+
+# ==========================================
+# 4. MARIMO APP LAYOUT
+# ==========================================
+
+app_title = mo.md("# 🎻 Orchestr8: The Command Center")
+
+# --- CONTROL PANEL ---
+path_input = mo.ui.text(
+    value=".", 
+    label="Project Root", 
+    full_width=True
+)
+
+scan_button = mo.ui.button(
+    label="🔍 Scan & Verify Codebase", 
+    on_change=lambda _: run_scan()
+)
+
+def run_scan():
+    root = path_input.value
+    set_project_root(root)
+    df = scan_project(root)
+    df, edges = verify_connections(root, df)
+    set_files_df(df)
+    set_edges_df(edges)
+
+# --- TAB 1: EXPLORER VIEW ---
+def explorer_view():
+    df = get_files_df()
+    if df.empty:
+        return mo.md("*No project loaded. Enter a path and click Scan.*")
+    
+    # Add Visual Badges
+    display_df = df.copy()
+    display_df['status_badge'] = display_df['status'].apply(render_badge)
+    
+    # Interactive Table
+    table = mo.ui.table(
+        display_df[['status_badge', 'path', 'type', 'size', 'issues']],
+        selection='single',
+        label="File System"
+    )
+    
+    # Handle Selection
+    def on_select(value):
+        if value:
+            set_selected_file(value[0]['path'])
+            
+    return mo.vstack([
+        table,
+        # We hook into the table's value to update state
+        mo.call_to_action(
+            lambda: on_select(table.value) if hasattr(table, 'value') else None
+        )
+    ])
+
+# --- TAB 2: CONNECTION GRAPH ---
+def connection_graph_view():
+    edges = get_edges_df()
+    nodes = get_files_df()
+    
+    if edges.empty:
+        return mo.md("*No connections found.*")
+    
+    # Build NetworkX Graph
+    G = nx.from_pandas_edgelist(edges, source='source', target='target')
+    
+    # Use PyVis for Physics
+    net = Network(height="500px", width="100%", bgcolor="#222222", font_color="white")
+    net.from_nx(G)
+    
+    # Physics settings
+    net.barnes_hut()
+    
+    # Render to HTML string
+    # We save to a temp file or get string (PyVis quirks)
+    try:
+        html_str = net.generate_html()
+        return mo.Html(html_str)
+    except:
+        return mo.md("Graph generation requires write permissions for temp files.")
+
+# --- TAB 3: PRD GENERATOR ---
+def prd_generator_view():
+    selected = get_selected_file()
+    if not selected:
+        return mo.md("👈 *Select a file in the Explorer View to generate a PRD.*")
+    
+    # The Template (Jinja2)
+    template_str = """
+    # PRD: {{ filename }}
+    **Generated:** {{ timestamp }}
+    **Status:** {{ status }}
+    
+    ## 1. Overview
+    This document describes the functionality of `{{ filename }}`. 
+    It is a {{ extension }} file with a size of {{ size }} bytes.
+    
+    ## 2. Dependencies (The "Context Link")
+    The ConnectionGraph indicates this file is connected to:
+    {% for edge in connections %}
+    - `{{ edge.target }}` (Type: {{ edge.type }})
+    {% endfor %}
+    
+    ## 3. Implementation Plan
+    [TODO: Taskmaster AI to insert specific implementation details here based on file content]
+    """
+    
+    # Context Packing
+    df = get_files_df()
+    edges = get_edges_df()
+    
+    file_data = df[df['path'] == selected].iloc[0]
+    relevant_edges = edges[edges['source'] == selected].to_dict('records')
+    
+    # Render
+    t = Template(template_str)
+    markdown_out = t.render(
+        filename=selected,
+        timestamp=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+        status=file_data['status'],
+        extension=file_data['type'],
+        size=file_data['size'],
+        connections=relevant_edges
+    )
+    
+    return mo.md(markdown_out)
+
+# --- TAB 4: THE EMPEROR (Taskmaster) ---
+def emperor_view():
+    selected = get_selected_file()
+    
+    mission_input = mo.ui.text_area(label="Mission Briefing", placeholder="e.g. Refactor the login logic to use OAuth...")
+    
+    def deploy_general():
+        if not selected: return
+        # Logic to append to logs
+        current_logs = get_agent_logs()
+        new_log = f"[{datetime.datetime.now().time()}] 🚀 DEPLOYING GENERAL to '{selected}' with mission: {mission_input.value}"
+        set_agent_logs(current_logs + [new_log])
+        
+    deploy_btn = mo.ui.button(label="Deploy Agent", on_change=lambda _: deploy_general())
+    
+    # Log Window
+    logs = get_agent_logs()
+    log_display = mo.md("\n".join([f"- {l}" for l in logs]))
+    
+    return mo.vstack([
+        mo.md(f"### Target: `{selected or 'None'}`"),
+        mission_input,
+        deploy_btn,
+        mo.md("---"),
+        mo.md("### 📡 Command Center Logs"),
+        log_display
+    ])
+
+# ==========================================
+# 5. MAIN RENDER
+# ==========================================
+
+tabs = mo.ui.tabs({
+    "📁 Explorer": explorer_view(),
+    "🕸️ Connections": connection_graph_view(),
+    "📄 PRD Generator": prd_generator_view(),
+    "👑 Emperor": emperor_view()
+})
+
+mo.vstack([
+    app_title,
+    mo.hstack([path_input, scan_button], justify="start"),
+    tabs
+])

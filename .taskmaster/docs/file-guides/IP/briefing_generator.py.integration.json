@@ -1,0 +1,49 @@
+{
+  "source": "IP/briefing_generator.py",
+  "total_lines": 248,
+  "sha256": "71a90f00c0eb0077f48fdf482377cf0321067cf81475ebf7c1babbf4d6f9558d",
+  "role": "Mission briefing compiler",
+  "risks": [
+    "Consumes heterogeneous campaign JSON with no strict schema",
+    "Token-heavy output can drift without checklist canon checks",
+    "Diagram generation depends on upstream context completeness"
+  ],
+  "anchors": [
+    {
+      "line": 14,
+      "text": "load_campaign_log(...)"
+    },
+    {
+      "line": 69,
+      "text": "build_fiefdom_diagram(...)"
+    },
+    {
+      "line": 106,
+      "text": "generate(...)"
+    },
+    {
+      "line": 174,
+      "text": "Mermaid embed block"
+    },
+    {
+      "line": 229,
+      "text": "Checklist campaign JSON guidance"
+    }
+  ],
+  "integration_gaps": [
+    {
+      "gap": "Campaign entry schema validation",
+      "status": "pending"
+    }
+  ],
+  "resolved_gaps": [
+    {
+      "gap": "Campaign history path migrated to .orchestr8/campaigns JSON",
+      "status": "complete"
+    },
+    {
+      "gap": "Mermaid diagram wired into briefing output",
+      "status": "complete"
+    }
+  ]
+}

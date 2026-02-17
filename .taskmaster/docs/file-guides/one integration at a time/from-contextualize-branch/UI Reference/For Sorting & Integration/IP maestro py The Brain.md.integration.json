@@ -1,0 +1,22 @@
+{
+  "source": "one integration at a time/from-contextualize-branch/UI Reference/For Sorting & Integration/IP maestro py The Brain.md",
+  "total_lines": 17,
+  "sha256": "e967f9c990ab90fffe86c3e20ee1582984858f4c3f1be07493496d24065b29b3",
+  "chunk_count": 1,
+  "observation_ids": [
+    504
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [
+    {
+      "line": 1,
+      "text": "# IP/maestro.py (The Brain)"
+    }
+  ],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}

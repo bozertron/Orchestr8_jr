@@ -1,0 +1,46 @@
+{
+  "source": "IP/features/maestro/code_city_context.py",
+  "total_lines": 294,
+  "sha256": "1842458832b66353ef60b1afda3adb0162d6f1e8803532856bef821cc7d5003b",
+  "role": "Code City context handoff assembler",
+  "risks": [
+    "Room extraction differs across file types",
+    "Payload compatibility required by multiple panel consumers",
+    "Health/lock context quality is upstream dependent"
+  ],
+  "anchors": [
+    {
+      "line": 18,
+      "text": "derive_context_scope(file_path)"
+    },
+    {
+      "line": 167,
+      "text": "build_building_panel_for_node(...)"
+    },
+    {
+      "line": 232,
+      "text": "select_room_entry(panel)"
+    },
+    {
+      "line": 261,
+      "text": "build_code_city_context_payload(...)"
+    }
+  ],
+  "integration_gaps": [
+    {
+      "gap": "Non-Python room extraction precision",
+      "status": "pending",
+      "notes": "Generic parser only catches simple function/class patterns."
+    }
+  ],
+  "resolved_gaps": [
+    {
+      "gap": "Building panel contract runtime validation",
+      "status": "complete"
+    },
+    {
+      "gap": "Room-entry trigger + sitting-room handoff payload",
+      "status": "complete"
+    }
+  ]
+}

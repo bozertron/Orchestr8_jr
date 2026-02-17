@@ -1,0 +1,17 @@
+{
+  "source": "one integration at a time/star-vector/configs/accelerate/1-gpu.yaml",
+  "total_lines": 16,
+  "sha256": "0c0f6b25cb073e6b9e243a8e5d6db8b854562d084f2e51d7913a28ea873b9919",
+  "chunk_count": 1,
+  "observation_ids": [
+    841
+  ],
+  "risks": [
+    "General integration risk: enforce tests around schema, state, and behavior contracts."
+  ],
+  "anchors": [],
+  "generated_from": {
+    "manifest": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/manifest.json",
+    "key_lines": ".taskmaster/memory/bootstrap/2026-02-13_015038_repo-wide-net-new-sidecars/key_lines_with_files.tsv"
+  }
+}
